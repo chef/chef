@@ -12,6 +12,76 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      x86_tag: ${{ steps.tags.outputs.x86_tag }}
+    steps:
+      - id: tags
+        run: |
+          echo "x86_tag=3.0.39" >> $GITHUB_OUTPUT
+
+  functional-docker:
+    needs: config
+    name: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-centos-7:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: yum
+            label: centos-7-x86
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-centos-8:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: dnf
+            label: centos-8-x86
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-debian-9:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: apt
+            label: debian-9-x86
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-ubuntu-1604:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: apt
+            label: ubuntu-1604-x86
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-sles-15:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: zypper
+            label: sles-15-x86
+    runs-on: ${{ matrix.runs-on }}
+    container:
+      image: ${{ matrix.container }}
+      options: --privileged
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install native deps (yum)
+        if: matrix.pkg_mgr == 'yum'
+        run: yum install -y openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel curl
+      - name: Install native deps (dnf)
+        if: matrix.pkg_mgr == 'dnf'
+        run: dnf install -y openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel curl
+      - name: Install native deps (apt)
+        if: matrix.pkg_mgr == 'apt'
+        run: |
+          apt-get update
+          apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev curl
+      - name: Install native deps (zypper)
+        if: matrix.pkg_mgr == 'zypper'
+        run: zypper install -y --no-confirm openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel curl
+      - name: Install Ruby via rbenv
+        run: |
+          curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          rbenv install 3.1.4
+          rbenv global 3.1.4
+          gem install bundler
+          echo "$HOME/.rbenv/bin" >> $GITHUB_PATH
+          echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
+      - run: bundle install
+      - run: bundle exec rake spec:functional
+
   choco:
     strategy:
       fail-fast: false
