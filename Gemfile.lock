@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/knife.git
-  revision: 90cfcf9b1095077ef5c35a896d68db3fda495985
+  revision: 11b0ed7e3e43348749d5a3ad0ba72fe5044459fa
   branch: main
   specs:
-    knife (19.0.100)
+    knife (19.0.109)
       abbrev
       bcrypt_pbkdf (~> 1.1)
       chef-licensing (~> 1.2)
@@ -24,7 +24,7 @@ GIT
       erubis (~> 2.7)
       ffi (>= 1.15, < 1.18.0)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 3)
+      highline (>= 1.6.9, < 4)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-cli (>= 2.1.1, < 3.0)
@@ -306,7 +306,7 @@ GEM
       logger
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
-    faraday-http-cache (2.5.1)
+    faraday-http-cache (2.7.0)
       faraday (>= 0.8)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
@@ -329,7 +329,8 @@ GEM
     hashdiff (1.2.1)
     hashie (5.1.0)
       logger
-    highline (2.1.0)
+    highline (3.1.2)
+      reline
     http-accept (2.1.1)
     http-cookie (1.1.0)
       domain_name (~> 0.5)
@@ -366,6 +367,7 @@ GEM
       tty-table (~> 0.10)
     inspec-core-bin (7.0.107)
       inspec-core (= 7.0.107)
+    io-console (0.8.2)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -403,7 +405,7 @@ GEM
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
       wmi-lite (~> 1.0)
-    multi_json (1.19.1)
+    multi_json (1.20.1)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
     net-ftp (0.3.9)
@@ -450,7 +452,7 @@ GEM
       binding_of_caller (>= 1.0)
       pry (~> 0.13)
     pstore (0.1.4)
-    public_suffix (6.0.2)
+    public_suffix (7.0.5)
     racc (1.8.1)
     rack (3.2.6)
     rackup (2.3.1)
@@ -462,6 +464,8 @@ GEM
       logger
       tsort
     regexp_parser (2.11.3)
+    reline (0.6.3)
+      io-console (~> 0.5)
     repl_type_completor (0.1.15)
       prism (~> 1.0)
       rbs (>= 2.7.0)
