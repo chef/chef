@@ -7,7 +7,7 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/"
 echo "steps:"
 echo ""
-# RHEL-family platforms (RHEL 9): run Integration only here; Unit/Functional run in GitHub Actions (unit-docker, functional-docker).
+# RHEL-family platforms (RHEL 9): run Unit, Functional, and Integration in Buildkite (requires subscription).
 # Rocky 8: run Integration only here; Unit/Functional run in GitHub Actions (unit-docker, functional-docker).
 # Rocky 9: run Integration only here; Unit/Functional run in GitHub Actions (unit-docker, functional-docker).
 # Debian: run Integration only here; Unit/Functional run in GitHub Actions (unit-docker, functional-docker).
@@ -30,12 +30,16 @@ for platform in ${rhel_platforms[@]}; do
     queue="default-privileged"
   fi
 
-  echo "- label: \"Integration $platform :ruby:\""
+  echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
   echo "    queue: $queue"
+  echo "  matrix:"
+  echo "    - \"Unit\""
+  echo "    - \"Integration\""
+  echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
   echo "      image: $image"
@@ -45,7 +49,7 @@ for platform in ${rhel_platforms[@]}; do
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .expeditor/scripts/bk_container_prep.sh"
-  echo "    - .expeditor/scripts/prep_and_run_tests.sh Integration"
+  echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
   echo "  timeout_in_minutes: 60"
 done
 

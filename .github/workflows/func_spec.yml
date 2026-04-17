@@ -106,12 +106,6 @@ jobs:
             container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.arm_tag }}
             pkg_mgr: dnf
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-rhel-9:${{ needs.config.outputs.x86_tag }}
-            pkg_mgr: dnf
-          - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-rhel-9:${{ needs.config.outputs.arm_tag }}
-            pkg_mgr: dnf
-          - runs-on: ubuntu-24.04
             container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.x86_tag }}
             pkg_mgr: apt
           - runs-on: ubuntu-24.04-arm
