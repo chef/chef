@@ -7,6 +7,9 @@ name: func_spec
     branches:
       - chef-18
 
+permissions:
+  contents: read
+
 concurrency:
   group: func-specs-${{ github.ref }}
   cancel-in-progress: true

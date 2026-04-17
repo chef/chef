@@ -7,6 +7,9 @@ name: unit_specs
     branches:
       - chef-18
 
+permissions:
+  contents: read
+
 concurrency:
   group: unit-specs-${{ github.ref }}
   cancel-in-progress: true
