@@ -16,3 +16,4 @@ run_list "end_to_end::default"
 # cookbook 'example_cookbook', path: '../cookbooks/example_cookbook'
 
 cookbook "end_to_end", path: "cookbooks/end_to_end"
+cookbook "java"
