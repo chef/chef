@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/cheffish.git
-  revision: f8740fc6fbd82f13490511ca4d1535544af64816
+  revision: 5095f5699a3a88c611caca393c4d1710a5625b4f
   branch: main
   specs:
     cheffish (17.2.0)
@@ -524,6 +524,7 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.9.1)
+    unf_ext (0.0.9.1-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.1.1)
