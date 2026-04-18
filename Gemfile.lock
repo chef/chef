@@ -423,7 +423,7 @@ GEM
     rackup (2.3.1)
       rack (>= 3)
     rainbow (3.1.1)
-    rake (13.3.1)
+    rake (13.4.2)
     rb-readline (0.5.5)
     rbs (3.10.4)
       logger
