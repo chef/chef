@@ -1,17 +1,50 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.2.105 -->
+## [v19.2.105](https://github.com/chef/chef/tree/v19.2.105) (2026-04-19)
 
 #### Merged Pull Requests
-- fix auth token env reference in adhoc [#15853](https://github.com/chef/chef/pull/15853) ([rishichawda](https://github.com/rishichawda))
+- Bump pry from 0.15.2 to 0.16.0 [#15875](https://github.com/chef/chef/pull/15875) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump pry from 0.15.2 to 0.16.0 [#15875](https://github.com/chef/chef/pull/15875) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.105 -->
+- Fix &#39;occured&#39; -&gt; &#39;occurred&#39; typo in client_spec unit test strings [#15899](https://github.com/chef/chef/pull/15899) ([SAY-5](https://github.com/SAY-5)) <!-- 19.2.104 -->
+- Bump rake from 13.3.1 to 13.4.2 [#15906](https://github.com/chef/chef/pull/15906) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.103 -->
+- Bump cheffish from `f8740fc` to `5095f56` [#15917](https://github.com/chef/chef/pull/15917) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.102 -->
+- Bump aws-sdk-s3 from 1.218.0 to 1.219.0 [#15859](https://github.com/chef/chef/pull/15859) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.101 -->
+- Bump pry-byebug from 3.11.0 to 3.12.0 [#15909](https://github.com/chef/chef/pull/15909) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.100 -->
+- Bump ohai from `ac6cdfd` to `db1f20a` [#15919](https://github.com/chef/chef/pull/15919) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.99 -->
+- Don&#39;t waste buildkite time on github-only changes [#15916](https://github.com/chef/chef/pull/15916) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.98 -->
+- Dependabot: Don&#39;t auto rebase [#15914](https://github.com/chef/chef/pull/15914) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.97 -->
+- Bump cookstyle from 8.5.2 to 8.6.10 [#15822](https://github.com/chef/chef/pull/15822) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.96 -->
+- Remove more knife references [#15887](https://github.com/chef/chef/pull/15887) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.95 -->
+- Move debian and rocky-8 over to GHA [#15913](https://github.com/chef/chef/pull/15913) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.94 -->
+- Test removing conditionals around ffi [#15911](https://github.com/chef/chef/pull/15911) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.93 -->
+- Update README badges [#15870](https://github.com/chef/chef/pull/15870) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.92 -->
+- Clear out debugs [#15905](https://github.com/chef/chef/pull/15905) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.91 -->
+- Bump pry-stack_explorer from 0.6.1 to 0.6.3 [#15876](https://github.com/chef/chef/pull/15876) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.90 -->
+- Correcting the Rest Resource [#15867](https://github.com/chef/chef/pull/15867) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.89 -->
+- Dependabot tweaks for chef-18 [#15871](https://github.com/chef/chef/pull/15871) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.88 -->
+- Fix inconsistent Gemfile [#15872](https://github.com/chef/chef/pull/15872) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.87 -->
+- Fix up platforms list in Gemfile.lock [#15891](https://github.com/chef/chef/pull/15891) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.86 -->
+- Fix fedora-42 and opensuse-leap-15 CI failures [#15902](https://github.com/chef/chef/pull/15902) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.85 -->
+- Migrate gem tests to GHA [#15904](https://github.com/chef/chef/pull/15904) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.84 -->
+- Remove rocky and arm exemptions from allchecks [#15903](https://github.com/chef/chef/pull/15903) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.83 -->
+- Disable macos runs with chronoguard comment [#15898](https://github.com/chef/chef/pull/15898) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.82 -->
+- enable arm runners [#15778](https://github.com/chef/chef/pull/15778) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.81 -->
+- use a different env name for sha [#15900](https://github.com/chef/chef/pull/15900) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.80 -->
+- set github_sha to the correct ref for macOS kitchen tests [#15893](https://github.com/chef/chef/pull/15893) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.79 -->
+- Enable manual kitchen tests, fix push kitchen tests [#15886](https://github.com/chef/chef/pull/15886) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.78 -->
+- Removing Knife from Chef [#15847](https://github.com/chef/chef/pull/15847) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.77 -->
+- Add SELinux fcontext install hook for Habitat package [#15787](https://github.com/chef/chef/pull/15787) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.76 -->
+- Updating community checklist and copilot instructions [#15864](https://github.com/chef/chef/pull/15864) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.75 -->
+- More omnibus cleanup [#15855](https://github.com/chef/chef/pull/15855) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.74 -->
+- enable docker arm image build and push [#15856](https://github.com/chef/chef/pull/15856) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.73 -->
 - fix auth token env reference in adhoc [#15853](https://github.com/chef/chef/pull/15853) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.73 -->
 - Windows plan dies during removal of devkit tests.  [#15849](https://github.com/chef/chef/pull/15849) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.73 -->
 - Fix dependabot security runs [#15845](https://github.com/chef/chef/pull/15845) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.72 -->

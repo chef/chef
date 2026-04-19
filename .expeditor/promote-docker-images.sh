@@ -1,4 +1,4 @@
-# This script is not currently in use.
+# This script is not in use currently but may be used in the future.
 #! /bin/bash
 set -eou pipefail
 

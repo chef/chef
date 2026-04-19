@@ -15,6 +15,7 @@ From there you should see a zoom link that links you to the meeting.
 - [Cookstyle](https://github.com/chef/cookstyle) ![Open PRs](https://img.shields.io/github/issues-pr/chef/cookstyle) [Cookstyle pull requests](https://github.com/chef/cookstyle/pulls)
 - [Chef-Plans](https://github.com/chef/chef-plans) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef-plans) [Chef-Plans pull requests](https://github.com/chef/chef-plans/pulls)
 - [Chef-Powershell-Shim](https://github.com/chef/chef-powershell-shim) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef-powershell-shim) [Chef-Powershell-Shim pull requests](https://github.com/chef/chef-powershell-shim/pulls)
+- [Knife](https://github.com/chef/knife) ![Open PRs](https://img.shields.io/github/issues-pr/chef/knife) [Knife pull requests](https://github.com/chef/knife/pulls)
 
 ## Projects MixLib
 - [MixLib-Shellout](https://github.com/chef/mixlib-shellout) ![Open PRs](https://img.shields.io/github/issues-pr/chef/mixlib-shellout) [MixLib-Shellout pull requests](https://github.com/chef/mixlib-shellout/pulls)

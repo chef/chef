@@ -1,0 +1,39 @@
+#!/bin/sh
+# Apply SELinux file context rules for Chef Infra Client when SELinux is active.
+# This ensures the hab-packaged binaries are labeled as bin_t and can be executed
+# by systemd services on SELinux-enforcing systems (e.g., Fedora, RHEL).
+# On systems without SELinux or with SELinux disabled, this hook exits cleanly.
+# Windows installations use install.ps1 instead of this hook.
+
+if command -v getenforce >/dev/null 2>&1; then
+  se_status=$(getenforce)
+  if [ "$se_status" = "Enforcing" ] || [ "$se_status" = "Permissive" ]; then
+    # Derive the hab root (e.g. /hab or /opt/hab) from the package path so the
+    # fcontext rule covers dependency interpreters (e.g. Ruby) that live outside
+    # {{pkg.path}}. A package-scoped rule is insufficient because the kernel checks
+    # the SELinux label of the shebang interpreter, which defaults to default_t —
+    # a type systemd (init_t) cannot exec.
+    hab_root=$(echo "{{pkg.path}}" | sed 's|/pkgs/.*||')
+    echo "SELinux is in $se_status mode. Applying file context rules for ${hab_root}/bin directories..."
+
+    # Add a broad fcontext rule covering all bin directories under the hab root
+    if command -v semanage >/dev/null 2>&1; then
+      semanage fcontext -a -t bin_t "${hab_root}(/.*)?/bin(/.*)?" 2>/dev/null || true
+      echo "Applied fcontext rule for ${hab_root}(/.*)?/bin(/.*)?"
+    else
+      echo "Warning: semanage not found, cannot apply fcontext rules"
+    fi
+
+    # Relabel all binaries under the hab root so the new context takes effect immediately
+    if command -v restorecon >/dev/null 2>&1; then
+      restorecon -Rv "${hab_root}" 2>/dev/null || true
+      echo "Applied restorecon to ${hab_root}"
+    else
+      echo "Warning: restorecon not found, cannot relabel files"
+    fi
+  else
+    echo "SELinux is $se_status, skipping file context rules"
+  fi
+fi
+
+exit 0

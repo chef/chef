@@ -94,7 +94,7 @@ jobs:
       # perform native and Habitat packaging, publish to package repositories
       package-binaries: false     # Package binaries (e.g., RPM, DEB, MSI, dpkg + signing + SHA)
       habitat-build: false        # Create Habitat packages
-      publish-packages: false     # Publish packages (e.g., container from Dockerfile to ECR, go-releaser binary to releases page, omnibus to artifactory, gems, choco, homebrew, other app stores)
+      publish-packages: false     # Publish packages (e.g., container from Dockerfile to ECR, go-releaser binary to releases page, Habitat packages to package repositories and Artifactory to artifactory, gems, choco, homebrew, other app stores)
 
       # generate and export Software Bill of Materials (SBOM) in various formats
       generate-sbom: true

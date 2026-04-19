@@ -4,6 +4,11 @@
 
 Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure. This repository contains the core Chef Infra Client and related utilities.
 
+## Environment Rules
+Copilot must always detect the OS and Shell and provide commands specific to that OS and shell.
+If the OS is not specified, Copilot must ask the user to specify it before providing any commands.
+Copilot should never mix commands across different platforms.
+
 ## Repository Structure
 
 The Chef repository follows a modular structure with the following key components:
@@ -19,7 +24,6 @@ chef/
 ├── ext/                        # External extensions (e.g., win32-eventlog)
 ├── habitat/                    # Habitat packaging configuration
 ├── kitchen-tests/              # Test Kitchen integration tests
-├── knife/                      # Knife CLI tool for Chef management
 ├── lib/                        # Main Chef library code
 │   ├── chef.rb                 # Main entry point
 │   └── chef/                   # Core Chef modules and classes
@@ -256,7 +260,6 @@ rake spec
 
 - `chef-utils`: Utility functions
 - `chef-config`: Configuration management
-- `knife`: CLI tool
 - `chef-bin`: Binary executables
 
 ## Emergency Procedures

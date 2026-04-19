@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/cheffish.git
-  revision: f8740fc6fbd82f13490511ca4d1535544af64816
+  revision: 5095f5699a3a88c611caca393c4d1710a5625b4f
   branch: main
   specs:
     cheffish (17.2.0)
@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: ac6cdfdfc76b2511ec68976f5b05fddcae77b989
+  revision: db1f20ab5ec597d07508c82149224e826737baa0
   branch: main
   specs:
-    ohai (19.1.27)
+    ohai (19.1.28)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -45,14 +45,14 @@ GIT
 PATH
   remote: .
   specs:
-    chef (19.2.73)
+    chef (19.2.105)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       bcrypt_pbkdf (~> 1.0)
-      chef-config (= 19.2.73)
+      chef-config (= 19.2.105)
       chef-licensing (~> 1.3)
-      chef-utils (= 19.2.73)
+      chef-utils (= 19.2.105)
       chef-vault
       chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
@@ -84,15 +84,15 @@ PATH
       unf_ext (~> 0.0.9.1)
       uri (>= 1.0.4, < 1.2.0)
       vault (>= 0.18.2, < 0.21.0)
-    chef (19.2.73-universal-mingw-ucrt)
+    chef (19.2.105-universal-mingw-ucrt)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
       bcrypt_pbkdf (~> 1.0)
-      chef-config (= 19.2.73)
+      chef-config (= 19.2.105)
       chef-licensing (~> 1.3)
       chef-powershell (~> 18.6.6)
-      chef-utils (= 19.2.73)
+      chef-utils (= 19.2.105)
       chef-vault
       chef-zero (~> 15.1.0)
       corefoundation (~> 0.3.4)
@@ -139,15 +139,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (19.2.73)
-      chef (= 19.2.73)
+    chef-bin (19.2.105)
+      chef (= 19.2.105)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (19.2.73)
+    chef-config (19.2.105)
       addressable
-      chef-utils (= 19.2.73)
+      chef-utils (= 19.2.105)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -157,7 +157,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (19.2.73)
+    chef-utils (19.2.105)
       concurrent-ruby
 
 GEM
@@ -170,7 +170,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1234.0)
+    aws-partitions (1.1239.0)
     aws-sdk-core (3.244.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -182,7 +182,7 @@ GEM
     aws-sdk-kms (1.123.0)
       aws-sdk-core (~> 3, >= 3.244.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.218.0)
+    aws-sdk-s3 (1.219.0)
       aws-sdk-core (~> 3, >= 3.244.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
@@ -193,12 +193,16 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
+    bcrypt_pbkdf (1.1.2-arm64-darwin)
+    bcrypt_pbkdf (1.1.2-x64-mingw-ucrt)
+    bcrypt_pbkdf (1.1.2-x86_64-darwin)
     benchmark (0.5.0)
     bigdecimal (4.1.1)
-    binding_of_caller (1.0.1)
+    binding_of_caller (2.0.0)
       debug_inspector (>= 1.2.0)
     builder (3.3.0)
-    byebug (12.0.0)
+    byebug (13.0.0)
+      reline (>= 0.6.0)
     chef-gyoku (1.5.0)
       builder (>= 2.1.2)
       rexml (~> 3.4)
@@ -253,8 +257,8 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.3.6)
     connection_pool (2.5.5)
-    cookstyle (8.5.2)
-      rubocop (= 1.81.6)
+    cookstyle (8.6.10)
+      rubocop (= 1.84.2)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
     crack (1.0.1)
@@ -333,6 +337,7 @@ GEM
       tty-table (~> 0.10)
     inspec-core-bin (7.0.107)
       inspec-core (= 7.0.107)
+    io-console (0.8.2)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
@@ -392,8 +397,8 @@ GEM
       bigdecimal
     openssl (3.3.1)
     ostruct (0.6.3)
-    parallel (1.27.0)
-    parser (3.3.10.0)
+    parallel (1.28.0)
+    parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
     parslet (2.0.0)
@@ -402,28 +407,31 @@ GEM
     plist (3.7.2)
     prism (1.9.0)
     proxifier2 (1.1.0)
-    pry (0.15.2)
+    pry (0.16.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.11.0)
-      byebug (~> 12.0)
-      pry (>= 0.13, < 0.16)
-    pry-stack_explorer (0.6.1)
-      binding_of_caller (~> 1.0)
+      reline (>= 0.6.0)
+    pry-byebug (3.12.0)
+      byebug (~> 13.0)
+      pry (>= 0.13, < 0.17)
+    pry-stack_explorer (0.6.3)
+      binding_of_caller (>= 1.0)
       pry (~> 0.13)
     pstore (0.1.4)
-    public_suffix (6.0.2)
+    public_suffix (7.0.5)
     racc (1.8.1)
     rack (3.2.6)
     rackup (2.3.1)
       rack (>= 3)
     rainbow (3.1.1)
-    rake (13.3.1)
+    rake (13.4.2)
     rb-readline (0.5.5)
     rbs (3.10.4)
       logger
       tsort
-    regexp_parser (2.11.3)
+    regexp_parser (2.12.0)
+    reline (0.6.3)
+      io-console (~> 0.5)
     repl_type_completor (0.1.15)
       prism (~> 1.0)
       rbs (>= 2.7.0)
@@ -444,7 +452,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
-    rubocop (1.81.6)
+    rubocop (1.84.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -452,12 +460,12 @@ GEM
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
-      rubocop-ast (>= 1.47.1, < 2.0)
+      rubocop-ast (>= 1.49.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.48.0)
+    rubocop-ast (1.49.1)
       parser (>= 3.3.7.2)
-      prism (~> 1.4)
+      prism (~> 1.7)
     ruby-progressbar (1.13.0)
     rubyntlm (0.6.5)
       base64
@@ -558,9 +566,13 @@ GEM
     yajl (0.3.4)
 
 PLATFORMS
-  arm64-darwin-21
+  arm64-darwin-23
+  arm64-darwin-24
+  arm64-darwin-25
+  arm64-darwin-26
   ruby
   x64-mingw-ucrt
+  x86_64-darwin-23
 
 DEPENDENCIES
   appbundler
@@ -572,13 +584,12 @@ DEPENDENCIES
   chef-vault
   cheffish!
   crack (~> 1.0.1)
-  ed25519 (~> 1.2)
   fauxhai-ng
   ffi (>= 1.15.5)
   inspec-core-bin (= 7.0.107)
   ohai!
   openssl (= 3.3.1)
-  pry (~> 0.15.2)
+  pry (~> 0.16.0)
   pry-byebug
   pry-stack_explorer
   rake (>= 12.3.3)

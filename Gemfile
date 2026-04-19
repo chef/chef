@@ -10,11 +10,7 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-if RUBY_PLATFORM.include?("mingw") || RUBY_PLATFORM.include?("darwin")
-  gem "ffi", ">= 1.15.5", "< 1.18.0"
-else
-  gem "ffi", ">= 1.15.5", force_ruby_platform: true
-end
+gem "ffi", ">= 1.15.5", force_ruby_platform: true
 
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
@@ -44,7 +40,7 @@ gem "repl_type_completor", "~> 0.1.15" # deprecation warnings in chef-shell
 group(:packaging, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
-  gem "pry", "~> 0.15.2"
+  gem "pry", "~> 0.16.0"
   # byebug does not install on freebsd on ruby 3.0
   install_if -> { !RUBY_PLATFORM.match?(/freebsd/i) } do
     gem "pry-byebug"
@@ -57,11 +53,6 @@ group(:ruby_shadow) do
   install_if -> { !RUBY_PLATFORM.match?(/mingw/) } do
     gem "chef-ruby-shadow", "~> 3.0.0", platforms: :ruby
   end
-end
-
-# deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
-group(:knife_windows_deps) do
-  gem "ed25519", "~> 1.2" # ed25519 ssh key support
 end
 
 group(:development, :test) do

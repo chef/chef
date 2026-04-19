@@ -1,4 +1,0 @@
-Name: default
-IncomingDir: /tmp/incoming
-TempDir: /tmp
-Allow: sid unstable>sid

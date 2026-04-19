@@ -12,6 +12,9 @@ updates:
       # Due to FIPS builds and having to couple the openssl
       # build itself, we don't let dependabot bump openssl
       - dependency-name: "openssl"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
 
   - package-ecosystem: bundler
     directory: "/"
@@ -25,6 +28,15 @@ updates:
       # Due to FIPS builds and having to couple the openssl
       # build itself, we don't let dependabot bump openssl
       - dependency-name: "openssl"
+      # chef-18 needs to stay on inspec 5, the pre-license version
+      - dependency-name: "inspec-core-bin"
+        versions: [">= 6"]
+      # chef-18 needs to stay on toml 1 which is less strict
+      - dependency-name: "tomlrb"
+        versions: [">= 2"]
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
 
   - package-ecosystem: bundler
     directory: "/omnibus"
@@ -34,6 +46,9 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
 
   - package-ecosystem: github-actions
     directory: "/"
@@ -42,3 +57,6 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
