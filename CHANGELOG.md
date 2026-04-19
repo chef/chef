@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.105 -->
-## [v19.2.105](https://github.com/chef/chef/tree/v19.2.105) (2026-04-19)
+<!-- latest_release 19.2.106 -->
+## [v19.2.106](https://github.com/chef/chef/tree/v19.2.106) (2026-04-19)
 
 #### Merged Pull Requests
-- Bump pry from 0.15.2 to 0.16.0 [#15875](https://github.com/chef/chef/pull/15875) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump streetsidesoftware/cspell-action from 8.3.0 to 8.4.0 [#15850](https://github.com/chef/chef/pull/15850) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump streetsidesoftware/cspell-action from 8.3.0 to 8.4.0 [#15850](https://github.com/chef/chef/pull/15850) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.106 -->
 - Bump pry from 0.15.2 to 0.16.0 [#15875](https://github.com/chef/chef/pull/15875) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.105 -->
 - Fix &#39;occured&#39; -&gt; &#39;occurred&#39; typo in client_spec unit test strings [#15899](https://github.com/chef/chef/pull/15899) ([SAY-5](https://github.com/SAY-5)) <!-- 19.2.104 -->
 - Bump rake from 13.3.1 to 13.4.2 [#15906](https://github.com/chef/chef/pull/15906) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.103 -->
