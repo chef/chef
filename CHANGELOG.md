@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.103 -->
-## [v19.2.103](https://github.com/chef/chef/tree/v19.2.103) (2026-04-19)
+<!-- latest_release 19.2.104 -->
+## [v19.2.104](https://github.com/chef/chef/tree/v19.2.104) (2026-04-19)
 
 #### Merged Pull Requests
-- Bump rake from 13.3.1 to 13.4.2 [#15906](https://github.com/chef/chef/pull/15906) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix &#39;occured&#39; -&gt; &#39;occurred&#39; typo in client_spec unit test strings [#15899](https://github.com/chef/chef/pull/15899) ([SAY-5](https://github.com/SAY-5))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix &#39;occured&#39; -&gt; &#39;occurred&#39; typo in client_spec unit test strings [#15899](https://github.com/chef/chef/pull/15899) ([SAY-5](https://github.com/SAY-5)) <!-- 19.2.104 -->
 - Bump rake from 13.3.1 to 13.4.2 [#15906](https://github.com/chef/chef/pull/15906) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.103 -->
 - Bump cheffish from `f8740fc` to `5095f56` [#15917](https://github.com/chef/chef/pull/15917) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.102 -->
 - Bump aws-sdk-s3 from 1.218.0 to 1.219.0 [#15859](https://github.com/chef/chef/pull/15859) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.101 -->
