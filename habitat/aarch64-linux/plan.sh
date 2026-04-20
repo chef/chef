@@ -40,11 +40,12 @@ pkg_deps=(
 pkg_svc_user=root
 pkg_svc_group=root
 
-# TODO: Remove this conditional logic once a hab version >= 2.0.495 is released.
-# Check if hab version is >= 2.0.495 for aarch64-linux
-# The install hook requires hab >= 2.0.495 on arm64 architecture
+# TODO: Remove this conditional logic once a hab version >= 2.0.507 is released.
+# Check if hab version is >= 2.0.507 for aarch64-linux
+# The install hook requires hab >= 2.0.507 on arm64 architecture
+# Bumped to 2.0.507 because 2.0.504 did not fix the issue
 hab_version=$(hab --version 2>/dev/null | awk '{print $2}')
-required_version="2.0.495"
+required_version="2.0.507"
 
 if [[ -z "$hab_version" ]]; then
   build_line "WARNING: Unable to determine Habitat version"
