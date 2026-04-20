@@ -59,10 +59,20 @@ class Chef
 
       private
 
+      # Maximum size for section text displayed on STDOUT (CHEF-14144).
+      # Error messages (especially from template errors) can be megabytes in size
+      # when they include a full node object dump. Truncate to a sane size.
+      MAX_DISPLAY_TEXT_LENGTH = 10_000
+
       def display_section(heading, text, out)
         out.puts heading
         out.puts "-" * heading.size
-        out.puts text
+        if text.is_a?(String) && text.length > MAX_DISPLAY_TEXT_LENGTH
+          out.puts text[0, MAX_DISPLAY_TEXT_LENGTH]
+          out.puts "\n... [truncated #{text.length - MAX_DISPLAY_TEXT_LENGTH} characters of output]"
+        else
+          out.puts text
+        end
         out.puts "\n"
       end
 

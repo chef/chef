@@ -93,6 +93,15 @@ class Chef
           @_extension_modules = []
         end
 
+        # Provide a compact inspect to prevent massive output in error messages.
+        # Ruby's NoMethodError includes #inspect of the receiver, which by default
+        # dumps all instance variables. Since TemplateContext holds the full node
+        # object (with all attributes and secrets), this can produce 60MB+ of
+        # output, causing segfaults and exposing sensitive data. (CHEF-14144)
+        def inspect
+          "#<#{self.class} template_name=#{@template_name.inspect} cookbook_name=#{@cookbook_name.inspect}>"
+        end
+
         ###
         # USER FACING API
         ###
@@ -220,8 +229,19 @@ class Chef
           @original_exception, @template, @context, @options = original_exception, template, context, options
         end
 
+        # Maximum size for error messages to prevent excessive output (CHEF-14144).
+        # Template errors (e.g. NoMethodError) can include the full #inspect of
+        # the TemplateContext, which holds the entire node object. Cap the message
+        # to a sane size to avoid multi-megabyte log output and segfaults.
+        MAX_MESSAGE_LENGTH = 10_000
+
         def message
-          @original_exception.message
+          msg = @original_exception.message
+          if msg.length > MAX_MESSAGE_LENGTH
+            msg[0, MAX_MESSAGE_LENGTH] + "\n... [truncated #{msg.length - MAX_MESSAGE_LENGTH} characters]"
+          else
+            msg
+          end
         end
 
         def line_number

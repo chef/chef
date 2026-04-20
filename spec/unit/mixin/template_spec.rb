@@ -314,4 +314,51 @@ describe Chef::Mixin::Template, "render_template" do
       end
     end
   end
+
+  # CHEF-14144: Excessive output from template errors
+  describe "TemplateContext#inspect" do
+    it "should return a compact string instead of dumping all instance variables" do
+      context = Chef::Mixin::Template::TemplateContext.new({})
+      context[:node] = { "platform" => "centos", "large_data" => "x" * 100_000 }
+      context[:template_name] = "test.erb"
+      context[:cookbook_name] = "my_cookbook"
+
+      result = context.inspect
+      expect(result).to include("Chef::Mixin::Template::TemplateContext")
+      expect(result).to include("my_cookbook")
+      expect(result).to include("test.erb")
+      expect(result.length).to be < 200
+      expect(result).not_to include("large_data")
+    end
+  end
+
+  describe "TemplateError message truncation (CHEF-14144)" do
+    it "should truncate excessively long error messages" do
+      huge_message = "undefined method `platform?' for " + ("x" * 20_000)
+      original_exception = double("exception",
+        message: huge_message,
+        backtrace: ["(erubis):1"]
+      )
+      template_error = Chef::Mixin::Template::TemplateError.new(
+        original_exception, "<%= platform? %>", {}, {}
+      )
+
+      msg = template_error.message
+      expect(msg.length).to be < (Chef::Mixin::Template::TemplateError::MAX_MESSAGE_LENGTH + 200)
+      expect(msg).to include("[truncated")
+      expect(msg).to include("undefined method `platform?'")
+    end
+
+    it "should not truncate short error messages" do
+      original_exception = double("exception",
+        message: "undefined method `platform?'",
+        backtrace: ["(erubis):1"]
+      )
+      template_error = Chef::Mixin::Template::TemplateError.new(
+        original_exception, "<%= platform? %>", {}, {}
+      )
+
+      expect(template_error.message).to eq("undefined method `platform?'")
+    end
+  end
 end
