@@ -19,7 +19,7 @@ else
   echo "--- Promoting within channel: ${channel}"
 fi
 
-version="${EXPEDITOR_VERSION:?ERROR: EXPEDITOR_VERSION not set or VERSION file not found}"
+version="${EXPEDITOR_PROMOTABLE:-${EXPEDITOR_VERSION:?ERROR: EXPEDITOR_VERSION not set or VERSION file not found}}"
 
 # Authenticate with Docker
 docker_login_user="expeditor"
@@ -29,20 +29,22 @@ docker_login_password="$(vault read -field=expeditor-full-access secret/docker/e
 }
 
 echo "--- Logging into Docker Hub"
-docker login -u "$docker_login_user" -p "$docker_login_password" || {
+echo "${docker_login_password}" | docker login -u "${docker_login_user}" --password-stdin || {
   echo "ERROR: Docker login failed"
   exit 1
 }
 
-# Helper function to create and push a multi-arch manifest
+declare -a promoted_tags=()
+
+# Idempotent helper function to create and push a multi-arch manifest
 # This manifests includes BOTH amd64 and arm64 images
 function create_and_push_manifest() {
   local manifest_tag="$1"
+  local target_manifest="chef/chef-hab:${manifest_tag}"
   local source_images=("chef/chef-hab:${version}-amd64" "chef/chef-hab:${version}-arm64")
 
-  echo "--- Creating manifest chef/chef-hab:${manifest_tag}"
+  echo "--- Creating manifest ${target_manifest}"
 
-  # Check that both source images exist
   for img in "${source_images[@]}"; do
     echo "    Verifying ${img} exists..."
     docker manifest inspect "${img}" > /dev/null 2>&1 || {
@@ -51,23 +53,27 @@ function create_and_push_manifest() {
     }
   done
 
-  # Create manifest combining both architectures
-  docker manifest create "chef/chef-hab:${manifest_tag}" \
+  # Idempotent reruns: remove local manifest ref if it already exists.
+  docker manifest rm "${target_manifest}" > /dev/null 2>&1 || true
+
+  docker manifest create "${target_manifest}" \
     --amend "${source_images[0]}" \
     --amend "${source_images[1]}"
 
-  echo "--- Pushing manifest chef/chef-hab:${manifest_tag}"
-  docker manifest push "chef/chef-hab:${manifest_tag}"
+  echo "--- Pushing manifest ${target_manifest}"
+  docker manifest push "${target_manifest}"
+  promoted_tags+=("${manifest_tag}")
 }
 
-# Parse version into components: 19.1.163 → major=19, minor=1, patch=163
+# Parse version into components: 19.1.163 -> major=19, minor=1, patch=163
 declare -i major_version minor_version _patch_version
-IFS="."; read -r major_version minor_version _patch_version <<< "$version"
+IFS="."
+read -r major_version minor_version _patch_version <<< "${version}"
 
 echo "--- Version breakdown: major=${major_version}, minor=${minor_version}, patch=${_patch_version}"
 
-# Create appropriate tags based on target channel
-case "$channel" in
+# Create tags based on target channel.
+case "${channel}" in
   current)
     # For 'current' channel: create major and major.minor version tags
     # These tags represent the latest pre-release versions
@@ -93,8 +99,17 @@ case "$channel" in
     echo "--- Creating unstable channel tags (version-specific only)"
     create_and_push_manifest "unstable"
     ;;
+
+  *)
+    echo "ERROR: Unrecognized channel: ${channel}"
+    exit 1
+    ;;
 esac
 
 echo "--- Successfully promoted chef/chef-hab:${version} to ${channel}"
-echo "--- Available Docker tags for this release:"
-docker manifest inspect "chef/chef-hab:${version}-amd64" | jq '.Descriptor.digest' 2>/dev/null || true
+echo "--- Verifying promoted manifest tags: ${promoted_tags[*]}"
+for tag in "${promoted_tags[@]}"; do
+  echo "    Checking chef/chef-hab:${tag}"
+  docker manifest inspect "chef/chef-hab:${tag}" > /dev/null
+done
+echo "--- All promoted manifest tags verified"
