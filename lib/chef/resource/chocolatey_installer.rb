@@ -1,13 +1,13 @@
-require 'cgi'
-require 'uri'
+require "cgi" unless defined?(CGI)
+require "uri" unless defined?(URI)
 
 class Chef
   class Resource
     class ChocolateyInstaller < Chef::Resource
       provides :chocolatey_installer
 
-      description 'Use the chocolatey_installer resource to ensure that Chocolatey itself is installed to your specification. Use the Chocolatey Feature resource to customize your install. Then use the Chocolatey Package resource to install packages on Windows via Chocolatey.'
-      introduced '18.3'
+      description "Use the chocolatey_installer resource to ensure that Chocolatey itself is installed to your specification. Use the Chocolatey Feature resource to customize your install. Then use the Chocolatey Package resource to install packages on Windows via Chocolatey."
+      introduced "18.3"
       examples <<~DOC
         **Install Chocolatey**
 
@@ -56,25 +56,25 @@ class Chef
       allowed_actions :install, :uninstall, :upgrade
 
       property :download_url, String,
-        description: 'The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, Chocolatey installs fall back to the official Chocolatey community repository to download Chocolatey from. It can also be used for offline installation by providing a path to a Chocolatey.nupkg. If the provided URL is a PowerShell script (ending in .ps1), that script will be downloaded and executed directly. If it is any other file type, it will be downloaded to the Chef client directory. ChefConfig::Config.etc_chef_dir(windows: true) is used to find that location.'
+        description: "The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, Chocolatey installs fall back to the official Chocolatey community repository to download Chocolatey from. It can also be used for offline installation by providing a path to a Chocolatey.nupkg. If the provided URL is a PowerShell script (ending in .ps1), that script will be downloaded and executed directly. If it is any other file type, it will be downloaded to the Chef client directory. ChefConfig::Config.etc_chef_dir(windows: true) is used to find that location."
 
       property :chocolatey_version, String,
-        description: 'Specifies a target version of Chocolatey to install. By default, the latest stable version is installed. This will use the value in $env:ChocolateyVersion by default, if that environment variable is present. This parameter is ignored if download_url is set.'
+        description: "Specifies a target version of Chocolatey to install. By default, the latest stable version is installed. This will use the value in $env:ChocolateyVersion by default, if that environment variable is present. This parameter is ignored if download_url is set."
 
       property :use_native_unzip, [TrueClass, FalseClass], default: false,
-                                                           description: "If set, uses built-in Windows decompression tools instead of 7zip when unpacking the downloaded nupkg. This will be set by default if use_native_unzip is set to a value other than 'false' or '0'. This parameter will be ignored in PS 5+ in favour of using the Expand-Archive built in PowerShell cmdlet directly."
+        description: "If set, uses built-in Windows decompression tools instead of 7zip when unpacking the downloaded nupkg. This will be set by default if use_native_unzip is set to a value other than 'false' or '0'. This parameter will be ignored in PS 5+ in favour of using the Expand-Archive built in PowerShell cmdlet directly."
 
       property :ignore_proxy, [TrueClass, FalseClass], default: false,
-                                                       description: "If set, ignores any configured proxy. This will override any proxy environment variables or parameters. This will be set by default if ignore_proxy is set to a value other than 'false' or '0'."
+        description: "If set, ignores any configured proxy. This will override any proxy environment variables or parameters. This will be set by default if ignore_proxy is set to a value other than 'false' or '0'."
 
       property :proxy_url, String,
-        description: 'Specifies the proxy URL to use during the download.'
+        description: "Specifies the proxy URL to use during the download."
 
       property :proxy_user, String,
-        description: 'The username to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_password are set'
+        description: "The username to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_password are set"
 
       property :proxy_password, String,
-        description: 'The password to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_user are set'
+        description: "The password to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_user are set"
 
       load_current_value do
         current_state = is_choco_installed?
@@ -83,11 +83,11 @@ class Chef
       end
 
       def is_choco_installed?
-        ::File.exist?("#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin\\choco.exe")
+        ::File.exist?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe")
       end
 
       def get_choco_version
-        powershell_exec('choco --version').result
+        powershell_exec("choco --version").result
       end
 
       def existing_version
@@ -95,7 +95,7 @@ class Chef
       end
 
       def download_url_path
-        return download_url if download_url.match?(%r{^[a-zA-Z]:[\\/]}) || download_url.start_with?('\\\\')
+        return download_url if download_url.match?(%r{^[a-zA-Z]:[\\/]}) || download_url.start_with?("\\\\")
 
         ::URI.parse(download_url).path
       rescue URI::InvalidURIError
@@ -103,12 +103,12 @@ class Chef
       end
 
       def download_url_script?
-        ::File.extname(download_url_path).casecmp('.ps1') == 0
+        ::File.extname(download_url_path).casecmp(".ps1") == 0
       end
 
       def download_destination
         filename = ::File.basename(::CGI.unescape(download_url_path.to_s))
-        filename = 'chocolatey.nupkg' if filename.empty? || ['/', '\\', '.'].include?(filename)
+        filename = "chocolatey.nupkg" if filename.empty? || ["/", "\\", "."].include?(filename)
 
         Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), filename)
       end
@@ -120,12 +120,12 @@ class Chef
             # parameters are empty.
             new_resource.proxy_user.nil? != new_resource.proxy_password.nil?
           end
-          a.failure_message(Chef::Exceptions::ValidationFailed, 'You must specify both a proxy_user and a proxy_password')
+          a.failure_message(Chef::Exceptions::ValidationFailed, "You must specify both a proxy_user and a proxy_password")
           a.whyrun("Assuming that if you have configured a 'proxy_user' you must also supply a 'proxy_password'")
         end
       end
 
-      action :install, description: 'Installs Chocolatey package manager' do
+      action :install, description: "Installs Chocolatey package manager" do
         if new_resource.download_url
           powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
         end
@@ -135,11 +135,11 @@ class Chef
         end
 
         if new_resource.use_native_unzip
-          powershell_exec('Set-Item -path env:ChocolateyUseWindowsCompression -Value true')
+          powershell_exec("Set-Item -path env:ChocolateyUseWindowsCompression -Value true")
         end
 
         if new_resource.ignore_proxy
-          powershell_exec('Set-Item -path env:ChocolateyIgnoreProxy -Value true')
+          powershell_exec("Set-Item -path env:ChocolateyIgnoreProxy -Value true")
         end
 
         if new_resource.proxy_url
@@ -170,7 +170,7 @@ class Chef
         end
       end
 
-      action :upgrade, description: 'Upgrades the Chocolatey package manager' do
+      action :upgrade, description: "Upgrades the Chocolatey package manager" do
         proposed_version = if new_resource.chocolatey_version
                              Gem::Version.new(new_resource.chocolatey_version)
                            end
@@ -184,11 +184,11 @@ class Chef
         end
 
         if new_resource.use_native_unzip
-          powershell_exec('Set-Item -path env:ChocolateyUseWindowsCompression -Value true')
+          powershell_exec("Set-Item -path env:ChocolateyUseWindowsCompression -Value true")
         end
 
         if new_resource.ignore_proxy
-          powershell_exec('Set-Item -path env:ChocolateyIgnoreProxy -Value true')
+          powershell_exec("Set-Item -path env:ChocolateyIgnoreProxy -Value true")
         end
 
         if new_resource.proxy_url
@@ -202,18 +202,18 @@ class Chef
         if proposed_version && existing_version < proposed_version
           powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{proposed_version}")
         else
-          powershell_exec('Remove-Item -path env:ChocolateyVersion')
+          powershell_exec("Remove-Item -path env:ChocolateyVersion")
         end
 
-        converge_by('upgrade choco version') do
-          powershell_exec('choco upgrade Chocolatey -y').result
+        converge_by("upgrade choco version") do
+          powershell_exec("choco upgrade Chocolatey -y").result
         end
       end
 
-      action :uninstall, description: 'Uninstall Chocolatey package manager' do
+      action :uninstall, description: "Uninstall Chocolatey package manager" do
         path = 'c:\\programdata\\chocolatey\\bin'
         if File.exists?(path)
-          converge_by('Uninstall Choco') do
+          converge_by("Uninstall Choco") do
             powershell_code = <<~CODE
               Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
               [Environment]::SetEnvironmentVariable("ChocolateyLastPathUpdate", $null ,"User")
@@ -233,7 +233,7 @@ class Chef
             powershell_exec(powershell_code).error!
           end
         end
-        Chef::Log.warn('Chocolatey is already uninstalled.')
+        Chef::Log.warn("Chocolatey is already uninstalled.")
       end
     end
   end
