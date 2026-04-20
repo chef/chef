@@ -40,7 +40,8 @@ pkg_deps=(
 pkg_svc_user=root
 pkg_svc_group=root
 
-# TODO: Remove this conditional logic once a hab version >= 2.0.507 is released.
+
+# TODO: Remove this conditional logic once a hab version >= 2.0.507 is released. - fail-after:2026-05-15
 # Check if hab version is >= 2.0.507 for aarch64-linux
 # The install hook requires hab >= 2.0.507 on arm64 architecture
 # Bumped to 2.0.507 because 2.0.504 did not fix the issue

@@ -13,4 +13,4 @@ jobs:
       - uses: actions/checkout@v6
       - uses: jaymzh/chronoguard@main
         with:
-          files: .github/workflows/allchecks.yml, .github/workflows/kitchen.yml
+          files: .github/workflows/allchecks.yml, .github/workflows/kitchen.yml, habitat/aarch64-linux/plan.sh
