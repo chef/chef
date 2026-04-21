@@ -18,6 +18,10 @@
 require "spec_helper"
 
 describe Chef::Resource::ChocolateyInstaller do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
   describe "When installing from Chocolatey" do
     include RecipeDSLHelper
 
@@ -43,7 +47,7 @@ describe Chef::Resource::ChocolateyInstaller do
     # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
     before(:each) do
       @original_env = ENV.to_hash
-      ENV["ALLUSERSPROFILE"] = "C:\\ProgramData"
+      ENV["ALLUSERSPROFILE"] = 'C:\\ProgramData'
     end
 
     after(:each) do
@@ -108,7 +112,6 @@ describe Chef::Resource::ChocolateyInstaller do
     end
 
     describe "upgrading choco versions" do
-
       context "on windows", :windows_only do
         describe "when the versions do not match" do
           it "upgrades if the proposed version is newer" do
@@ -159,7 +162,7 @@ describe Chef::Resource::ChocolateyInstaller do
     # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
     before(:each) do
       @original_env = ENV.to_hash
-      ENV["ALLUSERSPROFILE"] = "C:\\ProgramData"
+      ENV["ALLUSERSPROFILE"] = 'C:\\ProgramData'
     end
 
     after(:each) do
@@ -173,6 +176,45 @@ describe Chef::Resource::ChocolateyInstaller do
           resource.download_url = "https://some.custom.url/install.ps1"
           expect { resource.action :install }.not_to raise_error
         end
+
+        it "downloads non-script URLs to a full path in the chef directory" do
+          resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_download", run_context)
+          resource.download_url = "https://some.custom.url/packages/chocolatey.2.0.0.nupkg"
+          expected_destination = Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), "chocolatey.2.0.0.nupkg")
+          install_provider = resource.provider_for_action(:install)
+
+          commands = []
+          shell_out = instance_double("Mixlib::ShellOut", error!: nil)
+
+          allow(resource).to receive(:provider_for_action).with(:install).and_return(install_provider)
+          allow(resource).to receive(:is_choco_installed?).and_return(false)
+          allow(install_provider).to receive(:powershell_exec) do |command|
+            commands << command
+            shell_out
+          end
+          allow(Chef::Log).to receive(:info)
+
+          resource.run_action(:install)
+
+          expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value https://some.custom.url/packages/chocolatey.2.0.0.nupkg")
+          expect(commands).to include("Invoke-WebRequest 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg' -OutFile '#{expected_destination}'")
+        end
+      end
+    end
+
+    describe "custom download path helpers" do
+      it "detects PowerShell scripts from the URL path" do
+        resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_script", run_context)
+        resource.download_url = "https://some.custom.url/install.ps1?token=abc123"
+
+        expect(resource.download_url_script?).to be true
+      end
+
+      it "falls back to a package filename when the URL path has no basename" do
+        resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_path", run_context)
+        resource.download_url = "https://some.custom.url/"
+
+        expect(resource.download_destination).to eq(Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), "chocolatey.nupkg"))
       end
     end
   end

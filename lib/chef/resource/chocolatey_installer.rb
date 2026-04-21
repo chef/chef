@@ -1,3 +1,6 @@
+require "cgi" unless defined?(CGI)
+require "uri" unless defined?(URI)
+
 class Chef
   class Resource
     class ChocolateyInstaller < Chef::Resource
@@ -91,6 +94,25 @@ class Chef
         Gem::Version.new(get_choco_version)
       end
 
+      def download_url_path
+        return download_url if download_url.match?(%r{^[a-zA-Z]:[\\/]}) || download_url.start_with?("\\\\")
+
+        ::URI.parse(download_url).path
+      rescue URI::InvalidURIError
+        download_url
+      end
+
+      def download_url_script?
+        ::File.extname(download_url_path).casecmp(".ps1") == 0
+      end
+
+      def download_destination
+        filename = ::File.basename(::CGI.unescape(download_url_path.to_s))
+        filename = "chocolatey.nupkg" if filename.empty? || ["/", "\\", "."].include?(filename)
+
+        Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), filename)
+      end
+
       def define_resource_requirements
         requirements.assert(:install, :upgrade).each do |a|
           a.assertion do
@@ -133,16 +155,14 @@ class Chef
           if new_resource.download_url
             Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
             # If it's a PowerShell script, execute it directly (original behavior)
-            if new_resource.download_url.downcase.end_with?(".ps1")
+            if download_url_script?
               powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
             else
               # Assume it's a direct link to a nupkg or other file and handle accordingly
-              chef_dir = ChefConfig::Config.etc_chef_dir(windows: true)
+              destination = download_destination
 
-              # Let PowerShell handle the filename - it will use the server's suggested filename
-              # from Content-Disposition header, or fall back to the URL path
-              powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{chef_dir}'").error!
-              Chef::Log.info("Downloaded file from #{new_resource.download_url} to #{chef_dir}")
+              powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{destination}'").error!
+              Chef::Log.info("Downloaded file from #{new_resource.download_url} to #{destination}")
             end
           else
             powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
@@ -151,11 +171,9 @@ class Chef
       end
 
       action :upgrade, description: "Upgrades the Chocolatey package manager" do
-        if new_resource.chocolatey_version
-          proposed_version = Gem::Version.new(new_resource.chocolatey_version)
-        else
-          proposed_version = nil
-        end
+        proposed_version = if new_resource.chocolatey_version
+                             Gem::Version.new(new_resource.chocolatey_version)
+                           end
 
         if new_resource.download_url
           powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
@@ -193,7 +211,7 @@ class Chef
       end
 
       action :uninstall, description: "Uninstall Chocolatey package manager" do
-        path = "c:\\programdata\\chocolatey\\bin"
+        path = 'c:\\programdata\\chocolatey\\bin'
         if File.exists?(path)
           converge_by("Uninstall Choco") do
             powershell_code = <<~CODE
