@@ -8,13 +8,15 @@
 #        <repo>:<version>-amd64 and <repo>:<version>-arm64
 #   2) docker-manifest-create.sh already created canonical multi-arch manifest:
 #        <repo>:<version>
-#   3) This script DOES NOT build images; it only creates promotion tags by
-#      retagging from <repo>:<version>.
+#   3) This script DOES NOT build images; it creates promotion tags by creating
+#      new manifest lists from the existing arch tags:
+#        <repo>:<version>-amd64 and <repo>:<version>-arm64
 #
 # Safety checks:
-#   - Validates <repo>:<version> is a manifest list/index
-#   - Validates both amd64 and arm64 are present in that manifest
-#   - Fails fast if source manifest is missing/incomplete
+#   - Validates <repo>:<version> exists as a multi-arch manifest list/index
+#   - Validates both amd64 and arm64 are present in <repo>:<version>
+#   - Validates <repo>:<version>-amd64 and <repo>:<version>-arm64 exist before
+#     creating each promoted tag
 #
 # Tag behavior:
 #   - current channel: <major>, <major>.<minor>, current
@@ -95,12 +97,24 @@ function validate_source_manifest_once() {
 function create_and_push_manifest() {
   local manifest_tag="$1"
   local target_manifest="${docker_repo}:${manifest_tag}"
-  local source_manifest="${docker_repo}:${version}"
+  local src_amd64="${docker_repo}:${version}-amd64"
+  local src_arm64="${docker_repo}:${version}-arm64"
 
-  echo "--- Creating manifest ${target_manifest} from ${source_manifest}"
+  echo "--- Creating manifest ${target_manifest} from ${src_amd64} and ${src_arm64}"
+
+  docker manifest inspect "${src_amd64}" > /dev/null 2>&1 || {
+    echo "ERROR: Source image ${src_amd64} not found"
+    exit 1
+  }
+
+  docker manifest inspect "${src_arm64}" > /dev/null 2>&1 || {
+    echo "ERROR: Source image ${src_arm64} not found"
+    exit 1
+  }
 
   docker manifest create "${target_manifest}" \
-    --amend "${source_manifest}"
+    --amend "${src_amd64}" \
+    --amend "${src_arm64}"
 
   echo "--- Pushing manifest ${target_manifest}"
   docker manifest push "${target_manifest}"
