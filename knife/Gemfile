@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "knife", path: "."
+gem "bigdecimal", "<= 4.1.1"
 
 group(:development, :test) do
   gem "cheffish", ">= 14" # testing only , but why didn't this need to explicit in chef?
