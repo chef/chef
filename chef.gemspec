@@ -74,7 +74,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier2", "~> 1.1"
 
-  s.add_dependency "aws-sdk-s3", "~> 1.218.0" # s3 recipe-url support
+  s.add_dependency "aws-sdk-s3", ">= 1.218", "< 1.220" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", ">= 0.18.2", "< 0.21.0" # hashi vault official client gem
 
