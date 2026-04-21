@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.54 -->
-## [v18.10.54](https://github.com/chef/chef/tree/v18.10.54) (2026-04-19)
+<!-- latest_release 18.10.55 -->
+## [v18.10.55](https://github.com/chef/chef/tree/v18.10.55) (2026-04-21)
 
 #### Merged Pull Requests
-- Bump pry-stack_explorer from 0.6.2 to 0.6.3 [#15877](https://github.com/chef/chef/pull/15877) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [backport] Pin ntp and openssh cookbook versions to prevent CI breakage [#15931](https://github.com/chef/chef/pull/15931) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [backport] Pin ntp and openssh cookbook versions to prevent CI breakage [#15931](https://github.com/chef/chef/pull/15931) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.55 -->
 - Bump pry-stack_explorer from 0.6.2 to 0.6.3 [#15877](https://github.com/chef/chef/pull/15877) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.54 -->
 - Revert &quot;Bump tomlrb from 1.3.0 to 2.0.4&quot; [#15857](https://github.com/chef/chef/pull/15857) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.53 -->
 - [chef18]Remove msys installed openssl on windows [#15863](https://github.com/chef/chef/pull/15863) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.52 -->
