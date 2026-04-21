@@ -4,6 +4,7 @@ set -eou pipefail
 export DOCKER_CLI_EXPERIMENTAL=enabled
 # set expeditor_version equal to the version file
 export EXPEDITOR_VERSION=$(cat VERSION)
+docker_repo="${DOCKER_REPO:-chef/chef-hab}"
 
 # Determine channel from project_promoted context (source/target channels)
 # If running in project_promoted workload, EXPEDITOR_TARGET_CHANNEL is set
@@ -22,11 +23,16 @@ fi
 version="${EXPEDITOR_PROMOTABLE:-${EXPEDITOR_VERSION:?ERROR: EXPEDITOR_VERSION not set or VERSION file not found}}"
 
 # Authenticate with Docker
-docker_login_user="expeditor"
-docker_login_password="$(vault read -field=expeditor-full-access secret/docker/expeditor 2>/dev/null)" || {
-  echo "ERROR: Could not fetch Docker credentials from vault"
-  exit 1
-}
+# Allow overrides via env vars for testing; otherwise fetch from vault for production
+docker_login_user="${DOCKER_LOGIN_USER:-expeditor}"
+docker_login_password="${DOCKER_LOGIN_PASSWORD:-}"
+
+if [[ -z "${docker_login_password}" ]]; then
+  docker_login_password="$(vault read -field=expeditor-full-access secret/docker/expeditor 2>/dev/null)" || {
+    echo "ERROR: Could not fetch Docker credentials from vault and DOCKER_LOGIN_PASSWORD not set"
+    exit 1
+  }
+fi
 
 echo "--- Logging into Docker Hub"
 echo "${docker_login_password}" | docker login -u "${docker_login_user}" --password-stdin || {
@@ -40,8 +46,8 @@ declare -a promoted_tags=()
 # This manifests includes BOTH amd64 and arm64 images
 function create_and_push_manifest() {
   local manifest_tag="$1"
-  local target_manifest="chef/chef-hab:${manifest_tag}"
-  local source_images=("chef/chef-hab:${version}-amd64" "chef/chef-hab:${version}-arm64")
+  local target_manifest="${docker_repo}:${manifest_tag}"
+  local source_images=("${docker_repo}:${version}-amd64" "${docker_repo}:${version}-arm64")
 
   echo "--- Creating manifest ${target_manifest}"
 
@@ -106,10 +112,10 @@ case "${channel}" in
     ;;
 esac
 
-echo "--- Successfully promoted chef/chef-hab:${version} to ${channel}"
-echo "--- Verifying promoted manifest tags: ${promoted_tags[*]}"
+echo "--- Successfully promoted ${docker_repo}:${version} to ${channel}"
+echo "--- Verifying promoted manifest tags: "
 for tag in "${promoted_tags[@]}"; do
-  echo "    Checking chef/chef-hab:${tag}"
-  docker manifest inspect "chef/chef-hab:${tag}" > /dev/null
+  echo "    Checking ${docker_repo}:${tag}"
+  docker manifest inspect "${docker_repo}:${tag}" > /dev/null
 done
 echo "--- All promoted manifest tags verified"
