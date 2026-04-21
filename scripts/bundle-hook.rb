@@ -2,7 +2,7 @@
 # Bundle hook script to generate both standard and AIX-specific lock files
 # This script runs bundle install/update twice:
 # 1. Normal run to generate Gemfile.lock
-# 2. AIX-specific run with ENV["GENERATE_AIX"] = true to generate Gemfile.aix.lock
+# 2. AIX-specific run with ENV["GENERATE_AIX"] = true to generate Gemfile-aix.lock
 
 require "fileutils"
 
@@ -53,11 +53,11 @@ Dir.chdir(project_root) do
     exit 1
   end
 
-  # Step 4: Move AIX Gemfile.lock to Gemfile.aix.lock
-  puts "\n📁 Step 4: Moving AIX Gemfile.lock to Gemfile.aix.lock..."
+  # Step 4: Move AIX Gemfile.lock to Gemfile-aix.lock
+  puts "\n📁 Step 4: Moving AIX Gemfile.lock to Gemfile-aix.lock..."
   if File.exist?("Gemfile.lock")
-    FileUtils.mv("Gemfile.lock", "Gemfile.aix.lock")
-    puts "   ✅ Gemfile.lock moved to Gemfile.aix.lock"
+    FileUtils.mv("Gemfile.lock", "Gemfile-aix.lock")
+    puts "   ✅ Gemfile.lock moved to Gemfile-aix.lock"
   else
     puts "   ⚠️  No Gemfile.lock found from AIX run"
   end
@@ -74,7 +74,7 @@ Dir.chdir(project_root) do
   puts "\n🎉 Bundle hook completed successfully!"
   puts "📄 Generated files:"
   puts "   - Gemfile.lock (standard dependencies)"
-  puts "   - Gemfile.aix.lock (AIX-specific dependencies)"
+  puts "   - Gemfile-aix.lock (AIX-specific dependencies)"
 
 rescue => e
   puts "\n💥 Error during bundle hook execution: #{e.message}"

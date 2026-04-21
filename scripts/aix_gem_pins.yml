@@ -1,0 +1,28 @@
+# AIX Gem Pin Overrides
+#
+# Single source of truth for AIX-specific gem version constraints.
+# Both scripts/sync_aix_lockfile.rb and scripts/check_aix_lockfile.rb
+# load this file.
+#
+# Add an entry here when a gem in Gemfile.lock cannot be used as-is on
+# powerpc-ibm-aix and a specific older version must be used instead.
+#
+# Format:
+#   gems:
+#     - name: <gem-name>
+#       version: "<x.y.z>"
+#       reason: "<why AIX needs this specific version>"
+#
+# Current baseline: chef-18 @ 18.10.56
+# All gems in the main Gemfile.lock compile cleanly from source on AIX
+# at their current versions. No hard version overrides are required at
+# this baseline. Add entries below when a future Gemfile.lock update
+# introduces a gem version that fails to build on powerpc-ibm-aix.
+#
+# Known categories of AIX-sensitive gems (for reference):
+#   ffi            - native extension; must compile with AIX XLC or GCC
+#   nokogiri       - native extension; requires --use-system-libraries
+#   psych          - YAML C extension; requires specific libyaml path
+#   google-protobuf - binary gem unavailable for powerpc-ibm-aix
+#
+gems: []
