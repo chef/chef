@@ -1,4 +1,30 @@
 #! /bin/bash
+
+# Purpose:
+#   Promote Docker tags for chef/chef-hab when Expeditor emits project_promoted.
+#
+# Flow assumptions:
+#   1) docker/build pipeline already pushed arch images:
+#        <repo>:<version>-amd64 and <repo>:<version>-arm64
+#   2) docker-manifest-create.sh already created canonical multi-arch manifest:
+#        <repo>:<version>
+#   3) This script DOES NOT build images; it only creates promotion tags by
+#      retagging from <repo>:<version>.
+#
+# Safety checks:
+#   - Validates <repo>:<version> is a manifest list/index
+#   - Validates both amd64 and arm64 are present in that manifest
+#   - Fails fast if source manifest is missing/incomplete
+#
+# Tag behavior:
+#   - current channel: <major>, <major>.<minor>, current
+#   - stable channel:  <major>, <major>.<minor>, stable, latest
+#   - unstable channel: unstable
+#
+# Testing:
+#   - Set DOCKER_REPO to a throwaway repo (for example {test-account}/{test-repo})
+#   - Set DOCKER_LOGIN_USER / DOCKER_LOGIN_PASSWORD to bypass vault locally
+
 set -eou pipefail
 
 export DOCKER_CLI_EXPERIMENTAL=enabled
@@ -42,29 +68,39 @@ echo "${docker_login_password}" | docker login -u "${docker_login_user}" --passw
 
 declare -a promoted_tags=()
 
-# Idempotent helper function to create and push a multi-arch manifest
+function validate_source_manifest_once() {
+  local source_manifest="${docker_repo}:${version}"
+  local manifest_json
+  manifest_json="$(docker manifest inspect "${source_manifest}" 2>/dev/null)" || {
+    echo "ERROR: Source manifest ${source_manifest} not found on Docker Hub"
+    exit 1
+  }
+
+  local media_type
+  media_type="$(echo "${manifest_json}" | jq -r '.mediaType // empty')"
+  if [[ "${media_type}" != "application/vnd.docker.distribution.manifest.list.v2+json" ]] && \
+     [[ "${media_type}" != "application/vnd.oci.image.index.v1+json" ]]; then
+    echo "ERROR: ${source_manifest} is not a multi-arch manifest list/index"
+    exit 1
+  fi
+
+  local architectures
+  architectures="$(echo "${manifest_json}" | jq -r '.manifests[]?.platform.architecture' | sort -u)"
+  echo "${architectures}" | grep -qx "amd64" || { echo "ERROR: missing amd64"; exit 1; }
+  echo "${architectures}" | grep -qx "arm64" || { echo "ERROR: missing arm64"; exit 1; }
+}
+
+# Idempotent helper: create promotion tags from canonical multi-arch version manifest
 # This manifests includes BOTH amd64 and arm64 images
 function create_and_push_manifest() {
   local manifest_tag="$1"
   local target_manifest="${docker_repo}:${manifest_tag}"
-  local source_images=("${docker_repo}:${version}-amd64" "${docker_repo}:${version}-arm64")
+  local source_manifest="${docker_repo}:${version}"
 
-  echo "--- Creating manifest ${target_manifest}"
-
-  for img in "${source_images[@]}"; do
-    echo "    Verifying ${img} exists..."
-    docker manifest inspect "${img}" > /dev/null 2>&1 || {
-      echo "ERROR: Source image ${img} not found on Docker Hub"
-      return 1
-    }
-  done
-
-  # Idempotent reruns: remove local manifest ref if it already exists.
-  docker manifest rm "${target_manifest}" > /dev/null 2>&1 || true
+  echo "--- Creating manifest ${target_manifest} from ${source_manifest}"
 
   docker manifest create "${target_manifest}" \
-    --amend "${source_images[0]}" \
-    --amend "${source_images[1]}"
+    --amend "${source_manifest}"
 
   echo "--- Pushing manifest ${target_manifest}"
   docker manifest push "${target_manifest}"
@@ -78,6 +114,7 @@ read -r major_version minor_version _patch_version <<< "${version}"
 
 echo "--- Version breakdown: major=${major_version}, minor=${minor_version}, patch=${_patch_version}"
 
+validate_source_manifest_once
 # Create tags based on target channel.
 case "${channel}" in
   current)
