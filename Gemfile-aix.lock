@@ -280,7 +280,7 @@ GEM
       tomlrb
     mixlib-log (3.1.2.1)
       ffi (< 1.17.0)
-    mixlib-shellout (3.4.10)
+    mixlib-shellout (3.3.9)
       chef-utils
     multi_json (1.19.1)
     multipart-post (2.4.1)

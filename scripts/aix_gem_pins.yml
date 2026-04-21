@@ -25,4 +25,7 @@
 #   psych          - YAML C extension; requires specific libyaml path
 #   google-protobuf - binary gem unavailable for powerpc-ibm-aix
 #
-gems: []
+gems:
+  - name: mixlib-shellout
+    version: "3.3.9"
+    reason: "AIX omnibus toolchain runs Ruby 3.0.3; 3.4.10+ requires Ruby >= 3.1"
