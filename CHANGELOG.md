@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.2.107 -->
+## [v19.2.107](https://github.com/chef/chef/tree/v19.2.107) (2026-04-21)
 
 #### Merged Pull Requests
+- Pin ntp and openssh cookbook versions to prevent CI breakage [#15926](https://github.com/chef/chef/pull/15926) ([tpowell-progress](https://github.com/tpowell-progress))
 - refactor habitat builds for validate/adhoc [#15869](https://github.com/chef/chef/pull/15869) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pin ntp and openssh cookbook versions to prevent CI breakage [#15926](https://github.com/chef/chef/pull/15926) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.107 -->
 - refactor habitat builds for validate/adhoc [#15869](https://github.com/chef/chef/pull/15869) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.106 -->
 - Bump streetsidesoftware/cspell-action from 8.3.0 to 8.4.0 [#15850](https://github.com/chef/chef/pull/15850) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.106 -->
 - Bump pry from 0.15.2 to 0.16.0 [#15875](https://github.com/chef/chef/pull/15875) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.105 -->
