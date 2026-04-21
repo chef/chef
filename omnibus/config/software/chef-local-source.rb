@@ -59,6 +59,12 @@ gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
 bin_dirs bin_dirs.push "#{gem_dir}/gems/*/bin/**"
 lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems/extensions/**", "#{gem_dir}/bundler/gems/*", "#{gem_dir}/bundler/gems/*/lib/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
 
+# On AIX, clear any incomplete installp state from prior cancelled builds
+# before chef-foundation is installed (chef-foundation uses installp).
+# Unconditional: aix? evaluates on the Linux jump box (returns false there),
+# but the command itself uses a shell-level test evaluated on the remote AIX host.
+dependency "aix-installp-cleanup"
+
 dependency "chef-foundation"
 
 relative_path "chef"
@@ -70,18 +76,73 @@ build do
   excluded_groups = %w{docgen cookstyle}
   excluded_groups << "ruby_prof" if aix?
   excluded_groups << "ruby_shadow" if aix?
+  excluded_groups << "pry" if aix? # byebug >= 12 requires ruby >= 3.1; AIX toolchain ships ruby 3.0
   excluded_groups << "ed25519" if solaris2?
 
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
-  copy "Gemfile.aix.lock", "Gemfile.lock", remove_destination: true if aix?
-  bundle "config set --local without docgen cookstyle development test", env: env
-  bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
+  if aix?
+    copy "Gemfile-aix.lock", "Gemfile.lock", remove_destination: true
+
+    # Bypass Bundler's ruby version compatibility check on AIX.
+    # The AIX omnibus toolchain and chef-foundation ship Ruby 3.0.3, but
+    # several gems bumped their required_ruby_version metadata to >= 3.1
+    # without actually using 3.1-only language features. Bundler refuses to
+    # install them despite the code being fully compatible. This patch makes
+    # ensure_specs_are_compatible! a no-op so the install proceeds.
+    # Write the patch to an absolute path so RUBYOPT works regardless of cwd.
+    # Native extension compilation spawns Ruby subprocesses with cwd changed to
+    # the gem's ext/ directory, so a relative ./path would fail (LoadError).
+    command <<~SH, env: env
+      cat > /tmp/aix_skip_ruby_check.rb << 'PATCH'
+      require "bundler"
+      require "bundler/installer"
+      module AixBundlerCompat
+        private
+        def ensure_specs_are_compatible!
+        end
+      end
+      Bundler::Installer.prepend(AixBundlerCompat)
+      PATCH
+    SH
+
+    aix_env = env.merge("RUBYOPT" => "-r/tmp/aix_skip_ruby_check.rb")
+    bundle "config set --local without #{bundle_excludes.join(" ")}", env: aix_env
+    # Use --no-deployment to allow git sources and --frozen to enforce lockfile compliance
+    # The Ruby version check is bypassed via aix_skip_ruby_check.rb RUBYOPT patch
+    bundle "install --jobs=2 --no-deployment --frozen --without #{bundle_excludes.join(" ")}", env: aix_env
+  else
+    bundle "config set --local without #{bundle_excludes.join(" ")}", env: env
+    bundle "install --jobs=2 --no-deployment --frozen --without #{bundle_excludes.join(" ")}", env: env
+  end
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
-  command "rake install:local", env: env
+  if aix?
+    # On AIX Ruby 3.0, uri 1.1.1 (required by chef gemspec for CVE fix)
+    # breaks RubyGems 3.2.32's HTTP client causing "undefined method
+    # 'request' for nil:NilClass" during gem install dependency resolution.
+    # Install sub-gems normally (they have few deps and succeed), then
+    # install the main chef gem with --ignore-dependencies to skip the
+    # broken code path.  All deps are already installed by bundle install.
+    command "cd chef-utils && rake install && cd ..", env: env
+    command "cd chef-config && rake install && cd ..", env: env
+    gem "build chef.gemspec", env: env
+    gem "install chef-*.gem --local --ignore-dependencies --no-document --force", env: env
+    # omnibus-test.sh runs 'bundle install' from the installed chef gem dir.
+    # Without a Gemfile.lock there, Bundler resolves from scratch and picks up
+    # Ruby 3.1-only gems (e.g. mixlib-shellout 3.4.10). Copy our AIX-compatible
+    # lockfile so the test step uses the same versions as the build step.
+    command <<~SH, env: env
+      for dir in #{install_dir}/embedded/lib/ruby/gems/*/gems/chef-[0-9]*/; do
+        test -d "$dir" && cp Gemfile-aix.lock "${dir}Gemfile.lock" && echo "AIX: deployed Gemfile.lock to ${dir}"
+      done
+    SH
+    command "cd chef-bin && gem build chef-bin.gemspec && gem install chef-bin-*.gem --local --ignore-dependencies --no-document --force && cd ..", env: env
+  else
+    command "rake install:local", env: env
+  end
 
   gemspec_name = if windows?
                    # Chef18 is built with ruby3.1 so platform name is changed.

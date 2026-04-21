@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
 
-  # AIX Gemfile.aix.lock uses this, but currently a manual process
+  # AIX Gemfile-aix.lock uses this, but currently a manual process
   if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
     s.add_dependency "inspec-core", ">= 5", "< 8"
   else

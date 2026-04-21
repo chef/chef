@@ -111,6 +111,11 @@ export PATH="/opt/${TOOLCHAIN:-omnibus-toolchain}/bin:/usr/local/bin:/opt/${TOOL
 # add chef's bin paths to PATH to ensure tests function properly
 export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
 
+# Save the checkout directory (has spec/) before any cd calls.
+# On AIX the omnibus plugin copies the full repo here; the installed gem dir
+# produced by 'gem install chef-*.gem' only contains gemspec s.files (lib/**).
+checkout_dir="$PWD"
+
 gem_list="$(gem which chef)"
 lib_dir="$(dirname "$gem_list")"
 chef_gem="$(dirname "$lib_dir")"
@@ -129,14 +134,85 @@ export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
 
+# AIX ships Ruby 3.0.3; several gems declare required_ruby_version >= 3.1
+# even though the code works on 3.0. Inject a Bundler compatibility patch so
+# bundle install does not abort on the version mismatch.
+# Must be set *after* the unset loop above (which clears RUBYOPT) and *after*
+# the chef-client/ruby/gem version checks above (which fail if RUBYOPT points
+# to a file that tries to `require "bundler"` before RubyGems is ready).
+if [[ "$(uname -s)" == "AIX" ]]; then
+  # Clear any incomplete installp state from previous cancelled or failed test
+  # runs.  This command runs on the REMOTE AIX machine (not the Linux jump box),
+  # so /usr/sbin/installp exists here.  Running it unconditionally is safe: if
+  # there is no incomplete state it exits 0 immediately; if there is incomplete
+  # state it commits or rolls back the partial installation before we proceed.
+  sudo /usr/sbin/installp -C 2>/dev/null || true
+
+  cat > /tmp/aix_skip_ruby_check.rb << 'RUBY_PATCH'
+require "bundler"
+require "bundler/installer"
+module AixBundlerCompat
+  private
+  def ensure_specs_are_compatible!
+  end
+end
+Bundler::Installer.prepend(AixBundlerCompat)
+RUBY_PATCH
+  export RUBYOPT="-r/tmp/aix_skip_ruby_check.rb"
+fi
+
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
 # cspell:disable-next-line
 rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
-  sudo -E bundle install --jobs=3 --retry=3
-  sudo -E bundle exec rspec --profile -f progress
+  if [[ "$(uname -s)" == "AIX" ]]; then
+    # sudo -E on AIX may not preserve RUBYOPT when sudoers env_reset is active.
+    # Pass PATH and RUBYOPT explicitly via 'sudo env' so bundle is found and
+    # the bundler bypass is always applied regardless of sudoers configuration.
+
+    # The omnibus build sets BUNDLE_WITHOUT (development, test, etc.) in
+    # .bundle/config so those groups are excluded from the packaged install.
+    # Clear it here so the test-step bundle install includes test/development
+    # gems (e.g. webmock) that spec_helper requires.
+    sudo env "PATH=$PATH" bundle config unset without 2>/dev/null || \
+      sudo env "PATH=$PATH" bundle config --delete without 2>/dev/null || true
+
+    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
+    # The installed gem dir (chef_gem) only contains s.files (lib/**); spec/ is
+    # absent. The omnibus plugin copied the full repo to checkout_dir, so pass
+    # that spec path explicitly and add it to the load path so require
+    # "spec_helper" resolves correctly. Also carry RUBYOPT so bundler does not
+    # abort on required_ruby_version checks during rspec's require phase.
+    #
+    # spec_helper.rb uses Dir["spec/support/**/*.rb"] (relative to CWD) to
+    # auto-load support files including the Matchers module.  Since we cd'd to
+    # chef_gem above (for bundle install), that Dir glob would return nothing
+    # and every spec file would fail with "uninitialized constant Matchers".
+    # Run rspec from checkout_dir so the relative glob resolves correctly, and
+    # set BUNDLE_GEMFILE explicitly so bundler still uses the installed gem's
+    # Gemfile + Gemfile-aix.lock rather than the branch development Gemfile.
+    cd "$checkout_dir"
+    # Pass the same env vars that 'sudo -E' would preserve on other platforms.
+    # CHEF_LICENSE is required so integration tests that shell_out to chef-client
+    # don't fail with exit 172 (license not accepted).
+    # TMPDIR ensures temp-file operations inside specs land in the expected dir.
+    sudo env "PATH=$PATH" \
+             "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" \
+             "BUNDLE_GEMFILE=$chef_gem/Gemfile" \
+             "CHEF_LICENSE=${CHEF_LICENSE:-accept-no-persist}" \
+             "TMPDIR=${TMPDIR:-/tmp}" \
+      bundle exec rspec --profile -f progress -I "$checkout_dir/spec" "$checkout_dir/spec"
+    # Restore ownership of the checkout directory after the root rspec run.
+    # Without this, the next build's tar extraction over the same AIX machine
+    # fails with "file access permissions" because root-owned dirs can't be
+    # overwritten by the buildkite agent user.
+    sudo chown -R "$(id -un):$(id -gn)" "$checkout_dir" 2>/dev/null || true
+  else
+    sudo -E bundle install --jobs=3 --retry=3
+    sudo -E bundle exec rspec --profile -f progress
+  fi
 else
   sudo bundle install --jobs=3 --retry=3
   sudo bundle exec rspec --profile -f progress

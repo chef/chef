@@ -3,12 +3,12 @@
 #
 
 namespace :bundle do
-  desc "Run bundle install and generate both Gemfile.lock and Gemfile.aix.lock"
+  desc "Run bundle install and generate both Gemfile.lock and Gemfile-aix.lock"
   task :install do
     ruby "scripts/bundle-hook.rb install"
   end
 
-  desc "Run bundle update and generate both Gemfile.lock and Gemfile.aix.lock"
+  desc "Run bundle update and generate both Gemfile.lock and Gemfile-aix.lock"
   task :update do
     ruby "scripts/bundle-hook.rb update"
   end
@@ -33,7 +33,7 @@ namespace :bundle do
     ruby "scripts/bundle-hook.rb update #{gem_name}"
   end
 
-  desc "Validate that both Gemfile.lock and Gemfile.aix.lock are in sync with dependencies"
+  desc "Validate that Gemfile.lock and Gemfile-aix.lock are in sync with dependencies"
   task :validate do
     puts "🔍 Validating lock files are in sync..."
 
@@ -43,8 +43,8 @@ namespace :bundle do
       exit 1
     end
 
-    unless File.exist?("Gemfile.aix.lock")
-      puts "❌ Gemfile.aix.lock not found. Run 'rake bundle:install' first."
+    unless File.exist?("Gemfile-aix.lock")
+      puts "❌ Gemfile-aix.lock not found. Run 'ruby scripts/sync_aix_lockfile.rb' first."
       exit 1
     end
 
@@ -55,7 +55,7 @@ namespace :bundle do
     system("head -20 Gemfile.lock")
 
     puts "\n📋 AIX lock file:"
-    system("head -20 Gemfile.aix.lock")
+    system("head -20 Gemfile-aix.lock")
 
     puts "\n✅ Both lock files exist. Manual inspection recommended to ensure platform-specific dependencies are correct."
   end
@@ -64,7 +64,7 @@ namespace :bundle do
   task :clean_and_install do
     puts "🧹 Cleaning existing lock files..."
     File.delete("Gemfile.lock") if File.exist?("Gemfile.lock")
-    File.delete("Gemfile.aix.lock") if File.exist?("Gemfile.aix.lock")
+    File.delete("Gemfile-aix.lock") if File.exist?("Gemfile-aix.lock")
     File.delete("Gemfile.lock.base") if File.exist?("Gemfile.lock.base")
 
     puts "🔄 Regenerating lock files..."

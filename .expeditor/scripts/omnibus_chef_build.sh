@@ -37,7 +37,8 @@ fi
 echo "--- AIX gemfile.lock"
 if [[ -n "${BUILDKITE_LABEL:-}" ]] && [[ "$BUILDKITE_LABEL" =~ aix ]]; then
   cd "${SCRIPT_DIR}/../.."
-  cp -f Gemfile.aix.lock Gemfile.lock
+  cp -f Gemfile-aix.lock Gemfile.lock
+  cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
 fi
 
 echo "--- Running bundle install for Omnibus"

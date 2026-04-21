@@ -38,8 +38,9 @@ group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "0.15.2"
-  # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
+  # byebug does not install on freebsd on ruby 3.0; byebug >= 12 requires ruby >= 3.1
+  # which is incompatible with the AIX omnibus toolchain (ruby 3.0.3)
+  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd|aix/i)
   gem "pry-stack_explorer"
 end
 
@@ -63,6 +64,14 @@ group(:development, :test) do
   gem "crack", "< 1.0.2" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end
+
+# Pins to avoid native extension compilation failures on AIX Ruby 3.0.3.
+# The AIX xlC_r 13.x compiler does not support C++20 designated initializers
+# (.field = value) used in newer versions of these gems.
+gem "date", "~> 3.2.0"
+gem "unf_ext", "~> 0.0.8.0"
+# mixlib-shellout 3.4.x declares required_ruby_version >= 3.1; 3.3.x is Ruby 3.0 compatible.
+gem "mixlib-shellout", "~> 3.3.0"
 
 gem "cookstyle", "~> 8.6"
 
