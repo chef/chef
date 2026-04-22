@@ -56,6 +56,19 @@ updates:
 
   - package-ecosystem: github-actions
     directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: "chef-18"
     schedule:
       interval: daily
     open-pull-requests-limit: 10
