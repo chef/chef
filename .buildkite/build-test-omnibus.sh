@@ -174,9 +174,6 @@ then
       echo "    OMNIBUS_FIPS_MODE: false"
     fi
     echo "    IGNORE_CACHE: true"
-    if [[ $platform == *"aix"* ]]; then
-      echo "    BUNDLE_LOCKFILE: Gemfile-aix.lock"
-    fi
     echo "  key: build-$build_key"
     echo "  label: \":hammer_and_wrench: $platform\""
     echo "  retry:"
