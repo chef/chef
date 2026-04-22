@@ -2,18 +2,21 @@ $HabitatVersion = if ($env:HAB_VERSION) { $env:HAB_VERSION } else { '2.0.504' }
 
 Set-ExecutionPolicy Bypass -Scope Process -Force
 
-$installScriptUrl = 'https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'
-$installScriptPath = Join-Path $env:TEMP "hab-install-$HabitatVersion.ps1"
+function Stop-HabitatProcesses {
+    # Stop any running hab-related processes to release file locks (e.g. concrt140.dll)
+    # that would prevent the installer from overwriting existing files.
+    $habProcesses = Get-Process -Name hab*, hab-launch*, hab-sup* -ErrorAction SilentlyContinue
+    if ($habProcesses) {
+        Write-Host "Stopping running Habitat processes to release file locks..."
+        $habProcesses | Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 2
+    }
+}
 
 function Install-HabitatVersion {
-    Invoke-WebRequest -Uri $installScriptUrl -OutFile $installScriptPath
-    try {
-        & $installScriptPath -Version $HabitatVersion
-        if (-not $?) { throw "Failed to install Habitat $HabitatVersion" }
-    }
-    finally {
-        Remove-Item $installScriptPath -Force -ErrorAction SilentlyContinue
-    }
+    Stop-HabitatProcesses
+    iex "& { $(irm https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1) } -Version $HabitatVersion"
+    if (-not $?) { throw "Failed to install Habitat $HabitatVersion" }
 }
 
 try {
@@ -22,12 +25,7 @@ try {
         Write-Host "--- :habicat: Installing Habitat $HabitatVersion"
         Install-HabitatVersion
     } elseif ($hab_version -gt [Version]$HabitatVersion) {
-        Write-Host "--- :habicat: Habitat $hab_version detected (greater than required $HabitatVersion). Removing with prejudice..."
-        $habPath = (Get-Command hab -ErrorAction SilentlyContinue).Source | Split-Path -Parent
-        if ($habPath) {
-            Remove-Item -Path $habPath -Recurse -Force -ErrorAction Continue
-            Write-Host "--- :habicat: Deleted Habitat from $habPath"
-        }
+        Write-Host "--- :habicat: Installing Habitat $HabitatVersion (replacing $hab_version)"
         Install-HabitatVersion
     } else {
         Write-Host "--- :habicat: :thumbsup: Habitat $HabitatVersion is already installed"
