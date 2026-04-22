@@ -25,13 +25,12 @@ cert.sign(key, OpenSSL::Digest.new("SHA256"))
 
 cert_pem = cert.to_pem
 
-# Start a local HTTPS server in the background serving a test page
 server = WEBrick::HTTPServer.new(
   Port: 9443,
   SSLEnable: true,
   SSLCertificate: cert,
   SSLPrivateKey: key,
-  Logger: WEBrick::Log.new("/dev/null"),
+  Logger: WEBrick::Log.new(File::NULL),
   AccessLog: []
 )
 server.mount_proc("/index.html") { |_req, res| res.body = "trusted cert test OK" }
