@@ -76,6 +76,15 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
   # pre-command hook is the only place to fix the lockfile before the SSH copy.
   cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
 
+  # Skip the development group on AIX.  The dev group (berkshelf, test-kitchen,
+  # kitchen-vagrant) pulls in chef → inspec-core/train-winrm and test-kitchen →
+  # chef-winrm/chef-winrm-fs/chef-gyoku, all of which require Ruby >= 3.1, but
+  # the AIX omnibus toolchain ships Ruby 3.0.  These gems are not needed to
+  # build the omnibus package.  Create .bundle/config so bundler picks it up
+  # when the repo is SSH-copied to the AIX host and bundle install is run.
+  mkdir -p omnibus/.bundle
+  printf 'BUNDLE_WITHOUT: "development"\n' > omnibus/.bundle/config
+
   # Surgical patch for the root Gemfile.lock: preserves Windows platform-variant
   # gem entries (e.g. mixlib-shellout-x64-mingw-ucrt) that Bundler's
   # deployment-mode completeness check requires on non-AIX builds.
