@@ -20,7 +20,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   next if %w{chef chef-universal-mingw-ucrt proxifier}.include?(gem_name)
 
-  next if gem_name.match?(/ruby.shadow/) && RUBY_PLATFORM.include?("aix")
+  next if gem_name.match?(/ruby.shadow/) && RUBY_PLATFORM =~ /aix|mswin|mingw|windows/
 
   puts "re-installing #{gem_name}..."
 
