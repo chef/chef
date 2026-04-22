@@ -5,15 +5,6 @@ set -eu
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
 
-# For AIX builds the omnibus plugin copies the repo to the remote host via SSH,
-# so BUNDLE_LOCKFILE is not forwarded.  Swap in the AIX lockfiles now, while we
-# are still on the Buildkite agent, so the omnibus plugin propagates the correct
-# lockfile to the AIX machine.
-if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
-  cp -f Gemfile-aix.lock Gemfile.lock
-  cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
-fi
-
 docker ps || true
 
 # Get chef foundation version from the json file
@@ -65,6 +56,15 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
     buildkite-agent annotate --style warning --context "rebase-pr-branch-${main}" \
       "Couldn't rebase onto main ([${main}](${github}${main})), building PR HEAD ([${pr_head}](${github}${pr_head}))."
   fi
+fi
+
+# For AIX builds the omnibus plugin copies the repo to the remote host via SSH,
+# so BUNDLE_LOCKFILE is not forwarded.  Swap in the AIX lockfiles now (after the
+# rebase so git doesn't reject it as unstaged changes), so the omnibus plugin
+# propagates the correct lockfiles to the AIX machine.
+if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
+  cp -f Gemfile-aix.lock Gemfile.lock
+  cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
 fi
 
 # Only if on chef-canary or chef org
