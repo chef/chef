@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.59 -->
-## [v18.10.59](https://github.com/chef/chef/tree/v18.10.59) (2026-04-22)
+<!-- latest_release 18.10.60 -->
+## [v18.10.60](https://github.com/chef/chef/tree/v18.10.60) (2026-04-22)
 
 #### Merged Pull Requests
-- Remove code climate from chef-18 [#15939](https://github.com/chef/chef/pull/15939) ([stringsn88keys](https://github.com/stringsn88keys))
+- [chef-18] Backport: Don&#39;t waste buildkite time on github-only changes [#15949](https://github.com/chef/chef/pull/15949) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] Backport: Don&#39;t waste buildkite time on github-only changes [#15949](https://github.com/chef/chef/pull/15949) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.60 -->
 - Remove code climate from chef-18 [#15939](https://github.com/chef/chef/pull/15939) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 18.10.59 -->
 - Omnibus privatization submodule [#15659](https://github.com/chef/chef/pull/15659) ([poorndm](https://github.com/poorndm)) <!-- 18.10.58 -->
 - Fixing download bug [#15925](https://github.com/chef/chef/pull/15925) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.57 -->
