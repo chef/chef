@@ -3,6 +3,15 @@
 # exit immediately on failure, or if an undefined variable is used
 set -eu
 
+# If the only changed files are under .github/, skip all tests
+BASE_BRANCH="${BUILDKITE_PULL_REQUEST_BASE_BRANCH:-chef-18}"
+changed_files=$(git diff --name-only "origin/${BASE_BRANCH}...HEAD" 2>/dev/null || git diff --name-only HEAD~1 2>/dev/null || true)
+
+if [[ -n "$changed_files" ]] && ! echo "$changed_files" | grep -qv '^\.github/'; then
+  echo "steps: []"
+  exit 0
+fi
+
 echo "---"
 echo "env:"
 echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
