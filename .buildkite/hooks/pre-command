@@ -59,12 +59,18 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
 fi
 
 # For AIX builds the omnibus plugin copies the repo to the remote host via SSH,
-# so BUNDLE_LOCKFILE is not forwarded.  Swap in the AIX lockfiles now (after the
-# rebase so git doesn't reject it as unstaged changes), so the omnibus plugin
-# propagates the correct lockfiles to the AIX machine.
+# so BUNDLE_LOCKFILE is not forwarded.  Patch the lockfiles in-place (after the
+# rebase so git doesn't reject unstaged changes) so the omnibus plugin propagates
+# correct lockfiles to the AIX machine.
+#
+# The AIX omnibus toolchain ships Ruby 3.0; mixlib-shellout >= 3.4 requires
+# Ruby >= 3.1.  We pin only the source-gem spec line (not the Windows platform
+# variant) so that all other gems (winrm-fs etc.) remain present and Bundler's
+# deployment-mode completeness check continues to pass.
 if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
-  cp -f Gemfile-aix.lock Gemfile.lock
-  cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
+  AIX_SHELLOUT_VER=$(grep '^ *mixlib-shellout ([0-9]' Gemfile-aix.lock | head -1 | sed 's/.*(\(.*\))/\1/')
+  sed -i "s/^\( *mixlib-shellout\) (3\.[0-9]*\.[0-9]*)$/\1 (${AIX_SHELLOUT_VER})/" Gemfile.lock
+  sed -i "s/^\( *mixlib-shellout\) (3\.[0-9]*\.[0-9]*)$/\1 (${AIX_SHELLOUT_VER})/" omnibus/Gemfile.lock
 fi
 
 # Only if on chef-canary or chef org
