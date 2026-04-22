@@ -39,7 +39,13 @@ group(:omnibus_package, :pry) do
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "0.15.2"
   # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
+  #
+  # byebyg 13 and pry-byebug 3.12 both require Ruby 3.2, so we must
+  # lock them to less than that.
+  unless RUBY_PLATFORM.match?(/freebsd/i)
+    gem "byebug", "< 13"
+    gem "pry-byebug", "< 3.12"
+  end
   gem "pry-stack_explorer"
 end
 
