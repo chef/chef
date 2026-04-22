@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.108 -->
-## [v19.2.108](https://github.com/chef/chef/tree/v19.2.108) (2026-04-21)
+<!-- latest_release 19.2.109 -->
+## [v19.2.109](https://github.com/chef/chef/tree/v19.2.109) (2026-04-22)
 
 #### Merged Pull Requests
-- Block install hook on arm until next release [#15927](https://github.com/chef/chef/pull/15927) ([tpowell-progress](https://github.com/tpowell-progress))
+- Don&#39;t require `Expeditor Config Validation` for now [#15934](https://github.com/chef/chef/pull/15934) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t require `Expeditor Config Validation` for now [#15934](https://github.com/chef/chef/pull/15934) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.109 -->
 - Block install hook on arm until next release [#15927](https://github.com/chef/chef/pull/15927) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.108 -->
 - Pin ntp and openssh cookbook versions to prevent CI breakage [#15926](https://github.com/chef/chef/pull/15926) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.107 -->
 - refactor habitat builds for validate/adhoc [#15869](https://github.com/chef/chef/pull/15869) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.106 -->
