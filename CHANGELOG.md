@@ -1,17 +1,47 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.27 -->
-## [v18.10.27](https://github.com/chef/chef/tree/v18.10.27) (2026-04-01)
+<!-- latest_release 18.10.57 -->
+## [v18.10.57](https://github.com/chef/chef/tree/v18.10.57) (2026-04-21)
 
 #### Merged Pull Requests
-- [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Fixing download bug [#15925](https://github.com/chef/chef/pull/15925) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixing download bug [#15925](https://github.com/chef/chef/pull/15925) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.57 -->
+- [backport] Fix fedora-42 and opensuse-leap-15 CI failures (cherry-pick from #15902) [#15932](https://github.com/chef/chef/pull/15932) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.56 -->
+- [backport] Pin ntp and openssh cookbook versions to prevent CI breakage [#15931](https://github.com/chef/chef/pull/15931) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.55 -->
+- Bump pry-stack_explorer from 0.6.2 to 0.6.3 [#15877](https://github.com/chef/chef/pull/15877) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.54 -->
+- Revert &quot;Bump tomlrb from 1.3.0 to 2.0.4&quot; [#15857](https://github.com/chef/chef/pull/15857) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.53 -->
+- [chef18]Remove msys installed openssl on windows [#15863](https://github.com/chef/chef/pull/15863) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.52 -->
+- Lock some versions for chef-18 [#15858](https://github.com/chef/chef/pull/15858) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.51 -->
+- Bump tomlrb from 1.3.0 to 2.0.4 [#15808](https://github.com/chef/chef/pull/15808) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.50 -->
+- Updating for CVE-2025-14762 [#15848](https://github.com/chef/chef/pull/15848) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.49 -->
+- [chef-18] update rack to 3.2.6 [#15854](https://github.com/chef/chef/pull/15854) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.48 -->
+- Bump addressable from 2.8.7 to 2.8.9 [#15819](https://github.com/chef/chef/pull/15819) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.47 -->
+- Update diff-lcs requirement from &gt;= 1.2.4, != 1.4.0, &lt; 1.6.0 to &gt;= 1.2.4, != 1.4.0, &lt; 2.1.0 [#15826](https://github.com/chef/chef/pull/15826) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.46 -->
+- [chef-18] Fix invalid TOML in unittest [#15841](https://github.com/chef/chef/pull/15841) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.45 -->
+- Disable Expeditor gem bumps on chef-18 [#15843](https://github.com/chef/chef/pull/15843) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.44 -->
+- Bump pry-stack_explorer from 0.6.1 to 0.6.2 [#15830](https://github.com/chef/chef/pull/15830) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.43 -->
+- Bump cookstyle from 8.6.4 to 8.6.10 [#15810](https://github.com/chef/chef/pull/15810) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.42 -->
+- Bump aws-sdk-secretsmanager from 1.128.0 to 1.129.0 [#15807](https://github.com/chef/chef/pull/15807) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.41 -->
+- Bump net-ssh from 7.3.0 to 7.3.2 [#15818](https://github.com/chef/chef/pull/15818) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.40 -->
+- Update inspec-core requirement from &gt;= 5, &lt; 6 to &gt;= 5, &lt; 8 [#15814](https://github.com/chef/chef/pull/15814) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.39 -->
+- Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15804](https://github.com/chef/chef/pull/15804) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.38 -->
+- Bump ohai from `73fcb7e` to `7a4e10c` [#15805](https://github.com/chef/chef/pull/15805) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.37 -->
+- Update unf_ext requirement from ~&gt; 0.0.8.2 to &gt;= 0.0.8.2, &lt; 0.0.10.0 [#15816](https://github.com/chef/chef/pull/15816) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.36 -->
+- Bump webmock from 3.26.1 to 3.26.2 [#15809](https://github.com/chef/chef/pull/15809) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.35 -->
+- Bump aws-sdk-s3 from 1.213.0 to 1.218.0 [#15832](https://github.com/chef/chef/pull/15832) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.34 -->
+- Bump crack from 0.4.5 to 1.0.1 [#15828](https://github.com/chef/chef/pull/15828) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.33 -->
+- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15829](https://github.com/chef/chef/pull/15829) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.32 -->
+- Update highline requirement from &gt;= 1.6.9, &lt; 3 to &gt;= 1.6.9, &lt; 4 [#15831](https://github.com/chef/chef/pull/15831) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.31 -->
+- Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15802](https://github.com/chef/chef/pull/15802) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.30 -->
+- Bump pry from 0.13.0 to 0.15.2 [#15801](https://github.com/chef/chef/pull/15801) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.29 -->
+- Backport dependabot fixes to chef-18 [#15789](https://github.com/chef/chef/pull/15789) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.28 -->
 - [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.27 -->
 - Bump test-kitchen from 3.7.0 to 4.0.0 in /omnibus [#15759](https://github.com/chef/chef/pull/15759) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.26 -->
 - [backport] Fix bad platform_family matches [#15742](https://github.com/chef/chef/pull/15742) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.25 -->

@@ -222,6 +222,8 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+        # Mask apt background services so unattended-upgrades never holds the dpkg lock during converge
+        - RUN for s in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service unattended-upgrades.service; do ln -sf /dev/null /etc/systemd/system/$s; done
 
   - name: ubuntu-24.04
     driver:
@@ -230,6 +232,8 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+        # Mask apt background services so unattended-upgrades never holds the dpkg lock during converge
+        - RUN for s in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service unattended-upgrades.service; do ln -sf /dev/null /etc/systemd/system/$s; done
 
   - name: opensuse-leap-15
     driver:

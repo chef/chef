@@ -37,7 +37,7 @@ end
 group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
-  gem "pry", "= 0.13.0"
+  gem "pry", "0.15.2"
   # byebug does not install on freebsd on ruby 3.0
   gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
   gem "pry-stack_explorer"
@@ -60,7 +60,7 @@ group(:development, :test) do
   gem "rake", ">= 12.3.3"
   gem "rspec"
   gem "webmock"
-  gem "crack", "< 0.4.6" # due to https://github.com/jnunemaker/crack/pull/75
+  gem "crack", "< 1.0.2" # due to https://github.com/jnunemaker/crack/pull/75
   gem "fauxhai-ng" # for chef-utils gem
 end
 
@@ -70,4 +70,8 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into Gemfile.local
-eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
+#
+# But doing eval_gemfile("./Gemfile.local") breaks dependabot, so a
+# bit of indirection here
+local_gemfile = File.join(__dir__, "Gemfile.local")
+eval(File.read(local_gemfile)) if File.exist?(local_gemfile)

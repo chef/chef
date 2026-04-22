@@ -25,10 +25,11 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
+  # help dependabot by specifying a default. If the default is in
+  # the 'else', dependabot misses it and falls back to a very old ruby
+  s.required_ruby_version = ">= 3.1.0"
   if RUBY_PLATFORM =~ /aix/
     s.required_ruby_version = ">= 3.0.3"
-  else
-    s.required_ruby_version = ">= 3.1.0"
   end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
@@ -47,9 +48,9 @@ Gem::Specification.new do |s|
 
   # AIX Gemfile.aix.lock uses this, but currently a manual process
   if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
-    s.add_dependency "inspec-core", ">= 5", "<= 5.22.80"
+    s.add_dependency "inspec-core", ">= 5", "< 8"
   else
-    s.add_dependency "inspec-core", ">= 5", "< 6"
+    s.add_dependency "inspec-core", ">= 5", "< 8"
   end
 
   s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
@@ -57,7 +58,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
-  s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 1.6.0" # 1.4 breaks output. Used in lib/chef/util/diff
+  s.add_dependency "diff-lcs", ">= 1.2.4", "!= 1.4.0", "< 2.1.0" # 1.4 breaks output. Used in lib/chef/util/diff
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3" # archive_file resource
   s.add_dependency "chef-zero", ">= 15.0.21", "< 15.2"
   s.add_dependency "chef-vault" # chef-vault resources and helpers
@@ -67,15 +68,15 @@ Gem::Specification.new do |s|
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0" # osx_profile resource
-  s.add_dependency "unf_ext", "~> 0.0.8.2" # older platforms
-  s.add_dependency "uri", "~> 1.0.4" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
+  s.add_dependency "unf_ext", ">= 0.0.8.2", "< 0.0.10.0" # older platforms
+  s.add_dependency "uri", ">= 1.0.4", "< 1.2.0" # This is used by net-http. We are forcing a version to get past a CVE in 1.0.2
   s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
 
   s.add_dependency "proxifier2", "~> 1.1"
 
-  s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
+  s.add_dependency "aws-sdk-s3", "~> 1.218.0" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
-  s.add_dependency "vault", "~> 0.18.2" # hashi vault official client gem
+  s.add_dependency "vault", ">= 0.18.2", "< 0.21.0" # hashi vault official client gem
 
   s.bindir = "bin"
   s.executables = %w{ }
