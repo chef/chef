@@ -69,22 +69,22 @@ fi
 # non-digit before ')') in the main lockfile.  This keeps all other gems intact
 # so Bundler's deployment-mode completeness check continues to pass.
 if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
-  patch_lockfile() {
-    local aix_lock="$1"
-    local main_lock="$2"
-    # Source-gem spec lines: 4-space indent, version is digits+dots only (no -platform suffix)
-    grep '^    [a-z][a-z0-9_-]* ([0-9][0-9.]*)$' "$aix_lock" | \
-    while IFS= read -r aix_line; do
-      gem_name=$(echo "$aix_line" | sed 's/^    \([^ ]*\) .*/\1/')
-      aix_ver=$(echo "$aix_line" | sed 's/.*(\([^)]*\))/\1/')
-      # Escape regex metacharacters in gem name
-      esc_gem=$(printf '%s' "$gem_name" | sed 's/[].[\+^$()|{}/\\*?]/\\&/g')
-      # Replace only the source-gem spec line (pure version digits+dots, no platform suffix)
-      sed -i "s/^\(    ${esc_gem} \)([0-9][0-9.]*)$/\1(${aix_ver})/" "$main_lock"
-    done
-  }
-  patch_lockfile Gemfile-aix.lock Gemfile.lock
-  patch_lockfile omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
+  # Full copy for omnibus lockfile: ensures correct versions AND dep blocks.
+  # The omnibus bundle install runs on AIX, so the AIX-only PLATFORMS section
+  # in the lockfile is fine.  The omnibus Buildkite plugin runs its own bundle
+  # install on AIX directly — it does NOT call omnibus_chef_build.sh — so this
+  # pre-command hook is the only place to fix the lockfile before the SSH copy.
+  cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
+
+  # Surgical patch for the root Gemfile.lock: preserves Windows platform-variant
+  # gem entries (e.g. mixlib-shellout-x64-mingw-ucrt) that Bundler's
+  # deployment-mode completeness check requires on non-AIX builds.
+  while IFS= read -r aix_line; do
+    gem_name=$(echo "$aix_line" | sed 's/^    \([^ ]*\) .*/\1/')
+    aix_ver=$(echo "$aix_line" | sed 's/.*(\([^)]*\))/\1/')
+    esc_gem=$(printf '%s' "$gem_name" | sed 's/[].[\+^$()|{}/\\*?]/\\&/g')
+    sed -i "s/^\(    ${esc_gem} \)([0-9][0-9.]*)$/\1(${aix_ver})/" Gemfile.lock
+  done < <(grep '^    [a-z][a-z0-9_-]* ([0-9][0-9.]*)$' Gemfile-aix.lock)
 fi
 
 # Only if on chef-canary or chef org
