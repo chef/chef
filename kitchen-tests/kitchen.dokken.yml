@@ -47,6 +47,8 @@ lifecycle:
       includes:
         - centos-7
         - oraclelinux-7
+    - remote: echo "****[DEBUG] Habitat version****"
+    - remote: sh -c "hab --version"
     - remote: echo "****Importing Habitat Origin Key****"
     - remote: sh -c "cat /gha-key.tar.gz | HAB_LICENSE=accept-no-persist hab origin key import"
 
