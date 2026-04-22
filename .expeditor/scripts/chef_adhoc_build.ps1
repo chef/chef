@@ -4,6 +4,10 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+# Ensuring habitat 2.0.504 is installed
+$ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
+& "$ScriptRoute"
+
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 $env:Path += ";C:\buildkite-agent\bin"
 
