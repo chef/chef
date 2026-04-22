@@ -12,8 +12,8 @@ jobs:
     steps:
       - uses: wechuli/allcheckspassed@v2
         with:
-          # SonarCloud - never works for forks
-          checks_exclude: ".*(SonarCloud Code Analysis).*"
+          # Expeditor Config Validation has been hanging - fail-after:2026-05-05
+          checks_exclude: ".*(Expeditor Config Validation).*"
           # Retry every minute for 30 minutes...
           retries: 90
           verbose: true
