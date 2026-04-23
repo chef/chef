@@ -747,6 +747,7 @@
     "keyname",
     "KEYNAME",
     "keypair",
+    "keypresses",
     "keyrings",
     "keyscan",
     "keysign",
