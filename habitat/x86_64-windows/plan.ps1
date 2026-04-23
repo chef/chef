@@ -162,6 +162,9 @@ function Invoke-Build {
 
         Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
+            if ($git_gem -match "ruby-shadow") {
+                continue
+            }
             try {
                 Push-Location $git_gem
                 Write-BuildLine " -- installing $git_gem"
