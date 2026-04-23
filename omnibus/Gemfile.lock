@@ -232,9 +232,9 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.7.7)
-      libyajl2 (>= 2.1)
-      yajl
+    ffi-yajl (3.0.0)
+      ffi (~> 1.5)
+      libyajl2 (>= 1.2)
     ffi-yajl (2.7.7-universal-mingw-ucrt)
       libyajl2 (>= 2.1)
       yajl
@@ -322,7 +322,7 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.4.10)
+    mixlib-shellout (3.3.9)
       chef-utils
     mixlib-shellout (3.4.10-x64-mingw-ucrt)
       chef-utils

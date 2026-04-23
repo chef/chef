@@ -58,36 +58,18 @@ if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
   fi
 fi
 
-# For AIX builds the omnibus plugin copies the repo to the remote host via SSH,
-# so BUNDLE_LOCKFILE is not forwarded.  Patch the lockfiles in-place (after the
-# rebase so git doesn't reject unstaged changes) so the omnibus plugin propagates
-# correct lockfiles to the AIX machine.
+# For AIX builds, patch the root Gemfile.lock in-place so that pure-Ruby gem
+# version lines match the AIX-compatible versions from Gemfile-aix.lock.
 #
-# The AIX omnibus toolchain ships Ruby 3.0; some gems require Ruby >= 3.1.
-# For each gem pinned to a different version in the AIX lockfile, rewrite the
-# matching source-gem spec line (not Windows platform variants, which end in a
-# non-digit before ')') in the main lockfile.  This keeps all other gems intact
-# so Bundler's deployment-mode completeness check continues to pass.
+# The AIX omnibus toolchain ships Ruby 3.0; some gems in the main lockfile
+# require Ruby >= 3.1.  omnibus/Gemfile.lock is committed with AIX-compatible
+# pure-Ruby versions already patched (Windows platform-variant entries are kept
+# at their original versions), so only the root lockfile needs runtime patching.
+#
+# The surgical sed only touches pure-version spec lines (digits+dots, no
+# platform suffix like -x64-mingw-ucrt) to preserve Windows variants that
+# Bundler's deployment-mode completeness check requires.
 if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
-  # Full copy for omnibus lockfile: ensures correct versions AND dep blocks.
-  # The omnibus bundle install runs on AIX, so the AIX-only PLATFORMS section
-  # in the lockfile is fine.  The omnibus Buildkite plugin runs its own bundle
-  # install on AIX directly — it does NOT call omnibus_chef_build.sh — so this
-  # pre-command hook is the only place to fix the lockfile before the SSH copy.
-  cp -f omnibus/Gemfile-aix.lock omnibus/Gemfile.lock
-
-  # Skip the development group on AIX.  The dev group (berkshelf, test-kitchen,
-  # kitchen-vagrant) pulls in chef → inspec-core/train-winrm and test-kitchen →
-  # chef-winrm/chef-winrm-fs/chef-gyoku, all of which require Ruby >= 3.1, but
-  # the AIX omnibus toolchain ships Ruby 3.0.  These gems are not needed to
-  # build the omnibus package.  Create .bundle/config so bundler picks it up
-  # when the repo is SSH-copied to the AIX host and bundle install is run.
-  mkdir -p omnibus/.bundle
-  printf 'BUNDLE_WITHOUT: "development"\n' > omnibus/.bundle/config
-
-  # Surgical patch for the root Gemfile.lock: preserves Windows platform-variant
-  # gem entries (e.g. mixlib-shellout-x64-mingw-ucrt) that Bundler's
-  # deployment-mode completeness check requires on non-AIX builds.
   while IFS= read -r aix_line; do
     gem_name=$(echo "$aix_line" | sed 's/^    \([^ ]*\) .*/\1/')
     aix_ver=$(echo "$aix_line" | sed 's/.*(\([^)]*\))/\1/')
