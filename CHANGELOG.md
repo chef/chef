@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.68 -->
-## [v18.10.68](https://github.com/chef/chef/tree/v18.10.68) (2026-04-23)
+<!-- latest_release 18.10.69 -->
+## [v18.10.69](https://github.com/chef/chef/tree/v18.10.69) (2026-04-23)
 
 #### Merged Pull Requests
-- Bump actions/checkout from 5 to 6 [#15954](https://github.com/chef/chef/pull/15954) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core from 3.16.1 to 3.16.2 [#15930](https://github.com/chef/chef/pull/15930) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core from 3.16.1 to 3.16.2 [#15930](https://github.com/chef/chef/pull/15930) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.69 -->
 - Bump actions/checkout from 5 to 6 [#15954](https://github.com/chef/chef/pull/15954) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.68 -->
 - [chef-18] Lock Gemfile to pry-byebug 3.11 [#15944](https://github.com/chef/chef/pull/15944) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.67 -->
 - Backporting sugarjar config to chef-18 [#15946](https://github.com/chef/chef/pull/15946) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.66 -->
