@@ -1,6 +1,7 @@
 documentation:
-  - 'README.md'
-  - 'CODE_OF_CONDUCT.md'
-  - 'CONTRIBUTING.md'
-  - 'lib/chef/resource/**/*'
-
+  - changed-files:
+      - any-glob-to-any-file:
+        - 'README.md'
+        - 'CODE_OF_CONDUCT.md'
+        - 'CONTRIBUTING.md'
+        - 'lib/chef/resource/**/*'
