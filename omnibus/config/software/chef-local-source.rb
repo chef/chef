@@ -76,9 +76,37 @@ build do
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
-  copy "Gemfile-aix.lock", "Gemfile.lock", remove_destination: true if aix?
-  bundle "config set --local without #{bundle_excludes.join(" ")}", env: env
-  bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
+  if aix?
+    copy "Gemfile-aix.lock", "Gemfile.lock", remove_destination: true
+
+    # Bypass Bundler's ruby version compatibility check on AIX.
+    # The AIX omnibus toolchain and chef-foundation ship Ruby 3.0.3, but
+    # several gems (train-core, inspec-core, chef-vault, etc.) bumped their
+    # required_ruby_version metadata to >= 3.1 as organizational policy
+    # without actually using 3.1-only language features.  Bundler refuses to
+    # install them despite the code being fully compatible.  The patch below
+    # makes ensure_specs_are_compatible! a no-op so the install proceeds.
+    command <<~SH, env: env
+      cat > aix_skip_ruby_check.rb << 'PATCH'
+      module AixBundlerCompat
+        def ensure_specs_are_compatible!
+        end
+      end
+      module Bundler
+        class Installer
+          prepend AixBundlerCompat
+        end
+      end
+      PATCH
+    SH
+
+    aix_env = env.merge("RUBYOPT" => "-r./aix_skip_ruby_check.rb")
+    bundle "config set --local without #{bundle_excludes.join(" ")}", env: aix_env
+    bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: aix_env
+  else
+    bundle "config set --local without #{bundle_excludes.join(" ")}", env: env
+    bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
+  end
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
