@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.62 -->
-## [v18.10.62](https://github.com/chef/chef/tree/v18.10.62) (2026-04-23)
+<!-- latest_release 18.10.63 -->
+## [v18.10.63](https://github.com/chef/chef/tree/v18.10.63) (2026-04-23)
 
 #### Merged Pull Requests
-- Bump streetsidesoftware/cspell-action from 2.12.0 to 8.4.0 [#15955](https://github.com/chef/chef/pull/15955) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump danger/danger-js from 11.3.1 to 13.0.5 [#15959](https://github.com/chef/chef/pull/15959) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump danger/danger-js from 11.3.1 to 13.0.5 [#15959](https://github.com/chef/chef/pull/15959) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.63 -->
 - Bump streetsidesoftware/cspell-action from 2.12.0 to 8.4.0 [#15955](https://github.com/chef/chef/pull/15955) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.62 -->
 - backport CODEOWNERS changes to chef-18 [#15948](https://github.com/chef/chef/pull/15948) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.61 -->
 - [chef-18] Backport: Don&#39;t waste buildkite time on github-only changes [#15949](https://github.com/chef/chef/pull/15949) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.60 -->
