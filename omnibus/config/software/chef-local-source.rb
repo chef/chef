@@ -88,15 +88,14 @@ build do
     # makes ensure_specs_are_compatible! a no-op so the install proceeds.
     command <<~SH, env: env
       cat > aix_skip_ruby_check.rb << 'PATCH'
+      require "bundler"
+      require "bundler/installer"
       module AixBundlerCompat
+        private
         def ensure_specs_are_compatible!
         end
       end
-      module Bundler
-        class Installer
-          prepend AixBundlerCompat
-        end
-      end
+      Bundler::Installer.prepend(AixBundlerCompat)
       PATCH
     SH
 
