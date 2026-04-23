@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.70 -->
-## [v18.10.70](https://github.com/chef/chef/tree/v18.10.70) (2026-04-23)
+<!-- latest_release 18.10.71 -->
+## [v18.10.71](https://github.com/chef/chef/tree/v18.10.71) (2026-04-23)
 
 #### Merged Pull Requests
-- Bump ohai from `7a4e10c` to `2b30698` [#15951](https://github.com/chef/chef/pull/15951) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump rake from 13.3.1 to 13.4.2 [#15907](https://github.com/chef/chef/pull/15907) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump rake from 13.3.1 to 13.4.2 [#15907](https://github.com/chef/chef/pull/15907) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.71 -->
 - Bump ohai from `7a4e10c` to `2b30698` [#15951](https://github.com/chef/chef/pull/15951) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.70 -->
 - Bump train-core from 3.16.1 to 3.16.2 [#15930](https://github.com/chef/chef/pull/15930) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.69 -->
 - Bump actions/checkout from 5 to 6 [#15954](https://github.com/chef/chef/pull/15954) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.68 -->
