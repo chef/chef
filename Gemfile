@@ -38,8 +38,9 @@ group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "0.15.2"
-  # byebug does not install on freebsd on ruby 3.0
-  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd/i)
+  # byebug does not install on freebsd on ruby 3.0; byebug >= 12 requires ruby >= 3.1
+  # which is incompatible with the AIX omnibus toolchain (ruby 3.0.3)
+  gem "pry-byebug" unless RUBY_PLATFORM.match?(/freebsd|aix/i)
   gem "pry-stack_explorer"
 end
 

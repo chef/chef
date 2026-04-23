@@ -70,13 +70,14 @@ build do
   excluded_groups = %w{docgen cookstyle}
   excluded_groups << "ruby_prof" if aix?
   excluded_groups << "ruby_shadow" if aix?
+  excluded_groups << "pry" if aix? # byebug >= 12 requires ruby >= 3.1; AIX toolchain ships ruby 3.0
   excluded_groups << "ed25519" if solaris2?
 
   # these are gems which are not shipped but which must be installed in the testers
   bundle_excludes = excluded_groups + %w{development test}
 
   copy "Gemfile-aix.lock", "Gemfile.lock", remove_destination: true if aix?
-  bundle "config set --local without docgen cookstyle development test", env: env
+  bundle "config set --local without #{bundle_excludes.join(" ")}", env: env
   bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: env
   ruby "post-bundle-install.rb", env: env
 
