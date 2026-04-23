@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.65 -->
-## [v18.10.65](https://github.com/chef/chef/tree/v18.10.65) (2026-04-23)
+<!-- latest_release 18.10.66 -->
+## [v18.10.66](https://github.com/chef/chef/tree/v18.10.66) (2026-04-23)
 
 #### Merged Pull Requests
-- Bump wechuli/allcheckspassed from 1 to 2 [#15956](https://github.com/chef/chef/pull/15956) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Backporting sugarjar config to chef-18 [#15946](https://github.com/chef/chef/pull/15946) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backporting sugarjar config to chef-18 [#15946](https://github.com/chef/chef/pull/15946) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.66 -->
 - Bump wechuli/allcheckspassed from 1 to 2 [#15956](https://github.com/chef/chef/pull/15956) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.65 -->
 - Upgrade the GH labeler - backport to chef-18 [#15960](https://github.com/chef/chef/pull/15960) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.64 -->
 - Bump danger/danger-js from 11.3.1 to 13.0.5 [#15959](https://github.com/chef/chef/pull/15959) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.63 -->
