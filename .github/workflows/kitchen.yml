@@ -29,7 +29,7 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
     - name: Kitchen Test
@@ -49,7 +49,7 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           clean: true
       - name: Install Chef
@@ -87,7 +87,7 @@ jobs:
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
       - name: Downgrade Docker to 28.0.4
@@ -140,7 +140,7 @@ jobs:
 #      CHEF_LICENSE: accept-no-persist
 #      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
 #    steps:
-#      - uses: actions/checkout@v5
+#      - uses: actions/checkout@v6
 #      - name: Install Vagrant and VirtualBox
 #        run: |
 #          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
