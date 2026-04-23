@@ -55,8 +55,8 @@ if Gem.win_platform? && defined?(Reline::Windows)
   # default gem without a Gemspec entry in loaded_specs.
   reline_version = begin
     Gem::Version.new(Reline::VERSION)
-  rescue StandardError
-    Gem::Version.new("0")
+                   rescue StandardError
+                     Gem::Version.new("0")
   end
 
   if reline_version < Gem::Version.new("0.3.2")
@@ -65,17 +65,16 @@ if Gem.win_platform? && defined?(Reline::Windows)
     class Reline::Windows
       class << self
         # Reopen process_key_event and change only the ESC-emission guard.
-        # All other behaviour – surrogate pair handling, KEY_MAP matching, bare
+        # All other behavior – surrogate pair handling, KEY_MAP matching, bare
         # control-key suppression – is preserved verbatim from the original.
         def process_key_event(repeat_count, virtual_key_code, virtual_scan_code, char_code, control_key_state)
-
           # ---- surrogate pair handling (unchanged) --------------------------------
-          if 0xD800 <= char_code && char_code <= 0xDBFF
+          if char_code.between?(0xD800, 0xDBFF)
             @@hsg = char_code
             return
           end
 
-          if 0xDC00 <= char_code && char_code <= 0xDFFF
+          if char_code.between?(0xDC00, 0xDFFF)
             if @@hsg
               char_code = 0x10000 + (@@hsg - 0xD800) * 0x400 + char_code - 0xDC00
               @@hsg = nil
