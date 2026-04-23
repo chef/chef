@@ -56,7 +56,7 @@ lifecycle:
     - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
 
     - remote: echo "****Installing Habitat package for Chef Infra Client****"
-    - remote: sh -c "HAB_LICENSE=accept-no-persist hab pkg install /chef-infra-client-latest.hart --auth \"$(cat /hab_token)\""
+    - remote: sh -c "HAB_AUTH_TOKEN=$(cat /hab_token) HAB_LICENSE=accept-no-persist hab pkg install /chef-infra-client-latest.hart"
     - remote: echo "****Installed chef-infra-client version:****"
     - remote: sh -c "HAB_LICENSE=accept-no-persist hab pkg exec gha/chef-infra-client chef-client -v"
 
