@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.114 -->
-## [v19.2.114](https://github.com/chef/chef/tree/v19.2.114) (2026-04-22)
+<!-- latest_release 19.2.115 -->
+## [v19.2.115](https://github.com/chef/chef/tree/v19.2.115) (2026-04-23)
 
 #### Merged Pull Requests
-- Have dependabot update github-actions on chef-18 too [#15945](https://github.com/chef/chef/pull/15945) ([jaymzh](https://github.com/jaymzh))
+- Bump aws-sdk-s3 from 1.219.0 to 1.220.0 [#15950](https://github.com/chef/chef/pull/15950) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump aws-sdk-s3 from 1.219.0 to 1.220.0 [#15950](https://github.com/chef/chef/pull/15950) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.115 -->
 - Have dependabot update github-actions on chef-18 too [#15945](https://github.com/chef/chef/pull/15945) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.114 -->
 - Dependabot: Lock pry-byebug version on chef-18 [#15940](https://github.com/chef/chef/pull/15940) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.113 -->
 - Bump train-core from 3.16.1 to 3.16.2 [#15928](https://github.com/chef/chef/pull/15928) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.112 -->
