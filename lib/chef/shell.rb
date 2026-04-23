@@ -72,6 +72,13 @@ module Shell
     # to get access to the main object before irb starts.
     ::IRB.setup(nil)
 
+    # Apply Windows AltGr input fix for affected Reline versions (< 0.3.2).
+    # European keyboard layouts (e.g. German) use AltGr (Ctrl+Alt) to produce
+    # characters such as { } [ ]. Without this patch Reline emits a spurious ESC
+    # prefix making chef-shell unusable for those users. Safe no-op on non-Windows
+    # and on Reline versions where the upstream fix is already present.
+    require_relative "monkey_patches/reline-windows"
+
     irb_conf[:USE_COLORIZE] = options.config[:use_colorize]
     irb_conf[:USE_SINGLELINE] = options.config[:use_singleline]
     irb_conf[:USE_MULTILINE] = options.config[:use_multiline]
