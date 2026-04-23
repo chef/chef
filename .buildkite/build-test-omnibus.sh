@@ -187,10 +187,17 @@ then
       echo "    omnibus: builder"
       echo "    omnibus-toolchain: \"*\""
     fi
+    # AIX ships an older omnibus toolchain with Ruby 3.0; chef-foundation
+    # builds for AIX lag behind the main release — use the latest available.
+    if [[ $platform == *"aix"* ]]; then
+      cf_version="3.2.38"
+    else
+      cf_version="$CHEF_FOUNDATION_VERSION"
+    fi
     echo "  plugins:"
     echo "  - chef/omnibus#v0.2.102:"
     echo "      build: chef"
-    echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
+    echo "      chef-foundation-version: $cf_version"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ "$build_key" == "mac_os_x-13-arm64" ] || [ "$build_key" == "mac_os_x-14-arm64" ]; then
