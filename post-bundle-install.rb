@@ -109,26 +109,33 @@ default_gem_list = {
   uri: "0.12.4",
 }
 
-default_gem_list.each do |gem_name, version|
-  # Handle resolv gem conflict with default gem
-  puts "Checking #{gem_name} gem installation..."
-  gem_info = `gem info #{gem_name}`
+# On AIX, the omnibus toolchain/foundation ships Ruby 3.0.3.  Replacing the
+# default resolv gem with a newer version (0.7.x) causes
+# "undefined method 'request' for nil:NilClass" in RubyGems' HTTP client
+# because the newer resolv changes internal APIs that RubyGems 3.0 expects.
+# Skip the default-gem replacement on AIX to keep the default gems intact.
+unless RUBY_PLATFORM.include?("aix")
+  default_gem_list.each do |gem_name, version|
+    # Handle resolv gem conflict with default gem
+    puts "Checking #{gem_name} gem installation..."
+    gem_info = `gem info #{gem_name}`
 
-  if gem_info.include?("default):") && gem_info.match?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
-    # Extract the default gem path
-    default_path = gem_info.match(/default\): (.+)$/)[1]
+    if gem_info.include?("default):") && gem_info.match?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
+      # Extract the default gem path
+      default_path = gem_info.match(/default\): (.+)$/)[1]
 
-    if default_path
-      gemspec_path = File.join(default_path.strip, "specifications", "default", "#{gem_name}-#{version}.gemspec")
+      if default_path
+        gemspec_path = File.join(default_path.strip, "specifications", "default", "#{gem_name}-#{version}.gemspec")
 
-      if File.exist?(gemspec_path)
-        puts "Removing default #{gem_name} gemspec: #{gemspec_path}"
-        File.delete(gemspec_path)
+        if File.exist?(gemspec_path)
+          puts "Removing default #{gem_name} gemspec: #{gemspec_path}"
+          File.delete(gemspec_path)
+        end
       end
-    end
 
-    puts "Installing #{gem_name} gem..."
-    system("gem install #{gem_name}") or raise "gem install #{gem_name} failed" # NOSONAR
-    puts "#{gem_name} gem installed successfully"
+      puts "Installing #{gem_name} gem..."
+      system("gem install #{gem_name}") or raise "gem install #{gem_name} failed" # NOSONAR
+      puts "#{gem_name} gem installed successfully"
+    end
   end
 end
