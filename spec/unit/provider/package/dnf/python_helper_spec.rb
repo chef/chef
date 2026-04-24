@@ -34,3 +34,72 @@ describe Chef::Provider::Package::Dnf::PythonHelper, :requires_root, external: e
     expect(helper.compare_versions("0:1.8.29-6.el8.x86_64", "0:1.8.29-6.el8_3.1.x86_64")).to eql(-1)
   end
 end
+
+describe Chef::Provider::Package::Dnf::PythonHelper, "#dnf_command" do
+  let(:helper) do
+    Singleton.__init__(Chef::Provider::Package::Dnf::PythonHelper)
+    Chef::Provider::Package::Dnf::PythonHelper.instance
+  end
+
+  let(:dnf_helper_path) do
+    Chef::Provider::Package::Dnf::PythonHelper::DNF_HELPER
+  end
+
+  let(:success_result) { double("shell_out", exitstatus: 0) }
+  let(:failure_result) { double("shell_out", exitstatus: 1) }
+
+  it "stops shell_out calls after finding the first working python" do
+    allow(helper).to receive(:where).and_return(
+      ["/usr/bin/python3", "/usr/bin/python2", "/usr/bin/python2.7"]
+    )
+
+    expect(helper).to receive(:shell_out)
+      .with("/usr/bin/python3 -c 'import dnf'")
+      .and_return(success_result)
+    expect(helper).not_to receive(:shell_out)
+      .with("/usr/bin/python2 -c 'import dnf'")
+    expect(helper).not_to receive(:shell_out)
+      .with("/usr/bin/python2.7 -c 'import dnf'")
+
+    expect(helper.dnf_command).to eq("/usr/bin/python3 #{dnf_helper_path}")
+  end
+
+  it "tries subsequent executables when earlier ones fail" do
+    allow(helper).to receive(:where).and_return(
+      ["/usr/bin/python3", "/usr/bin/python2", "/usr/bin/python2.7"]
+    )
+
+    expect(helper).to receive(:shell_out)
+      .with("/usr/bin/python3 -c 'import dnf'")
+      .and_return(failure_result)
+    expect(helper).to receive(:shell_out)
+      .with("/usr/bin/python2 -c 'import dnf'")
+      .and_return(success_result)
+
+    expect(helper.dnf_command).to eq("/usr/bin/python2 #{dnf_helper_path}")
+  end
+
+  it "raises when no executable can import dnf" do
+    allow(helper).to receive(:where).and_return(
+      ["/usr/bin/python3"]
+    )
+
+    expect(helper).to receive(:shell_out)
+      .with("/usr/bin/python3 -c 'import dnf'")
+      .and_return(failure_result)
+
+    expect { helper.dnf_command }.to raise_error(
+      Chef::Exceptions::Package,
+      "cannot find dnf libraries, you may need to use yum_package"
+    )
+  end
+
+  it "raises when no executables are found" do
+    allow(helper).to receive(:where).and_return([])
+
+    expect { helper.dnf_command }.to raise_error(
+      Chef::Exceptions::Package,
+      "cannot find dnf libraries, you may need to use yum_package"
+    )
+  end
+end
