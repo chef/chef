@@ -174,13 +174,15 @@ action_class do
   end
 
   def rest_url_collection
-    current_resource.class.rest_api_collection
+    endpoint = current_resource.class.rest_api_endpoint || ""
+    "#{endpoint}#{current_resource.class.rest_api_collection}"
   end
 
   # Resource document URL after RFC 6570 template evaluation via properties substitution
   def rest_url_document
+    endpoint = current_resource.class.rest_api_endpoint || ""
     template = ::Addressable::Template.new(current_resource.class.rest_api_document)
-    template.expand(property_map).to_s
+    "#{endpoint}#{template.expand(property_map)}"
   end
 
   # Convenience method for conditional requires
