@@ -38,6 +38,10 @@ updates:
         # past pry-byebug 3.11
       - dependency-name: "pry-byebug"
         versions: [">= 3.12.0"]
+        # CentOS7 requires bigdecimal < 4.1.2, and tha tmeans staying
+        # on aws-sdk-s3 < 1.219 (see PR #15952) for Chef-18
+        dependency-name: "aws-sdk-s3"
+        versions: [">= 1.219.0"]
     # don't automatically rebase on every single time we're out of date with
     # base (whith is always) because it kills CI capacity
     rebase-strategy: disabled
