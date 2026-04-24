@@ -6,6 +6,10 @@
 
 require "fileutils"
 
+GEMFILE_LOCK = "Gemfile.lock".freeze
+GEMFILE_AIX_LOCK = "Gemfile.aix.lock".freeze
+GEMFILE_LOCK_BASE = "Gemfile.lock.base".freeze
+
 # Parse command line arguments
 command = ARGV[0] || "install"
 bundle_args = ARGV[1..-1] || []
@@ -28,12 +32,12 @@ Dir.chdir(project_root) do
   end
 
   # Step 2: Copy Gemfile.lock to Gemfile.lock.base
-  puts "\n💾 Step 2: Backing up Gemfile.lock to Gemfile.lock.base..."
-  if File.exist?("Gemfile.lock")
-    FileUtils.cp("Gemfile.lock", "Gemfile.lock.base")
-    puts "   ✅ Gemfile.lock copied to Gemfile.lock.base"
+  puts "\n💾 Step 2: Backing up #{GEMFILE_LOCK} to #{GEMFILE_LOCK_BASE}..."
+  if File.exist?(GEMFILE_LOCK)
+    FileUtils.cp(GEMFILE_LOCK, GEMFILE_LOCK_BASE)
+    puts "   ✅ #{GEMFILE_LOCK} copied to #{GEMFILE_LOCK_BASE}"
   else
-    puts "   ⚠️  No Gemfile.lock found to backup"
+    puts "   ⚠️  No #{GEMFILE_LOCK} found to backup"
   end
 
   # Step 3: Run AIX-specific bundle operation
@@ -46,43 +50,43 @@ Dir.chdir(project_root) do
     puts "❌ AIX bundle #{command} failed!"
 
     # Restore original Gemfile.lock on failure
-    if File.exist?("Gemfile.lock.base")
-      puts "🔄 Restoring original Gemfile.lock..."
-      FileUtils.mv("Gemfile.lock.base", "Gemfile.lock")
+    if File.exist?(GEMFILE_LOCK_BASE)
+      puts "🔄 Restoring original #{GEMFILE_LOCK}..."
+      FileUtils.mv(GEMFILE_LOCK_BASE, GEMFILE_LOCK)
     end
     exit 1
   end
 
   # Step 4: Move AIX Gemfile.lock to Gemfile-aix.lock
-  puts "\n📁 Step 4: Moving AIX Gemfile.lock to Gemfile-aix.lock..."
-  if File.exist?("Gemfile.lock")
-    FileUtils.mv("Gemfile.lock", "Gemfile-aix.lock")
-    puts "   ✅ Gemfile.lock moved to Gemfile-aix.lock"
+  puts "\n📁 Step 4: Moving AIX #{GEMFILE_LOCK} to #{GEMFILE_AIX_LOCK}..."
+  if File.exist?(GEMFILE_LOCK)
+    FileUtils.mv(GEMFILE_LOCK, GEMFILE_AIX_LOCK)
+    puts "   ✅ #{GEMFILE_LOCK} moved to #{GEMFILE_AIX_LOCK}"
   else
-    puts "   ⚠️  No Gemfile.lock found from AIX run"
+    puts "   ⚠️  No #{GEMFILE_LOCK} found from AIX run"
   end
 
   # Step 5: Restore original Gemfile.lock
-  puts "\n🔄 Step 5: Restoring original Gemfile.lock..."
-  if File.exist?("Gemfile.lock.base")
-    FileUtils.mv("Gemfile.lock.base", "Gemfile.lock")
-    puts "   ✅ Gemfile.lock.base restored to Gemfile.lock"
+  puts "\n🔄 Step 5: Restoring original #{GEMFILE_LOCK}..."
+  if File.exist?(GEMFILE_LOCK_BASE)
+    FileUtils.mv(GEMFILE_LOCK_BASE, GEMFILE_LOCK)
+    puts "   ✅ #{GEMFILE_LOCK_BASE} restored to #{GEMFILE_LOCK}"
   else
-    puts "   ⚠️  No Gemfile.lock.base found to restore"
+    puts "   ⚠️  No #{GEMFILE_LOCK_BASE} found to restore"
   end
 
   puts "\n🎉 Bundle hook completed successfully!"
   puts "📄 Generated files:"
-  puts "   - Gemfile.lock (standard dependencies)"
-  puts "   - Gemfile-aix.lock (AIX-specific dependencies)"
+  puts "   - #{GEMFILE_LOCK} (standard dependencies)"
+  puts "   - #{GEMFILE_AIX_LOCK} (AIX-specific dependencies)"
 
 rescue => e
   puts "\n💥 Error during bundle hook execution: #{e.message}"
 
   # Cleanup: restore original lock file if it exists
-  if File.exist?("Gemfile.lock.base")
-    puts "🧹 Cleaning up: restoring original Gemfile.lock..."
-    FileUtils.mv("Gemfile.lock.base", "Gemfile.lock")
+  if File.exist?(GEMFILE_LOCK_BASE)
+    puts "🧹 Cleaning up: restoring original #{GEMFILE_LOCK}..."
+    FileUtils.mv(GEMFILE_LOCK_BASE, GEMFILE_LOCK)
   end
 
   exit 1
