@@ -133,7 +133,7 @@ describe "rest_resource using query-based addressing" do
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   API_BASE_URL,
+      endpoint: API_BASE_URL,
       debug_rest: true,
       logger: Chef::Log,
     }
@@ -397,7 +397,7 @@ describe "rest_resource using path-based addressing" do
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   API_BASE_URL,
+      endpoint: API_BASE_URL,
       debug_rest: true,
       logger: Chef::Log,
     }
@@ -467,9 +467,9 @@ describe "rest_resource using rest_api_endpoint" do
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   RestResourceWithEndpoint.rest_api_endpoint,
+      endpoint: RestResourceWithEndpoint.rest_api_endpoint,
       debug_rest: true,
-      logger:     Chef::Log,
+      logger: Chef::Log,
     }
     ).connection
   }
@@ -545,9 +545,9 @@ describe "rest_resource using rest_identity_property" do
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   API_BASE_URL,
+      endpoint: API_BASE_URL,
       debug_rest: true,
-      logger:     Chef::Log,
+      logger: Chef::Log,
     }
     ).connection
   }
@@ -617,9 +617,9 @@ describe "rest_resource using rest_api_endpoint and rest_identity_property" do
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   RestResourceWithEndpointAndIdentityProperty.rest_api_endpoint,
+      endpoint: RestResourceWithEndpointAndIdentityProperty.rest_api_endpoint,
       debug_rest: true,
-      logger:     Chef::Log,
+      logger: Chef::Log,
     }
     ).connection
   }
@@ -695,9 +695,9 @@ describe "rest_resource with endpoint configured via Train transport (query-base
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   API_HOST,
+      endpoint: API_HOST,
       debug_rest: true,
-      logger:     Chef::Log,
+      logger: Chef::Log,
     }
     ).connection
   }
@@ -767,9 +767,9 @@ describe "rest_resource with endpoint configured via Train transport (path-based
   let(:train) {
     Train.create(
       "rest", {
-      endpoint:   API_HOST,
+      endpoint: API_HOST,
       debug_rest: true,
-      logger:     Chef::Log,
+      logger: Chef::Log,
     }
     ).connection
   }
