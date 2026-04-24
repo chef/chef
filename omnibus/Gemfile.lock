@@ -232,9 +232,8 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.7.7)
-      libyajl2 (>= 2.1)
-      yajl
+    ffi-yajl (2.6.0)
+      libyajl2 (>= 1.2)
     ffi-yajl (2.7.7-universal-mingw-ucrt)
       libyajl2 (>= 2.1)
       yajl
