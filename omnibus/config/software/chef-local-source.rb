@@ -99,7 +99,7 @@ build do
       PATCH
     SH
 
-    aix_env = env.merge("RUBYOPT" => "-r./aix_skip_ruby_check.rb")
+    aix_env = env.merge("RUBYOPT" => "-r#{project_dir}/aix_skip_ruby_check.rb")
     bundle "config set --local without #{bundle_excludes.join(" ")}", env: aix_env
     bundle "install --jobs=2 --without #{bundle_excludes.join(" ")}", env: aix_env
   else
