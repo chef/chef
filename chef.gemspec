@@ -76,7 +76,7 @@ Gem::Specification.new do |s|
 
   # 1.219 depends (transitively) on bigdecimal 4.1.2 which dodesn't compile
   # on CentOS7
-  s.add_dependency "aws-sdk-s3", ">= 1.218.0", "< 1.219.0"
+  s.add_dependency "aws-sdk-s3", ">= 1.218.0", "< 1.221.0"
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", ">= 0.18.2", "< 0.21.0" # hashi vault official client gem
 
