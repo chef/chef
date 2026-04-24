@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.117 -->
-## [v19.2.117](https://github.com/chef/chef/tree/v19.2.117) (2026-04-23)
+<!-- latest_release 19.2.118 -->
+## [v19.2.118](https://github.com/chef/chef/tree/v19.2.118) (2026-04-24)
 
 #### Merged Pull Requests
-- use local server and cert instead of external in trusted cert recipe [#15923](https://github.com/chef/chef/pull/15923) ([rishichawda](https://github.com/rishichawda))
+- Bump ohai from `820824c` to `29bd2a3` [#15964](https://github.com/chef/chef/pull/15964) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai from `820824c` to `29bd2a3` [#15964](https://github.com/chef/chef/pull/15964) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.118 -->
 - use local server and cert instead of external in trusted cert recipe [#15923](https://github.com/chef/chef/pull/15923) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.117 -->
 - Update mixlib-shellout requirement from ~&gt; 3.3.8 to &gt;= 3.3.8, &lt; 3.5.0 [#15941](https://github.com/chef/chef/pull/15941) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.116 -->
 - Bump aws-sdk-s3 from 1.219.0 to 1.220.0 [#15950](https://github.com/chef/chef/pull/15950) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.115 -->
