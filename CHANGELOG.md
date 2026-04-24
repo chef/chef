@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.76 -->
-## [v18.10.76](https://github.com/chef/chef/tree/v18.10.76) (2026-04-24)
+<!-- latest_release 18.10.77 -->
+## [v18.10.77](https://github.com/chef/chef/tree/v18.10.77) (2026-04-24)
 
 #### Merged Pull Requests
-- [backport] [chef-18] fix intermittent failures on trusted certs test [#15961](https://github.com/chef/chef/pull/15961) ([rishichawda](https://github.com/rishichawda))
+- [Chef-18 backport][dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15971](https://github.com/chef/chef/pull/15971) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef-18 backport][dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15971](https://github.com/chef/chef/pull/15971) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.77 -->
 - [backport] [chef-18] fix intermittent failures on trusted certs test [#15961](https://github.com/chef/chef/pull/15961) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.76 -->
 - [chef-18 backport] Correcting the Rest Resource [#15970](https://github.com/chef/chef/pull/15970) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.75 -->
 - [chef-18] Lock to specific version of aws-sdk-s3 to keep C7 compat [#15966](https://github.com/chef/chef/pull/15966) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.74 -->
