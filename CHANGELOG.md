@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.73 -->
-## [v18.10.73](https://github.com/chef/chef/tree/v18.10.73) (2026-04-24)
+<!-- latest_release 18.10.74 -->
+## [v18.10.74](https://github.com/chef/chef/tree/v18.10.74) (2026-04-24)
 
 #### Merged Pull Requests
-- Bump ohai from `2b30698` to `31b00ef` [#15965](https://github.com/chef/chef/pull/15965) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-18] Lock to specific version of aws-sdk-s3 to keep C7 compat [#15966](https://github.com/chef/chef/pull/15966) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] Lock to specific version of aws-sdk-s3 to keep C7 compat [#15966](https://github.com/chef/chef/pull/15966) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.74 -->
 - Bump ohai from `2b30698` to `31b00ef` [#15965](https://github.com/chef/chef/pull/15965) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.73 -->
 - keyboard bug in reline 0.3.1 [#15963](https://github.com/chef/chef/pull/15963) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.72 -->
 - Bump rake from 13.3.1 to 13.4.2 [#15907](https://github.com/chef/chef/pull/15907) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.71 -->
