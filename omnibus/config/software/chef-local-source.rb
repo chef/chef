@@ -109,7 +109,21 @@ build do
   ruby "post-bundle-install.rb", env: env
 
   # use the rake install task to build/install chef-config/chef-utils
-  command "rake install:local", env: env
+  if aix?
+    # On AIX Ruby 3.0, uri 1.1.1 (required by chef gemspec for CVE fix)
+    # breaks RubyGems 3.2.32's HTTP client causing "undefined method
+    # 'request' for nil:NilClass" during gem install dependency resolution.
+    # Install sub-gems normally (they have few deps and succeed), then
+    # install the main chef gem with --ignore-dependencies to skip the
+    # broken code path.  All deps are already installed by bundle install.
+    command "cd chef-utils && rake install && cd ..", env: env
+    command "cd chef-config && rake install && cd ..", env: env
+    gem "build chef.gemspec", env: env
+    gem "install chef-*.gem --local --ignore-dependencies --no-document --force", env: env
+    command "cd chef-bin && gem build chef-bin.gemspec && gem install chef-bin-*.gem --local --ignore-dependencies --no-document --force && cd ..", env: env
+  else
+    command "rake install:local", env: env
+  end
 
   gemspec_name = if windows?
                    # Chef18 is built with ruby3.1 so platform name is changed.
