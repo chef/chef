@@ -204,6 +204,7 @@ describe Chef::Resource::ChefClientConfig do
 
       allow(provider).to receive(:directory) do |path, &block|
         dir_resource = double("directory")
+        allow(dir_resource).to receive(:recursive) { |value| captured[path] ||= {}; captured[path][:recursive] = value }
         allow(dir_resource).to receive(:owner) { |value| captured[path] ||= {}; captured[path][:owner] = value }
         allow(dir_resource).to receive(:group) { |value| captured[path] ||= {}; captured[path][:group] = value }
         allow(dir_resource).to receive(:mode) { |value| captured[path] ||= {}; captured[path][:mode] = value }

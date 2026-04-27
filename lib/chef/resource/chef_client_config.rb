@@ -335,7 +335,7 @@ class Chef
         default: DIRECTORY_SPEC_DEFAULTS,
         coerce: proc { |v|
           DIRECTORY_SPEC_DEFAULTS.merge(v) do |_key, base, override|
-            base.merge(override)
+            override.is_a?(Hash) ? base.merge(override) : override
           end
         }
 
