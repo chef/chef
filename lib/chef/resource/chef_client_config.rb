@@ -348,7 +348,7 @@ class Chef
         # or a stream name (STDOUT/STDERR) rather than a file path. Only raise if
         # the user customized logs specs but log_location is not a usable file path.
         if new_resource.directory_specs[:logs] != DIRECTORY_SPEC_DEFAULTS[:logs] && log_directory.nil?
-          raise ArgumentError, "Invalid directory_specs: logs requires log_location to be a file path."
+          raise ArgumentError, "Invalid directory_specs: logs requires :logs (file path)"
         end
 
         # Build path map for each managed directory. For cache and backups, fall
