@@ -344,34 +344,25 @@ class Chef
         default: "0640"
 
       action :create, description: "Create a client.rb config file and folders for configuring #{ChefUtils::Dist::Infra::PRODUCT}." do
-        path_dependencies = {
-          cache: [new_resource.file_cache_path, ":cache"],
-          backups: [new_resource.file_backup_path, ":backups"],
-          logs: [log_directory, ":logs (file path)"],
-        }
-
-        invalid_specs = new_resource.directory_specs.each_key.select do |spec_key|
-          dependency = path_dependencies[spec_key]
-          dependency && dependency[0].nil? &&
-            new_resource.directory_specs[spec_key] != DIRECTORY_SPEC_DEFAULTS[spec_key]
+        # The logs directory is derived from log_location, which may be a symbol
+        # or a stream name (STDOUT/STDERR) rather than a file path. Only raise if
+        # the user customized logs specs but log_location is not a usable file path.
+        if new_resource.directory_specs[:logs] != DIRECTORY_SPEC_DEFAULTS[:logs] && log_directory.nil?
+          raise ArgumentError, "Invalid directory_specs: logs requires log_location to be a file path."
         end
 
-        unless invalid_specs.empty?
-          details = invalid_specs.map do |spec_key|
-            "#{spec_key} requires #{path_dependencies[spec_key][1]}"
-          end.join(", ")
-
-          raise ArgumentError, "Invalid directory_specs: #{details}"
-        end
-
+        # Build path map for each managed directory. For cache and backups, fall
+        # back to ChefConfig defaults when not explicitly set so that directory_specs
+        # overrides are applied even if the user didn't configure a custom path in client.rb.
         spec_paths = {
           config: new_resource.config_directory,
           client_d: ::File.join(new_resource.config_directory, "client.d"),
           logs: log_directory,
-          cache: new_resource.file_cache_path,
-          backups: new_resource.file_backup_path,
+          cache: new_resource.file_cache_path || ChefConfig::Config.file_cache_path,
+          backups: new_resource.file_backup_path || ChefConfig::Config.file_backup_path,
         }
 
+        # Build directory specs based on user input and defaults
         specs = {}
         new_resource.directory_specs.each do |key, overrides|
           path = spec_paths[key]
@@ -456,6 +447,8 @@ class Chef
           end
         end
 
+        # A helper class to encapsulate directory spec data and application logic for both *nix and Windows.
+        # This allows us to keep the logic for how to apply permissions to directories in one place and makes it easier to test.
         class DirectorySpec
           attr_reader :path, :owner, :group, :mode, :rights, :inherits
 
@@ -497,6 +490,10 @@ class Chef
           end
         end
 
+        # A helper method to determine the directory to apply log permissions to based on the log_location property.
+        # If log_location is a file path, this returns the directory containing that file.
+        # If log_location is not a file path (e.g., it's a symbol for syslog or win_evt, or it's STDOUT/STDERR),
+        # this returns nil since there is no directory to apply permissions to.
         def log_directory
           return unless new_resource.log_location.is_a?(String)
           return if %w{STDOUT STDERR}.include?(new_resource.log_location)
