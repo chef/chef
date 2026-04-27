@@ -16,6 +16,10 @@ gem "ffi", "<= 1.17.0"
 # Version 3.4.10+ requires Ruby 3.1+
 gem "mixlib-shellout", "~> 3.3.0"
 
+# Pin ffi-yajl to a version compatible with Ruby 3.0.3 on AIX
+# Version 2.7.7+ requires Ruby 3.1+
+gem "ffi-yajl", "~> 2.6.0"
+
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
 # the Test Kitchen-based build lab. You can skip these unnecessary dependencies
