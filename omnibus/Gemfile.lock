@@ -4,7 +4,6 @@ GIT
   branch: main
   specs:
     omnibus-software (26.1.360)
-      ffi (>= 1.17.0)
       omnibus (>= 9.0.0)
 
 GIT
@@ -70,6 +69,8 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
+    bcrypt_pbkdf (1.1.2-x64-mingw-ucrt)
+    bcrypt_pbkdf (1.1.2-x86-mingw32)
     benchmark (0.5.0)
     berkshelf (8.0.9)
       chef (>= 15.7.32)
@@ -240,12 +241,15 @@ GEM
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
     ffi (1.17.0)
+    ffi (1.17.0-x64-mingw-ucrt)
+    ffi (1.17.0-x86-mingw32)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
-    ffi-yajl (2.6.0)
-      libyajl2 (>= 1.2)
+    ffi-yajl (2.7.7)
+      libyajl2 (>= 2.1)
+      yajl
     ffi-yajl (2.7.7-universal-mingw-ucrt)
       libyajl2 (>= 2.1)
       yajl
@@ -333,7 +337,7 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.3.9)
+    mixlib-shellout (3.4.10)
       chef-utils
     mixlib-shellout (3.4.10-x64-mingw-ucrt)
       chef-utils
@@ -523,6 +527,8 @@ GEM
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
     unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
+    unf_ext (0.0.8.2-x86-mingw32)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.0.2)
@@ -590,6 +596,7 @@ DEPENDENCIES
   omnibus!
   omnibus-software!
   pedump
+  rest-client!
   test-kitchen (>= 1.23)
   winrm-fs (~> 1.0)
 
