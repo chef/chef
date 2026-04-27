@@ -101,10 +101,10 @@ build do
 
     aix_env = env.merge("RUBYOPT" => "-r#{project_dir}/aix_skip_ruby_check.rb")
     bundle "config set --local without #{bundle_excludes.join(" ")}", env: aix_env
-    bundle "install --jobs=2 --no-deployment --without #{bundle_excludes.join(" ")}", env: aix_env
+    bundle "install --jobs=2 --no-deployment --frozen --without #{bundle_excludes.join(" ")}", env: aix_env
   else
     bundle "config set --local without #{bundle_excludes.join(" ")}", env: env
-    bundle "install --jobs=2 --no-deployment --without #{bundle_excludes.join(" ")}", env: env
+    bundle "install --jobs=2 --no-deployment --frozen --without #{bundle_excludes.join(" ")}", env: env
   end
   ruby "post-bundle-install.rb", env: env
 
