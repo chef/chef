@@ -71,12 +71,12 @@ GEM
     bcrypt_pbkdf (1.1.2-arm64-darwin)
     bcrypt_pbkdf (1.1.2-x86_64-darwin)
     benchmark (0.5.0)
-    berkshelf (8.1.21)
-      chef (>= 18.10)
+    berkshelf (8.1.6)
+      chef (>= 18.0.0)
       chef-cleanroom (~> 1.0)
       chef-config
       concurrent-ruby (~> 1.0)
-      ffi (>= 1.15.5, < 1.18.0)
+      ffi (>= 1.15.5, <= 1.16.3)
       minitar (~> 1.0)
       mixlib-archive (>= 1.1.4, < 2.0)
       mixlib-config (>= 2.2.5)
@@ -89,27 +89,27 @@ GEM
     bigdecimal (4.1.2)
     builder (3.3.0)
     cgi (0.5.1)
-    chef (18.10.17)
+    chef (18.3.0)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.10.17)
-      chef-utils (= 18.10.17)
+      chef-config (= 18.3.0)
+      chef-utils (= 18.3.0)
       chef-vault
-      chef-zero (>= 15.0.21, < 15.2)
+      chef-zero (>= 14.0.11)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5, <= 1.16.3)
+      ffi (>= 1.15.5)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (>= 5, < 6)
+      inspec-core (>= 5)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 3.2)
+      mixlib-log (>= 2.0.3, < 4.0)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
@@ -117,17 +117,16 @@ GEM
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.13, >= 3.13.4)
+      train-core (~> 3.10)
       train-rest (>= 0.4.1)
-      train-winrm (~> 0.4.0)
-      unf_ext (~> 0.0.8.2)
-      uri (~> 1.0.4)
+      train-winrm (>= 0.2.5)
+      unf_ext (>= 0.0.8.2)
       uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.18.2)
+      vault (~> 0.16)
     chef-cleanroom (1.0.5)
-    chef-config (18.10.17)
+    chef-config (18.3.0)
       addressable
-      chef-utils (= 18.10.17)
+      chef-utils (= 18.3.0)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -138,7 +137,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (18.10.17)
+    chef-utils (18.3.0)
       concurrent-ruby
     chef-vault (4.2.9)
       syslog (~> 0.3)
@@ -175,6 +174,7 @@ GEM
     citrus (3.0.2)
     coderay (1.1.3)
     concurrent-ruby (1.3.6)
+    connection_pool (2.5.5)
     contracts (0.16.1)
     corefoundation (0.3.13)
       ffi (>= 1.15.0)
@@ -279,8 +279,8 @@ GEM
       mixlib-shellout
       mixlib-versioning
       thor
-    mixlib-log (3.1.2.1)
-      ffi (< 1.17.0)
+    mixlib-log (3.2.3)
+      ffi (>= 1.15.5)
     mixlib-shellout (3.3.9)
       chef-utils
     mixlib-versioning (1.2.12)
@@ -293,6 +293,8 @@ GEM
       time
     net-http (0.9.1)
       uri (>= 0.11.1)
+    net-http-persistent (4.0.8)
+      connection_pool (>= 2.2.4, < 4)
     net-protocol (0.2.2)
       timeout
     net-scp (4.1.0)
@@ -417,10 +419,10 @@ GEM
     toml-rb (2.2.0)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.16.2)
+    train-core (3.12.13)
       addressable (~> 2.5)
-      ffi (>= 1.16.0, < 1.18)
-      json (>= 2.19.2, < 3.0)
+      ffi (!= 1.13.0)
+      json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 5.0)
       net-ssh (>= 2.9, < 8.0)
@@ -452,13 +454,15 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unf_ext (0.0.8.2)
+    unf_ext (0.0.9.1)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
-    uri (1.0.4)
+    uri (1.1.1)
     uuidtools (2.2.0)
-    vault (0.18.2)
+    vault (0.20.1)
       aws-sigv4
+      base64
+      net-http-persistent (~> 4.0, >= 4.0.2)
     webrick (1.9.2)
     winrm (2.3.9)
       builder (>= 2.1.2)
@@ -496,6 +500,7 @@ DEPENDENCIES
   pedump
   rest-client!
   test-kitchen (>= 1.23)
+  train-core (~> 3.12.0)
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
