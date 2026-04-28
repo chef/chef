@@ -148,7 +148,7 @@ for gem in ${external_gems[@]}; do
   esac
 done
 
-habitat_plans=("linux" "linux-kernel2" "windows")
+habitat_plans=("linux" "windows")
 
 for plan in ${habitat_plans[@]}; do
   echo "- label: \":habicat: $plan plan\""
