@@ -137,5 +137,23 @@ describe Chef::Formatters::ErrorDescription do
       end
 
     end
+
+    # CHEF-14144: Excessive output from template errors
+    context "when a section has excessively long text" do
+      let(:huge_text) { "x" * 50_000 }
+
+      before do
+        subject.section("Huge Section", huge_text)
+      end
+
+      it "should truncate the section text to MAX_DISPLAY_TEXT_LENGTH" do
+        subject.display(out)
+        output = out.out.string
+        expect(output).to include("Huge Section")
+        expect(output).to include("[truncated")
+        # Output should be much smaller than the original 50KB
+        expect(output.length).to be < (Chef::Formatters::ErrorDescription::MAX_DISPLAY_TEXT_LENGTH + 1000)
+      end
+    end
   end
 end
