@@ -85,8 +85,11 @@ build do
     # without actually using 3.1-only language features. Bundler refuses to
     # install them despite the code being fully compatible. This patch makes
     # ensure_specs_are_compatible! a no-op so the install proceeds.
+    # Write the patch to an absolute path so RUBYOPT works regardless of cwd.
+    # Native extension compilation spawns Ruby subprocesses with cwd changed to
+    # the gem's ext/ directory, so a relative ./path would fail (LoadError).
     command <<~SH, env: env
-      cat > aix_skip_ruby_check.rb << 'PATCH'
+      cat > /tmp/aix_skip_ruby_check.rb << 'PATCH'
       require "bundler"
       require "bundler/installer"
       module AixBundlerCompat
@@ -98,7 +101,7 @@ build do
       PATCH
     SH
 
-    aix_env = env.merge("RUBYOPT" => "-r./aix_skip_ruby_check.rb")
+    aix_env = env.merge("RUBYOPT" => "-r/tmp/aix_skip_ruby_check.rb")
     bundle "config set --local without #{bundle_excludes.join(" ")}", env: aix_env
     # Use --no-deployment to allow git sources and --frozen to enforce lockfile compliance
     # The Ruby version check is bypassed via aix_skip_ruby_check.rb RUBYOPT patch
