@@ -65,9 +65,11 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-# Pin date to avoid native extension compilation failure on AIX Ruby 3.0.3
-# date 3.3.x+ has build issues on AIX; date 3.2.x works correctly
+# Pins to avoid native extension compilation failures on AIX Ruby 3.0.3.
+# The AIX xlC_r 13.x compiler does not support C++20 designated initializers
+# (.field = value) used in newer versions of these gems.
 gem "date", "~> 3.2.0"
+gem "unf_ext", "~> 0.0.8.0"
 
 gem "cookstyle", "~> 8.6"
 

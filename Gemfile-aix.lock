@@ -479,8 +479,8 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unf_ext (0.0.9.1)
-    unf_ext (0.0.9.1-x64-mingw-ucrt)
+    unf_ext (0.0.8.2)
+    unf_ext (0.0.8.2-x64-mingw-ucrt)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
     uri (1.1.1)
@@ -551,6 +551,7 @@ DEPENDENCIES
   rest-client!
   rspec
   ruby-shadow!
+  unf_ext (~> 0.0.8.0)
   webmock
 
 BUNDLED WITH
