@@ -26,6 +26,10 @@ gem "train-core", "~> 3.12.0"
 # Version 3.2.3+ requires Ruby 3.1+
 gem "mixlib-log", "~> 3.0.0"
 
+# Pin date to avoid native extension compilation issues on AIX
+# date 3.5.1+ has build issues; use 3.2.x instead
+gem "date", "~> 3.2.0"
+
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
 # the Test Kitchen-based build lab. You can skip these unnecessary dependencies
