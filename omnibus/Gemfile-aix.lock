@@ -41,6 +41,16 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (7.1.3.2)
+      base64
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      connection_pool (>= 2.2.5)
+      drb
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      mutex_m
+      tzinfo (~> 2.0)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     artifactory (3.0.17)
@@ -89,27 +99,28 @@ GEM
     bigdecimal (4.1.2)
     builder (3.3.0)
     cgi (0.5.1)
-    chef (18.3.0)
+    chef (18.8.11)
+      activesupport (>= 4.2.7.1, <= 7.1.3.2)
       addressable
       aws-sdk-s3 (~> 1.91)
       aws-sdk-secretsmanager (~> 1.46)
-      chef-config (= 18.3.0)
-      chef-utils (= 18.3.0)
+      chef-config (= 18.8.11)
+      chef-utils (= 18.8.11)
       chef-vault
-      chef-zero (>= 14.0.11)
+      chef-zero (>= 15.0.21)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 1.6.0, != 1.4.0)
       erubis (~> 2.7)
-      ffi (>= 1.15.5)
+      ffi (>= 1.15.5, <= 1.16.3)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       iniparse (~> 1.4)
-      inspec-core (>= 5)
+      inspec-core (>= 5, < 6)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
       mixlib-cli (>= 2.1.1, < 3.0)
-      mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-log (>= 2.0.3, < 3.2)
       mixlib-shellout (>= 3.1.1, < 4.0)
       net-ftp
       net-sftp (>= 2.1.2, < 5.0)
@@ -117,16 +128,17 @@ GEM
       plist (~> 3.2)
       proxifier2 (~> 1.1)
       syslog-logger (~> 1.6)
-      train-core (~> 3.10)
+      train-core (~> 3.10, <= 3.12.13)
       train-rest (>= 0.4.1)
-      train-winrm (>= 0.2.5)
-      unf_ext (>= 0.0.8.2)
+      train-winrm (~> 0.2.17)
+      unf_ext (~> 0.0.8.2)
+      uri (~> 1.0.3)
       uuidtools (>= 2.1.5, < 3.0)
-      vault (~> 0.16)
+      vault (~> 0.18.2)
     chef-cleanroom (1.0.5)
-    chef-config (18.3.0)
+    chef-config (18.8.11)
       addressable
-      chef-utils (= 18.3.0)
+      chef-utils (= 18.8.11)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -137,7 +149,7 @@ GEM
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (18.3.0)
+    chef-utils (18.8.11)
       concurrent-ruby
     chef-vault (4.2.9)
       syslog (~> 0.3)
@@ -182,6 +194,7 @@ GEM
     date (3.5.1)
     diff-lcs (1.5.1)
     domain_name (0.6.20240107)
+    drb (2.2.3)
     ed25519 (1.4.0)
     erb (4.0.4.1)
       cgi (>= 0.3.3)
@@ -212,6 +225,8 @@ GEM
       domain_name (~> 0.5)
     httpclient (2.9.0)
       mutex_m
+    i18n (1.14.8)
+      concurrent-ruby (~> 1.0)
     iniparse (1.5.0)
     inspec-core (5.22.3)
       addressable (~> 2.4)
@@ -269,6 +284,7 @@ GEM
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2026.0414)
     minitar (1.1.0)
+    minitest (5.27.0)
     mixlib-archive (1.3.3)
       mixlib-log
     mixlib-authentication (3.0.10)
@@ -279,8 +295,7 @@ GEM
       mixlib-shellout
       mixlib-versioning
       thor
-    mixlib-log (3.2.3)
-      ffi (>= 1.15.5)
+    mixlib-log (3.0.9)
     mixlib-shellout (3.3.9)
       chef-utils
     mixlib-versioning (1.2.12)
@@ -293,8 +308,6 @@ GEM
       time
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-http-persistent (4.0.8)
-      connection_pool (>= 2.2.4, < 4)
     net-protocol (0.2.2)
       timeout
     net-scp (4.1.0)
@@ -381,7 +394,6 @@ GEM
       addressable (>= 2.3.5)
       faraday (>= 0.17.3, < 3)
     semverse (3.0.2)
-    socksify (1.8.1)
     solve (4.0.4)
       molinillo (~> 0.6)
       semverse (>= 1.1, < 4.0)
@@ -430,11 +442,10 @@ GEM
       aws-sigv4 (~> 1.5)
       rest-client (~> 2.1)
       train-core (~> 3.0)
-    train-winrm (0.4.3)
-      chef-winrm (>= 2.4.4, < 3.0)
-      chef-winrm-elevated (>= 1.2.5, < 2.0)
-      chef-winrm-fs (>= 1.4.1, < 2.0)
-      socksify (~> 1.8)
+    train-winrm (0.2.17)
+      chef-winrm (>= 2.3.11)
+      chef-winrm-elevated (>= 1.2.5)
+      chef-winrm-fs (>= 1.3.7)
     tsort (0.2.0)
     tty-box (0.7.0)
       pastel (~> 0.8)
@@ -454,15 +465,15 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-screen (~> 0.8)
-    unf_ext (0.0.9.1)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
+    unf_ext (0.0.8.2)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
-    uri (1.1.1)
+    uri (1.0.4)
     uuidtools (2.2.0)
-    vault (0.20.1)
+    vault (0.18.2)
       aws-sigv4
-      base64
-      net-http-persistent (~> 4.0, >= 4.0.2)
     webrick (1.9.2)
     winrm (2.3.9)
       builder (>= 2.1.2)
@@ -494,6 +505,7 @@ DEPENDENCIES
   ffi (<= 1.17.0)
   ffi-yajl (~> 2.6.0)
   kitchen-vagrant (>= 1.3.1)
+  mixlib-log (~> 3.0.0)
   mixlib-shellout (~> 3.3.0)
   omnibus!
   omnibus-software!

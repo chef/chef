@@ -24,6 +24,10 @@ gem "ffi-yajl", "~> 2.6.0"
 # Version 3.16.2+ requires Ruby 3.1+
 gem "train-core", "~> 3.12.0"
 
+# Pin mixlib-log to a version compatible with Ruby 3.0.3 on AIX
+# Version 3.2.3+ requires Ruby 3.1+
+gem "mixlib-log", "~> 3.0.0"
+
 # This development group is installed by default when you run `bundle install`,
 # but if you are using Omnibus in a CI-based infrastructure, you do not need
 # the Test Kitchen-based build lab. You can skip these unnecessary dependencies
