@@ -26,7 +26,13 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   Dir.chdir(gempath) do
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
-    system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    # On AIX (Ruby 3.0.3), git-sourced gems often declare required_ruby_version >= 3.1.0.
+    # Without --ignore-dependencies, gem install falls back to rubygems.org and installs
+    # the wrong gem version with different dependency constraints (e.g. rest-client on
+    # rubygems.org requires http-accept >= 1.7.0, < 2.0 instead of ~> 2.1.0).
+    # Use --ignore-dependencies on AIX since all deps are already installed by bundle install.
+    install_flags = RUBY_PLATFORM.include?("aix") ? "--ignore-dependencies --no-document" : "--conservative --minimal-deps --no-document"
+    system("gem install #{gem_name}*.gem #{install_flags}") or raise "gem install failed"
   end
 end
 
