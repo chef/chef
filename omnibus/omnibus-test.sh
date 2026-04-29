@@ -90,24 +90,6 @@ do
   unset $ruby_env_var
 done
 
-# AIX ships Ruby 3.0.3; several gems declare required_ruby_version >= 3.1
-# even though the code works on 3.0. Inject a Bundler compatibility patch so
-# bundle install does not abort on the version mismatch. RUBYOPT must be set
-# *after* the unset loop above which would otherwise clear it.
-if [[ "$(uname -s)" == "AIX" ]]; then
-  cat > /tmp/aix_skip_ruby_check.rb << 'RUBY_PATCH'
-require "bundler"
-require "bundler/installer"
-module AixBundlerCompat
-  private
-  def ensure_specs_are_compatible!
-  end
-end
-Bundler::Installer.prepend(AixBundlerCompat)
-RUBY_PATCH
-  export RUBYOPT="-r/tmp/aix_skip_ruby_check.rb"
-fi
-
 chef-client --version
 
 # Exercise various packaged tools to validate binstub shebangs
@@ -146,6 +128,26 @@ fi
 export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
+
+# AIX ships Ruby 3.0.3; several gems declare required_ruby_version >= 3.1
+# even though the code works on 3.0. Inject a Bundler compatibility patch so
+# bundle install does not abort on the version mismatch.
+# Must be set *after* the unset loop above (which clears RUBYOPT) and *after*
+# the chef-client/ruby/gem version checks above (which fail if RUBYOPT points
+# to a file that tries to `require "bundler"` before RubyGems is ready).
+if [[ "$(uname -s)" == "AIX" ]]; then
+  cat > /tmp/aix_skip_ruby_check.rb << 'RUBY_PATCH'
+require "bundler"
+require "bundler/installer"
+module AixBundlerCompat
+  private
+  def ensure_specs_are_compatible!
+  end
+end
+Bundler::Installer.prepend(AixBundlerCompat)
+RUBY_PATCH
+  export RUBYOPT="-r/tmp/aix_skip_ruby_check.rb"
+fi
 
 # only add -E if not on centos 6
 sudo_path="$(command -v sudo)"
