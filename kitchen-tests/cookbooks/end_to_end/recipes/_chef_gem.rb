@@ -22,11 +22,11 @@ end
 # RHEL/etc: gcc alone isn't enough — glibc-devel provides the C stdlib headers
 # that mkmf needs to compile even a trivial test program.
 build_pkgs = value_for_platform_family(
-  "debian" => %w[build-essential],
-  "rhel" => %w[gcc make glibc-devel],
-  "fedora" => %w[gcc make glibc-devel],
-  "suse" => %w[gcc make],
-  "amazon" => %w[gcc make glibc-devel]
+  "debian" => %w{build-essential},
+  "rhel" => %w{gcc make glibc-devel},
+  "fedora" => %w{gcc make glibc-devel},
+  "suse" => %w{gcc make},
+  "amazon" => %w{gcc make glibc-devel}
 )
 
 package build_pkgs if build_pkgs
@@ -84,7 +84,7 @@ end
 chef_gem "mysql2" do
   compile_time false
   options lazy {
-    config = %w[/usr/bin/mysql_config /usr/bin/mariadb_config].find { |p| ::File.executable?(p) }
+    config = %w{/usr/bin/mysql_config /usr/bin/mariadb_config}.find { |p| ::File.executable?(p) }
     config ? "-- --with-mysql-config=#{config}" : nil
   }
   ignore_failure true

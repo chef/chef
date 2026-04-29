@@ -790,6 +790,8 @@
     "miscutils",
     "MITM",
     "mkgroup",
+    "extconf",
+    "libmariadb",
     "mkmf",
     "mkpath",
     "MKTEMP",
