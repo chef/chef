@@ -33,6 +33,12 @@ class Chef
       module ClassMethods
         # We want to mix these in as class methods
         def writable?(path)
+          # In target mode the path refers to the remote filesystem.  Delegate
+          # to TargetIO so the check runs on the remote host via SSH rather than
+          # against the local Windows filesystem (where Linux paths like /tmp do
+          # not exist and ::File.exist? always returns false).
+          return ::TargetIO::File.writable?(path) if Chef::Config.target_mode?
+
           ::File.exist?(path) && Chef::ReservedNames::Win32::File.file_access_check(
             path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
           )
