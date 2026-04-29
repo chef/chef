@@ -1,0 +1,151 @@
+---
+name: target_mode_specs
+
+"on":
+  pull_request:
+    branches: [main, "chef-*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: target-mode-specs-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CHEF_LICENSE: accept-no-persist
+  FORCE_FFI_YAJL: ext
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Detect which categories of target-mode code were touched in this PR.
+  # Outputs:
+  #   core_changed   – "true" if core target-mode infrastructure was modified
+  #   resource_files – comma-separated list of changed resource/provider files
+  #                    that declare target_mode support (may be empty)
+  # ─────────────────────────────────────────────────────────────────────────────
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core_changed: ${{ steps.detect.outputs.core_changed }}
+      resource_files: ${{ steps.detect.outputs.resource_files }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect target mode relevant changes
+        id: detect
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          echo "=== Changed files ==="
+          echo "$CHANGED"
+          echo "====================="
+
+          # Core target-mode infrastructure paths (including this workflow and tasks)
+          CORE_PATHS=(
+            "lib/chef/target_io/"
+            "lib/chef/train_transport.rb"
+            "chef-config/lib/chef-config/mixin/train_transport.rb"
+            "chef-config/lib/chef-config/config.rb"
+            "lib/chef/application/client.rb"
+            "lib/chef/client.rb"
+            "lib/chef/node.rb"
+            "lib/chef/policy_builder/"
+            ".github/workflows/target_mode_specs.yml"
+            "tasks/target_mode.rb"
+            ".expeditor/scripts/prep_and_run_tests.sh"
+            "spec/unit/target_io/"
+          )
+
+          core_changed=false
+          for pattern in "${CORE_PATHS[@]}"; do
+            if echo "$CHANGED" | grep -qF "$pattern"; then
+              core_changed=true
+              echo "Core target-mode change detected: $pattern"
+              break
+            fi
+          done
+          echo "core_changed=$core_changed" >> "$GITHUB_OUTPUT"
+
+          # Detect changed resource/provider files that declare target_mode support.
+          # We check out those files and grep them directly so we catch additions
+          # as well as modifications.
+          resource_files=""
+          while IFS= read -r f; do
+            if [[ "$f" =~ ^lib/chef/(resource|provider)/ && "$f" =~ \.rb$ && -f "$f" ]]; then
+              if grep -qE 'provides\s+:\w+.*target_mode:\s*true|target_mode\s+support:\s*:full' "$f"; then
+                resource_files="${resource_files}${f},"
+                echo "Target-mode resource/provider changed: $f"
+              fi
+            fi
+          done <<< "$CHANGED"
+
+          resource_files="${resource_files%,}"  # strip trailing comma
+          echo "resource_files=$resource_files" >> "$GITHUB_OUTPUT"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Run the full target_io spec suite + static analysis when core files change.
+  # ─────────────────────────────────────────────────────────────────────────────
+  target-mode-core:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.core_changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: false
+
+      - name: Create unit test node fixtures
+        run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
+
+      - run: bundle install
+
+      - name: Run target mode specs
+        run: bundle exec rake spec:target_mode
+
+      - name: Run target mode static analysis
+        run: bundle exec rake target_mode:static_analysis
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Run unit specs for each resource/provider that supports target mode and was
+  # changed in this PR.  Catches regressions in target-mode-capable resources.
+  # ─────────────────────────────────────────────────────────────────────────────
+  target-mode-resources:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.resource_files != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          clean: true
+
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: false
+
+      - name: Create unit test node fixtures
+        run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
+
+      - run: bundle install
+
+      - name: Run specs for changed target-mode resources/providers
+        run: bundle exec rake "target_mode:changed_files[${{ needs.detect-changes.outputs.resource_files }}]"
