@@ -64,23 +64,33 @@ execute "debug-mysql2-build-env-after" do
   live_stream true
 end
 
-# Debug: directly verify that gcc can compile a mysql test program from the shell.
-# If this passes but chef_gem still fails, the issue is in the Hab gem subprocess env.
-# If this fails, the error below reveals the actual compiler/linker problem.
-execute "debug-gcc-mysql-compile-test" do
-  command "printf '#include <mysql.h>\\nvoid t(){mysql_query(NULL,NULL);}\\n' > /tmp/mysql2_test.c && " \
-          "gcc $(mysql_config --cflags 2>/dev/null || mariadb_config --cflags 2>/dev/null) " \
-          "$(mysql_config --libs 2>/dev/null || mariadb_config --libs 2>/dev/null) " \
-          "-c /tmp/mysql2_test.c -o /tmp/mysql2_test.o 2>&1 && " \
-          "echo 'DIRECT GCC MYSQL COMPILE: PASSED' || " \
-          "echo 'DIRECT GCC MYSQL COMPILE: FAILED (see error above)'"
-  action :run
-  live_stream true
+# The Hab Ruby on some platforms was compiled against Hab glibc 2.41 whose
+# libm.so.6 uses newer ELF .relr.dyn sections (SHT_RELR type 0x13) that the
+# system binutils ld on RHEL 8/9 x86_64 and Debian 11 cannot parse when
+# resolving transitive link-time dependencies. Ruby 3.4's mkmf.rb checks
+# ENV['LDFLAGS'] as a fallback (via arg_config), so we prepend system library
+# dirs as -rpath-link: the linker will then find the system libm.so.6 first
+# (before the incompatible Hab glibc copy) when building native extensions.
+# At runtime the Hab dynamic linker correctly resolves glibc via LD_LIBRARY_PATH.
+ruby_block "fix-hab-glibc-ldflags-for-gem-builds" do
+  block do
+    require "rbconfig"
+    existing = (RbConfig::CONFIG["LDFLAGS"] || "").strip
+    rpath_link_flags = %w{
+      /usr/lib64 /lib64
+      /usr/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
+      /usr/lib/aarch64-linux-gnu /lib/aarch64-linux-gnu
+      /usr/lib
+    }.select { |d| ::File.directory?(d) }
+     .map    { |d| "-Wl,-rpath-link,#{d}" }
+     .join(" ")
+    ENV["LDFLAGS"] = "#{existing} #{rpath_link_flags}".strip
+    Chef::Log.info("Set LDFLAGS for gem builds: #{ENV['LDFLAGS']}")
+  end
 end
 
 # Pass explicit mysql_config path to extconf.rb via gem install's -- separator.
-# This bypasses any PATH differences in the Habitat Ruby gem subprocess that
-# might prevent find_executable('mysql_config') from succeeding.
+# This bypasses any PATH differences in the Habitat Ruby gem subprocess.
 chef_gem "mysql2" do
   compile_time false
   options lazy {
@@ -100,11 +110,10 @@ execute "debug-mysql2-mkmf-log" do
   live_stream true
 end
 
-# Fail the converge explicitly if mysql2.so was not produced — this is cleaner than
-# relying on the chef_gem error since we used ignore_failure above for diagnostics.
+# Fail the converge explicitly if mysql2.so was not produced.
 execute "verify-mysql2-so-exists" do
   command "find /hab/pkgs/core/ruby3_4 -name 'mysql2.so' 2>/dev/null | " \
           "grep -q . && echo 'mysql2 installed OK' || " \
-          "{ echo 'ERROR: mysql2.so not found — gem compilation failed; see mkmf.log above'; exit 1; }"
+          "{ echo 'ERROR: mysql2.so not found -- gem compilation failed; see mkmf.log above'; exit 1; }"
   action :run
 end
