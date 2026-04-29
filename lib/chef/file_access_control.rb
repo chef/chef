@@ -28,6 +28,7 @@ class Chef
 
     if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
       require_relative "file_access_control/windows"
+      require_relative "file_access_control/unix"
       include FileAccessControl::Windows
     else
       require_relative "file_access_control/unix"
@@ -55,6 +56,15 @@ class Chef
       @current_resource, @resource, @provider = current_resource, new_resource, provider
       @file = @current_resource.path
       @modified = false
+
+      # When running on Windows in target mode the remote host is a Unix
+      # system managed via SSH.  Extend this instance with the Unix access
+      # control module so that permissions are applied via TargetIO
+      # (chmod/chown over SSH) rather than Win32 security APIs against a
+      # path that does not exist on the local Windows filesystem.
+      if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && ChefConfig::Config.target_mode?
+        extend FileAccessControl::Unix
+      end
     end
 
     def modified?
