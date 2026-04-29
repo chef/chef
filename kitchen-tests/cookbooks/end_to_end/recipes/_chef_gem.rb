@@ -41,7 +41,8 @@ execute "debug-mysql2-build-env-before" do
 end
 
 # Install MySQL/MariaDB client development headers for the mysql2 gem.
-# RHEL 9+ replaced mariadb-devel with mariadb-connector-c-devel in AppStream.
+# Rocky/Alma/Oracle Linux 9+ (RHEL family >= 9) replaced mariadb-devel with
+# mariadb-connector-c-devel in AppStream; v8 still uses mariadb-devel.
 mysql2_dev_pkg = value_for_platform_family(
   "debian" => "default-libmysqlclient-dev",
   "rhel" => node["platform_version"].to_i >= 9 ? "mariadb-connector-c-devel" : "mariadb-devel",
