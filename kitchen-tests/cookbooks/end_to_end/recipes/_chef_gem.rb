@@ -82,10 +82,10 @@ ruby_block "fix-hab-glibc-ldflags-for-gem-builds" do
       /usr/lib/aarch64-linux-gnu /lib/aarch64-linux-gnu
       /usr/lib
     }.select { |d| ::File.directory?(d) }
-     .map    { |d| "-Wl,-rpath-link,#{d}" }
-     .join(" ")
+      .map { |d| "-Wl,-rpath-link,#{d}" }
+      .join(" ")
     ENV["LDFLAGS"] = "#{existing} #{rpath_link_flags}".strip
-    Chef::Log.info("Set LDFLAGS for gem builds: #{ENV['LDFLAGS']}")
+    Chef::Log.info("Set LDFLAGS for gem builds: #{ENV["LDFLAGS"]}")
   end
 end
 
