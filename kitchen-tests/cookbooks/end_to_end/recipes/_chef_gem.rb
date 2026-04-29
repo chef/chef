@@ -64,6 +64,47 @@ execute "debug-mysql2-build-env-after" do
   live_stream true
 end
 
+# Debug: directly verify that gcc can compile a mysql test program from the shell.
+# If this passes but chef_gem still fails, the issue is in the Hab gem subprocess env.
+# If this fails, the error below reveals the actual compiler/linker problem.
+execute "debug-gcc-mysql-compile-test" do
+  command "printf '#include <mysql.h>\\nvoid t(){mysql_query(NULL,NULL);}\\n' > /tmp/mysql2_test.c && " \
+          "gcc $(mysql_config --cflags 2>/dev/null || mariadb_config --cflags 2>/dev/null) " \
+          "$(mysql_config --libs 2>/dev/null || mariadb_config --libs 2>/dev/null) " \
+          "-c /tmp/mysql2_test.c -o /tmp/mysql2_test.o 2>&1 && " \
+          "echo 'DIRECT GCC MYSQL COMPILE: PASSED' || " \
+          "echo 'DIRECT GCC MYSQL COMPILE: FAILED (see error above)'"
+  action :run
+  live_stream true
+end
+
+# Pass explicit mysql_config path to extconf.rb via gem install's -- separator.
+# This bypasses any PATH differences in the Habitat Ruby gem subprocess that
+# might prevent find_executable('mysql_config') from succeeding.
 chef_gem "mysql2" do
   compile_time false
+  options lazy {
+    config = %w[/usr/bin/mysql_config /usr/bin/mariadb_config].find { |p| ::File.executable?(p) }
+    config ? "-- --with-mysql-config=#{config}" : nil
+  }
+  ignore_failure true
+end
+
+# After the gem install attempt, display the mkmf.log so we can see the exact
+# gcc invocation and error if compilation failed.
+execute "debug-mysql2-mkmf-log" do
+  command "mkmf=$(find /hab/pkgs/core/ruby3_4 -name mkmf.log -path '*mysql2*' 2>/dev/null | head -1); " \
+          "[ -f \"$mkmf\" ] && echo \"=== mkmf.log: $mkmf ===\" && cat \"$mkmf\" || " \
+          "echo 'no mysql2 mkmf.log found'"
+  action :run
+  live_stream true
+end
+
+# Fail the converge explicitly if mysql2.so was not produced — this is cleaner than
+# relying on the chef_gem error since we used ignore_failure above for diagnostics.
+execute "verify-mysql2-so-exists" do
+  command "find /hab/pkgs/core/ruby3_4 -name 'mysql2.so' 2>/dev/null | " \
+          "grep -q . && echo 'mysql2 installed OK' || " \
+          "{ echo 'ERROR: mysql2.so not found — gem compilation failed; see mkmf.log above'; exit 1; }"
+  action :run
 end
