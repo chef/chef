@@ -124,6 +124,15 @@ build do
     command "cd chef-config && rake install && cd ..", env: env
     gem "build chef.gemspec", env: env
     gem "install chef-*.gem --local --ignore-dependencies --no-document --force", env: env
+    # omnibus-test.sh runs 'bundle install' from the installed chef gem dir.
+    # Without a Gemfile.lock there, Bundler resolves from scratch and picks up
+    # Ruby 3.1-only gems (e.g. mixlib-shellout 3.4.10). Copy our AIX-compatible
+    # lockfile so the test step uses the same versions as the build step.
+    command <<~SH, env: env
+      for dir in #{install_dir}/embedded/lib/ruby/gems/*/gems/chef-[0-9]*/; do
+        test -d "$dir" && cp Gemfile-aix.lock "${dir}Gemfile.lock" && echo "AIX: deployed Gemfile.lock to ${dir}"
+      done
+    SH
     command "cd chef-bin && gem build chef-bin.gemspec && gem install chef-bin-*.gem --local --ignore-dependencies --no-document --force && cd ..", env: env
   else
     command "rake install:local", env: env
