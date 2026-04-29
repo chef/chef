@@ -157,8 +157,9 @@ sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
   if [[ "$(uname -s)" == "AIX" ]]; then
     # sudo -E on AIX may not preserve RUBYOPT when sudoers env_reset is active.
-    # Pass it explicitly via 'sudo env' so the bundler bypass is always applied.
-    sudo env "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
+    # Pass PATH and RUBYOPT explicitly via 'sudo env' so bundle is found and
+    # the bundler bypass is always applied regardless of sudoers configuration.
+    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
   else
     sudo -E bundle install --jobs=3 --retry=3
   fi
