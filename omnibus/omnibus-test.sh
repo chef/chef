@@ -111,6 +111,11 @@ export PATH="/opt/${TOOLCHAIN:-omnibus-toolchain}/bin:/usr/local/bin:/opt/${TOOL
 # add chef's bin paths to PATH to ensure tests function properly
 export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
 
+# Save the checkout directory (has spec/) before any cd calls.
+# On AIX the omnibus plugin copies the full repo here; the installed gem dir
+# produced by 'gem install chef-*.gem' only contains gemspec s.files (lib/**).
+checkout_dir="$PWD"
+
 gem_list="$(gem which chef)"
 lib_dir="$(dirname "$gem_list")"
 chef_gem="$(dirname "$lib_dir")"
@@ -160,10 +165,15 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
     # Pass PATH and RUBYOPT explicitly via 'sudo env' so bundle is found and
     # the bundler bypass is always applied regardless of sudoers configuration.
     sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
+    # The installed gem dir (chef_gem) only contains s.files (lib/**); spec/ is
+    # absent. The omnibus plugin copied the full repo to checkout_dir, so pass
+    # that spec path explicitly.  Also carry RUBYOPT so bundler does not abort
+    # on required_ruby_version checks during rspec's require phase.
+    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle exec rspec --profile -f progress "$checkout_dir/spec"
   else
     sudo -E bundle install --jobs=3 --retry=3
+    sudo -E bundle exec rspec --profile -f progress
   fi
-  sudo -E bundle exec rspec --profile -f progress
 else
   sudo bundle install --jobs=3 --retry=3
   sudo bundle exec rspec --profile -f progress
