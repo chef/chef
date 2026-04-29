@@ -33,7 +33,7 @@ module TargetIO
           pattern  = Array(pattern)
           matchdot = flags || ::File::FNM_DOTMATCH ? "dotglob" : ""
 
-          cmd += <<-BASH4
+          cmd = <<-BASH4
             shopt -s globstar #{matchdot}
             cd #{base}
             for f in #{pattern.join(" ")}; do
