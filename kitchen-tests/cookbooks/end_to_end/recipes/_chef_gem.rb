@@ -64,38 +64,30 @@ execute "debug-mysql2-build-env-after" do
   live_stream true
 end
 
-# The Hab Ruby on some platforms was compiled against Hab glibc 2.41 whose
-# libm.so.6 uses newer ELF .relr.dyn sections (SHT_RELR type 0x13) that the
-# system binutils ld on RHEL 8/9 x86_64 and Debian 11 cannot parse when
-# resolving transitive link-time dependencies. Ruby 3.4's mkmf.rb checks
-# ENV['LDFLAGS'] as a fallback (via arg_config), so we prepend system library
-# dirs as -rpath-link: the linker will then find the system libm.so.6 first
-# (before the incompatible Hab glibc copy) when building native extensions.
-# At runtime the Hab dynamic linker correctly resolves glibc via LD_LIBRARY_PATH.
-ruby_block "fix-hab-glibc-ldflags-for-gem-builds" do
-  block do
-    require "rbconfig"
-    existing = (RbConfig::CONFIG["LDFLAGS"] || "").strip
-    rpath_link_flags = %w{
+# GNU ld on older systems (RHEL 8/9 x86_64, Debian 11) cannot parse .relr.dyn ELF
+# sections in Hab glibc 2.41's libm.so.6. GNU ld searches -rpath-link dirs BEFORE
+# following a library's DT_RPATH, so adding system lib dirs as -Wl,-rpath-link
+# causes ld to find the compatible system libm.so.6 first when resolving libruby
+# transitive dependencies. mkmf.rb initializes $LDFLAGS from --with-LDFLAGS= in
+# extconf.rb's ARGV (not from ENV["LDFLAGS"]), so we pass it via gem install's --
+# separator. The value has spaces, so it is wrapped in shell single-quotes in the
+# options string; the shell removes the quotes and passes the whole thing as one
+# ARGV element to extconf.rb, which mkmf matches via arg_config("--with-LDFLAGS").
+chef_gem "mysql2" do
+  compile_time false
+  options lazy {
+    sys_dirs = %w{
       /usr/lib64 /lib64
       /usr/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
       /usr/lib/aarch64-linux-gnu /lib/aarch64-linux-gnu
       /usr/lib
     }.select { |d| ::File.directory?(d) }
-      .map { |d| "-Wl,-rpath-link,#{d}" }
-      .join(" ")
-    ENV["LDFLAGS"] = "#{existing} #{rpath_link_flags}".strip
-    Chef::Log.info("Set LDFLAGS for gem builds: #{ENV["LDFLAGS"]}")
-  end
-end
-
-# Pass explicit mysql_config path to extconf.rb via gem install's -- separator.
-# This bypasses any PATH differences in the Habitat Ruby gem subprocess.
-chef_gem "mysql2" do
-  compile_time false
-  options lazy {
+    rpath_link = sys_dirs.map { |d| "-Wl,-rpath-link,#{d}" }.join(" ")
     config = %w{/usr/bin/mysql_config /usr/bin/mariadb_config}.find { |p| ::File.executable?(p) }
-    config ? "-- --with-mysql-config=#{config}" : nil
+    args = []
+    args << "--with-mysql-config=#{config}" if config
+    args << "'--with-LDFLAGS=#{rpath_link}'" unless rpath_link.empty?
+    args.empty? ? nil : "-- #{args.join(" ")}"
   }
   ignore_failure true
 end
