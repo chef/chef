@@ -155,7 +155,13 @@ sudo_path="$(command -v sudo)"
 rhel_sudo="/opt/rh/devtoolset-7/root/usr/bin/sudo"
 sudo_args=""
 if [[ "$sudo_path" != "$rhel_sudo" ]]; then
-  sudo -E bundle install --jobs=3 --retry=3
+  if [[ "$(uname -s)" == "AIX" ]]; then
+    # sudo -E on AIX may not preserve RUBYOPT when sudoers env_reset is active.
+    # Pass it explicitly via 'sudo env' so the bundler bypass is always applied.
+    sudo env "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
+  else
+    sudo -E bundle install --jobs=3 --retry=3
+  fi
   sudo -E bundle exec rspec --profile -f progress
 else
   sudo bundle install --jobs=3 --retry=3

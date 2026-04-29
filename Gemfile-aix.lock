@@ -337,9 +337,9 @@ GEM
       tomlrb
     mixlib-log (3.1.2.1)
       ffi (< 1.17.0)
-    mixlib-shellout (3.4.10)
+    mixlib-shellout (3.3.9)
       chef-utils
-    mixlib-shellout (3.4.10-x64-mingw-ucrt)
+    mixlib-shellout (3.3.9-x64-mingw-ucrt)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
@@ -541,6 +541,7 @@ DEPENDENCIES
   fauxhai-ng
   ffi (>= 1.15.5, <= 1.17.0)
   inspec-core-bin (>= 5, < 6)
+  mixlib-shellout (~> 3.3.0)
   ohai!
   openssl (= 3.3.0)
   pry (= 0.15.2)

@@ -70,6 +70,8 @@ end
 # (.field = value) used in newer versions of these gems.
 gem "date", "~> 3.2.0"
 gem "unf_ext", "~> 0.0.8.0"
+# mixlib-shellout 3.4.x declares required_ruby_version >= 3.1; 3.3.x is Ruby 3.0 compatible.
+gem "mixlib-shellout", "~> 3.3.0"
 
 gem "cookstyle", "~> 8.6"
 
