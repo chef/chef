@@ -179,7 +179,13 @@ then
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
-    echo "  timeout_in_minutes: 120"
+    # AIX omnibus builds take longer due to slower xlC_r compilation; use 180 min
+    # to match the timeout already set for AIX test steps.
+    if [[ $platform == *"aix"* ]]; then
+      echo "  timeout_in_minutes: 180"
+    else
+      echo "  timeout_in_minutes: 120"
+    fi
     echo "  agents:"
     echo "    queue: omnibus-$platform"
     if [[ $platform == mac_os_x* ]]
