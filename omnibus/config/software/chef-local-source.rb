@@ -59,6 +59,10 @@ gem_dir = "#{install_dir}/embedded/lib/ruby/gems/#{ruby_mmv}"
 bin_dirs bin_dirs.push "#{gem_dir}/gems/*/bin/**"
 lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems/extensions/**", "#{gem_dir}/bundler/gems/*", "#{gem_dir}/bundler/gems/*/lib/**", "#{gem_dir}/gems/*", "#{gem_dir}/gems/*/lib/**", "#{gem_dir}/gems/*/ext/**"]
 
+# On AIX, clear any incomplete installp state from prior cancelled builds
+# before chef-foundation is installed (chef-foundation uses installp).
+dependency "aix-installp-cleanup" if aix?
+
 dependency "chef-foundation"
 
 relative_path "chef"
