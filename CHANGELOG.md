@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.123 -->
-## [v19.2.123](https://github.com/chef/chef/tree/v19.2.123) (2026-04-30)
+<!-- latest_release 19.2.124 -->
+## [v19.2.124](https://github.com/chef/chef/tree/v19.2.124) (2026-04-30)
 
 #### Merged Pull Requests
-- fix: skip Windows load_resource_attributes guard in target mode [#15981](https://github.com/chef/chef/pull/15981) ([johnmccrae](https://github.com/johnmccrae))
+- Bump ohai from `29bd2a3` to `5b34b04` [#15975](https://github.com/chef/chef/pull/15975) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai from `29bd2a3` to `5b34b04` [#15975](https://github.com/chef/chef/pull/15975) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.124 -->
 - fix: skip Windows load_resource_attributes guard in target mode [#15981](https://github.com/chef/chef/pull/15981) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.123 -->
 - fix: delegate FileAccessControl.writable? to TargetIO in target mode on Windows [#15979](https://github.com/chef/chef/pull/15979) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.122 -->
 - Fix docker image promotion stage for chef19 docker pipeline [#15901](https://github.com/chef/chef/pull/15901) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.121 -->
