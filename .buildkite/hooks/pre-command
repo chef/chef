@@ -78,6 +78,74 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
   done < <(grep '^    [a-z][a-z0-9_-]* ([0-9][0-9.]*)$' Gemfile-aix.lock)
 fi
 
+# For AIX build steps, pre-clean any dirty installp state on the remote AIX
+# machine(s) before the omnibus-buildkite-plugin runs. The plugin uses installp
+# to install chef-foundation inside build.sh; if a previous build was cancelled
+# mid-installp the fileset is left in a dirty "incomplete operations" state and
+# all subsequent installp invocations fail. We SSH to every AIX machine for the
+# current agent queue (across both omnibus-toolchain and angry-omnibus-toolchain)
+# and run `installp -C` which commits or rolls back any incomplete operations.
+# This is safe on clean machines (no-op). Errors here are non-fatal.
+if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
+   [[ "${BUILDKITE_STEP_KEY:-}" =~ ^build- ]] && \
+   [[ "${BUILDKITE_ORGANIZATION_SLUG:-}" != "chef-oss" ]]; then
+  echo "--- AIX build: pre-cleaning installp state on remote AIX machine(s)"
+  (
+    set +eu
+    # Plugin JSON is available after plugin post-checkout hook runs (before pre-command)
+    PLATFORMS_JSON="$(ls /var/lib/buildkite-agent/plugins/github-com-chef-omnibus-buildkite-plugin-*/files/esoteric-omnibus-platforms.json 2>/dev/null | head -1)"
+    if [[ ! -f "${PLATFORMS_JSON:-}" ]]; then
+      echo "AIX pre-cleanup: plugin JSON not found, skipping"
+      exit 0
+    fi
+
+    # Collect all AIX hostnames for this queue from all toolchain entries
+    AIX_HOSTS="$(jq -r --arg q "${BUILDKITE_AGENT_META_DATA_QUEUE:-}" \
+      '.[] | .[$q] // empty' "$PLATFORMS_JSON" 2>/dev/null)"
+    if [[ -z "${AIX_HOSTS:-}" ]]; then
+      echo "AIX pre-cleanup: no hosts for queue '${BUILDKITE_AGENT_META_DATA_QUEUE:-}', skipping"
+      exit 0
+    fi
+
+    # Authenticate to Vault (same method as omnibus-buildkite-plugin)
+    VAULT_ADDR="https://vault.ps.chef.co"
+    VAULT_TOKEN="$(VAULT_ADDR="$VAULT_ADDR" vault login \
+      -method=aws -path=aws/private-cd -token-only \
+      header_value=vault.ps.chef.co role=omnibus-secrets 2>/dev/null)"
+    if [[ -z "${VAULT_TOKEN:-}" ]]; then
+      echo "AIX pre-cleanup: Vault auth failed, skipping"
+      exit 0
+    fi
+
+    SSH_KEY="$(VAULT_ADDR="$VAULT_ADDR" VAULT_TOKEN="$VAULT_TOKEN" \
+      vault read -field=ssh_private_key account/static/esoteric/chef-ci 2>/dev/null)"
+    if [[ -z "${SSH_KEY:-}" ]]; then
+      echo "AIX pre-cleanup: could not retrieve SSH key, skipping"
+      exit 0
+    fi
+
+    AIX_KEY_FILE="$(mktemp /tmp/aix-cleanup-key-XXXXXX)"
+    echo "$SSH_KEY" > "$AIX_KEY_FILE"
+    chmod 600 "$AIX_KEY_FILE"
+
+    # Run installp -C on every AIX machine for this queue in parallel
+    while IFS= read -r host; do
+      [[ -z "$host" ]] && continue
+      echo "  Running installp -C on $host"
+      ssh -i "$AIX_KEY_FILE" \
+        -o StrictHostKeyChecking=no \
+        -o ServerAliveInterval=30 \
+        -o ConnectTimeout=30 \
+        "chef-ci@${host}" \
+        "sudo /usr/sbin/installp -C 2>&1; true" &
+    done <<< "$AIX_HOSTS"
+    wait
+
+    rm -f "$AIX_KEY_FILE"
+    echo "AIX pre-cleanup: installp -C complete on all hosts"
+  ) || echo "AIX pre-cleanup: encountered errors (non-fatal, continuing)"
+fi
+
 # Only if on chef-canary or chef org
 # force regions on omnibus queues
 [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]]; then
