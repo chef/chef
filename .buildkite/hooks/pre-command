@@ -128,16 +128,16 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
     echo "$SSH_KEY" > "$AIX_KEY_FILE"
     chmod 600 "$AIX_KEY_FILE"
 
-    # Run installp -C on every AIX machine for this queue in parallel
+    # Run installp -C and disk-space check on every AIX machine for this queue in parallel
     while IFS= read -r host; do
       [[ -z "$host" ]] && continue
-      echo "  Running installp -C on $host"
+      echo "  Running installp -C + disk check on $host"
       ssh -i "$AIX_KEY_FILE" \
         -o StrictHostKeyChecking=no \
         -o ServerAliveInterval=30 \
         -o ConnectTimeout=30 \
         "chef-ci@${host}" \
-        "sudo /usr/sbin/installp -C 2>&1; true" &
+        "sudo /usr/sbin/installp -C 2>&1; true; echo 'Disk:'; df -g / /opt /var 2>/dev/null || df /" &
     done <<< "$AIX_HOSTS"
     wait
 
