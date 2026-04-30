@@ -167,9 +167,10 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
     sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
     # The installed gem dir (chef_gem) only contains s.files (lib/**); spec/ is
     # absent. The omnibus plugin copied the full repo to checkout_dir, so pass
-    # that spec path explicitly.  Also carry RUBYOPT so bundler does not abort
-    # on required_ruby_version checks during rspec's require phase.
-    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle exec rspec --profile -f progress "$checkout_dir/spec"
+    # that spec path explicitly and add it to the load path so require
+    # "spec_helper" resolves correctly. Also carry RUBYOPT so bundler does not
+    # abort on required_ruby_version checks during rspec's require phase.
+    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle exec rspec --profile -f progress -I "$checkout_dir/spec" "$checkout_dir/spec"
   else
     sudo -E bundle install --jobs=3 --retry=3
     sudo -E bundle exec rspec --profile -f progress
