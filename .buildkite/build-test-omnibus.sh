@@ -166,6 +166,19 @@ then
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
     build_key=$(echo $platform | tr . _)
+    # AIX agents are physical machines shared between build and test steps.
+    # A cancelled or failed installp (chef or chef-foundation) leaves the fileset
+    # in an incomplete state, causing the next installp to refuse with
+    # "0503-434 installp: There are incomplete installation operations".
+    # Emit a cleanup step on the same queue that runs installp -C first.
+    if [[ $platform == *"aix"* ]]; then
+      echo "- key: cleanup-build-$build_key"
+      echo "  label: ':broom: installp cleanup $platform'"
+      echo "  command: 'sudo installp -C 2>/dev/null; true'"
+      echo "  soft_fail: true"
+      echo "  agents:"
+      echo "    queue: omnibus-$platform"
+    fi
     echo "- env:"
     if [ $platform == "el-7-ppc64" ] || [ $platform == "el-7-ppc64le" ]
     then
@@ -176,6 +189,10 @@ then
     echo "    IGNORE_CACHE: true"
     echo "  key: build-$build_key"
     echo "  label: \":hammer_and_wrench: $platform\""
+    # AIX build step must wait for the cleanup step on the same agent queue.
+    if [[ $platform == *"aix"* ]]; then
+      echo "  depends_on: cleanup-build-$build_key"
+    fi
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
@@ -314,6 +331,15 @@ then
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)
     test_key=$(echo ${platform%:*} | tr . _)
+    # AIX: emit a pre-cleanup step on the same agent queue (see build step comment).
+    if [[ $platform == *"aix"* ]]; then
+      echo "- key: cleanup-test-$test_key"
+      echo "  label: ':broom: installp cleanup ${platform%:*}'"
+      echo "  command: 'sudo installp -C 2>/dev/null; true'"
+      echo "  soft_fail: true"
+      echo "  agents:"
+      echo "    queue: omnibus-${platform%:*}"
+    fi
     echo "- env:"
     if [ $build_key == "el-7-ppc64" ] || [ $build_key == "el-7-ppc64le" ]
     then
@@ -324,6 +350,13 @@ then
     echo "    OMNIBUS_BUILDER_KEY: build-${build_key}"
     echo "  key: test-${test_key}"
     echo "  label: \":mag: ${platform%:*}\""
+    # AIX test step must wait for the cleanup step on the same agent queue,
+    # and explicitly depend on the build step so the BFF is ready.
+    if [[ $platform == *"aix"* ]]; then
+      echo "  depends_on:"
+      echo "    - cleanup-test-$test_key"
+      echo "    - build-$build_key"
+    fi
     echo "  retry:"
     echo "    automatic:"
     echo "      limit: 1"
