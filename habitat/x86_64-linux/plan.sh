@@ -13,10 +13,13 @@ pkg_bin_dirs=(
 pkg_build_deps=(
   core/glibc
   core/make
-  core/gcc
+  core/gcc/14.3.0
+  core/binutils/2.36.1
   core/git
   core/which
 )
+# RELR fix: Pin to binutils 2.36.1 (pre-RELR era) for compatibility with RHEL 9 and other systems with ld < 2.38
+# See: RELR.dyn-summary.md
 
 pkg_bin_dirs=(bin)
 pkg_include_dirs=(include)
