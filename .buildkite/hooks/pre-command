@@ -78,16 +78,16 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
   done < <(grep '^    [a-z][a-z0-9_-]* ([0-9][0-9.]*)$' Gemfile-aix.lock)
 fi
 
-# For AIX build steps, pre-clean any dirty installp state on the remote AIX
-# machine(s) before the omnibus-buildkite-plugin runs. The plugin uses installp
-# to install chef-foundation inside build.sh; if a previous build was cancelled
-# mid-installp the fileset is left in a dirty "incomplete operations" state and
-# all subsequent installp invocations fail. We SSH to every AIX machine for the
-# current agent queue (across both omnibus-toolchain and angry-omnibus-toolchain)
-# and run `installp -C` which commits or rolls back any incomplete operations.
-# This is safe on clean machines (no-op). Errors here are non-fatal.
+# For AIX build and test steps, pre-clean any dirty installp state on the remote
+# AIX machine(s) before the omnibus-buildkite-plugin runs. The plugin uses
+# installp to install chef-foundation (build) and the chef package (test); if a
+# previous build was cancelled mid-installp the fileset is left in a dirty
+# "incomplete operations" state and all subsequent installp invocations fail. We
+# SSH to every AIX machine for the current agent queue (across both
+# omnibus-toolchain and angry-omnibus-toolchain) and run `installp -C` which
+# commits or rolls back any incomplete operations. Safe on clean machines (no-op).
+# Errors here are non-fatal.
 if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
-   [[ "${BUILDKITE_STEP_KEY:-}" =~ ^build- ]] && \
    [[ "${BUILDKITE_ORGANIZATION_SLUG:-}" != "chef-oss" ]]; then
   echo "--- AIX build: pre-cleaning installp state on remote AIX machine(s)"
   (
