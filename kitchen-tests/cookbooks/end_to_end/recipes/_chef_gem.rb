@@ -68,11 +68,12 @@ end
 # sections in Hab glibc 2.41's libm.so.6. GNU ld searches -rpath-link dirs BEFORE
 # following a library's DT_RPATH, so adding system lib dirs as -Wl,-rpath-link
 # causes ld to find the compatible system libm.so.6 first when resolving libruby
-# transitive dependencies. mkmf.rb initializes $LDFLAGS from --with-LDFLAGS= in
-# extconf.rb's ARGV (not from ENV["LDFLAGS"]), so we pass it via gem install's --
-# separator. The value has spaces, so it is wrapped in shell single-quotes in the
-# options string; the shell removes the quotes and passes the whole thing as one
-# ARGV element to extconf.rb, which mkmf matches via arg_config("--with-LDFLAGS").
+# transitive dependencies. mkmf.rb initializes $LDFLAGS from --with-ldflags= in
+# extconf.rb's ARGV (not from ENV["LDFLAGS"]). The key lookup in mkmf is lowercase
+# ("--with-ldflags"), so the option name must be lowercase too. The value has
+# spaces, so it is wrapped in shell single-quotes in the options string; the shell
+# removes the quotes and passes the whole thing as one ARGV element to extconf.rb,
+# which mkmf matches via with_config("ldflags") / arg_config("--with-ldflags").
 chef_gem "mysql2" do
   compile_time false
   options lazy {
@@ -86,7 +87,7 @@ chef_gem "mysql2" do
     config = %w{/usr/bin/mysql_config /usr/bin/mariadb_config}.find { |p| ::File.executable?(p) }
     args = []
     args << "--with-mysql-config=#{config}" if config
-    args << "'--with-LDFLAGS=#{rpath_link}'" unless rpath_link.empty?
+    args << "'--with-ldflags=#{rpath_link}'" unless rpath_link.empty?
     args.empty? ? nil : "-- #{args.join(" ")}"
   }
   ignore_failure true
