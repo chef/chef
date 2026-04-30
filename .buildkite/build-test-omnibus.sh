@@ -174,7 +174,7 @@ then
     if [[ $platform == *"aix"* ]]; then
       echo "- key: cleanup-build-$build_key"
       echo "  label: ':broom: installp cleanup $platform'"
-      echo "  command: 'sudo installp -C 2>/dev/null; true'"
+      echo "  command: 'sudo installp -C || true'"
       echo "  soft_fail: true"
       echo "  agents:"
       echo "    queue: omnibus-$platform"
@@ -335,7 +335,7 @@ then
     if [[ $platform == *"aix"* ]]; then
       echo "- key: cleanup-test-$test_key"
       echo "  label: ':broom: installp cleanup ${platform%:*}'"
-      echo "  command: 'sudo installp -C 2>/dev/null; true'"
+      echo "  command: 'sudo installp -C || true'"
       echo "  soft_fail: true"
       echo "  agents:"
       echo "    queue: omnibus-${platform%:*}"
