@@ -26,7 +26,9 @@ skip_transitive_dependency_licensing true
 # Running 'installp -C' commits or rolls back the partial state cleanly.
 # Safe to run unconditionally: exits 0 immediately if no cleanup is needed.
 build do
-  if aix?
-    command "sudo /usr/sbin/installp -C 2>/dev/null || true"
-  end
+  # Use a shell-level test so this is evaluated on the remote build host
+  # (AIX), not on the Linux jump box where the omnibus Ruby DSL is parsed.
+  # On AIX: /usr/sbin/installp exists → runs installp -C to clear incomplete state.
+  # On Linux/macOS: /usr/sbin/installp absent → test -f fails, command is a no-op.
+  command "test -f /usr/sbin/installp && sudo /usr/sbin/installp -C 2>/dev/null; true"
 end

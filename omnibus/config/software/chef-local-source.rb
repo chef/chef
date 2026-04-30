@@ -61,7 +61,9 @@ lib_dirs ["#{ruby_dir}/**", "#{gem_dir}/extensions/**", "#{gem_dir}/bundler/gems
 
 # On AIX, clear any incomplete installp state from prior cancelled builds
 # before chef-foundation is installed (chef-foundation uses installp).
-dependency "aix-installp-cleanup" if aix?
+# Unconditional: aix? evaluates on the Linux jump box (returns false there),
+# but the command itself uses a shell-level test evaluated on the remote AIX host.
+dependency "aix-installp-cleanup"
 
 dependency "chef-foundation"
 
