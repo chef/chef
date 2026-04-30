@@ -53,7 +53,7 @@ Gem::Specification.new do |s|
     s.add_dependency "inspec-core", ">= 5", "< 8"
   end
 
-  s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
+  s.add_dependency "ffi", ">= 1.15.5", "<= 1.17.5"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
