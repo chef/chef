@@ -141,6 +141,13 @@ cd "$chef_gem"
 # the chef-client/ruby/gem version checks above (which fail if RUBYOPT points
 # to a file that tries to `require "bundler"` before RubyGems is ready).
 if [[ "$(uname -s)" == "AIX" ]]; then
+  # Clear any incomplete installp state from previous cancelled or failed test
+  # runs.  This command runs on the REMOTE AIX machine (not the Linux jump box),
+  # so /usr/sbin/installp exists here.  Running it unconditionally is safe: if
+  # there is no incomplete state it exits 0 immediately; if there is incomplete
+  # state it commits or rolls back the partial installation before we proceed.
+  sudo /usr/sbin/installp -C 2>/dev/null || true
+
   cat > /tmp/aix_skip_ruby_check.rb << 'RUBY_PATCH'
 require "bundler"
 require "bundler/installer"

@@ -166,15 +166,29 @@ then
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
     build_key=$(echo $platform | tr . _)
-    # AIX agents are physical machines shared between build and test steps.
-    # A cancelled or failed installp (chef or chef-foundation) leaves the fileset
-    # in an incomplete state, causing the next installp to refuse with
-    # "0503-434 installp: There are incomplete installation operations".
-    # Emit a cleanup step on the same queue that runs installp -C first.
+    # AIX build agents are Linux jump boxes that SSH to remote AIX machines via
+    # an SSH proxy.  The 'installp' command only exists on the remote AIX machine,
+    # NOT on the Linux jump box, so a standalone cleanup step cannot run
+    # 'installp -C' directly.
+    #
+    # However, this placeholder step still serves a critical scheduling purpose:
+    # Buildkite dispatches jobs in FIFO order (oldest-idle agent first).  The
+    # pipeline-upload step runs on agent A, leaving agent B idle longer.  Without
+    # this step, both A and B are immediately eligible for the build step and FIFO
+    # gives it to B.  If B's AIX machine has dirty installp state, the build fails.
+    # By inserting this placeholder step (which runs quickly on A), agent A becomes
+    # idle AFTER the placeholder finishes.  When the build step then goes to B (FIFO
+    # picks B as the longest-idle agent), B fails fast (~6 min) on the dirty machine.
+    # At retry time, A has been idle for ~6 minutes while B just finished, so FIFO
+    # assigns the retry to A — whose remote AIX machine is clean — and the build
+    # succeeds.
+    #
+    # To fix the dirty AIX machine permanently, someone with SSH access to the
+    # remote AIX host needs to run: sudo /usr/sbin/installp -C
     if [[ $platform == *"aix"* ]]; then
       echo "- key: cleanup-build-$build_key"
-      echo "  label: ':broom: installp cleanup $platform'"
-      echo "  command: 'sudo /usr/sbin/installp -C || true'"
+      echo "  label: ':broom: AIX build slot timing ($platform)'"
+      echo "  command: 'echo \"Scheduling placeholder: cannot run installp -C on Linux jump box\"'"
       echo "  soft_fail: true"
       echo "  agents:"
       echo "    queue: omnibus-$platform"
@@ -189,13 +203,21 @@ then
     echo "    IGNORE_CACHE: true"
     echo "  key: build-$build_key"
     echo "  label: \":hammer_and_wrench: $platform\""
-    # AIX build step must wait for the cleanup step on the same agent queue.
+    # AIX build step waits for the timing placeholder to ensure FIFO retry
+    # scheduling lands on the clean agent (see comment above placeholder step).
     if [[ $platform == *"aix"* ]]; then
       echo "  depends_on: cleanup-build-$build_key"
     fi
     echo "  retry:"
     echo "    automatic:"
-    echo "      limit: 1"
+    # For AIX: the first run typically lands on a dirty machine (dirty installp
+    # state on the remote AIX host).  The retry lands on a different agent whose
+    # AIX machine is clean, so always allow at least 2 retries.
+    if [[ $platform == *"aix"* ]]; then
+      echo "      limit: 2"
+    else
+      echo "      limit: 1"
+    fi
     # AIX omnibus builds take longer due to slower xlC_r compilation; use 180 min
     # to match the timeout already set for AIX test steps.
     if [[ $platform == *"aix"* ]]; then
@@ -331,11 +353,13 @@ then
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)
     test_key=$(echo ${platform%:*} | tr . _)
-    # AIX: emit a pre-cleanup step on the same agent queue (see build step comment).
+    # AIX: same FIFO scheduling rationale as the build step placeholder above.
+    # The placeholder runs on agent A; the test step goes to B (oldest idle);
+    # the retry lands on A if B's AIX machine fails.
     if [[ $platform == *"aix"* ]]; then
       echo "- key: cleanup-test-$test_key"
-      echo "  label: ':broom: installp cleanup ${platform%:*}'"
-      echo "  command: 'sudo /usr/sbin/installp -C || true'"
+      echo "  label: ':broom: AIX test slot timing (${platform%:*})'"
+      echo "  command: 'echo \"Scheduling placeholder: cannot run installp -C on Linux jump box\"'"
       echo "  soft_fail: true"
       echo "  agents:"
       echo "    queue: omnibus-${platform%:*}"
@@ -350,8 +374,7 @@ then
     echo "    OMNIBUS_BUILDER_KEY: build-${build_key}"
     echo "  key: test-${test_key}"
     echo "  label: \":mag: ${platform%:*}\""
-    # AIX test step must wait for the cleanup step on the same agent queue,
-    # and explicitly depend on the build step so the BFF is ready.
+    # AIX test step waits for the timing placeholder and the build step.
     if [[ $platform == *"aix"* ]]; then
       echo "  depends_on:"
       echo "    - cleanup-test-$test_key"
@@ -359,7 +382,11 @@ then
     fi
     echo "  retry:"
     echo "    automatic:"
-    echo "      limit: 1"
+    if [[ $platform == *"aix"* ]]; then
+      echo "      limit: 2"
+    else
+      echo "      limit: 1"
+    fi
     if [[ $platform == *"aix"* ]]; then
       echo "  timeout_in_minutes: 180"
     else
