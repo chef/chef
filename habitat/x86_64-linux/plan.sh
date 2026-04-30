@@ -13,13 +13,11 @@ pkg_bin_dirs=(
 pkg_build_deps=(
   core/glibc
   core/make
-  core/gcc/14.3.0
-  core/binutils/2.36.1
+  core/gcc
   core/git
   core/which
 )
-# RELR fix: Pin to binutils 2.36.1 (pre-RELR era) for compatibility with RHEL 9 and other systems with ld < 2.38
-# See: RELR.dyn-summary.md
+
 
 pkg_bin_dirs=(bin)
 pkg_include_dirs=(include)
@@ -87,7 +85,9 @@ do_prepare() {
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
   export CFLAGS="${CPPFLAGS}"
-  export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib"
+  export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib -Wl,--no-relr"
+  # RELR fix: Disable RELR generation for x86 compatibility with RHEL 9 and other systems with ld < 2.38
+  # See: RELR.dyn-summary.md
   export HAB_BLDR_CHANNEL="base-2025"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"

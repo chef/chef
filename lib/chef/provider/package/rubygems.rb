@@ -656,10 +656,13 @@ class Chef
             src += gem_sources.map { |s| "--source=#{s}" }
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
+          # RELR fix: Pass -Wl,--no-relr flag to linker for native gem compilation on systems with ld < 2.38
+          # See: RELR.dyn-summary.md
+          env_vars = { "LDFLAGS" => "-Wl,--no-relr" }
           if !version.nil? && !version.empty?
-            shell_out!("#{gem_binary_path} install #{name} -q #{rdoc_string} -v \"#{version}\"#{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install #{name} -q #{rdoc_string} -v \"#{version}\"#{src_str}#{opts}", env: env_vars)
           else
-            shell_out!("#{gem_binary_path} install \"#{name}\" -q #{rdoc_string} #{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install \"#{name}\" -q #{rdoc_string} #{src_str}#{opts}", env: env_vars)
           end
         end
 
