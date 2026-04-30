@@ -164,6 +164,14 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
     # sudo -E on AIX may not preserve RUBYOPT when sudoers env_reset is active.
     # Pass PATH and RUBYOPT explicitly via 'sudo env' so bundle is found and
     # the bundler bypass is always applied regardless of sudoers configuration.
+
+    # The omnibus build sets BUNDLE_WITHOUT (development, test, etc.) in
+    # .bundle/config so those groups are excluded from the packaged install.
+    # Clear it here so the test-step bundle install includes test/development
+    # gems (e.g. webmock) that spec_helper requires.
+    sudo env "PATH=$PATH" bundle config unset without 2>/dev/null || \
+      sudo env "PATH=$PATH" bundle config --delete without 2>/dev/null || true
+
     sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle install --jobs=3 --retry=3
     # The installed gem dir (chef_gem) only contains s.files (lib/**); spec/ is
     # absent. The omnibus plugin copied the full repo to checkout_dir, so pass
