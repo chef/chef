@@ -19,7 +19,7 @@
 require_relative "../../spec_helper"
 require "chef/secret_fetcher/hashi_vault"
 
-describe Chef::SecretFetcher::HashiVault do
+describe Chef::SecretFetcher::HashiVault, :not_supported_on_aix do
   let(:node) { {} }
   let(:run_context) { double("run_context", node: node) }
 

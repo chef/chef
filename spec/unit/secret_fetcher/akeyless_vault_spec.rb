@@ -19,7 +19,7 @@
 require_relative "../../spec_helper"
 require "chef/secret_fetcher/akeyless_vault"
 
-describe Chef::SecretFetcher::AKeylessVault do
+describe Chef::SecretFetcher::AKeylessVault, :not_supported_on_aix do
   let(:node) { {} }
   let(:run_context) { double("run_context", node: node) }
 
