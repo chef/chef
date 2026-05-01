@@ -194,7 +194,15 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
     # set BUNDLE_GEMFILE explicitly so bundler still uses the installed gem's
     # Gemfile + Gemfile-aix.lock rather than the branch development Gemfile.
     cd "$checkout_dir"
-    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" "BUNDLE_GEMFILE=$chef_gem/Gemfile" \
+    # Pass the same env vars that 'sudo -E' would preserve on other platforms.
+    # CHEF_LICENSE is required so integration tests that shell_out to chef-client
+    # don't fail with exit 172 (license not accepted).
+    # TMPDIR ensures temp-file operations inside specs land in the expected dir.
+    sudo env "PATH=$PATH" \
+             "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" \
+             "BUNDLE_GEMFILE=$chef_gem/Gemfile" \
+             "CHEF_LICENSE=${CHEF_LICENSE:-accept-no-persist}" \
+             "TMPDIR=${TMPDIR:-/tmp}" \
       bundle exec rspec --profile -f progress -I "$checkout_dir/spec" "$checkout_dir/spec"
   else
     sudo -E bundle install --jobs=3 --retry=3
