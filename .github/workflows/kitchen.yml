@@ -330,7 +330,7 @@ jobs:
           # Create a token file that can be mounted into containers
           echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
           chmod 600 hab_token
-      - name: Kitchen Test
+      - name: Kitchen Converge
         run: |
           # Inspec integration tests are currently unstable within kitchen-test context due to hab and package changes between the projects... these will be turned back on as things finalize for a GA release
           # Use this when turning on Inspec integration tests
@@ -338,7 +338,14 @@ jobs:
 
           # Run recipe convergence only
           kitchen converge end-to-end-${{ matrix.os }}
-          kitchen destroy end-to-end-${{ matrix.os }}
+      - name: Dump Chef stacktrace on failure
+        if: failure()
+        run: |
+          kitchen exec end-to-end-${{ matrix.os }} -c \
+            "[ -f /opt/kitchen/cache/chef-stacktrace.out ] && { echo '=== /opt/kitchen/cache/chef-stacktrace.out ==='; cat /opt/kitchen/cache/chef-stacktrace.out; } || echo 'No chef-stacktrace.out found'"
+      - name: Kitchen Destroy
+        if: always()
+        run: kitchen destroy end-to-end-${{ matrix.os }}
 
   # end-to-end recipe testing on ARM64 using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_arm64:
@@ -406,10 +413,16 @@ jobs:
         run: |
           echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
           chmod 600 hab_token
-      - name: Kitchen Test
+      - name: Kitchen Converge
+        run: kitchen converge end-to-end-${{ matrix.os }}
+      - name: Dump Chef stacktrace on failure
+        if: failure()
         run: |
-          kitchen converge end-to-end-${{ matrix.os }}
-          kitchen destroy end-to-end-${{ matrix.os }}
+          kitchen exec end-to-end-${{ matrix.os }} -c \
+            "[ -f /opt/kitchen/cache/chef-stacktrace.out ] && { echo '=== /opt/kitchen/cache/chef-stacktrace.out ==='; cat /opt/kitchen/cache/chef-stacktrace.out; } || echo 'No chef-stacktrace.out found'"
+      - name: Kitchen Destroy
+        if: always()
+        run: kitchen destroy end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:
