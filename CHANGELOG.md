@@ -1,17 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.121 -->
-## [v19.2.121](https://github.com/chef/chef/tree/v19.2.121) (2026-04-28)
+<!-- latest_release 19.2.125 -->
+## [v19.2.125](https://github.com/chef/chef/tree/v19.2.125) (2026-05-01)
 
 #### Merged Pull Requests
-- Fix docker image promotion stage for chef19 docker pipeline [#15901](https://github.com/chef/chef/pull/15901) ([neha-p6](https://github.com/neha-p6))
+- fix: use Unix file access control in target mode when running on Windows [#15980](https://github.com/chef/chef/pull/15980) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix: use Unix file access control in target mode when running on Windows [#15980](https://github.com/chef/chef/pull/15980) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.125 -->
+- Bump ohai from `29bd2a3` to `5b34b04` [#15975](https://github.com/chef/chef/pull/15975) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.124 -->
+- fix: skip Windows load_resource_attributes guard in target mode [#15981](https://github.com/chef/chef/pull/15981) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.123 -->
+- fix: delegate FileAccessControl.writable? to TargetIO in target mode on Windows [#15979](https://github.com/chef/chef/pull/15979) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.122 -->
 - Fix docker image promotion stage for chef19 docker pipeline [#15901](https://github.com/chef/chef/pull/15901) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.121 -->
 - ensure habitat 2.0.504 is installed [#15935](https://github.com/chef/chef/pull/15935) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.120 -->
 - Tell dependabot not to bump aws-sdk-s3 on chef-18 [#15967](https://github.com/chef/chef/pull/15967) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.119 -->

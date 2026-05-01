@@ -26,12 +26,12 @@ class Chef
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl
 
+    require_relative "file_access_control/unix"
+
     if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
       require_relative "file_access_control/windows"
-      require_relative "file_access_control/unix"
       include FileAccessControl::Windows
     else
-      require_relative "file_access_control/unix"
       include FileAccessControl::Unix
     end
 
