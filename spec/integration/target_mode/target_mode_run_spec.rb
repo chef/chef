@@ -86,7 +86,7 @@ RSpec.describe "Target Mode Cookbook Convergence", :integration do
       "--always-dump-stacktrace",
       "--target", target_host,
       "--config", File.join(config_dir, "client.rb"),
-      "--runlist", "recipe[target_mode_test::#{recipe}]",
+      "--runlist", "recipe[target_mode_test::#{recipe}]" # rubocop:disable Style/TrailingCommaInArrayLiteral
     ].join(" ")
 
     shell_out!(
@@ -173,7 +173,7 @@ RSpec.describe "Target Mode Cookbook Convergence", :integration do
     it "is idempotent on a second converge" do
       run_target_mode(target_host: ssh_host, creds_file: creds_1, recipe: "linux", config_dir: tmp_dir)
       second = run_target_mode(target_host: ssh_host, creds_file: creds_1, recipe: "linux", config_dir: tmp_dir)
-      expect(second.stdout).to match(/0 resources updated/i).or match(/Infra Phase complete, 0\//i)
+      expect(second.stdout).to match(/0 resources updated/i).or match(%r{Infra Phase complete, 0/}i)
     end
   end
 
@@ -218,7 +218,7 @@ RSpec.describe "Target Mode Cookbook Convergence", :integration do
     it "is idempotent on a second converge" do
       run_target_mode(target_host: ssh_host, creds_file: creds_2, recipe: "linux", config_dir: tmp_dir)
       second = run_target_mode(target_host: ssh_host, creds_file: creds_2, recipe: "linux", config_dir: tmp_dir)
-      expect(second.stdout).to match(/0 resources updated/i).or match(/Infra Phase complete, 0\//i)
+      expect(second.stdout).to match(/0 resources updated/i).or match(%r{Infra Phase complete, 0/}i)
     end
   end
 
