@@ -77,7 +77,7 @@ module TargetIO
         def install(src, dest, mode: nil, owner: nil, group: nil, preserve: nil, noop: nil, verbose: nil)
           cmd = "install -c"
           cmd << " -p" if preserve
-          cmd << " -m " << mode_to_s(mode) if mode
+          cmd << " -m " << __mode_to_s(mode) if mode
           cmd << " -o #{owner}" if owner
           cmd << " -g #{group}" if group
           cmd << " " << [src, dest].flatten.join(" ")

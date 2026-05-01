@@ -30,7 +30,6 @@ class Chef
 
     if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
       require_relative "file_access_control/windows"
-
       include FileAccessControl::Windows
     else
       include FileAccessControl::Unix
