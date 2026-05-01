@@ -204,6 +204,11 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
              "CHEF_LICENSE=${CHEF_LICENSE:-accept-no-persist}" \
              "TMPDIR=${TMPDIR:-/tmp}" \
       bundle exec rspec --profile -f progress -I "$checkout_dir/spec" "$checkout_dir/spec"
+    # Restore ownership of the checkout directory after the root rspec run.
+    # Without this, the next build's tar extraction over the same AIX machine
+    # fails with "file access permissions" because root-owned dirs can't be
+    # overwritten by the buildkite agent user.
+    sudo chown -R "$(id -un):$(id -gn)" "$checkout_dir" 2>/dev/null || true
   else
     sudo -E bundle install --jobs=3 --retry=3
     sudo -E bundle exec rspec --profile -f progress

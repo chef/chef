@@ -137,7 +137,7 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
         -o ServerAliveInterval=30 \
         -o ConnectTimeout=30 \
         "chef-ci@${host}" \
-        "sudo /usr/sbin/installp -C 2>&1; true; echo 'Disk:'; df -g / /opt /var 2>/dev/null || df /" &
+        "sudo /usr/sbin/installp -C 2>&1; true; echo 'Disk:'; df -g / /opt /var 2>/dev/null || df /; sudo chown -R chef-ci: \$HOME 2>/dev/null; true" &
     done <<< "$AIX_HOSTS"
     wait
 
