@@ -45,7 +45,7 @@ jobs:
       # These options were in a chef-infra specific version. Commenting them out as a reference in case we need them at some point.
 
       # if version specified, it takes precedence; can be a semver like 1.0.2-xyz or a tag like "latest"
-      version: '19.3.0' # ${{ github.event.repository.version }}
+      version: '19.3' # ${{ github.event.repository.version }}
       detect-version-source-type: 'none' # options include "none" (do not detect), "file", "github-tag" or "github-release"
       detect-version-source-parameter: '' # use for file name
       language: 'ruby'  # options include "autodetect", "ruby", "go", "node", "python", "java", "dotnet", "c/c++", "other"
