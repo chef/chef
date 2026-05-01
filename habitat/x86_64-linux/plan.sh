@@ -1,4 +1,6 @@
 export HAB_BLDR_CHANNEL="base-2025"
+export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib -Wl,--no-relr"
+
 SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
@@ -85,7 +87,6 @@ do_prepare() {
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
   export CFLAGS="${CPPFLAGS}"
-  export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib -Wl,--no-relr"
   # RELR fix: Disable RELR generation for x86 compatibility with RHEL 9 and other systems with ld < 2.38
   # See: RELR.dyn-summary.md
   export HAB_BLDR_CHANNEL="base-2025"
