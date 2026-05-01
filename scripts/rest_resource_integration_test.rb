@@ -124,8 +124,8 @@ section "5. GET #{expanded_doc} (individual document)"
 
 response = conn.get(expanded_doc)
 fail!("GET document failed — HTTP #{response.code}") unless response.code == 200
-fail!("Response id mismatch — expected #{object_id}, got #{response.data['id']}") unless response.data["id"] == object_id
-pass("Retrieved — id=#{response.data['id']}, name='#{response.data['name']}'")
+fail!("Response id mismatch — expected #{object_id}, got #{response.data['id']}") unless response.data["id"] == object_id # rubocop:disable Style/StringLiteralsInInterpolation
+pass("Retrieved — id=#{response.data['id']}, name='#{response.data['name']}'") # rubocop:disable Style/StringLiteralsInInterpolation
 pass("Individual document matches collection entry ✓")
 
 # ── Done ──────────────────────────────────────────────────────────────────────
