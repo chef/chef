@@ -185,7 +185,17 @@ if [[ "$sudo_path" != "$rhel_sudo" ]]; then
     # that spec path explicitly and add it to the load path so require
     # "spec_helper" resolves correctly. Also carry RUBYOPT so bundler does not
     # abort on required_ruby_version checks during rspec's require phase.
-    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" bundle exec rspec --profile -f progress -I "$checkout_dir/spec" "$checkout_dir/spec"
+    #
+    # spec_helper.rb uses Dir["spec/support/**/*.rb"] (relative to CWD) to
+    # auto-load support files including the Matchers module.  Since we cd'd to
+    # chef_gem above (for bundle install), that Dir glob would return nothing
+    # and every spec file would fail with "uninitialized constant Matchers".
+    # Run rspec from checkout_dir so the relative glob resolves correctly, and
+    # set BUNDLE_GEMFILE explicitly so bundler still uses the installed gem's
+    # Gemfile + Gemfile-aix.lock rather than the branch development Gemfile.
+    cd "$checkout_dir"
+    sudo env "PATH=$PATH" "RUBYOPT=-r/tmp/aix_skip_ruby_check.rb" "BUNDLE_GEMFILE=$chef_gem/Gemfile" \
+      bundle exec rspec --profile -f progress -I "$checkout_dir/spec" "$checkout_dir/spec"
   else
     sudo -E bundle install --jobs=3 --retry=3
     sudo -E bundle exec rspec --profile -f progress
