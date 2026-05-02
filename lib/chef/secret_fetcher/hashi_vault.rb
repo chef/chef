@@ -18,14 +18,7 @@
 
 require_relative "base"
 require "aws-sdk-core" # Support for aws instance profile auth
-begin
-  require "vault"
-rescue SyntaxError, LoadError
-  # vault gem 0.20.1+ uses Ruby 3.1+ hash-value shorthand syntax and is
-  # incompatible with Ruby < 3.1 (e.g. AIX ships Ruby 3.0.3).  Rescue here
-  # so that the class file can be loaded; methods that call Vault.* will raise
-  # a NameError at runtime if the vault gem is unavailable.
-end
+require "vault"
 class Chef
   class SecretFetcher
     # == Chef::SecretFetcher::HashiVault
