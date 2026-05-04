@@ -1,6 +1,4 @@
 export HAB_BLDR_CHANNEL="base-2025"
-export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib -Wl,--no-relr"
-
 SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
@@ -19,7 +17,6 @@ pkg_build_deps=(
   core/git
   core/which
 )
-
 
 pkg_bin_dirs=(bin)
 pkg_include_dirs=(include)
@@ -87,8 +84,9 @@ do_prepare() {
   export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
   export CFLAGS="${CPPFLAGS}"
-  # RELR fix: Disable RELR generation for x86 compatibility with RHEL 9 and other systems with ld < 2.38
-  # See: RELR.dyn-summary.md
+  export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib"
+  # Suppress SHT_RELR (.relr.dyn) sections so systems with ld < 2.38 can link against libruby.so
+  export LDFLAGS="${LDFLAGS} -Wl,--pack-dyn-relocs=none"
   export HAB_BLDR_CHANNEL="base-2025"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"
