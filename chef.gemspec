@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
 
-  # AIX Gemfile.aix.lock uses this, but currently a manual process
+  # AIX Gemfile-aix.lock uses this, but currently a manual process
   if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
     s.add_dependency "inspec-core", ">= 5", "< 8"
   else
@@ -74,9 +74,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier2", "~> 1.1"
 
-  # 1.219 depends (transitively) on bigdecimal 4.1.2 which dodesn't compile
-  # on CentOS7
-  s.add_dependency "aws-sdk-s3", ">= 1.218.0", "< 1.219.0"
+  s.add_dependency "aws-sdk-s3", "~> 1.218.0" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", ">= 0.18.2", "< 0.21.0" # hashi vault official client gem
 
