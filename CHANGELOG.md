@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.0 -->
-## [v19.3.0](https://github.com/chef/chef/tree/v19.3.0) (2026-05-05)
+<!-- latest_release 19.3.1 -->
+## [v19.3.1](https://github.com/chef/chef/tree/v19.3.1) (2026-05-06)
 
 #### Merged Pull Requests
-- Fix double spaces after periods in action_collection.md [#15983](https://github.com/chef/chef/pull/15983) ([johnmccrae](https://github.com/johnmccrae))
+- install hab from chef origin (not core) in docker build [#15984](https://github.com/chef/chef/pull/15984) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- install hab from chef origin (not core) in docker build [#15984](https://github.com/chef/chef/pull/15984) ([mwrock](https://github.com/mwrock)) <!-- 19.3.1 -->
 - Fix double spaces after periods in action_collection.md [#15983](https://github.com/chef/chef/pull/15983) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.0 -->
 - Make blackduck report for 19.3 [#15982](https://github.com/chef/chef/pull/15982) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.126 -->
 - fix: use Unix file access control in target mode when running on Windows [#15980](https://github.com/chef/chef/pull/15980) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.125 -->
