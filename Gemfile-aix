@@ -1,0 +1,81 @@
+# AIX-specific Gemfile for Ruby 3.0.3 compatibility.
+# Copied to Gemfile by omnibus chef-local-source.rb during AIX builds.
+# Keep in sync with the main Gemfile — only differences should be
+# version pins needed for Ruby 3.0 and platform exclusions.
+
+source "https://rubygems.org"
+
+gem "chef", path: "."
+
+gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
+
+# Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
+gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
+
+gem "ffi", ">= 1.15.5", "<= 1.17.0"
+gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
+gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
+
+# AIX Ruby 3.0.3 compatibility pins — these gems bumped required_ruby_version
+# to >= 3.1 in newer releases but the code itself works on Ruby 3.0.
+gem "ffi-yajl", "~> 2.6.0"           # 2.7+ requires Ruby >= 3.1
+gem "mixlib-shellout", "~> 3.3.0"     # 3.4+ requires Ruby >= 3.1
+gem "date", "~> 3.2.0"               # keep compatible with Ruby 3.0
+
+# Note: openssl FIPS pin is not applied on AIX
+
+if File.exist?(File.expand_path("chef-bin", __dir__))
+  # bundling in a git checkout
+  gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
+else
+  # bundling in omnibus
+  gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
+end
+
+gem "cheffish", ">= 17"
+
+group(:omnibus_package) do
+  gem "appbundler"
+  gem "rb-readline"
+  gem "chef-vault"
+
+  # inspec-core-bin pinned to match inspec-core constraint in gemspec
+  gem "inspec-core-bin", ">= 5", "<= 5.22.80"
+end
+
+group(:omnibus_package, :pry) do
+  # Locked because pry-byebug is broken with 13+.
+  gem "pry", "0.15.2"
+  # byebug 12+ and pry-byebug 3.11+ require Ruby >= 3.1
+  unless RUBY_PLATFORM.match?(/freebsd/i)
+    gem "byebug", "< 12"
+    gem "pry-byebug", "< 3.11"
+  end
+  gem "pry-stack_explorer"
+end
+
+# ruby-shadow is not supported on AIX
+group(:ruby_shadow) do
+end
+
+# deps that cannot be put in the knife gem because they require a compiler and fail on windows nodes
+group(:knife_windows_deps) do
+  gem "ed25519", "~> 1.2" # ed25519 ssh key support
+end
+
+group(:development, :test) do
+  gem "rake", ">= 12.3.3"
+  gem "rspec"
+  gem "webmock"
+  gem "crack", "< 1.0.2" # due to https://github.com/jnunemaker/crack/pull/75
+  gem "fauxhai-ng" # for chef-utils gem
+end
+
+gem "cookstyle", "~> 8.6"
+
+instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
+
+# If you want to load debugging tools into the bundle exec sandbox,
+# add these additional dependencies into Gemfile.local
+local_gemfile = File.join(__dir__, "Gemfile.local")
+eval(File.read(local_gemfile)) if File.exist?(local_gemfile)

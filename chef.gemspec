@@ -34,8 +34,14 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.13", ">= 3.13.4"
-  s.add_dependency "train-winrm", "~> 0.4.0"
+  if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
+    # train-core 3.13+ requires Ruby >= 3.1; AIX ships Ruby 3.0.3
+    s.add_dependency "train-core", "~> 3.12.0"
+    # train-winrm 0.3+ requires Ruby >= 3.1 and WinRM is not used on AIX
+  else
+    s.add_dependency "train-core", "~> 3.13", ">= 3.13.4"
+    s.add_dependency "train-winrm", "~> 0.4.0"
+  end
   s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
@@ -46,9 +52,9 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 18.0"
 
-  # AIX Gemfile-aix.lock uses this, but currently a manual process
   if RUBY_PLATFORM.include?("aix") || ENV["GENERATE_AIX"] == "true"
-    s.add_dependency "inspec-core", ">= 5", "< 8"
+    # inspec-core 5.23+ depends on train-core >= 3.13 which requires Ruby >= 3.1
+    s.add_dependency "inspec-core", ">= 5", "<= 5.22.80"
   else
     s.add_dependency "inspec-core", ">= 5", "< 8"
   end
