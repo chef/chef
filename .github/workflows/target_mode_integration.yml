@@ -1,0 +1,278 @@
+---
+name: target_mode_integration
+
+# Run on PRs and pushes that touch target-mode transport code, the test
+# fixtures, or this workflow file itself.  Transport integration tests spin up
+# real SSH/WinRM targets and are intentionally separate from the unit-only
+# target_mode_specs.yml workflow.
+"on":
+  pull_request:
+    branches: [main, "chef-*"]
+    paths:
+      - "lib/chef/target_io/**"
+      - "lib/chef/train_transport.rb"
+      - "chef-config/lib/chef-config/mixin/train_transport.rb"
+      - "lib/chef/application/client.rb"
+      - "lib/chef/client.rb"
+      - ".github/workflows/target_mode_integration.yml"
+      - "spec/integration/target_mode/**"
+      - "tasks/target_mode.rb"
+  push:
+    branches: [main, "chef-*"]
+    paths:
+      - "lib/chef/target_io/**"
+      - "lib/chef/train_transport.rb"
+      - "chef-config/lib/chef-config/mixin/train_transport.rb"
+      - ".github/workflows/target_mode_integration.yml"
+      - "spec/integration/target_mode/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: target-mode-integration-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CHEF_LICENSE: accept-no-persist
+  FORCE_FFI_YAJL: ext
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Linux host – 2 Ubuntu SSH containers
+  #
+  # Spins up two independent Ubuntu containers that each run sshd.  The Train
+  # SSH transport is verified against both, then chef-client --target converges
+  # target_mode_test::linux on each and the resulting remote artefacts are
+  # checked via a second Train connection to prove the cookbook actually ran.
+  # ─────────────────────────────────────────────────────────────────────────────
+  linux-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: false
+
+      - run: bundle install
+
+      - name: Generate SSH key pair for container access
+        run: ssh-keygen -t ed25519 -f /tmp/id_test -N "" -q
+
+      - name: Build SSH-enabled Linux container image
+        run: |
+          docker build \
+            --build-arg SSH_PUB_KEY="$(cat /tmp/id_test.pub)" \
+            -t chef-ssh-target \
+            spec/integration/target_mode/support/docker/linux-ssh
+
+      - name: Start Linux SSH target containers
+        run: |
+          docker run -d --name linux-target-1 -p 2222:22 chef-ssh-target
+          docker run -d --name linux-target-2 -p 2223:22 chef-ssh-target
+
+      - name: Wait for SSH to become available on both containers
+        run: |
+          for port in 2222 2223; do
+            echo "Waiting for SSH on port $port..."
+            for i in $(seq 1 30); do
+              if ssh -o StrictHostKeyChecking=no \
+                     -o ConnectTimeout=2 \
+                     -o BatchMode=yes \
+                     -i /tmp/id_test \
+                     -p "$port" \
+                     root@127.0.0.1 true 2>/dev/null; then
+                echo "SSH on port $port is ready."
+                break
+              fi
+              [ "$i" -eq 30 ] && { echo "Timed out waiting for SSH on port $port"; exit 1; }
+              sleep 2
+            done
+          done
+          # Collect host keys so Train does not prompt
+          ssh-keyscan -p 2222 127.0.0.1 >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -p 2223 127.0.0.1 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Write per-target credentials files
+        run: |
+          mkdir -p /tmp/tm-creds
+          cat > /tmp/tm-creds/target1 << 'TOML'
+          ['127.0.0.1']
+          transport_protocol = "ssh"
+          host = "127.0.0.1"
+          port = 2222
+          user = "root"
+          key_files = ["/tmp/id_test"]
+          TOML
+          cat > /tmp/tm-creds/target2 << 'TOML'
+          ['127.0.0.1']
+          transport_protocol = "ssh"
+          host = "127.0.0.1"
+          port = 2223
+          user = "root"
+          key_files = ["/tmp/id_test"]
+          TOML
+
+      - name: Run Train transport connectivity tests
+        env:
+          TM_INTEGRATION_ENABLED: "true"
+          TM_SSH_HOST_1: "127.0.0.1"
+          TM_SSH_PORT_1: "2222"
+          TM_SSH_HOST_2: "127.0.0.1"
+          TM_SSH_PORT_2: "2223"
+          TM_SSH_USER: "root"
+          TM_SSH_KEY_FILE: /tmp/id_test
+        run: bundle exec rspec spec/integration/target_mode/transport_spec.rb --format doc
+
+      - name: Run target-mode cookbook convergence tests
+        env:
+          TM_INTEGRATION_ENABLED: "true"
+          TM_SSH_HOST_1: "127.0.0.1"
+          TM_SSH_PORT_1: "2222"
+          TM_SSH_HOST_2: "127.0.0.1"
+          TM_SSH_PORT_2: "2223"
+          TM_SSH_USER: "root"
+          TM_SSH_KEY_FILE: /tmp/id_test
+          TM_SSH_CREDS_1: /tmp/tm-creds/target1
+          TM_SSH_CREDS_2: /tmp/tm-creds/target2
+        run: bundle exec rspec spec/integration/target_mode/target_mode_run_spec.rb --format doc
+
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          echo "=== linux-target-1 logs ===" && docker logs linux-target-1 2>&1 || true
+          echo "=== linux-target-2 logs ===" && docker logs linux-target-2 2>&1 || true
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Windows host – Linux SSH target via WSL2
+  #
+  # GitHub windows-2022 runners do NOT have Docker Desktop and running Docker
+  # Engine inside WSL2 is unreliable (the embedded containerd in the Ubuntu
+  # docker.io package fails to load its bolt-database plugins on the runner
+  # kernel).  Instead we install openssh-server directly inside the WSL2
+  # Ubuntu instance and run sshd on port 2222.  WSL2 automatically proxies
+  # that port to Windows localhost, so Train SSH (running on the Windows Ruby
+  # instance) reaches the server at 127.0.0.1:2222 -- identical to the Docker
+  # container approach used in the Linux job.
+  #
+  # This validates the primary real-world use-case: a Windows admin using Chef
+  # target-mode to manage a Linux host via SSH.
+  #
+  # NOTE: WinRM transport testing is commented out because the WinRM transport
+  #       implementation is not yet complete.  Once Train WinRM support is
+  #       finished, re-enable the steps marked "TODO: WinRM" below.
+  # ─────────────────────────────────────────────────────────────────────────────
+  windows-host:
+    runs-on: windows-2022
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: false
+
+      - run: bundle install
+
+      # ── WSL2 Ubuntu distribution ──────────────────────────────────────────
+      # Set default version to 2 BEFORE the action installs the distro, then
+      # force-convert it afterwards. Vampire/setup-wsl has no supported input
+      # to control the WSL version -- it always runs --set-default-version 1.
+      - name: Force WSL default version to 2
+        shell: pwsh
+        run: wsl --set-default-version 2
+
+      - uses: Vampire/setup-wsl@v3
+        with:
+          distribution: Ubuntu-24.04
+          use-cache: "true"
+
+      - name: Ensure Ubuntu-24.04 is running as WSL2
+        shell: pwsh
+        run: |
+          wsl --set-version Ubuntu-24.04 2
+          wsl --set-default Ubuntu-24.04
+          wsl -d Ubuntu-24.04 bash -c "uname -r && echo 'WSL2 ready'"
+
+      # ── Set up SSH server in WSL2 and generate key pair ──────────────────
+      - name: Start sshd in WSL2 and generate SSH key pair
+        shell: pwsh
+        run: |
+          # Convert Windows path (D:\a\chef\chef) to WSL2 path (/mnt/d/a/chef/chef)
+          # in pure PowerShell -- wslpath is unreliable when called from pwsh.
+          function ConvertTo-WslPath($winPath) {
+            $drive  = $winPath.Substring(0, 1).ToLower()
+            $rest   = $winPath.Substring(2).Replace('\', '/')
+            return "/mnt/$drive$rest"
+          }
+
+          $wslWorkspace = ConvertTo-WslPath $env:GITHUB_WORKSPACE
+          $winKeyDir    = "$env:GITHUB_WORKSPACE\tmp\tm-keys"
+          New-Item -ItemType Directory -Force -Path $winKeyDir | Out-Null
+          $wslKeyDir    = ConvertTo-WslPath $winKeyDir
+
+          # Strip Windows CRLF line endings from the shell script before running.
+          # .gitattributes now enforces eol=lf for *.sh, but the current checkout
+          # may still have CRLFs; bash sees 'pipefail\r' as an unknown option.
+          $wslScript = "$wslWorkspace/spec/integration/target_mode/support/docker/wsl2_setup.sh"
+          wsl bash -c "sed -i 's/\r$//' '$wslScript'"
+          wsl bash $wslScript $wslWorkspace $wslKeyDir
+
+      # ── Credentials file (Windows paths for Train) ────────────────────────
+      - name: Write SSH credentials file
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "$env:GITHUB_WORKSPACE\tmp\tm-creds" | Out-Null
+          # Train on Windows needs forward-slash paths in the TOML key_files list.
+          # PowerShell here-strings require column-0 terminators which break YAML
+          # block scalars, so we build the content with explicit backtick-n newlines.
+          $keyPath = ("$env:GITHUB_WORKSPACE\tmp\tm-keys\id_test") -replace '\\', '/'
+          $creds = "['127.0.0.1']`ntransport_protocol = `"ssh`"`nhost = `"127.0.0.1`"`nport = 2222`nuser = `"root`"`nkey_files = [`"$keyPath`"]"
+          [System.IO.File]::WriteAllText("$env:GITHUB_WORKSPACE\tmp\tm-creds\target1", $creds)
+
+      # ── Transport connectivity tests ──────────────────────────────────────
+      - name: Run Train transport connectivity tests
+        shell: pwsh
+        env:
+          TM_INTEGRATION_ENABLED: "true"
+          TM_SSH_HOST_1: "127.0.0.1"
+          TM_SSH_PORT_1: "2222"
+          TM_SSH_USER: "root"
+        run: |
+          $env:TM_SSH_KEY_FILE = "$env:GITHUB_WORKSPACE\tmp\tm-keys\id_test"
+          bundle exec rspec spec/integration/target_mode/transport_spec.rb --format doc
+
+      # ── Cookbook convergence tests ────────────────────────────────────────
+      - name: Run target-mode cookbook convergence tests
+        shell: pwsh
+        env:
+          TM_INTEGRATION_ENABLED: "true"
+          TM_SSH_HOST_1: "127.0.0.1"
+          TM_SSH_PORT_1: "2222"
+          TM_SSH_USER: "root"
+        run: |
+          $env:TM_SSH_KEY_FILE = "$env:GITHUB_WORKSPACE\tmp\tm-keys\id_test"
+          $env:TM_SSH_CREDS_1  = "$env:GITHUB_WORKSPACE\tmp\tm-creds\target1"
+          bundle exec rspec spec/integration/target_mode/target_mode_run_spec.rb --format doc
+
+      # ── WinRM target (the Windows runner itself) ──────────────────────────
+      # TODO: WinRM – uncomment once WinRM transport is implemented.
+      # - name: Enable WinRM and create ephemeral test account
+      # ...
+
+      # ── Diagnostics ──────────────────────────────────────────────────────
+      - name: Show sshd status on failure
+        if: failure()
+        shell: pwsh
+        run: wsl bash -c "sudo systemctl status ssh 2>/dev/null || sudo /usr/sbin/sshd -T 2>&1 | head -20 || true"

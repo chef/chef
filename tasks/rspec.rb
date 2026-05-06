@@ -81,6 +81,14 @@ begin
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
+
+    desc "Run target mode unit specs (spec/unit/target_io/)"
+    RSpec::Core::RakeTask.new(:target_mode) do |t|
+      puts "--- Running target_mode specs"
+      t.verbose = false
+      t.rspec_opts = %w{--profile --format doc}
+      t.pattern = FileList["spec/unit/target_io/**/*_spec.rb"]
+    end
   end
 rescue LoadError
   STDERR.puts "\n*** RSpec not available. (sudo) gem install rspec to run unit tests. ***\n\n"
