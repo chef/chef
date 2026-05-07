@@ -22,6 +22,7 @@ gem "ffi-yajl", "~> 2.6.0"           # 2.7+ requires Ruby >= 3.1
 gem "mixlib-shellout", "~> 3.3.0"     # 3.4+ requires Ruby >= 3.1
 gem "date", "~> 3.2.0"               # keep compatible with Ruby 3.0
 gem "unf_ext", "~> 0.0.8.2"          # 0.0.9+ uses C++11 features incompatible with IBM xlC
+gem "bigdecimal", "~> 3.1.0"         # 4.x references __builtin_unreachable (unresolved on AIX)
 
 # Note: openssl FIPS pin is not applied on AIX
 
