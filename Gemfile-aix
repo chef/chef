@@ -23,6 +23,8 @@ gem "mixlib-shellout", "~> 3.3.0"     # 3.4+ requires Ruby >= 3.1
 gem "date", "~> 3.2.0"               # keep compatible with Ruby 3.0
 gem "unf_ext", "~> 0.0.8.2"          # 0.0.9+ uses C++11 features incompatible with IBM xlC
 gem "bigdecimal", "~> 3.1.0"         # 4.x references __builtin_unreachable (unresolved on AIX)
+gem "openssl"                         # ensure default gem is in lockfile for bundle exec visibility
+gem "uri", "~> 1.0.0"                 # avoid 1.1+ constant redefinition noise with Ruby 3.0 stdlib
 
 # Note: openssl FIPS pin is not applied on AIX
 
