@@ -293,6 +293,65 @@ describe Chef::Compliance::Runner do
     end
   end
 
+  describe "#run_completed" do
+    before do
+      allow(runner).to receive(:enabled?).and_return(true)
+      allow(runner).to receive(:report_with_interval)
+    end
+
+    it "runs the Compliance Phase" do
+      expect(runner).to receive(:report_with_interval)
+      runner.run_completed(node, nil)
+    end
+
+    it "sets @compliance_phase_completed to true after running" do
+      runner.run_completed(node, nil)
+      expect(runner.instance_variable_get(:@compliance_phase_completed)).to be true
+    end
+
+    it "does nothing when not enabled" do
+      allow(runner).to receive(:enabled?).and_return(false)
+      expect(runner).not_to receive(:report_with_interval)
+      runner.run_completed(node, nil)
+    end
+  end
+
+  describe "#run_failed" do
+    before do
+      allow(runner).to receive(:enabled?).and_return(true)
+      allow(runner).to receive(:report_with_interval)
+      runner.instance_variable_set(:@validation_passed, true)
+    end
+
+    it "runs the Compliance Phase on a normal failure" do
+      expect(runner).to receive(:report_with_interval)
+      runner.run_failed(StandardError.new("something went wrong"), nil)
+    end
+
+    it "skips the Compliance Phase when the exception is Chef::Exceptions::Reboot" do
+      expect(runner).not_to receive(:report_with_interval)
+      runner.run_failed(Chef::Exceptions::Reboot.new("rebooting"), nil)
+    end
+
+    it "skips the Compliance Phase when it has already run in this client run" do
+      runner.instance_variable_set(:@compliance_phase_completed, true)
+      expect(runner).not_to receive(:report_with_interval)
+      runner.run_failed(StandardError.new("something went wrong"), nil)
+    end
+
+    it "does nothing when not enabled" do
+      allow(runner).to receive(:enabled?).and_return(false)
+      expect(runner).not_to receive(:report_with_interval)
+      runner.run_failed(StandardError.new("something went wrong"), nil)
+    end
+
+    it "does nothing when validation has not passed" do
+      runner.instance_variable_set(:@validation_passed, false)
+      expect(runner).not_to receive(:report_with_interval)
+      runner.run_failed(StandardError.new("something went wrong"), nil)
+    end
+  end
+
   describe "interval running" do
     let(:tempdir) { Dir.mktmpdir("chef-compliance-tests") }
 
