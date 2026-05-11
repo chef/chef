@@ -16,6 +16,8 @@ function Install-HabitatVersion {
     }
 }
 
+Write-Host "--- :habicat: Ensuring minimum viable habitat installation.."
+
 try {
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]$HabitatVersion) {
@@ -26,6 +28,7 @@ try {
     }
 }
 catch {
+    Write-Host "hab not found or version check failed: $_"
     Write-Host "--- :habicat: Installing Habitat $HabitatVersion..."
     Install-HabitatVersion
 }
