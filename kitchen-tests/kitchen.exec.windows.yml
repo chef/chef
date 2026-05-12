@@ -10,6 +10,8 @@ transport:
 
 verifier:
   name: busser
+  ruby_bindir: C:\opscode\chef-workstation\embedded\bin
+  root_path: C:\Windows\Temp\verifier
 
 lifecycle:
   pre_converge:
