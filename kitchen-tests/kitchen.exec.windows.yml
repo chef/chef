@@ -16,8 +16,8 @@ lifecycle:
     - remote: . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
     - remote: C:\opscode\chef\bin\chef-client -v
     - remote: C:\opscode\chef\bin\ohai -v
-    - remote: C:\opscode\chef\bin\rake --version
-    - remote: C:\opscode\chef\bin\bundle -v
+    - remote: C:\opscode\chef\embedded\bin\rake --version
+    - remote: C:\opscode\chef\embedded\bin\bundle -v
     - remote: $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
     # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
     # This leads to failures during testing. Moving that file to its correct position here.
@@ -29,11 +29,6 @@ lifecycle:
     - remote: if ($output -is [Array]) { $output = $output[0] }
     - remote: $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
     - remote: Move-Item -Path $output.FullName -Destination $target_path
-    # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
-    # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
-    # libyajl2 build if already present. gem install seems to build anyway.
-    - remote: C:\opscode\chef\embedded\bin\gem uninstall -I libyajl2
-    - remote: C:\opscode\chef\embedded\bin\gem install libyajl2 --no-doc
     - remote: C:\opscode\chef\embedded\bin\gem install appbundler --no-doc
     - remote: C:\opscode\chef\embedded\bin\gem install appbundle-updater -v "~> 1.0.36" --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
@@ -46,7 +41,7 @@ lifecycle:
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
     # htmldiff and ldiff on windows cause a conflict with gems being loaded below. we remove them here.
     - remote: if (Test-Path C:\opscode\chef\embedded\bin\htmldiff) { Remove-Item -Path C:\opscode\chef\embedded\bin\htmldiff; Remove-Item -Path C:\opscode\chef\embedded\bin\ldiff }
-    - remote: C:\opscode\chef\bin\bundle install --jobs=3 --retry=3
+    - remote: C:\opscode\chef\embedded\bin\bundle install --jobs=3 --retry=3
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
 platforms:
