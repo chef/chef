@@ -33,6 +33,7 @@ lifecycle:
     # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
     # libyajl2 build if already present. gem install seems to build anyway.
     - remote: C:\opscode\chef\embedded\bin\gem uninstall -I libyajl2
+    - remote: C:\opscode\chef\embedded\bin\gem install libyajl2 --no-doc
     - remote: C:\opscode\chef\embedded\bin\gem install appbundler --no-doc
     - remote: C:\opscode\chef\embedded\bin\gem install appbundle-updater -v "~> 1.0.36" --no-doc
     - remote: If ($lastexitcode -ne 0) { Exit $lastexitcode }
