@@ -37,8 +37,7 @@ jobs:
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
         hab pkg install --binlink chef/chef-cli chef/chef-test-kitchen-enterprise
-        Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-        refreshenv
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\hab\bin"
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
