@@ -27,18 +27,18 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
-      HAB_LICENSE: accept
-      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
     - uses: actions/checkout@v6
-    - name: Install Test Kitchen Enterprise
+    - name: Install Chef Workstation
       shell: pwsh
+      env:
+        DOWNLOAD_LICENSE_ID: ${{ secrets.DOWNLOAD_LICENSE_ID }}
       run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-        hab pkg install --binlink chef/chef-cli chef/chef-test-kitchen-enterprise
-        hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-inspec --no-doc
-        Add-Content -Path $env:GITHUB_PATH -Value "C:\hab\bin"
+        $url = "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${env:DOWNLOAD_LICENSE_ID}&p=windows&m=x86_64"
+        Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\chef-workstation.msi"
+        Start-Process -Wait -FilePath msiexec.exe -ArgumentList "/i $env:TEMP\chef-workstation.msi /quiet /norestart"
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\bin"
+        Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\embedded\bin"
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
