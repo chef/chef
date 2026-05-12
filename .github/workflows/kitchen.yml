@@ -105,8 +105,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Install Test Kitchen Enterprise
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash
-          sudo hab pkg install --binlink chef/chef-test-kitchen-enterprise
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo -E bash
+          sudo -E hab pkg install --binlink chef/chef-test-kitchen-enterprise
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
