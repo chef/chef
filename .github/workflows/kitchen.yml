@@ -32,14 +32,15 @@ jobs:
     - name: Install Chef Workstation
       shell: pwsh
       env:
-        DOWNLOAD_LICENSE_ID: ${{ secrets.DOWNLOAD_LICENSE_ID }}
+        CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       run: |
         $pv = "${{ matrix.os }}".Split('-')[1]
-        $url = "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${env:DOWNLOAD_LICENSE_ID}&p=windows&pv=${pv}&m=x86_64"
+        $url = "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${env:CHEF_LICENSE_KEY}&p=windows&pv=${pv}&m=x86_64"
         Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\chef-workstation.msi"
         Start-Process -Wait -FilePath msiexec.exe -ArgumentList "/i $env:TEMP\chef-workstation.msi /quiet /norestart"
         Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\bin"
         Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\embedded\bin"
+        gem install libyajl2 --no-doc
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
