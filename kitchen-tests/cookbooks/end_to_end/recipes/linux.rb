@@ -109,7 +109,7 @@ end
 
 logrotate_package "logrotate"
 
-include_recipe "git"
+git_client "default"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
