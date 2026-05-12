@@ -103,7 +103,9 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd" unless fedora? || (amazon? && node["platform_version"] >= "2023") || (platform_family?("rhel") && node["platform_version"].to_i >= 10) # fedora 34+, Amazon Linux 2023+, and RHEL 10+ don't have nscd
+unless fedora? || (amazon? && node["platform_version"] >= "2023") || (platform_family?("rhel") && node["platform_version"].to_i >= 10) # fedora 34+, Amazon Linux 2023+, and RHEL 10+ don't have nscd
+  nscd "nscd"
+end
 
 logrotate_package "logrotate"
 
