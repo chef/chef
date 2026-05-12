@@ -34,7 +34,8 @@ jobs:
       env:
         DOWNLOAD_LICENSE_ID: ${{ secrets.DOWNLOAD_LICENSE_ID }}
       run: |
-        $url = "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${env:DOWNLOAD_LICENSE_ID}&p=windows&m=x86_64"
+        $pv = "${{ matrix.os }}".Split('-')[1]
+        $url = "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${env:DOWNLOAD_LICENSE_ID}&p=windows&pv=${pv}&m=x86_64"
         Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\chef-workstation.msi"
         Start-Process -Wait -FilePath msiexec.exe -ArgumentList "/i $env:TEMP\chef-workstation.msi /quiet /norestart"
         Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\bin"
