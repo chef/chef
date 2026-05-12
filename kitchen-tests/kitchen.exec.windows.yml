@@ -8,6 +8,9 @@ driver:
 transport:
   name: exec
 
+verifier:
+  name: busser
+
 lifecycle:
   pre_converge:
     - remote: . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current

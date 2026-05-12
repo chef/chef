@@ -38,7 +38,6 @@ jobs:
         $url = "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${env:DOWNLOAD_LICENSE_ID}&p=windows&pv=${pv}&m=x86_64"
         Invoke-WebRequest -Uri $url -OutFile "$env:TEMP\chef-workstation.msi"
         Start-Process -Wait -FilePath msiexec.exe -ArgumentList "/i $env:TEMP\chef-workstation.msi /quiet /norestart"
-        & "C:\opscode\chef-workstation\embedded\bin\gem.bat" install kitchen-inspec --no-doc
         Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\bin"
         Add-Content -Path $env:GITHUB_PATH -Value "C:\opscode\chef-workstation\embedded\bin"
     - name: Kitchen Test
