@@ -36,7 +36,7 @@ jobs:
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-        hab pkg install --binlink chef/chef-test-kitchen-enterprise
+        hab pkg install --binlink chef/chef-cli chef/chef-test-kitchen-enterprise
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
@@ -106,7 +106,7 @@ jobs:
       - name: Install Test Kitchen Enterprise
         run: |
           curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo -E bash
-          sudo -E hab pkg install --binlink chef/chef-test-kitchen-enterprise
+          sudo -E hab pkg install --binlink chef/chef-cli chef/chef-test-kitchen-enterprise
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
