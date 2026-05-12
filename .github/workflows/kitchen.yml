@@ -28,6 +28,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
     - uses: actions/checkout@v6
     - name: Install Test Kitchen Enterprise
@@ -57,7 +58,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           clean: true
-      - name: Install Test Kitchen Enterprise
+      - name: Install Test Kitchen
         env:
           DOWNLOAD_LICENSE_ID: ${{ secrets.DOWNLOAD_LICENSE_ID }}
         run: |
@@ -98,6 +99,7 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
       HAB_LICENSE: accept
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
       - name: Check out code
         uses: actions/checkout@v6
