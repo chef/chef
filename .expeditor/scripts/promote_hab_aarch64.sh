@@ -76,3 +76,14 @@ echo "--- Promoting ${PKG_IDENT} to ${TARGET_CHANNEL} channel"
 hab pkg promote "${PKG_IDENT}" "${TARGET_CHANNEL}" "${PKG_TARGET}"
 
 echo "--- Successfully promoted ${PKG_IDENT} (${PKG_TARGET}) to ${TARGET_CHANNEL}"
+
+# TEMPORARY: This is a workaround for the scenario mentioned here since
+# longer term flow should be native support in expeditor for promoting
+# habitat packages.
+# Habitat 2.0+ uses 'base' as the default channel for chef origin packages.
+# Promote to 'base' alongside 'base-2025' to ensure packages are discoverable.
+if [[ "${TARGET_CHANNEL}" == "base-2025" ]]; then
+  echo "--- Promoting ${PKG_IDENT} to base channel (Habitat 2.0+ default)"
+  hab pkg promote "${PKG_IDENT}" "base" "${PKG_TARGET}"
+  echo "--- Successfully promoted ${PKG_IDENT} (${PKG_TARGET}) to base"
+fi
