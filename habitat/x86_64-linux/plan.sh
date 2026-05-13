@@ -1,7 +1,6 @@
 export HAB_BLDR_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
-_chef_client_ruby="core/ruby3_4/3.4.8"
-_chef_client_ruby_channel="unstable"
+_chef_client_ruby="core/ruby3_4/3.4.8/20260508045659"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
@@ -89,8 +88,6 @@ do_prepare() {
   export HAB_BLDR_CHANNEL="base-2025"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"
-  export HAB_FALLBACK_CHANNEL="$_chef_client_ruby_channel"
-  export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="$_chef_client_ruby_channel"
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 
