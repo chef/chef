@@ -9,7 +9,7 @@ depends          "chrony"
 depends          "openssh", "< 3.0"
 depends          "resolver"
 depends          "users"
-depends          "git"
+depends          "git", "< 13.0.0"
 
 supports         "ubuntu"
 supports         "debian"
