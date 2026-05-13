@@ -112,7 +112,6 @@ jobs:
           curl -fsSL -o /tmp/chef-workstation.deb \
             "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${CHEF_LICENSE_KEY}&m=x86_64&p=ubuntu&pv=${UBUNTU_VERSION}"
           sudo dpkg -i /tmp/chef-workstation.deb
-          sudo /opt/chef-workstation/embedded/bin/gem install kitchen-inspec --no-doc
           echo "/opt/chef-workstation/bin" >> $GITHUB_PATH
           echo "/opt/chef-workstation/embedded/bin" >> $GITHUB_PATH
       - name: Downgrade Docker to 28.0.4

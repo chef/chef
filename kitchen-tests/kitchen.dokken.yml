@@ -8,6 +8,9 @@ driver:
 transport:
   name: dokken
 
+verifier:
+  name: busser
+
 provisioner:
   name: dokken
   client_rb:
