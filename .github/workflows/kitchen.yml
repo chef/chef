@@ -63,12 +63,12 @@ jobs:
           clean: true
       - name: Install Test Kitchen
         env:
-          DOWNLOAD_LICENSE_ID: ${{ secrets.DOWNLOAD_LICENSE_ID }}
+          CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
         run: |
           MACOS_VERSION=$(sw_vers -productVersion | cut -d. -f1)
           ARCH=$(uname -m)
           curl -fsSL -o /tmp/chef-workstation.pkg \
-            "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${DOWNLOAD_LICENSE_ID}&m=${ARCH}&p=macos&pv=${MACOS_VERSION}"
+            "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${CHEF_LICENSE_KEY}&m=${ARCH}&p=macos&pv=${MACOS_VERSION}"
           sudo installer -pkg /tmp/chef-workstation.pkg -target /
       - name: Kitchen Test
         run: kitchen test end-to-end-${{ matrix.os }}
@@ -101,15 +101,19 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
-      HAB_LICENSE: accept
-      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     steps:
       - name: Check out code
         uses: actions/checkout@v6
-      - name: Install Test Kitchen Enterprise
+      - name: Install Chef Workstation
+        env:
+          CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo -E bash
-          sudo -E hab pkg install --binlink chef/chef-cli chef/chef-test-kitchen-enterprise
+          UBUNTU_VERSION=$(lsb_release -rs)
+          curl -fsSL -o /tmp/chef-workstation.deb \
+            "https://chefdownload-commercial.chef.io/stable/chef-workstation/download?license_id=${CHEF_LICENSE_KEY}&m=x86_64&p=ubuntu&pv=${UBUNTU_VERSION}"
+          sudo dpkg -i /tmp/chef-workstation.deb
+          echo "/opt/chef-workstation/bin" >> $GITHUB_PATH
+          echo "/opt/chef-workstation/embedded/bin" >> $GITHUB_PATH
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
