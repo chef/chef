@@ -85,6 +85,8 @@ do_prepare() {
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
   export CFLAGS="${CPPFLAGS}"
   export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib"
+  # Suppress SHT_RELR (.relr.dyn) sections so systems with ld < 2.38 can link against libruby.so
+  export LDFLAGS="${LDFLAGS} -Wl,--pack-dyn-relocs=none"
   export HAB_BLDR_CHANNEL="base-2025"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"
