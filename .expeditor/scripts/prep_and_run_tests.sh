@@ -38,10 +38,6 @@ case $TestType in
         RakeTest=("spec:functional")
         ;;
 
-    TargetMode)
-        RakeTest=("spec:target_mode" "target_mode:static_analysis")
-        ;;
-
     *)
         echo -e "\nTestType $TestType not valid\n" >&2
         exit 1

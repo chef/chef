@@ -28,10 +28,6 @@ jobs:
       - name: Fetch PR head
         run: git fetch origin ${{ github.event.pull_request.head.sha }}
 
-        # NOTE!!
-        #   Do NOT add other paths here. This is not a general "security"
-        #   check, this is a check to make sure new secrets are not added
-        #   to pull_request_target PRs. That is the ONLY purpose.
       - name: Detect workflow file changes
         id: diff
         run: |
@@ -40,7 +36,7 @@ jobs:
           CHANGED=$(git diff --name-only \
             ${{ github.event.pull_request.base.sha }} \
             ${{ github.event.pull_request.head.sha }} \
-            | grep '^.github/workflows/' || true)
+            | grep -E '^(\.github/|habitat/|\.expeditor/|\.buildkite/|[Gg]emfile$|[Rr]akefile$|Dockerfile$|.*\.gemspec$)' || true)
 
           if [ -n "$CHANGED" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
