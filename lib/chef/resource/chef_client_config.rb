@@ -482,6 +482,7 @@ class Chef
               end
 
               resource.owner(owner) if owner
+              resource.group(group) if group
             else
               resource.owner(owner) if owner
               resource.group(group) if group
