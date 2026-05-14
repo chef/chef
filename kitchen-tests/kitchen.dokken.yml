@@ -10,6 +10,8 @@ transport:
 
 verifier:
   name: busser
+  ruby_bindir: /opt/chef-workstation/embedded/bin
+  root_path: /tmp/verifier
 
 provisioner:
   name: dokken
