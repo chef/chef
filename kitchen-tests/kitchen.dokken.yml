@@ -10,6 +10,12 @@ transport:
 
 verifier:
   name: busser
+  # Dokken containers run as root; sudo fails with PAM authentication errors
+  sudo: false
+  # Only install the serverspec runner; habitat_* test dirs don't have matching
+  # busser runners on rubygems.org and would cause gem install to fail
+  plugins:
+    - busser-serverspec
 
 provisioner:
   name: dokken
@@ -52,6 +58,10 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
+    # After appbundle-updater, bundle install may leave stale spec files for old gem
+    # versions whose gem_dir no longer exists. This breaks `gem list`/`gem install`
+    # with Gem::MissingSpecError during activate_dependencies. Remove them.
+    - remote: /opt/chef/embedded/bin/ruby -e "require 'rubygems'; Dir['/opt/chef/embedded/lib/ruby/gems/3.1.0/specifications/*.gemspec'].each{|f| s=Gem::Specification.load(f) rescue next; File.unlink(f) unless Dir.exist?(s.gem_dir)}"
 
 platforms:
   - name: amazonlinux-2
