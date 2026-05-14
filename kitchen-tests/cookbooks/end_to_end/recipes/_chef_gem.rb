@@ -42,17 +42,6 @@ if platform_family?("rhel", "fedora", "debian", "amazon", "suse")
   package build_pkgs
   package mysql2_dev_pkg
 
-  # Habitat's runtime PATH does not include system dirs like /usr/bin where
-  # gcc and ld are installed. Ensure they are on PATH for native compilation.
-  # ruby_block "add system paths for native gem compilation" do
-  #  block do
-  #    system_dirs = %w{/usr/bin /usr/local/bin /usr/sbin}
-  #    current = ENV["PATH"].to_s.split(":")
-  #    missing = system_dirs.select { |d| !current.include?(d) && ::File.directory?(d) }
-  #    ENV["PATH"] = (current + missing).join(":") unless missing.empty?
-  #  end
-  #end
-
   chef_gem "mysql2" do
     compile_time false
   end
