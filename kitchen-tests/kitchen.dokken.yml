@@ -58,10 +58,32 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    # After appbundle-updater, bundle install may leave stale spec files for old gem
-    # versions whose gem_dir no longer exists. This breaks `gem list`/`gem install`
-    # with Gem::MissingSpecError during activate_dependencies. Remove them.
-    - remote: /opt/chef/embedded/bin/ruby -e "require 'rubygems'; Dir['/opt/chef/embedded/lib/ruby/gems/3.1.0/specifications/*.gemspec'].each{|f| s=Gem::Specification.load(f) rescue next; File.unlink(f) unless Dir.exist?(s.gem_dir)}"
+    # After appbundle-updater, bundle install can leave gem specs with unsatisfied
+    # runtime dependencies (e.g. net-http requiring net-protocol at a version that
+    # was removed). This breaks `gem list`/`gem install` via activate_dependencies
+    # in request.rb. Remove any spec whose runtime deps can't be satisfied.
+    - remote: >-
+        /opt/chef/embedded/bin/ruby -e "
+          require 'rubygems';
+          to_remove = [];
+          Gem::Specification.each do |spec|;
+            spec.runtime_dependencies.each do |dep|;
+              unless Gem::Specification.find_all_by_name(dep.name, dep.requirement).any?;
+                to_remove << spec; break;
+              end;
+            end;
+          end;
+          to_remove.each{|s| File.unlink(s.spec_file) rescue nil; puts 'Removed '+s.full_name};
+          puts 'Cleaned '+to_remove.size.to_s+' specs with broken deps';
+        " 2>&1
+
+  pre_verify:
+    # habitat_* test dirs exist in the suite but busser-habitat_* runner gems do not exist
+    # on RubyGems.org, causing `gem install busser-habitat_config` etc. to fail.
+    # Remove them before busser's setup phase discovers and tries to install them.
+    - remote: >-
+        find /tmp/verifier /tmp/kitchen -maxdepth 8 -name 'habitat_*' -type d
+        -exec rm -rf {} + 2>/dev/null; echo "Removed habitat_* test dirs from verifier sandbox"
 
 platforms:
   - name: amazonlinux-2
