@@ -63,8 +63,8 @@ lifecycle:
     # was removed). This breaks `gem list`/`gem install` via activate_dependencies
     # in request.rb. Remove any spec whose runtime deps can't be satisfied.
     - remote: >-
-        /opt/chef/embedded/bin/ruby -e "
-          require 'rubygems';
+        sh -c '/opt/chef/embedded/bin/ruby -e "
+          require %(rubygems);
           to_remove = [];
           Gem::Specification.each do |spec|;
             spec.runtime_dependencies.each do |dep|;
@@ -73,17 +73,17 @@ lifecycle:
               end;
             end;
           end;
-          to_remove.each{|s| File.unlink(s.spec_file) rescue nil; puts 'Removed '+s.full_name};
-          puts 'Cleaned '+to_remove.size.to_s+' specs with broken deps';
-        " 2>&1
+          to_remove.each{|s| File.unlink(s.spec_file) rescue nil; puts %(Removed )+s.full_name};
+          puts %(Cleaned )+to_remove.size.to_s+%( specs with broken deps);
+        " 2>&1 || true'
 
   pre_verify:
     # habitat_* test dirs exist in the suite but busser-habitat_* runner gems do not exist
     # on RubyGems.org, causing `gem install busser-habitat_config` etc. to fail.
     # Remove them before busser's setup phase discovers and tries to install them.
+    # Must wrap in sh -c: docker exec has no shell so ; and 2>/dev/null require one.
     - remote: >-
-        find /tmp/verifier /tmp/kitchen -maxdepth 8 -name 'habitat_*' -type d
-        -exec rm -rf {} + 2>/dev/null; echo "Removed habitat_* test dirs from verifier sandbox"
+        sh -c 'find /tmp/verifier /tmp/kitchen -maxdepth 8 -name "habitat_*" -type d -exec rm -rf {} + 2>/dev/null; echo done'
 
 platforms:
   - name: amazonlinux-2
