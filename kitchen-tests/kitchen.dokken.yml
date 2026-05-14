@@ -49,7 +49,7 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    - remote: sudo /opt/chef/embedded/bin/gem update --system --no-doc 2>&1 | tail -3
+    - remote: sudo /opt/chef/embedded/bin/gem update --system --no-doc 2>/dev/null || true
 
 platforms:
   - name: amazonlinux-2
