@@ -10,8 +10,6 @@ transport:
 
 verifier:
   name: busser
-  ruby_bindir: /opt/chef-workstation/embedded/bin
-  root_path: /tmp/verifier
 
 provisioner:
   name: dokken
@@ -51,6 +49,7 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
+    - remote: sudo /opt/chef/embedded/bin/gem update --system --no-doc 2>&1 | tail -3
 
 platforms:
   - name: amazonlinux-2
