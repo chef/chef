@@ -38,7 +38,7 @@ jobs:
       run: |
         New-Item -ItemType Directory -Force -Path C:\kitchen\bin | Out-Null
         C:\opscode\chef\embedded\bin\gem.bat install test-kitchen -v 3.8.2 --no-document --bindir C:\kitchen\bin
-        C:\opscode\chef\embedded\bin\gem.bat install kitchen-inspec --no-document
+        C:\opscode\chef\embedded\bin\gem.bat install kitchen-inspec -v 2.6.2 --no-document
     - name: Kitchen Test
       run: |
         C:\kitchen\bin\kitchen.bat test end-to-end-${{ matrix.os }}
@@ -70,7 +70,7 @@ jobs:
         run: |
           sudo mkdir -p /tmp/kitchen/bin
           sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document --bindir /tmp/kitchen/bin
-          sudo /opt/chef/embedded/bin/gem install kitchen-inspec --no-document
+          sudo /opt/chef/embedded/bin/gem install kitchen-inspec -v 2.6.2 --no-document
       - name: Kitchen Test
         run: /tmp/kitchen/bin/kitchen test end-to-end-${{ matrix.os }}
 
@@ -113,7 +113,8 @@ jobs:
         run: |
           sudo mkdir -p /tmp/kitchen/bin
           sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document --bindir /tmp/kitchen/bin
-          sudo /opt/chef/embedded/bin/gem install kitchen-inspec kitchen-dokken --no-document
+          sudo /opt/chef/embedded/bin/gem install kitchen-inspec -v 2.6.2 --no-document
+          sudo /opt/chef/embedded/bin/gem install kitchen-dokken -v 2.20.8 --no-document
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
