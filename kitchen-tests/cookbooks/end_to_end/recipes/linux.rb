@@ -61,12 +61,13 @@ if platform_family?("rhel", "fedora", "amazon")
   end
 end
 
+include_recipe "::_chef_gem"
+
 build_essential do
   raise_if_unsupported true
 end
 
 include_recipe "::_packages"
-include_recipe "::_chef_gem"
 
 unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
   include_recipe value_for_platform(

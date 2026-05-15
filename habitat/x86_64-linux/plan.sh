@@ -88,7 +88,6 @@ do_prepare() {
   export HAB_BLDR_CHANNEL="base-2025"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"
-  export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 

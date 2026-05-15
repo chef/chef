@@ -1,17 +1,43 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.2.108 -->
-## [v19.2.108](https://github.com/chef/chef/tree/v19.2.108) (2026-04-21)
+<!-- latest_release 19.3.7 -->
+## [v19.3.7](https://github.com/chef/chef/tree/v19.3.7) (2026-05-15)
 
 #### Merged Pull Requests
-- Block install hook on arm until next release [#15927](https://github.com/chef/chef/pull/15927) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump Vampire/setup-wsl from 3 to 7 [#15988](https://github.com/chef/chef/pull/15988) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump Vampire/setup-wsl from 3 to 7 [#15988](https://github.com/chef/chef/pull/15988) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.7 -->
+- Test mysql gem to confirm fix for native gems [#15992](https://github.com/chef/chef/pull/15992) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.6 -->
+- Updating the notice file for 19.3 [#16004](https://github.com/chef/chef/pull/16004) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.5 -->
+- Remove kitchen-dokken install to patch old kitchen-dokken [#16000](https://github.com/chef/chef/pull/16000) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.4 -->
+- Bump Expeditor Config Validator deadline [#15994](https://github.com/chef/chef/pull/15994) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.3 -->
+- Add target mode CI test suite, static analysis, and GitHub Actions workflow [#15972](https://github.com/chef/chef/pull/15972) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.2 -->
+- install hab from chef origin (not core) in docker build [#15984](https://github.com/chef/chef/pull/15984) ([mwrock](https://github.com/mwrock)) <!-- 19.3.1 -->
+- Fix double spaces after periods in action_collection.md [#15983](https://github.com/chef/chef/pull/15983) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.0 -->
+- Make blackduck report for 19.3 [#15982](https://github.com/chef/chef/pull/15982) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.126 -->
+- fix: use Unix file access control in target mode when running on Windows [#15980](https://github.com/chef/chef/pull/15980) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.125 -->
+- Bump ohai from `29bd2a3` to `5b34b04` [#15975](https://github.com/chef/chef/pull/15975) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.124 -->
+- fix: skip Windows load_resource_attributes guard in target mode [#15981](https://github.com/chef/chef/pull/15981) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.123 -->
+- fix: delegate FileAccessControl.writable? to TargetIO in target mode on Windows [#15979](https://github.com/chef/chef/pull/15979) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.2.122 -->
+- Fix docker image promotion stage for chef19 docker pipeline [#15901](https://github.com/chef/chef/pull/15901) ([neha-p6](https://github.com/neha-p6)) <!-- 19.2.121 -->
+- ensure habitat 2.0.504 is installed [#15935](https://github.com/chef/chef/pull/15935) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.120 -->
+- Tell dependabot not to bump aws-sdk-s3 on chef-18 [#15967](https://github.com/chef/chef/pull/15967) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.119 -->
+- Bump ohai from `820824c` to `29bd2a3` [#15964](https://github.com/chef/chef/pull/15964) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.118 -->
+- use local server and cert instead of external in trusted cert recipe [#15923](https://github.com/chef/chef/pull/15923) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.117 -->
+- Update mixlib-shellout requirement from ~&gt; 3.3.8 to &gt;= 3.3.8, &lt; 3.5.0 [#15941](https://github.com/chef/chef/pull/15941) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.116 -->
+- Bump aws-sdk-s3 from 1.219.0 to 1.220.0 [#15950](https://github.com/chef/chef/pull/15950) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.115 -->
+- Have dependabot update github-actions on chef-18 too [#15945](https://github.com/chef/chef/pull/15945) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.114 -->
+- Dependabot: Lock pry-byebug version on chef-18 [#15940](https://github.com/chef/chef/pull/15940) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.113 -->
+- Bump train-core from 3.16.1 to 3.16.2 [#15928](https://github.com/chef/chef/pull/15928) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.112 -->
+- Bump ohai from `db1f20a` to `820824c` [#15929](https://github.com/chef/chef/pull/15929) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.2.111 -->
+- Revert &quot;updating paths to prevent execitions (#15699)&quot; [#15773](https://github.com/chef/chef/pull/15773) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.110 -->
+- Don&#39;t require `Expeditor Config Validation` for now [#15934](https://github.com/chef/chef/pull/15934) ([jaymzh](https://github.com/jaymzh)) <!-- 19.2.109 -->
 - Block install hook on arm until next release [#15927](https://github.com/chef/chef/pull/15927) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.108 -->
 - Pin ntp and openssh cookbook versions to prevent CI breakage [#15926](https://github.com/chef/chef/pull/15926) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.2.107 -->
 - refactor habitat builds for validate/adhoc [#15869](https://github.com/chef/chef/pull/15869) ([rishichawda](https://github.com/rishichawda)) <!-- 19.2.106 -->

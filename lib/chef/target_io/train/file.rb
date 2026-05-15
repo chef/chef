@@ -14,7 +14,7 @@ module TargetIO
         end
 
         def binread(name, length = nil, offset = 0)
-          content = read(file_name)
+          content = read(name)
           length = content.size - offset if length.nil?
 
           content[offset, length]
@@ -142,14 +142,14 @@ module TargetIO
         end
 
         def tempfile(filename)
-          tempdir = ::TargetIO::Dir.mktmpdir(path)
+          tempdir = ::TargetIO::Dir.mktmpdir(filename)
           ::File.join(tempdir, filename)
         end
 
         # passthrough or map calls to third parties
         def method_missing(m, *args, **kwargs, &block)
-          nonio    = %i{extname join dirname path split}
-          passthru = %i{basename directory? exist? exists? file? path pipe? socket? symlink?}
+          nonio    = %i{extname join dirname basename path split}
+          passthru = %i{directory? exist? exists? file? path pipe? socket? symlink?}
           redirect_train = {
             blockdev?: :block_device?,
             chardev?: :character_device?,
@@ -207,7 +207,7 @@ module TargetIO
             file_name, other_args = args[0], args[1..]
 
             file = transport_connection.file(file_name)
-            file.send(redirect[m], *other_args, **kwargs) # TODO: pass block
+            file.send(redirect_train[m], *other_args, **kwargs) # TODO: pass block
 
           else
             raise "Unsupported File method #{m}"
