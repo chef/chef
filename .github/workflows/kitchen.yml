@@ -64,6 +64,8 @@ jobs:
         uses: actionshub/chef-install@5.0.2
         with:
           project: chef
+      - name: Install coreutils
+        run: brew install coreutils
       - name: Install Test Kitchen gem
         run: |
           sudo mkdir -p /tmp/kitchen/bin
