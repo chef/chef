@@ -63,7 +63,7 @@ jobs:
         with:
           project: chef
       - name: Install Test Kitchen gem
-        run: /opt/chef/embedded/bin/gem install test-kitchen --no-document
+        run: sudo /opt/chef/embedded/bin/gem install test-kitchen --no-document
       - name: Kitchen Test
         run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
 
@@ -103,7 +103,7 @@ jobs:
         with:
           project: chef
       - name: Install Test Kitchen gem
-        run: /opt/chef/embedded/bin/gem install test-kitchen --no-document
+        run: sudo /opt/chef/embedded/bin/gem install test-kitchen --no-document
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
