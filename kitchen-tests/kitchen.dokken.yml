@@ -8,15 +8,6 @@ driver:
 transport:
   name: dokken
 
-verifier:
-  name: busser
-  # Dokken containers run as root; sudo fails with PAM authentication errors
-  sudo: false
-  # Only install the serverspec runner; habitat_* test dirs don't have matching
-  # busser runners on rubygems.org and would cause gem install to fail
-  plugins:
-    - busser-serverspec
-
 provisioner:
   name: dokken
   client_rb:
@@ -32,12 +23,9 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    - remote: echo "Installing appbundler, appbundle-updater, and busser gems:"
+    - remote: echo "Installing appbundler and appbundle-updater gems:"
     - remote: /opt/chef/embedded/bin/gem install appbundler --no-doc
     - remote: /opt/chef/embedded/bin/gem install appbundle-updater -v "~> 1.0.36" --no-doc
-    # Install busser before appbundle-updater: appbundle-updater's bundle install leaves the
-    # gem spec DB inconsistent; kitchen-busser skips gem install if the busser binary exists
-    - remote: /opt/chef/embedded/bin/gem install busser busser-serverspec --no-doc
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
@@ -58,32 +46,6 @@ lifecycle:
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    # After appbundle-updater, bundle install can leave gem specs with unsatisfied
-    # runtime dependencies (e.g. net-http requiring net-protocol at a version that
-    # was removed). This breaks `gem list`/`gem install` via activate_dependencies
-    # in request.rb. Remove any spec whose runtime deps can't be satisfied.
-    - remote: >-
-        sh -c '/opt/chef/embedded/bin/ruby -e "
-          require %(rubygems);
-          to_remove = [];
-          Gem::Specification.each do |spec|;
-            spec.runtime_dependencies.each do |dep|;
-              unless Gem::Specification.find_all_by_name(dep.name, dep.requirement).any?;
-                to_remove << spec; break;
-              end;
-            end;
-          end;
-          to_remove.each{|s| File.unlink(s.spec_file) rescue nil; puts %(Removed )+s.full_name};
-          puts %(Cleaned )+to_remove.size.to_s+%( specs with broken deps);
-        " 2>&1 || true'
-
-  pre_verify:
-    # habitat_* test dirs exist in the suite but busser-habitat_* runner gems do not exist
-    # on RubyGems.org, causing `gem install busser-habitat_config` etc. to fail.
-    # Remove them before busser's setup phase discovers and tries to install them.
-    # Must wrap in sh -c: docker exec has no shell so ; and 2>/dev/null require one.
-    - remote: >-
-        sh -c 'find /tmp/verifier /tmp/kitchen -maxdepth 8 -name "habitat_*" -type d -exec rm -rf {} + 2>/dev/null; echo done'
 
 platforms:
   - name: amazonlinux-2
