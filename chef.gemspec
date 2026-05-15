@@ -57,7 +57,7 @@ Gem::Specification.new do |s|
   s.add_dependency "inspec-core", "~> 7.0.107"
 
   s.add_dependency "ffi", ">= 1.15.5", "< 1.18.0"
-  s.add_dependency "ffi-yajl", "~> 2.2"
+  s.add_dependency "ffi-yajl", ">= 2.2", "< 4.0"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "ed25519", "~> 1.2" # ssh-ed25519 support for target mode
