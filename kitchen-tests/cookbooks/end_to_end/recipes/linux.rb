@@ -103,11 +103,13 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "openssh"
 
-include_recipe "nscd" unless fedora? || (platform_family?("rhel") && node["platform_version"].to_i >= 10) || (platform?("almalinux", "rocky", "oracle") && node["platform_version"].to_i >= 10) # fedora 34+ and RHEL 10+ don't have nscd
+unless fedora? || (amazon? && node["platform_version"] >= "2023") || (platform_family?("rhel") && node["platform_version"].to_i >= 10) || platform_family?("suse") # fedora 34+, Amazon Linux 2023+, RHEL 10+, and openSUSE don't have a working nscd
+  nscd "nscd"
+end
 
 logrotate_package "logrotate"
 
-include_recipe "git"
+git_client "default"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
