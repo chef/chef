@@ -66,7 +66,7 @@ chef_client_launchd "Every 30 mins Infra Client run" do
   action :enable
 end
 
-git_client 'default'
+git_client "default"
 
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
