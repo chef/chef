@@ -5,7 +5,9 @@ describe "openssl checks" do
     if macos?
       "1.1.1m"
     else
-      "3.5.5"
+      # this will break whenever your upstream openssl version changes, but this is meant to make
+      # sure we're actually using the version we expect to be using, and not some system version that might be present on the build machine
+      "3.5.6"
     end
   end
 
