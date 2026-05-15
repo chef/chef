@@ -35,9 +35,11 @@ jobs:
       with:
         project: chef
     - name: Install Test Kitchen gem
-      run: chef gem install test-kitchen --no-document
+      run: |
+        C:\opscode\chef\embedded\bin\gem.bat install test-kitchen --no-document
     - name: Kitchen Test
-      run: chef exec kitchen test end-to-end-${{ matrix.os }}
+      run: |
+        C:\opscode\chef\embedded\bin\kitchen.bat test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
@@ -61,9 +63,9 @@ jobs:
         with:
           project: chef
       - name: Install Test Kitchen gem
-        run: chef gem install test-kitchen --no-document
+        run: /opt/chef/embedded/bin/gem install test-kitchen --no-document
       - name: Kitchen Test
-        run: chef exec kitchen test end-to-end-${{ matrix.os }}
+        run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -101,7 +103,7 @@ jobs:
         with:
           project: chef
       - name: Install Test Kitchen gem
-        run: chef gem install test-kitchen --no-document
+        run: /opt/chef/embedded/bin/gem install test-kitchen --no-document
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
@@ -120,7 +122,7 @@ jobs:
           sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
           docker --version
       - name: Kitchen Test
-        run: chef exec kitchen test end-to-end-${{ matrix.os }}
+        run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:
