@@ -36,11 +36,12 @@ jobs:
         project: chef
     - name: Install Test Kitchen gem
       run: |
-        C:\opscode\chef\embedded\bin\gem.bat install test-kitchen -v 3.8.2 --no-document
+        New-Item -ItemType Directory -Force -Path C:\kitchen\bin | Out-Null
+        C:\opscode\chef\embedded\bin\gem.bat install test-kitchen -v 3.8.2 --no-document --bindir C:\kitchen\bin
         C:\opscode\chef\embedded\bin\gem.bat install kitchen-inspec --no-document
     - name: Kitchen Test
       run: |
-        C:\opscode\chef\embedded\bin\kitchen.bat test end-to-end-${{ matrix.os }}
+        C:\kitchen\bin\kitchen.bat test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
@@ -65,10 +66,11 @@ jobs:
           project: chef
       - name: Install Test Kitchen gem
         run: |
-          sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document
+          sudo mkdir -p /tmp/kitchen/bin
+          sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document --bindir /tmp/kitchen/bin
           sudo /opt/chef/embedded/bin/gem install kitchen-inspec --no-document
       - name: Kitchen Test
-        run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
+        run: /tmp/kitchen/bin/kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -107,7 +109,8 @@ jobs:
           project: chef
       - name: Install Test Kitchen gem
         run: |
-          sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document
+          sudo mkdir -p /tmp/kitchen/bin
+          sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document --bindir /tmp/kitchen/bin
           sudo /opt/chef/embedded/bin/gem install kitchen-inspec kitchen-dokken --no-document
       - name: Downgrade Docker to 28.0.4
         run: |
@@ -127,7 +130,7 @@ jobs:
           sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
           docker --version
       - name: Kitchen Test
-        run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
+        run: /tmp/kitchen/bin/kitchen test end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:
