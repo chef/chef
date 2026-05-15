@@ -193,7 +193,7 @@ jobs:
         shell: pwsh
         run: wsl --set-default-version 2
 
-      - uses: Vampire/setup-wsl@v3
+      - uses: Vampire/setup-wsl@v7
         with:
           distribution: Ubuntu-24.04
           use-cache: "true"
