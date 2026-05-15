@@ -135,7 +135,10 @@ jobs:
           sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
           docker --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        working-directory: kitchen-tests
+        run: |
+          bundle install --jobs=3 --retry=3
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:
