@@ -54,7 +54,7 @@ Gem::Specification.new do |s|
   end
 
   s.add_dependency "ffi", ">= 1.15.5", "<= 1.16.3"
-  s.add_dependency "ffi-yajl", "~> 2.2"
+  s.add_dependency "ffi-yajl", ">= 2.2", "< 4.0"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "erubis", "~> 2.7" # template resource / cookbook syntax check
