@@ -28,12 +28,20 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept
+      MULTI_JSON_ENGINE: json_gem
     steps:
     - uses: actions/checkout@v6
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
+      with:
+        project: chef
+    - name: Install Test Kitchen gem
+      run: |
+        C:\opscode\chef\embedded\bin\gem.bat install test-kitchen -v 3.8.2 --no-document --force
+        C:\opscode\chef\embedded\bin\gem.bat install kitchen-inspec -v 2.6.2 --no-document --force
     - name: Kitchen Test
-      run: kitchen test end-to-end-${{ matrix.os }}
+      run: |
+        C:\opscode\chef\embedded\bin\kitchen.bat test end-to-end-${{ matrix.os }}
 
   mac_arm64:
     strategy:
@@ -47,6 +55,7 @@ jobs:
     env:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      MULTI_JSON_ENGINE: json_gem
     steps:
       - name: Check out code
         uses: actions/checkout@v6
@@ -54,8 +63,16 @@ jobs:
           clean: true
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
+        with:
+          project: chef
+      - name: Install coreutils
+        run: brew install coreutils
+      - name: Install Test Kitchen gem
+        run: |
+          sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document --force
+          sudo /opt/chef/embedded/bin/gem install kitchen-inspec -v 2.6.2 --no-document --force
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
     strategy:
@@ -87,11 +104,19 @@ jobs:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+      MULTI_JSON_ENGINE: json_gem
     steps:
       - name: Check out code
         uses: actions/checkout@v6
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
+        with:
+          project: chef
+      - name: Install Test Kitchen gem
+        run: |
+          sudo /opt/chef/embedded/bin/gem install test-kitchen -v 3.8.2 --no-document --force
+          sudo /opt/chef/embedded/bin/gem install kitchen-inspec -v 2.6.2 --no-document --force
+          sudo /opt/chef/embedded/bin/gem install kitchen-dokken -v 2.20.8 --no-document --force
       - name: Downgrade Docker to 28.0.4
         run: |
           # Remove existing Docker
@@ -110,7 +135,7 @@ jobs:
           sudo apt-get install -y --allow-downgrades docker-ce=5:28.0.4-1~ubuntu.24.04~noble docker-ce-cli=5:28.0.4-1~ubuntu.24.04~noble containerd.io
           docker --version
       - name: Kitchen Test
-        run: kitchen test end-to-end-${{ matrix.os }}
+        run: /opt/chef/embedded/bin/kitchen test end-to-end-${{ matrix.os }}
 
 #  vm_lnx_x86_64:
 #    strategy:
