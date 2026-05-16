@@ -72,13 +72,31 @@ class Chef
         logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report_with_interval
+        @compliance_phase_completed = true
       end
 
-      def run_failed(_exception, _run_status)
+      def run_failed(exception, _run_status)
         # If the run has failed because our own validation of compliance
         # phase configuration has failed, we don't want to submit a report
         # because we're still not configured correctly.
         return unless enabled? && @validation_passed
+
+        # A reboot exception is not a real failure — it is an expected outcome
+        # when a reboot resource fires :reboot_now.  In that case run_completed
+        # has already executed the Compliance Phase, so running it again here
+        # would produce a duplicate scan (and the second scan may be killed by
+        # the pending reboot).
+        if exception.is_a?(Chef::Exceptions::Reboot)
+          logger.debug("#{self.class}##{__method__}: skipping Compliance Phase because a reboot was requested")
+          return
+        end
+
+        # Guard against any other code path that might trigger both run_completed
+        # and run_failed in the same client run.
+        if @compliance_phase_completed
+          logger.debug("#{self.class}##{__method__}: skipping Compliance Phase because it has already run in this client run")
+          return
+        end
 
         logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
