@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.80 -->
-## [v18.10.80](https://github.com/chef/chef/tree/v18.10.80) (2026-05-15)
+<!-- latest_release 18.10.81 -->
+## [v18.10.81](https://github.com/chef/chef/tree/v18.10.81) (2026-05-16)
 
 #### Merged Pull Requests
-- fix(kitchen-tests): fix nscd and git cookbook failures [#16010](https://github.com/chef/chef/pull/16010) ([johnmccrae](https://github.com/johnmccrae))
+- [Backport chef-18] Fix: Compliance Phase runs twice when reboot is scheduled during Chef Infra Client run [#15997](https://github.com/chef/chef/pull/15997) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Backport chef-18] Fix: Compliance Phase runs twice when reboot is scheduled during Chef Infra Client run [#15997](https://github.com/chef/chef/pull/15997) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.81 -->
 - fix(kitchen-tests): fix nscd and git cookbook failures [#16010](https://github.com/chef/chef/pull/16010) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.80 -->
 - Removing Kernel 2 support from Testing [#15973](https://github.com/chef/chef/pull/15973) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.79 -->
 - Remove unused dependabot config on chef-18 [#15968](https://github.com/chef/chef/pull/15968) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.78 -->
