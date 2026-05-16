@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.13 -->
-## [v19.3.13](https://github.com/chef/chef/tree/v19.3.13) (2026-05-16)
+<!-- latest_release 19.3.14 -->
+## [v19.3.14](https://github.com/chef/chef/tree/v19.3.14) (2026-05-16)
 
 #### Merged Pull Requests
-- Bump actions/labeler from 6.0.1 to 6.1.0 [#15989](https://github.com/chef/chef/pull/15989) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix openssl test [#16011](https://github.com/chef/chef/pull/16011) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix openssl test [#16011](https://github.com/chef/chef/pull/16011) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.14 -->
 - Bump actions/labeler from 6.0.1 to 6.1.0 [#15989](https://github.com/chef/chef/pull/15989) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.13 -->
 - Bump aws-sdk-secretsmanager from 1.129.0 to 1.130.0 [#16001](https://github.com/chef/chef/pull/16001) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.12 -->
 - Bump aws-sdk-s3 from 1.220.0 to 1.222.0 [#16002](https://github.com/chef/chef/pull/16002) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.11 -->
