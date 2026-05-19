@@ -49,3 +49,8 @@ bundle exec rake test:target_mode
 
 - Prefer `bundle exec` to ensure commands run against the project's locked gem set.
 - If a task is not available in your checkout, list tasks with `bundle exec rake -T`.
+
+## Dependency Notes
+
+- Critical dependency inventory and minimal pinning guidance are documented in `ai-track-docs/dependency-notes.md`.
+- Keep constraint changes minimal (no major upgrades) and validate with focused unit tests before broader CI runs.
