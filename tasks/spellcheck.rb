@@ -20,6 +20,25 @@ CSPELL_CONFIG_FILE = "cspell.json".freeze unless defined?(CSPELL_CONFIG_FILE)
 SPELLCHECK_STRUCTURED_LOGS_ENV = "SPELLCHECK_STRUCTURED_LOGS".freeze unless defined?(SPELLCHECK_STRUCTURED_LOGS_ENV)
 
 namespace :spellcheck do
+  # Helper to read a file with 1 retry for transient failures (lock/permission issues).
+  # Returns file content on success or raises StandardError if retries exhausted.
+  def read_file_with_retry(path, max_attempts = 2)
+    attempt = 0
+    last_error = nil
+
+    loop do
+      attempt += 1
+      begin
+        return File.read(path)
+      rescue StandardError => e
+        last_error = e
+        raise if attempt >= max_attempts
+
+        sleep(0.01) # brief backoff before retry
+      end
+    end
+  end
+
   task run: :prereqs do
     sh 'cspell lint --no-progress "**/*"'
   end
@@ -46,7 +65,9 @@ namespace :spellcheck do
     end
 
     begin
-      parsed_config = JSON.parse(File.read(CSPELL_CONFIG_FILE))
+      # Use retry helper to handle transient file read failures.
+      config_content = read_file_with_retry(CSPELL_CONFIG_FILE)
+      parsed_config = JSON.parse(config_content)
     rescue StandardError
       # Keep this broad so malformed JSON and read-time errors are surfaced uniformly.
       emit_structured_log.call("error")

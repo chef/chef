@@ -95,4 +95,34 @@ describe "spellcheck rake tasks" do
       expect { Rake::Task["spellcheck:config_check"].invoke }.to output("").to_stdout
     end
   end
+
+  # Resilience: Transient file read failure succeeds on retry
+  it "recovers from transient file read failure via retry" do
+    File.write("cspell.json", '{"version":"0.2"}')
+    call_count = 0
+
+    # Simulate transient read failure on first attempt, success on retry
+    allow(File).to receive(:read).and_wrap_original do |original_method, *args|
+      call_count += 1
+      if call_count == 1
+        raise IOError, "Device or resource busy (transient)"
+      end
+
+      original_method.call(*args)
+    end
+
+    expect { Rake::Task["spellcheck:config_check"].invoke }.not_to raise_error
+    expect(call_count).to eq(2) # Verify retry was attempted
+  end
+
+  # Resilience: Permanent file read failure after retries exhausted
+  it "aborts after retry exhaustion on permanent read failure" do
+    File.write("cspell.json", '{"version":"0.2"}')
+
+    # Simulate permanent read failure (all retries fail)
+    allow(File).to receive(:read).and_raise(IOError, "Permission denied")
+
+    expect { Rake::Task["spellcheck:config_check"].invoke }
+      .to raise_error(SystemExit, /Failed to parse config file 'cspell.json', skipping spellcheck/)
+  end
 end
