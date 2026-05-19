@@ -17,6 +17,7 @@
 
 # Shared config filename used by both validation and error messages.
 CSPELL_CONFIG_FILE = "cspell.json".freeze unless defined?(CSPELL_CONFIG_FILE)
+SPELLCHECK_STRUCTURED_LOGS_ENV = "SPELLCHECK_STRUCTURED_LOGS".freeze unless defined?(SPELLCHECK_STRUCTURED_LOGS_ENV)
 
 namespace :spellcheck do
   task run: :prereqs do
@@ -29,8 +30,11 @@ namespace :spellcheck do
     require "json"
     op_name = "spellcheck_config_check"
     started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    structured_logs_enabled = ENV.fetch(SPELLCHECK_STRUCTURED_LOGS_ENV, "1") != "0"
 
     emit_structured_log = lambda do |status|
+      next unless structured_logs_enabled
+
       elapsed_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000.0
       puts format("op=%s status=%s elapsed_ms=%.3f", op_name, status, elapsed_ms)
     end

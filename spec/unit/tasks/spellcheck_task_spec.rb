@@ -23,6 +23,18 @@ require "fileutils"
 describe "spellcheck rake tasks" do
   let(:tasks_file) { File.expand_path("../../../tasks/spellcheck.rb", __dir__) }
 
+  def with_env(var, value)
+    old_value = ENV[var]
+    ENV[var] = value
+    yield
+  ensure
+    if old_value.nil?
+      ENV.delete(var)
+    else
+      ENV[var] = old_value
+    end
+  end
+
   around do |example|
     original_dir = Dir.pwd
     tmpdir = Dir.mktmpdir("spellcheck-task-spec")
@@ -67,5 +79,20 @@ describe "spellcheck rake tasks" do
     File.write("cspell.json", '{"version":"0.2"}')
 
     expect { Rake::Task["spellcheck:config_check"].invoke }.not_to raise_error
+  end
+
+  it "emits structured logs when toggle is on" do
+    File.write("cspell.json", '{"version":"0.2"}')
+
+    expect { Rake::Task["spellcheck:config_check"].invoke }
+      .to output(/op=spellcheck_config_check status=ok elapsed_ms=\d+\.\d{3}/).to_stdout
+  end
+
+  it "does not emit structured logs when toggle is off" do
+    with_env("SPELLCHECK_STRUCTURED_LOGS", "0") do
+      File.write("cspell.json", '{"version":"0.2"}')
+
+      expect { Rake::Task["spellcheck:config_check"].invoke }.to output("").to_stdout
+    end
   end
 end
