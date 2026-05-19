@@ -43,4 +43,17 @@ describe "spellcheck rake tasks" do
     expect { Rake::Task["spellcheck:config_check"].invoke }
       .to raise_error(SystemExit, /Spellcheck config file 'cspell.json' not found, skipping spellcheck/)
   end
+
+  it "aborts when cspell.json is invalid json" do
+    File.write("cspell.json", "{ invalid_json ")
+
+    expect { Rake::Task["spellcheck:config_check"].invoke }
+      .to raise_error(SystemExit, /Failed to parse config file 'cspell.json', skipping spellcheck/)
+  end
+
+  it "passes when cspell.json is valid json" do
+    File.write("cspell.json", '{"version":"0.2"}')
+
+    expect { Rake::Task["spellcheck:config_check"].invoke }.not_to raise_error
+  end
 end

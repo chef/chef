@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+CSPELL_CONFIG_FILE = "cspell.json".freeze unless defined?(CSPELL_CONFIG_FILE)
+
 namespace :spellcheck do
   task run: :prereqs do
     sh 'cspell lint --no-progress "**/*"'
@@ -25,14 +27,14 @@ namespace :spellcheck do
   task :config_check do
     require "json"
 
-    config_file = "cspell.json"
-
-    unless File.readable?(config_file)
-      abort "Spellcheck config file '#{config_file}' not found, skipping spellcheck"
+    unless File.readable?(CSPELL_CONFIG_FILE)
+      abort "Spellcheck config file '#{CSPELL_CONFIG_FILE}' not found, skipping spellcheck"
     end
 
-    unless (JSON.parse(File.read(config_file)) rescue false)
-      abort "Failed to parse config file '#{config_file}', skipping spellcheck"
+    begin
+      JSON.parse(File.read(CSPELL_CONFIG_FILE))
+    rescue StandardError
+      abort "Failed to parse config file '#{CSPELL_CONFIG_FILE}', skipping spellcheck"
     end
   end
 
