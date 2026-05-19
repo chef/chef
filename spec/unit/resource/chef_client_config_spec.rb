@@ -362,6 +362,7 @@ describe Chef::Resource::ChefClientConfig do
     end
 
     it "passes user and group from the resource to all managed directories without directory_specs" do
+      allow(Chef::Platform).to receive(:windows?).and_return(false)
       resource.config_directory("/etc/chef")
       resource.user("chefuser")
       resource.group("chefgroup")
