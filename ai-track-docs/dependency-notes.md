@@ -94,3 +94,36 @@ bundle exec rake spellcheck
 
 - Proposals above are intentionally minimal and avoid major upgrades.
 - Apply one constraint change at a time and re-run unit/functional CI to isolate regressions.
+
+## Security Notes (Secret Hygiene)
+
+Critical secret surfaces in this repository/workflow:
+
+- Local env/config files (`.env*`, `.netrc`, `.npmrc`) that may contain tokens.
+- Generated kitchen artifacts that can carry credentials (`kitchen-tests/hab_token`, `kitchen-tests/gha-key.tar.gz`).
+- CI/runtime env vars such as `HAB_AUTH_TOKEN` and other credential-like values.
+
+Minimal constraints (no major changes):
+
+1. Keep secrets out of source control
+
+- Ensure common secret file patterns are ignored in `.gitignore`.
+- Keep generated token/key artifacts ignored by default.
+
+1. Prefer environment-provided credentials
+
+- Continue using environment variables and secret managers in CI.
+- Avoid adding new static keys/tokens in docs, tests, and YAML defaults.
+
+1. Log hygiene
+
+- Do not echo full credential values in scripts.
+- Redact or truncate sensitive values when debug output is required.
+
+Quick checks:
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+git status --short
+rg -n "(token|secret|password|private[_-]?key|api[_-]?key)" kitchen-tests .github .buildkite .expeditor --glob '!vendor/**'
+```
