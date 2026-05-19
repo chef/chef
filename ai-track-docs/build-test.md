@@ -45,6 +45,12 @@ bundle exec rake spellcheck
 bundle exec rake test:target_mode
 ```
 
+To view structured spellcheck logs (op/status/elapsed_ms):
+
+```bash
+bundle exec rake spellcheck 2>&1 | rg "op=spellcheck_"
+```
+
 ## Notes
 
 - Prefer `bundle exec` to ensure commands run against the project's locked gem set.

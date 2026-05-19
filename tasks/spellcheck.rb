@@ -27,9 +27,17 @@ namespace :spellcheck do
 
   task :config_check do
     require "json"
+    op_name = "spellcheck_config_check"
+    started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+    emit_structured_log = lambda do |status|
+      elapsed_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at) * 1000.0
+      puts format("op=%s status=%s elapsed_ms=%.3f", op_name, status, elapsed_ms)
+    end
 
     # Fail fast with a clear message before attempting parse.
     unless File.readable?(CSPELL_CONFIG_FILE)
+      emit_structured_log.call("error")
       abort "Spellcheck config file '#{CSPELL_CONFIG_FILE}' not found, skipping spellcheck"
     end
 
@@ -37,13 +45,17 @@ namespace :spellcheck do
       parsed_config = JSON.parse(File.read(CSPELL_CONFIG_FILE))
     rescue StandardError
       # Keep this broad so malformed JSON and read-time errors are surfaced uniformly.
+      emit_structured_log.call("error")
       abort "Failed to parse config file '#{CSPELL_CONFIG_FILE}', skipping spellcheck"
     end
 
     # cspell expects a JSON object config; reject parseable but invalid top-level types.
     unless parsed_config.is_a?(Hash)
+      emit_structured_log.call("error")
       abort "Spellcheck config file '#{CSPELL_CONFIG_FILE}' must contain a JSON object"
     end
+
+    emit_structured_log.call("ok")
   end
 
   task :cspell_check do

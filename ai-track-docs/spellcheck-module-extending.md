@@ -42,3 +42,31 @@ cd /Users/rchawda/github.com/chef/chef
 bundle exec rspec spec/unit/tasks/spellcheck_task_spec.rb
 bundle exec rake spellcheck
 ```
+
+## Structured Logs
+
+The config validation path emits structured timing logs with consistent fields:
+
+- op
+- status
+- elapsed_ms
+
+Example output line:
+
+```text
+op=spellcheck_config_check status=ok elapsed_ms=0.123
+```
+
+View all spellcheck logs:
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+bundle exec rake spellcheck 2>&1 | rg "op=spellcheck_"
+```
+
+View only failures:
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+bundle exec rake spellcheck 2>&1 | rg "op=spellcheck_.*status=error"
+```
