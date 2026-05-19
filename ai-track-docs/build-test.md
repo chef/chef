@@ -60,3 +60,21 @@ bundle exec rake spellcheck 2>&1 | rg "op=spellcheck_"
 
 - Critical dependency inventory and minimal pinning guidance are documented in `ai-track-docs/dependency-notes.md`.
 - Keep constraint changes minimal (no major upgrades) and validate with focused unit tests before broader CI runs.
+
+## CI Reliability and Local Fallback
+
+CI is configured via `.github/workflows/unit_specs.yml` and related workflows. If CI is unavailable, use the local fallback script that mirrors key CI setup steps (env vars, node fixtures, bundle install, targeted tests).
+
+Quick fallback run:
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+bash scripts/run_local_ci_tests.sh quick
+```
+
+Full fallback run (heavier, closer to CI unit coverage):
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+bash scripts/run_local_ci_tests.sh full
+```
