@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# Shared config filename used by both validation and error messages.
 CSPELL_CONFIG_FILE = "cspell.json".freeze unless defined?(CSPELL_CONFIG_FILE)
 
 namespace :spellcheck do
@@ -27,6 +28,7 @@ namespace :spellcheck do
   task :config_check do
     require "json"
 
+    # Fail fast with a clear message before attempting parse.
     unless File.readable?(CSPELL_CONFIG_FILE)
       abort "Spellcheck config file '#{CSPELL_CONFIG_FILE}' not found, skipping spellcheck"
     end
@@ -34,6 +36,7 @@ namespace :spellcheck do
     begin
       JSON.parse(File.read(CSPELL_CONFIG_FILE))
     rescue StandardError
+      # Keep this broad so malformed JSON and read-time errors are surfaced uniformly.
       abort "Failed to parse config file '#{CSPELL_CONFIG_FILE}', skipping spellcheck"
     end
   end

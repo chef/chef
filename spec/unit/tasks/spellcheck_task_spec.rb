@@ -28,6 +28,7 @@ describe "spellcheck rake tasks" do
     tmpdir = Dir.mktmpdir("spellcheck-task-spec")
 
     begin
+      # Isolate the task run in a temporary working dir so each example is deterministic.
       Dir.chdir(tmpdir)
       Rake.application = Rake::Application.new
       load tasks_file
@@ -39,11 +40,13 @@ describe "spellcheck rake tasks" do
     end
   end
 
+  # Missing file should always produce the same fast-fail message.
   it "aborts when cspell.json is missing" do
     expect { Rake::Task["spellcheck:config_check"].invoke }
       .to raise_error(SystemExit, /Spellcheck config file 'cspell.json' not found, skipping spellcheck/)
   end
 
+  # Invalid JSON should be rejected with parse guidance.
   it "aborts when cspell.json is invalid json" do
     File.write("cspell.json", "{ invalid_json ")
 
@@ -51,6 +54,7 @@ describe "spellcheck rake tasks" do
       .to raise_error(SystemExit, /Failed to parse config file 'cspell.json', skipping spellcheck/)
   end
 
+  # Valid JSON should pass config validation without aborting.
   it "passes when cspell.json is valid json" do
     File.write("cspell.json", '{"version":"0.2"}')
 
