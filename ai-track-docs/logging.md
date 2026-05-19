@@ -50,3 +50,20 @@ bundle exec rake spellcheck 2>&1 | rg "op=spellcheck_.*status=error"
 
 - `elapsed_ms` is computed with a monotonic clock (`Process::CLOCK_MONOTONIC`) to avoid wall-clock skew.
 - This logging is intentionally lightweight and line-oriented for local debugging and CI log scanning.
+
+## Toggle
+
+Structured logging for `spellcheck:config_check` can be toggled with an environment variable:
+
+- ON (default): unset `SPELLCHECK_STRUCTURED_LOGS` or set it to any value other than `0`
+- OFF: set `SPELLCHECK_STRUCTURED_LOGS=0`
+
+Examples:
+
+```bash
+# Default ON
+bundle exec rake spellcheck
+
+# Explicit OFF
+SPELLCHECK_STRUCTURED_LOGS=0 bundle exec rake spellcheck
+```
