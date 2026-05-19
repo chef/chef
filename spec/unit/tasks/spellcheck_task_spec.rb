@@ -54,6 +54,14 @@ describe "spellcheck rake tasks" do
       .to raise_error(SystemExit, /Failed to parse config file 'cspell.json', skipping spellcheck/)
   end
 
+  # Parseable JSON with wrong top-level type should be rejected.
+  it "aborts when cspell.json top-level json type is not an object" do
+    File.write("cspell.json", "[]")
+
+    expect { Rake::Task["spellcheck:config_check"].invoke }
+      .to raise_error(SystemExit, /Spellcheck config file 'cspell.json' must contain a JSON object/)
+  end
+
   # Valid JSON should pass config validation without aborting.
   it "passes when cspell.json is valid json" do
     File.write("cspell.json", '{"version":"0.2"}')

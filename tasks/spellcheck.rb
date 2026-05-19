@@ -34,10 +34,15 @@ namespace :spellcheck do
     end
 
     begin
-      JSON.parse(File.read(CSPELL_CONFIG_FILE))
+      parsed_config = JSON.parse(File.read(CSPELL_CONFIG_FILE))
     rescue StandardError
       # Keep this broad so malformed JSON and read-time errors are surfaced uniformly.
       abort "Failed to parse config file '#{CSPELL_CONFIG_FILE}', skipping spellcheck"
+    end
+
+    # cspell expects a JSON object config; reject parseable but invalid top-level types.
+    unless parsed_config.is_a?(Hash)
+      abort "Spellcheck config file '#{CSPELL_CONFIG_FILE}' must contain a JSON object"
     end
   end
 
