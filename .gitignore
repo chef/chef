@@ -98,3 +98,22 @@ chef_dictionary.txt
 
 # ignore any gems we build locally
 *.gem
+
+# Secret hygiene: local credentials and key material
+.env
+.env.*
+!.env.example
+!.env.sample
+*.secret
+*.secrets
+*.token
+*.pem
+*.p12
+*.pfx
+*.jks
+.npmrc
+.netrc
+
+# Kitchen-generated sensitive artifacts
+kitchen-tests/hab_token
+kitchen-tests/gha-key.tar.gz
