@@ -1,0 +1,13 @@
+flowchart TD
+    A[Chef CLI Entrypoints\nchef-bin/bin/*] --> B[Config Loading\nchef-config + core config]
+    B --> C[Policy and Node Context]
+    C --> D[Resource Collection\nCompile Phase]
+    D --> E[Provider Actions\nConverge Phase]
+    E --> F[Handlers, Reporting, Exit]
+
+    G[Shared Utilities\nchef-utils] --> B
+    G --> D
+    G --> E
+
+    H[Cookbooks and Inputs] --> C
+    I[Platform and Packaging\ndistro + habitat] --> A
