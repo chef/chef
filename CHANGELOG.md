@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.15 -->
-## [v19.3.15](https://github.com/chef/chef/tree/v19.3.15) (2026-05-19)
+<!-- latest_release 19.3.16 -->
+## [v19.3.16](https://github.com/chef/chef/tree/v19.3.16) (2026-05-20)
 
 #### Merged Pull Requests
-- Bump macos chronoguard out one month [#16020](https://github.com/chef/chef/pull/16020) ([tpowell-progress](https://github.com/tpowell-progress))
+- chef_client_config - Added permission overrides for Chef-managed directories [#16019](https://github.com/chef/chef/pull/16019) ([LoboDorado](https://github.com/LoboDorado))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.2.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- chef_client_config - Added permission overrides for Chef-managed directories [#16019](https://github.com/chef/chef/pull/16019) ([LoboDorado](https://github.com/LoboDorado)) <!-- 19.3.16 -->
 - Bump macos chronoguard out one month [#16020](https://github.com/chef/chef/pull/16020) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.15 -->
 - Fix openssl test [#16011](https://github.com/chef/chef/pull/16011) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.14 -->
 - Bump actions/labeler from 6.0.1 to 6.1.0 [#15989](https://github.com/chef/chef/pull/15989) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.13 -->
