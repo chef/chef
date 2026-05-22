@@ -31,9 +31,6 @@ class Chef
         backups: { mode: "0750", inherits: :auto },
       }.freeze
 
-      provides :chef_client_config, target_mode: true
-      target_mode support: :full
-
       description "Use the **chef_client_config** resource to create a client.rb file in the #{ChefUtils::Dist::Infra::PRODUCT} configuration directory. See the [client.rb docs](https://docs.chef.io/config_rb_client/) for more details on options available in the client.rb configuration file."
       introduced "16.6"
       examples <<~DOC
