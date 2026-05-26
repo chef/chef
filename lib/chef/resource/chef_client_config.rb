@@ -34,118 +34,118 @@ class Chef
       description "Use the **chef_client_config** resource to create a client.rb file in the #{ChefUtils::Dist::Infra::PRODUCT} configuration directory. See the [client.rb docs](https://docs.chef.io/config_rb_client/) for more details on options available in the client.rb configuration file."
       introduced "16.6"
       examples <<~DOC
-      **Bare minimum #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
+        **Bare minimum #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
 
-      The absolute minimum configuration necessary for a node to communicate with the #{ChefUtils::Dist::Server::PRODUCT} is the URL of the #{ChefUtils::Dist::Server::PRODUCT}. All other configuration options either have values at the server side (Policyfiles, Roles, Environments, etc) or have default values determined at client startup.
+        The absolute minimum configuration necessary for a node to communicate with the #{ChefUtils::Dist::Server::PRODUCT} is the URL of the #{ChefUtils::Dist::Server::PRODUCT}. All other configuration options either have values at the server side (Policyfiles, Roles, Environments, etc) or have default values determined at client startup.
 
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-      end
-      ```
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+        end
+        ```
 
-      **More complex #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
+        **More complex #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
 
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-        log_level :info
-        log_location :syslog
-        http_proxy 'proxy.example.dmz'
-        https_proxy 'proxy.example.dmz'
-        no_proxy %w(internal.example.dmz)
-      end
-      ```
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+          log_level :info
+          log_location :syslog
+          http_proxy 'proxy.example.dmz'
+          https_proxy 'proxy.example.dmz'
+          no_proxy %w(internal.example.dmz)
+        end
+        ```
 
-      **Adding additional config content to the client.rb**:
+        **Adding additional config content to the client.rb**:
 
-      This resource aims to provide common configuration options. Some configuration options are missing and some users may want to use arbitrary Ruby code within their configuration. For this we offer an `additional_config` property that can be used to add any configuration or code to the bottom of the `client.rb` file. Also keep in mind that within the configuration directory is a `client.d` directory where you can put additional `.rb` files containing configuration options. These can be created using `file` or `template` resources within your cookbooks as necessary.
+        This resource aims to provide common configuration options. Some configuration options are missing and some users may want to use arbitrary Ruby code within their configuration. For this we offer an `additional_config` property that can be used to add any configuration or code to the bottom of the `client.rb` file. Also keep in mind that within the configuration directory is a `client.d` directory where you can put additional `.rb` files containing configuration options. These can be created using `file` or `template` resources within your cookbooks as necessary.
 
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-        additional_config <<~CONFIG
-          # Extra config code to safely load a gem into the client run.
-          # Since the config is Ruby you can run any Ruby code you want via the client.rb.
-          # It's a great way to break things, so be careful
-          begin
-            require 'aws-sdk'
-          rescue LoadError
-            Chef::Log.warn "Failed to load aws-sdk."
-          end
-        CONFIG
-      end
-      ```
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+          additional_config <<~CONFIG
+            # Extra config code to safely load a gem into the client run.
+            # Since the config is Ruby you can run any Ruby code you want via the client.rb.
+            # It's a great way to break things, so be careful
+            begin
+              require 'aws-sdk'
+            rescue LoadError
+              Chef::Log.warn "Failed to load aws-sdk."
+            end
+          CONFIG
+        end
+        ```
 
-      **Setup two report handlers in the client.rb**:
+        **Setup two report handlers in the client.rb**:
 
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-        report_handlers [
-          {
-            'class' => 'ReportHandler1Class',
-            'arguments' => ["'FirstArgument'", "'SecondArgument'"],
-          },
-          {
-            'class' => 'ReportHandler2Class',
-            'arguments' => ["'FirstArgument'", "'SecondArgument'"],
-          },
-        ]
-      end
-      ```
-
-      **Report directly to the [Chef Automate data collector endpoint](/automate/data_collection/#configure-chef-infra-client-to-use-the-data-collector-endpoint-in-chef-automate).**
-
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-        data_collector_server_url 'https://automate.example.dmz'
-        data_collector_token 'TEST_TOKEN_TEST'
-      end
-      ```
-
-      **Set Linux directory ownership and modes**:
-
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-        user 'root'
-        group 'root'
-        file_cache_path '/var/chef/cache'
-        file_backup_path '/var/chef/backups'
-        log_location '/var/log/chef/client.log'
-        directory_specs(
-          config: { owner: 'root', group: 'root', mode: '0700' },
-          client_d: { owner: 'root', group: 'root', mode: '0700' },
-          logs: { owner: 'root', group: 'root', mode: '0750' },
-          cache: { owner: 'root', group: 'root', mode: '0750' },
-          backups: { owner: 'root', group: 'root', mode: '0750' }
-        )
-      end
-      ```
-
-      **Set Windows directory inheritance and rights**:
-
-      ```ruby
-      chef_client_config 'Create client.rb' do
-        chef_server_url 'https://chef.example.dmz'
-        config_directory 'C:/chef'
-        file_cache_path 'C:/chef/cache'
-        file_backup_path 'C:/chef/backups'
-        log_location 'C:/chef/log/client.log'
-        directory_specs(
-          config: {
-            owner: 'Administrators',
-            inherits: false,
-            rights: {
-              'Administrators' => :full_control,
-              'SYSTEM' => :full_control,
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+          report_handlers [
+            {
+              'class' => 'ReportHandler1Class',
+              'arguments' => ["'FirstArgument'", "'SecondArgument'"],
             },
-          }
-        )
-      end
-      ```
+            {
+              'class' => 'ReportHandler2Class',
+              'arguments' => ["'FirstArgument'", "'SecondArgument'"],
+            },
+          ]
+        end
+        ```
+
+        **Report directly to the [Chef Automate data collector endpoint](/automate/data_collection/#configure-chef-infra-client-to-use-the-data-collector-endpoint-in-chef-automate).**
+
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+          data_collector_server_url 'https://automate.example.dmz'
+          data_collector_token 'TEST_TOKEN_TEST'
+        end
+        ```
+
+        **Set Linux directory ownership and modes**:
+
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+          user 'root'
+          group 'root'
+          file_cache_path '/var/chef/cache'
+          file_backup_path '/var/chef/backups'
+          log_location '/var/log/chef/client.log'
+          directory_specs(
+            config: { owner: 'root', group: 'root', mode: '0700' },
+            client_d: { owner: 'root', group: 'root', mode: '0700' },
+            logs: { owner: 'root', group: 'root', mode: '0750' },
+            cache: { owner: 'root', group: 'root', mode: '0750' },
+            backups: { owner: 'root', group: 'root', mode: '0750' }
+          )
+        end
+        ```
+
+        **Set Windows directory inheritance and rights**:
+
+        ```ruby
+        chef_client_config 'Create client.rb' do
+          chef_server_url 'https://chef.example.dmz'
+          config_directory 'C:/chef'
+          file_cache_path 'C:/chef/cache'
+          file_backup_path 'C:/chef/backups'
+          log_location 'C:/chef/log/client.log'
+          directory_specs(
+            config: {
+              owner: 'Administrators',
+              inherits: false,
+              rights: {
+                'Administrators' => :full_control,
+                'SYSTEM' => :full_control,
+              },
+            }
+          )
+        end
+        ```
       DOC
 
       # @todo policy_file or policy_group being set requires the other to be set so enforce that.
