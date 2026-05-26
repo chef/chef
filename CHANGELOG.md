@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.85 -->
-## [v18.10.85](https://github.com/chef/chef/tree/v18.10.85) (2026-05-26)
+<!-- latest_release 18.10.86 -->
+## [v18.10.86](https://github.com/chef/chef/tree/v18.10.86) (2026-05-26)
 
 #### Merged Pull Requests
-- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#15969](https://github.com/chef/chef/pull/15969) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core from 3.16.2 to 3.16.3 [#15976](https://github.com/chef/chef/pull/15976) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core from 3.16.2 to 3.16.3 [#15976](https://github.com/chef/chef/pull/15976) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.86 -->
 - Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#15969](https://github.com/chef/chef/pull/15969) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.85 -->
 - Community omnibus [#16008](https://github.com/chef/chef/pull/16008) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.84 -->
 - [chef-18] [package] Backport: Add DNF5 support to the dnf_package provider [#16007](https://github.com/chef/chef/pull/16007) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.83 -->
