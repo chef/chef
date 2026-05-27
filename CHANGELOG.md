@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.19 -->
-## [v19.3.19](https://github.com/chef/chef/tree/v19.3.19) (2026-05-26)
+<!-- latest_release 19.3.20 -->
+## [v19.3.20](https://github.com/chef/chef/tree/v19.3.20) (2026-05-27)
 
 #### Merged Pull Requests
-- Bump ohai from `5b34b04` to `966bc8b` [#16023](https://github.com/chef/chef/pull/16023) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Disable chrony kitchen-tests on AlmaLinux 10 and document branching conventions [#16031](https://github.com/chef/chef/pull/16031) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable chrony kitchen-tests on AlmaLinux 10 and document branching conventions [#16031](https://github.com/chef/chef/pull/16031) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.20 -->
 - Bump ohai from `5b34b04` to `966bc8b` [#16023](https://github.com/chef/chef/pull/16023) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.19 -->
 - Bump aws-sdk-secretsmanager from 1.130.0 to 1.132.0 [#16026](https://github.com/chef/chef/pull/16026) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.18 -->
 - Bump aws-sdk-s3 from 1.222.0 to 1.224.0 [#16028](https://github.com/chef/chef/pull/16028) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.17 -->
