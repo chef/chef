@@ -107,6 +107,7 @@ When prompted to create a PR:
 - Create a PR with:
   - **Title**: Clear, descriptive title referencing the Jira ID
   - **Description**: HTML-formatted summary of changes made
+- For CVE fixes, add the `CVE` label and prefix the PR description with `[CVE]`
 - All operations should be performed on the local repository
 
 ## MCP Server Integration
