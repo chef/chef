@@ -219,7 +219,7 @@ class Chef
       def get_sysctld_value(key)
         raise unless ::TargetIO::File.exist?("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf")
 
-        k, v = ::Target_IO::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
+        k, v = ::TargetIO::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
         raise "Unknown sysctl key!" if k.nil?
         raise "Unknown sysctl value!" if v.nil?
 
