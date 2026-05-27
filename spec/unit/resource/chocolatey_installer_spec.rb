@@ -21,6 +21,9 @@ describe Chef::Resource::ChocolateyInstaller do
   include RecipeDSLHelper
 
   let(:resource) { Chef::Resource::ChocolateyInstaller.new("fakey_fakerton") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:config) do
     <<-CONFIG
       <?xml version="1.0" encoding="utf-8"?>
@@ -92,6 +95,50 @@ describe Chef::Resource::ChocolateyInstaller do
         allow(::File).to receive(:exist?).with('C:\ProgramData\chocolatey\bin\choco.exe').and_return(false)
         expect { Chef::Log.warn("Chocolatey is already uninstalled.") }.not_to output.to_stderr
       end
+
+      it "can install Chocolatey with a custom PS1 download URL" do
+        resource.download_url = "https://some.custom.url/install.ps1"
+        expect { resource.action :install }.not_to raise_error
+      end
+
+      it "downloads non-script URLs to a full path in the chef directory" do
+        resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_download", run_context)
+        resource.download_url = "https://some.custom.url/packages/chocolatey.2.0.0.nupkg"
+        expected_destination = Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), "chocolatey.2.0.0.nupkg")
+        install_provider = resource.provider_for_action(:install)
+
+        commands = []
+        shell_out = instance_double("Mixlib::ShellOut", error!: nil)
+
+        allow(resource).to receive(:provider_for_action).with(:install).and_return(install_provider)
+        allow(resource).to receive(:is_choco_installed?).and_return(false)
+        allow(install_provider).to receive(:powershell_exec) do |command|
+          commands << command
+          shell_out
+        end
+        allow(Chef::Log).to receive(:info)
+
+        resource.run_action(:install)
+
+        expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value https://some.custom.url/packages/chocolatey.2.0.0.nupkg")
+        expect(commands).to include("Invoke-WebRequest 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg' -OutFile '#{expected_destination}'")
+      end
+    end
+  end
+
+  describe "custom download path helpers" do
+    it "detects PowerShell scripts from the URL path" do
+      resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_script", run_context)
+      resource.download_url = "https://some.custom.url/install.ps1?token=abc123"
+
+      expect(resource.download_url_script?).to be true
+    end
+
+    it "falls back to a package filename when the URL path has no basename" do
+      resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_path", run_context)
+      resource.download_url = "https://some.custom.url/"
+
+      expect(resource.download_destination).to eq(Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), "chocolatey.nupkg"))
     end
   end
 
