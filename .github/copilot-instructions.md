@@ -83,13 +83,93 @@ chef/
 - Buildkite (build verification, platform testing)
 - Expeditor (release automation, version bumping, changelog generation)
 
-**Key Commands**:
+### 3. Implementation Phase
+
+- Follow Ruby best practices and Chef coding conventions
+- Ensure backward compatibility when possible
+- Implement changes incrementally
+- Write clean, well-documented code
+- Follow the existing code style and patterns
+
+### 4. Testing Requirements
+
+- **Unit Tests**: Create comprehensive unit tests for all new functionality
+- **Coverage Target**: Maintain test coverage > 80% for the repository
+- **Test Types**: Include unit, functional, and integration tests as appropriate
+- **Test Location**: Place tests in appropriate `spec/` subdirectories
+- **Test Framework**: Use RSpec for testing
+
+### 5. Validation and Quality Assurance
+
+- Run all existing tests to ensure no regressions
+- Verify code quality and adherence to Ruby standards
+- Check for any security implications
+- Validate functionality across different environments
+
+### 6. Documentation
+
+- Update relevant documentation
+- Add inline code comments where necessary
+- Update CHANGELOG.md if applicable
+- Ensure README updates if public API changes
+
+### 7. Pull Request Creation
+
+When prompted to create a PR:
+
+- Use GitHub CLI (`gh`) for branch and PR operations
+- Branch naming:
+  - Ask for preferred developer initials the first time encountered
+  - If a Jira ID is provided, include it in the branch name
+  - For work based on `main`, create branches as `{dev-initials}/{jira-id}-{short-description}` (or `{dev-initials}/{short-description}` when no Jira ID exists)
+  - For work based on a release branch (for example `chef-18`), create branches as `{dev-initials}/{release-branch}-{jira-id}-{short-description}` (or `{dev-initials}/{release-branch}-{short-description}` when no Jira ID exists)
+- Create commits with DCO sign-off (`git commit -s`)
+- Push changes to the new branch
+- Create a PR with:
+  - **Title**: Clear, descriptive title referencing the Jira ID
+  - **Description**: HTML-formatted summary of changes made
+- All operations should be performed on the local repository
+
+## MCP Server Integration
+
+### Atlassian MCP Server Usage
+
+When working with Jira integration:
+
+- Use the `atlassian-mcp-server` MCP server for all Jira operations
+- Fetch issue details using the provided Jira ID
+- Parse and understand the story requirements
+- Reference the Jira ID in commits and PR descriptions
+
+## GitHub CLI Authentication and Branch Management
+
+### Authentication Setup
+
+- GitHub CLI authentication should be configured separately
+- Do not reference `~/.profile` for login procedures
+- Ensure `gh auth status` shows authenticated state before proceeding
+
+### Branch and PR Management
+
 ```bash
-bundle install                    # Install dependencies
-bundle exec rake spec:unit        # Run unit tests
-bundle exec rake component_specs  # Run component tests
-bundle exec cookstyle            # Run lint checks
-kitchen test                      # Run Test Kitchen integration tests
+# Create and switch to a new branch from main
+gh repo view --json defaultBranch | jq -r '.defaultBranch' # Check default branch
+git checkout main
+git pull --ff-only origin main
+git checkout -b tp/JIRA-123-short-description
+
+# Create and switch to a new branch from a release branch (example: chef-18)
+git checkout chef-18
+git pull --ff-only origin chef-18
+git checkout -b tp/chef-18-JIRA-123-short-description
+
+# Commit with DCO sign-off
+git commit -s -m "JIRA-123: Brief description"
+
+# Push changes and create PR
+git push origin tp/JIRA-123-short-description
+gh pr create --title "JIRA-123: Brief description" \
+  --body "<h2>Summary</h2><p>Description of changes</p>"
 ```
 
 ---
