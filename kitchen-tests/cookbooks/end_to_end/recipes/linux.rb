@@ -69,7 +69,7 @@ end
 
 include_recipe "::_packages"
 
-unless amazon? && node["platform_version"] >= "2023" # TODO: look into chrony service issue
+unless (amazon? && node["platform_version"] >= "2023") || (platform?("almalinux") && node["platform_version"].to_i >= 10) # TODO: look into chrony service issue
   include_recipe value_for_platform(
     opensuseleap: { "default" => "ntp" },
     amazon: { "2" => "ntp" },
