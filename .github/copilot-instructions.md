@@ -393,6 +393,7 @@ AI MUST apply appropriate labels when creating/updating PRs. Labels are fetched 
 | `Chef 18.6` | Targeted for Chef 18.6 release | Release-specific features |
 | `Chef 18.8` | Targeted for Chef 18.8 release | Release-specific features |
 | `Chef 19` | Targeted for Chef 19 release | Chef 19 features |
+| `CVE` | Security vulnerability fix requiring CVE tracking | CVE fixes |
 | `community-blockers` | Community Engagement Blockers | High-priority community issues |
 | `dependencies` | Updates a dependency file | Gemfile, dependency updates |
 | `Design Proposal: Accepted. PRs Welcome` | Design approved, implementation needed | Feature requests ready for implementation |
@@ -414,7 +415,7 @@ AI MUST apply appropriate labels when creating/updating PRs. Labels are fetched 
 - **Test-only changes** → `Aspect: Testing` + `Expeditor: Skip Omnibus` + `Expeditor: Skip Habitat`
 - **Documentation-only** → `documentation` + `Expeditor: Skip Omnibus` + `Expeditor: Skip Habitat`
 - **Dependency updates** → `dependencies`
-- **Security issues** → `Aspect: Security` + backport labels if critical
+- **Security issues / CVE fixes** → `Aspect: Security` + `CVE` + backport labels if critical
 
 If required label missing → AI MUST prompt user to confirm alternative or note that label creation is outside scope.
 
