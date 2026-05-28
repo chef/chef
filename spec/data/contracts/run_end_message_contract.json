@@ -1,0 +1,37 @@
+{
+  "chef_server_fqdn": "chef-api.example.test",
+  "entity_uuid": "contract-guid-123",
+  "expanded_run_list": {
+    "recipes": [
+      "contract::default"
+    ],
+    "roles": []
+  },
+  "id": "contract-run-123",
+  "message_version": "1.1.0",
+  "message_type": "run_converge",
+  "node": {
+    "name": "contract-node"
+  },
+  "node_name": "contract-node",
+  "organization_name": "unknown_organization",
+  "resources": [],
+  "run_id": "contract-run-123",
+  "run_list": [
+    "recipe[contract::default]"
+  ],
+  "cookbooks": {
+    "contract_cookbook": {
+      "version": "1.0.0"
+    }
+  },
+  "policy_name": null,
+  "policy_group": null,
+  "start_time": "2026-01-01T10:00:00Z",
+  "end_time": "2026-01-01T10:00:05Z",
+  "source": "chef_client",
+  "status": "success",
+  "total_resource_count": 0,
+  "updated_resource_count": 0,
+  "deprecations": []
+}
