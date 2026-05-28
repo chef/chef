@@ -36,6 +36,41 @@ Chef Projects are built to last. We strive to ensure high quality throughout the
 2. **Green CI Tests:** We use [Buildkite](https://buildkite.com/chef-oss) to test all pull requests. We require these test runs to succeed on every pull request before being merged.
 3. **Rebase** `git rebase {target-branch}` prior to merging. :no_entry: Avoid pulling in the target branch, as mixing and matching with `rebase` can easily make a mess of the commit history :sob:... You will likely need to `git push -f {remote-branch}` after rebasing.
 
+### Walk Workflow (Plan-First, Evidence-Backed)
+
+If you are working in the Walk track, use the following workflow for each change:
+
+1. Start with a written plan before coding:
+    - State the goal/outcome.
+    - List the exact files to change.
+    - Explain expected impact and risk.
+2. Keep scope small and reviewable:
+    - Prefer 2-4 files for refactors/exercises.
+    - Avoid submodules and `vendor/` changes unless explicitly required.
+3. Generate and review diffs file-by-file before finalizing.
+4. Run validation and capture evidence:
+    - At minimum, run targeted tests for changed behavior.
+    - Run broader checks (`bundle exec rake spec`, `bundle exec rake style`) when feasible.
+    - If full lint fails due existing repository baseline issues, report that clearly and include targeted lint for changed files.
+5. Include the plan and evidence in the PR description:
+    - Plan summary
+    - Commands run
+    - Key output (examples/failures, lint result)
+    - Rollback note (commit SHA to revert)
+
+#### Walk Branching Strategy
+
+- Use a short, purpose-specific branch name.
+- For Walk exercises, include track and exercise context when possible (for example, `learn/walk/<user>-ex3-<short-topic>`).
+- Keep one logical change per branch/PR.
+
+#### Using Copilot in Walk Track
+
+- Ask for a plan first, then request file-by-file diffs.
+- Ask Copilot to run and report validation commands, not just suggest them.
+- Prefer evidence-backed PRs over large speculative changes.
+- If checks fail, diagnose first and only revert as a last resort.
+
 ### Local Coverage (Unit Suite)
 
 Chef does not currently expose a built-in `rake coverage` task in this repository root. To capture a local line coverage baseline for unit specs, run:
