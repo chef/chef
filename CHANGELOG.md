@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.22 -->
-## [v19.3.22](https://github.com/chef/chef/tree/v19.3.22) (2026-05-27)
+<!-- latest_release 19.3.23 -->
+## [v19.3.23](https://github.com/chef/chef/tree/v19.3.23) (2026-05-28)
 
 #### Merged Pull Requests
-- Obvious fix: Fix sysctl resource idempotency [#16035](https://github.com/chef/chef/pull/16035) ([williamtheaker](https://github.com/williamtheaker))
+- Automatically skip version bumps if CI files [#15687](https://github.com/chef/chef/pull/15687) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Automatically skip version bumps if CI files [#15687](https://github.com/chef/chef/pull/15687) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.23 -->
 - Obvious fix: Fix sysctl resource idempotency [#16035](https://github.com/chef/chef/pull/16035) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.3.22 -->
 - Document CVE PR label requirements [#16033](https://github.com/chef/chef/pull/16033) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.21 -->
 - Disable chrony kitchen-tests on AlmaLinux 10 and document branching conventions [#16031](https://github.com/chef/chef/pull/16031) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.20 -->
