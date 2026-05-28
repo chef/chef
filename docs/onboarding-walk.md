@@ -20,10 +20,14 @@ Working rules:
 4. Validate changes with commands, then report outputs clearly.
 5. Include in PR description:
    - plan summary
+   - review focus bullets (3-5: where to look and why)
+   - verification steps reviewers can run locally
    - files changed
+   - test strategy
    - test/lint commands run
-   - key evidence lines (examples/failures, lint status)
-   - rollback note (commit SHA to revert)
+   - key evidence lines (coverage/contract behavior, examples/failures, lint status)
+   - rollback plan (commit SHA to revert + validation after rollback)
+6. Ask Copilot to generate final PR text from the Walk PR template, then edit for accuracy before submitting.
 
 Repository defaults:
 - test runner: RSpec
