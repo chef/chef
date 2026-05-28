@@ -82,10 +82,12 @@ describe "spellcheck rake tasks" do
   end
 
   it "emits structured logs when toggle is on" do
-    File.write("cspell.json", '{"version":"0.2"}')
+    with_env("SPELLCHECK_STRUCTURED_LOGS", "1") do
+      File.write("cspell.json", '{"version":"0.2"}')
 
-    expect { Rake::Task["spellcheck:config_check"].invoke }
-      .to output(/op=spellcheck_config_check status=ok elapsed_ms=\d+\.\d{3}/).to_stdout
+      expect { Rake::Task["spellcheck:config_check"].invoke }
+        .to output(/op=spellcheck_config_check status=ok elapsed_ms=\d+\.\d{3}/).to_stdout
+    end
   end
 
   it "does not emit structured logs when toggle is off" do
