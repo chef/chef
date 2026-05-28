@@ -2,9 +2,13 @@ require_relative "application"
 require_relative "chef_fs/path_utils"
 require_relative "http/simple"
 require_relative "json_compat"
+require_relative "resilience/retry_with_backoff"
 
 class Chef
   class ConfigFetcher
+    REMOTE_FETCH_MAX_ATTEMPTS = 3
+    REMOTE_FETCH_BASE_DELAY = 0.1
+    REMOTE_FETCH_RETRY_ERRORS = [SocketError, Timeout::Error, Errno::ETIMEDOUT, Errno::ECONNRESET].freeze
 
     attr_reader :config_location
 
@@ -38,8 +42,18 @@ class Chef
     end
 
     def fetch_remote_config
-      http.get("")
-    rescue SocketError, SystemCallError, Net::HTTPClientException => error
+      Chef::Resilience::RetryWithBackoff.call(
+        max_attempts: REMOTE_FETCH_MAX_ATTEMPTS,
+        base_delay: REMOTE_FETCH_BASE_DELAY,
+        retry_on: REMOTE_FETCH_RETRY_ERRORS,
+        sleeper: self,
+        on_retry: proc { |error, attempt, delay|
+          Chef::Log.warn("Transient error fetching config '#{config_location}' (#{error.class}), retry #{attempt}/#{REMOTE_FETCH_MAX_ATTEMPTS - 1} in #{format('%.3f', delay)}s")
+        }
+      ) do
+        http.get("")
+      end
+    rescue SocketError, SystemCallError, Timeout::Error, Net::HTTPClientException => error
       Chef::Application.fatal!("Cannot fetch config '#{config_location}': '#{error.class}: #{error.message}")
     end
 
@@ -62,7 +76,7 @@ class Chef
     end
 
     def http
-      Chef::HTTP::Simple.new(config_location)
+      @http ||= Chef::HTTP::Simple.new(config_location)
     end
 
     def remote_config?
