@@ -36,6 +36,16 @@ Chef Projects are built to last. We strive to ensure high quality throughout the
 2. **Green CI Tests:** We use [Buildkite](https://buildkite.com/chef-oss) to test all pull requests. We require these test runs to succeed on every pull request before being merged.
 3. **Rebase** `git rebase {target-branch}` prior to merging. :no_entry: Avoid pulling in the target branch, as mixing and matching with `rebase` can easily make a mess of the commit history :sob:... You will likely need to `git push -f {remote-branch}` after rebasing.
 
+### Local Coverage (Unit Suite)
+
+Chef does not currently expose a built-in `rake coverage` task in this repository root. To capture a local line coverage baseline for unit specs, run:
+
+```bash
+bundle exec ruby -e 'require "coverage"; Coverage.start(lines: true); require "rspec/core"; exit_code = RSpec::Core::Runner.run(["spec/unit"], $stderr, $stdout); result = Coverage.result; project = result.select { |file, _| file.start_with?(Dir.pwd + "/lib/") || file.start_with?(Dir.pwd + "/chef-config/lib/") || file.start_with?(Dir.pwd + "/chef-utils/lib/") }; covered = 0; total = 0; project.each_value do |stats| lines = stats[:lines] || []; lines.each { |n| next if n.nil?; total += 1; covered += 1 if n > 0 }; end; pct = total.zero? ? 0.0 : (covered * 100.0 / total); puts "TOTAL_COVERAGE=#{format("%.2f", pct)}%"; puts "COVERED_LINES=#{covered}"; puts "TOTAL_LINES=#{total}"; exit exit_code'
+```
+
+This command measures line coverage for code under `lib/`, `chef-config/lib/`, and `chef-utils/lib/` while running the full `spec/unit` suite.
+
 ### Code Review Process
 
 Code review takes place in GitHub pull requests. See [this article](https://help.github.com/articles/about-pull-requests/) if you're not familiar with GitHub Pull Requests.

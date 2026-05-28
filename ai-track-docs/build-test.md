@@ -32,8 +32,10 @@ bundle exec rake spec:integration
 ## Coverage
 
 ```bash
-bundle exec rake coverage
+bundle exec ruby -e 'require "coverage"; Coverage.start(lines: true); require "rspec/core"; exit_code = RSpec::Core::Runner.run(["spec/unit"], $stderr, $stdout); result = Coverage.result; project = result.select { |file, _| file.start_with?(Dir.pwd + "/lib/") || file.start_with?(Dir.pwd + "/chef-config/lib/") || file.start_with?(Dir.pwd + "/chef-utils/lib/") }; covered = 0; total = 0; project.each_value do |stats| lines = stats[:lines] || []; lines.each { |n| next if n.nil?; total += 1; covered += 1 if n > 0 }; end; pct = total.zero? ? 0.0 : (covered * 100.0 / total); puts "TOTAL_COVERAGE=#{format("%.2f", pct)}%"; puts "COVERED_LINES=#{covered}"; puts "TOTAL_LINES=#{total}"; exit exit_code'
 ```
+
+This reports line coverage for `lib/`, `chef-config/lib/`, and `chef-utils/lib/` while executing the full unit suite (`spec/unit`).
 
 ## Useful Quality/Validation Tasks
 
