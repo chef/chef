@@ -89,6 +89,26 @@ describe Chef::ConfigFetcher do
         expect(fetcher.read_config).to eq(config_content)
       end
 
+      it "retries transient timeout failures with backoff and succeeds" do
+        expect(http).to receive(:get).with("").ordered.and_raise(Timeout::Error)
+        expect(fetcher).to receive(:sleep).with(0.1).ordered
+        expect(http).to receive(:get).with("").ordered.and_raise(Timeout::Error)
+        expect(fetcher).to receive(:sleep).with(0.2).ordered
+        expect(http).to receive(:get).with("").ordered.and_return(config_content)
+
+        expect(fetcher.read_config).to eq(config_content)
+      end
+
+      it "fails after retry exhaustion on transient timeout failures" do
+        expect(fetcher).to receive(:sleep).with(0.1).ordered
+        expect(fetcher).to receive(:sleep).with(0.2).ordered
+
+        expect(http).to receive(:get).with("").exactly(3).times.and_raise(Timeout::Error)
+
+        expect(Chef::Application).to receive(:fatal!).with(/Cannot fetch config '#{config_location}': 'Timeout::Error:/)
+        fetcher.read_config
+      end
+
       context "and consuming JSON" do
         let(:config_location) { "https://example.com/foo.json" }
 
