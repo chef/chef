@@ -54,9 +54,17 @@ If you are working in the Walk track, use the following workflow for each change
     - If full lint fails due existing repository baseline issues, report that clearly and include targeted lint for changed files.
 5. Include the plan and evidence in the PR description:
     - Plan summary
+    - Review focus bullets (3-5 bullets that call out what to review and why)
+    - Verification steps reviewers can run locally
+    - Test strategy (targeted + broader checks)
     - Commands run
-    - Key output (examples/failures, lint result)
-    - Rollback note (commit SHA to revert)
+    - Key output (coverage/contract evidence, examples/failures, lint result)
+    - Clear rollback plan (commit SHA to revert and post-rollback validation)
+6. Ask Copilot to generate the final PR text using the Walk PR template, then review and adjust before submission.
+
+Troubleshooting guidance:
+- If uncertain what to highlight for reviewers, focus on the riskiest file or most complex logic change.
+- If a PR is too large for clear review focus, split into smaller PRs and link them from a parent issue.
 
 #### Walk Branching Strategy
 
