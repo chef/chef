@@ -55,3 +55,31 @@ jobs:
         run: |
           chmod +x scripts/validate_architecture_diagram.sh
           scripts/validate_architecture_diagram.sh
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    name: Secret scanning (gitleaks)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+      - name: Run gitleaks
+        run: |
+          gitleaks detect \
+            --config .gitleaks.toml \
+            --source . \
+            --log-opts "origin/main..HEAD" \
+            --report-format json \
+            --report-path /tmp/gitleaks-report.json
+      - name: Upload scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: /tmp/gitleaks-report.json

@@ -1,0 +1,35 @@
+title = "chef-infra gitleaks config"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Global allowlist
+#
+# Paths and patterns listed here are deliberate test fixtures committed to this
+# repository for deterministic RSpec test coverage. They are NOT live credentials
+# and carry no operational risk. Each entry has an inline justification comment.
+# ──────────────────────────────────────────────────────────────────────────────
+[allowlist]
+  description = "Known-safe test fixtures and CI credential patterns"
+
+  paths = [
+    # Dummy RSA/SSL key files used exclusively in RSpec tests (spec/data/ssl/).
+    # These are self-signed test certificates generated for HTTP authenticator
+    # and SSL resource tests. They are not trusted by any production system.
+    "spec/data/ssl",
+
+    # OpenLDAP cookbook test data containing dummy passwords ("yougotit",
+    # "forsure"). These are attribute defaults for a fictional test cookbook and
+    # are never deployed.
+    "spec/data/cookbooks/openldap",
+
+    # Integration client tests embed a short test RSA signing key inline for
+    # deterministic HTTP signing tests. No real API credentials are present.
+    "spec/integration/client",
+
+    # server_api_spec embeds an RSA signing key constant (SIGNING_KEY_DOT_PEM)
+    # used only to stub Chef::Config in unit tests.
+    "spec/unit/server_api_spec.rb",
+
+    # HTTP authenticator spec verifies certificate object behavior using a test
+    # certificate path; no real key material is stored here.
+    "spec/unit/http/authenticator_spec.rb",
+  ]
