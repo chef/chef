@@ -1,0 +1,7 @@
+inherit_from:
+  - .rubocop.yml
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  Include:
+    - spec/unit/tasks/**/*.rb
