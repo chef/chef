@@ -127,3 +127,41 @@ cd /Users/rchawda/github.com/chef/chef
 git status --short
 rg -n "(token|secret|password|private[_-]?key|api[_-]?key)" kitchen-tests .github .buildkite .expeditor --glob '!vendor/**'
 ```
+
+## Dependency Upgrade Exercise (2026-05-28)
+
+### Goal
+
+- Find and apply one safe minor dependency upgrade with validation evidence.
+
+### What Was Checked
+
+- Strict outdated checks were run with Bundler in first-party bundles:
+	- `/chef-utils`
+	- `/chef-config`
+	- `/chef` (root; limited by git-sourced dependency fetch behavior)
+	- `/kitchen-tests` (dependency solver conflict with `inspec = 7.0.95` and `chef`'s `inspec-core ~> 7.0.107` requirement)
+
+### Result
+
+- No actionable minor upgrade was available in tracked lockfiles for low-risk, reviewable scope.
+- Candidate updates detected in strict mode were patch-level rspec family updates, but lockfiles were already at those versions in source control.
+- Root bundle outdated checks were not reliable for selection due repeated git-source fetch behavior in this environment.
+
+### Fallback Applied
+
+- Followed troubleshooting guidance: documented current state and verified patch-level status.
+- No dependency lockfile change was committed.
+
+### Validation Evidence
+
+- Full chef-utils test suite run:
+	- Command: `bundle exec rake spec`
+	- Result: `6921 examples, 0 failures`
+
+### Rollback
+
+- No repository dependency change was applied, so rollback is a no-op.
+- If a future dependency change is applied, rollback command pattern:
+	- `git revert <commit_sha>`
+	- or re-pin prior version and run `bundle install`.
