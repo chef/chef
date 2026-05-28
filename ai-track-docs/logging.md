@@ -57,6 +57,57 @@ Structured logging for `spellcheck:config_check` can be toggled with an environm
 
 - ON (default): unset `SPELLCHECK_STRUCTURED_LOGS` or set it to any value other than `0`
 - OFF: set `SPELLCHECK_STRUCTURED_LOGS=0`
+- OFF: set `SPELLCHECK_STRUCTURED_LOGS=0`
+
+---
+
+## Cookbook Upload Instrumentation (ex9)
+
+### Instrumented Path
+
+- File: `lib/chef/cookbook_uploader.rb`
+- Method: `Chef::CookbookUploader#upload_cookbooks`
+- Emission point: just before `Chef::Log.info("Upload complete!")` on successful completion
+
+### Log Schema
+
+```text
+op=cookbook_upload status=ok cookbooks=<count> elapsed_ms=<milliseconds>
+```
+
+Example (from local demo run):
+
+```text
+[2026-05-28T19:53:15+05:30] INFO: op=cookbook_upload status=ok cookbooks=1 elapsed_ms=0.446
+[2026-05-28T19:53:15+05:30] INFO: Upload complete!
+```
+
+The `elapsed_ms` covers the full `upload_cookbooks` span: syntax check, sandbox creation,
+file streaming, and cookbook manifest commit.
+
+### Where To View In Production / Staging
+
+Any surface that invokes `knife cookbook upload` or the `Chef::CookbookUploader` at `:info`
+log level will emit this line. Common entry points:
+
+| Surface | Command / config |
+|---|---|
+| knife CLI | `knife cookbook upload mycookbook --log-level info` |
+| chef-client convergence | `chef-client -l info` when upload is triggered during run |
+| CI pipelines | any `bundle exec knife cookbook upload` step with `LOG_LEVEL=info` |
+| Chef Automate | stream chef-client STDOUT; filter on `op=cookbook_upload` |
+
+Filter example (local / CI log):
+
+```bash
+knife cookbook upload mycookbook 2>&1 | grep "op=cookbook_upload"
+```
+
+### Notes
+
+- Timing uses `Process::CLOCK_MONOTONIC` — immune to wall-clock adjustments during upload.
+- Only emitted on the **success path**; a future exercise can add `status=error` on exception.
+- The `cookbooks` counter reflects the number of cookbooks passed to the uploader in one batch.
 
 Examples:
 

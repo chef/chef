@@ -202,4 +202,43 @@ describe Chef::CookbookUploader do
     end
   end
 
+  describe "structured upload latency logging" do
+
+    let(:cksums_not_on_remote) { [] }
+
+    let(:sandbox_response) do
+      { "checksums" => {}, "uri" => "https://chef.example.org/sandboxes/abc123" }
+    end
+
+    before do
+      allow(http_client).to receive(:post).and_return(sandbox_response)
+      allow(http_client).to receive(:put)
+    end
+
+    it "emits an op=cookbook_upload status=ok log line on success" do
+      logged_messages = []
+      allow(Chef::Log).to receive(:info) { |msg| logged_messages << msg }
+
+      uploader.upload_cookbooks
+
+      structured = logged_messages.grep(/op=cookbook_upload status=ok/)
+      expect(structured).not_to be_empty, "expected a structured op=cookbook_upload log line among: #{logged_messages.inspect}"
+      expect(structured.first).to match(/elapsed_ms=\d+\.\d{3}/)
+    end
+
+    it "includes elapsed_ms in the structured log as a non-negative number" do
+      logged_messages = []
+      allow(Chef::Log).to receive(:info) { |msg| logged_messages << msg }
+
+      uploader.upload_cookbooks
+
+      structured = logged_messages.find { |m| m.include?("op=cookbook_upload") }
+      expect(structured).not_to be_nil, "expected a structured op=cookbook_upload log line"
+
+      elapsed = structured[/elapsed_ms=(\d+\.\d+)/, 1].to_f
+      expect(elapsed).to be >= 0
+    end
+
+  end
+
 end
