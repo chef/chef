@@ -49,6 +49,11 @@ To learn more about our monthly feature releases and yearly major releases, see 
 
 We'd love to have your help developing Chef Infra. See our [Contributing Document](./CONTRIBUTING.md) for more information on getting started.
 
+If you are following the Walk methodology, see:
+
+- [Walk Workflow Guidelines](./CONTRIBUTING.md#walk-workflow-plan-first-evidence-backed)
+- [Walk Onboarding Prompt](./docs/onboarding-walk.md)
+
 ### Community PR Reviews
 Want to raise, review, and help merge a PR with the community and the engineering staff? Please see: [Community Pr Review](./docs/dev/how_to/community_pr_review_checklist.md)
 
