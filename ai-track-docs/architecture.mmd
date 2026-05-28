@@ -1,13 +1,23 @@
 flowchart TD
-    A[Chef CLI Entrypoints\nchef-bin/bin/*] --> B[Config Loading\nchef-config + core config]
-    B --> C[Policy and Node Context]
-    C --> D[Resource Collection\nCompile Phase]
-    D --> E[Provider Actions\nConverge Phase]
-    E --> F[Handlers, Reporting, Exit]
+    A[CLI Entrypoint\nchef-bin/bin/chef-client\nlib/chef/application/client.rb]
+    B[Config System\nchef-config/lib/chef-config/config.rb\nlib/chef/application/base.rb]
+    C[Client Orchestrator\nlib/chef/client.rb]
+    D[Policy Resolution\nlib/chef/policy_builder/dynamic.rb]
+    E[Run Context\nlib/chef/run_context.rb\nlib/chef/resource_collection.rb]
+    F[Converge Engine\nlib/chef/runner.rb]
+    G[Run End Reporting\nlib/chef/data_collector/run_end_message.rb]
+    H[Shared Utilities\nchef-utils/lib/]
 
-    G[Shared Utilities\nchef-utils] --> B
-    G --> D
-    G --> E
+    A -->|depends on| B
+    A -->|depends on| C
+    C -->|depends on| D
+    D -->|builds| E
+    E -->|executes through| F
+    F -->|emits run status| G
 
-    H[Cookbooks and Inputs] --> C
-    I[Platform and Packaging\ndistro + habitat] --> A
+    H -->|used by| B
+    H -->|used by| C
+
+    J[JSON Attributes\n-j file / config-fetcher input] -->|data flow| D
+    D -->|data flow: expanded node/run-list| E
+    E -->|data flow: action records + node state| G
