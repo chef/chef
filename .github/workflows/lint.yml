@@ -35,6 +35,29 @@ jobs:
           curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
       - uses: streetsidesoftware/cspell-action@v8.4.0
 
+  spellcheck-flag-modes:
+    runs-on: ubuntu-latest
+    name: Spellcheck structured logs (${{ matrix.mode }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mode: on
+            spellcheck_structured_logs: "1"
+          - mode: off
+            spellcheck_structured_logs: "0"
+    env:
+      BUNDLE_WITHOUT: ruby_shadow:packaging
+      SPELLCHECK_STRUCTURED_LOGS: ${{ matrix.spellcheck_structured_logs }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4
+          bundler-cache: false
+      - run: bundle install
+      - run: bundle exec rspec spec/unit/tasks/spellcheck_task_spec.rb
+
   linelint:
     runs-on: ubuntu-latest
     name: Check if all files end in newline

@@ -57,7 +57,65 @@ Structured logging for `spellcheck:config_check` can be toggled with an environm
 
 - ON (default): unset `SPELLCHECK_STRUCTURED_LOGS` or set it to any value other than `0`
 - OFF: set `SPELLCHECK_STRUCTURED_LOGS=0`
-- OFF: set `SPELLCHECK_STRUCTURED_LOGS=0`
+
+## Flag Lifecycle: SPELLCHECK_STRUCTURED_LOGS
+
+### Creation
+
+- Flag name: `SPELLCHECK_STRUCTURED_LOGS`
+- Defined in: `tasks/spellcheck.rb`
+- Purpose: allow low-risk enable/disable of structured log output for `spellcheck:config_check`
+
+### Default State
+
+- Default is ON.
+- Behavior rule: `ENV.fetch("SPELLCHECK_STRUCTURED_LOGS", "1") != "0"`
+
+### Enable / Disable
+
+Enable (explicit ON):
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+SPELLCHECK_STRUCTURED_LOGS=1 bundle exec rake spellcheck:config_check
+```
+
+Disable (OFF):
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+SPELLCHECK_STRUCTURED_LOGS=0 bundle exec rake spellcheck:config_check
+```
+
+### Validation Strategy (ON and OFF)
+
+Local contract checks:
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+SPELLCHECK_STRUCTURED_LOGS=1 bundle exec rspec spec/unit/tasks/spellcheck_task_spec.rb
+SPELLCHECK_STRUCTURED_LOGS=0 bundle exec rspec spec/unit/tasks/spellcheck_task_spec.rb
+```
+
+CI contract checks:
+
+- Workflow: `.github/workflows/lint.yml`
+- Job: `spellcheck-flag-modes`
+- Matrix modes:
+  - ON: `SPELLCHECK_STRUCTURED_LOGS=1`
+  - OFF: `SPELLCHECK_STRUCTURED_LOGS=0`
+
+### Removal Criteria
+
+Remove this flag only when one of the following is true:
+
+- structured logging behavior is permanently fixed with no planned fallback mode, and
+- at least one full release cycle has run with ON behavior and no rollback need.
+
+### Rollback
+
+- Operational rollback: set `SPELLCHECK_STRUCTURED_LOGS=0`.
+- Code rollback: revert flag-mode workflow job and lifecycle docs if policy changes.
 
 ---
 
@@ -69,7 +127,7 @@ Structured logging for `spellcheck:config_check` can be toggled with an environm
 - Method: `Chef::CookbookUploader#upload_cookbooks`
 - Emission point: just before `Chef::Log.info("Upload complete!")` on successful completion
 
-### Log Schema
+### Upload Log Schema
 
 ```text
 op=cookbook_upload status=ok cookbooks=<count> elapsed_ms=<milliseconds>
@@ -91,7 +149,7 @@ Any surface that invokes `knife cookbook upload` or the `Chef::CookbookUploader`
 log level will emit this line. Common entry points:
 
 | Surface | Command / config |
-|---|---|
+| --- | --- |
 | knife CLI | `knife cookbook upload mycookbook --log-level info` |
 | chef-client convergence | `chef-client -l info` when upload is triggered during run |
 | CI pipelines | any `bundle exec knife cookbook upload` step with `LOG_LEVEL=info` |
@@ -103,7 +161,7 @@ Filter example (local / CI log):
 knife cookbook upload mycookbook 2>&1 | grep "op=cookbook_upload"
 ```
 
-### Notes
+### Upload Notes
 
 - Timing uses `Process::CLOCK_MONOTONIC` — immune to wall-clock adjustments during upload.
 - Only emitted on the **success path**; a future exercise can add `status=error` on exception.
