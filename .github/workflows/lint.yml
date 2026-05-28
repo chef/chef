@@ -83,3 +83,102 @@ jobs:
         with:
           name: gitleaks-report
           path: /tmp/gitleaks-report.json
+
+  advisory-validation-summary:
+    runs-on: ubuntu-latest
+    name: Advisory validation summary (soft gate)
+    env:
+      BUNDLE_WITHOUT: ruby_shadow:packaging
+      SOFT_COVERAGE_THRESHOLD: "60.00"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4
+          bundler-cache: false
+      - name: Install dependencies
+        run: bundle install
+      - name: Collect advisory evidence
+        id: advisory
+        shell: bash
+        run: |
+          set +e
+
+          start_epoch="$(date +%s)"
+          tmp_output="$(mktemp)"
+
+          bundle exec ruby -e 'require "coverage"; Coverage.start(lines: true); require "rspec/core"; exit_code = RSpec::Core::Runner.run(["spec/unit/cookbook_uploader_spec.rb"], $stderr, $stdout); result = Coverage.result; project = result.select { |file, _| file.start_with?(Dir.pwd + "/lib/") || file.start_with?(Dir.pwd + "/chef-config/lib/") || file.start_with?(Dir.pwd + "/chef-utils/lib/") }; covered = 0; total = 0; project.each_value do |stats| lines = stats[:lines] || []; lines.each { |n| next if n.nil?; total += 1; covered += 1 if n > 0 }; end; pct = total.zero? ? 0.0 : (covered * 100.0 / total); puts "TOTAL_COVERAGE=#{format("%.2f", pct)}"; puts "COVERED_LINES=#{covered}"; puts "TOTAL_LINES=#{total}"; exit exit_code' > "$tmp_output" 2>&1
+          test_exit_code="$?"
+          end_epoch="$(date +%s)"
+          duration_seconds="$((end_epoch - start_epoch))"
+
+          coverage_pct="$(grep -E '^TOTAL_COVERAGE=' "$tmp_output" | tail -1 | cut -d'=' -f2)"
+          covered_lines="$(grep -E '^COVERED_LINES=' "$tmp_output" | tail -1 | cut -d'=' -f2)"
+          total_lines="$(grep -E '^TOTAL_LINES=' "$tmp_output" | tail -1 | cut -d'=' -f2)"
+          example_line="$(grep -E '[0-9]+ examples?, [0-9]+ failures?' "$tmp_output" | tail -1)"
+
+          if [[ -z "$coverage_pct" ]]; then
+            coverage_pct="n/a"
+          fi
+          if [[ -z "$covered_lines" ]]; then
+            covered_lines="n/a"
+          fi
+          if [[ -z "$total_lines" ]]; then
+            total_lines="n/a"
+          fi
+          if [[ -z "$example_line" ]]; then
+            example_line="not available"
+          fi
+
+          advisory_status="advisory-pass"
+          advisory_note="Coverage meets threshold or could not be evaluated as a hard gate."
+
+          if [[ "$test_exit_code" != "0" ]]; then
+            advisory_status="advisory-warning"
+            advisory_note="Contract test run failed; surfaced for review only (non-blocking)."
+          elif [[ "$coverage_pct" != "n/a" ]]; then
+            if ! awk -v actual="$coverage_pct" -v threshold="$SOFT_COVERAGE_THRESHOLD" 'BEGIN { exit (actual + 0 >= threshold + 0 ? 0 : 1) }'; then
+              advisory_status="advisory-warning"
+              advisory_note="Coverage is below soft threshold; review recommended, merge not blocked."
+            fi
+          fi
+
+          echo "advisory_status=$advisory_status" >> "$GITHUB_OUTPUT"
+          echo "coverage_pct=$coverage_pct" >> "$GITHUB_OUTPUT"
+          echo "covered_lines=$covered_lines" >> "$GITHUB_OUTPUT"
+          echo "total_lines=$total_lines" >> "$GITHUB_OUTPUT"
+          echo "examples_summary=$example_line" >> "$GITHUB_OUTPUT"
+          echo "test_exit_code=$test_exit_code" >> "$GITHUB_OUTPUT"
+          echo "duration_seconds=$duration_seconds" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Advisory Validation Summary (Soft Gate)"
+            echo
+            echo "This job is advisory only and does not block merges."
+            echo
+            echo "| Metric | Value |"
+            echo "|---|---|"
+            echo "| Advisory status | $advisory_status |"
+            echo "| Coverage (line %) | $coverage_pct |"
+            echo "| Covered lines | $covered_lines |"
+            echo "| Total lines | $total_lines |"
+            echo "| Soft threshold (%) | $SOFT_COVERAGE_THRESHOLD |"
+            echo "| Contract test summary | $example_line |"
+            echo "| Contract test exit code | $test_exit_code |"
+            echo "| Duration (seconds) | $duration_seconds |"
+            echo
+            echo "Note: $advisory_note"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          cp "$tmp_output" /tmp/advisory-validation-raw.log
+
+          # Always succeed to keep this a soft gate.
+          exit 0
+      - name: Upload advisory raw output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: advisory-validation-raw
+          path: /tmp/advisory-validation-raw.log

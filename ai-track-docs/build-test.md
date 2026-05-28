@@ -80,3 +80,40 @@ Full fallback run (heavier, closer to CI unit coverage):
 cd /Users/rchawda/github.com/chef/chef
 bash scripts/run_local_ci_tests.sh full
 ```
+
+## Advisory Coverage Soft Gate (CI)
+
+The lint workflow includes an advisory job that surfaces validation evidence in the GitHub
+job summary without blocking delivery.
+
+- Workflow file: `.github/workflows/lint.yml`
+- Job name: `Advisory validation summary (soft gate)`
+- Evidence emitted to: GitHub Step Summary (`$GITHUB_STEP_SUMMARY`) and artifact `advisory-validation-raw`
+- Blocking behavior: non-blocking by design (job exits successfully even when the advisory check warns)
+
+### What It Reports
+
+- Contract test result from a focused run of `spec/unit/cookbook_uploader_spec.rb`
+- Line coverage percentage for repository Ruby libraries (`lib/`, `chef-config/lib/`, `chef-utils/lib/`)
+- Covered and total line counts
+- Soft threshold value (`SOFT_COVERAGE_THRESHOLD`, currently `60.00`)
+- Advisory status: `advisory-pass` or `advisory-warning`
+
+### How To Use The Evidence In A PR
+
+1. Open the workflow run for your PR.
+2. Open job: `Advisory validation summary (soft gate)`.
+3. Copy the table from the job summary into your PR Evidence section.
+4. If status is `advisory-warning`, explain the delta and any follow-up work.
+
+### Local Reproduction (same command shape used by CI)
+
+```bash
+cd /Users/rchawda/github.com/chef/chef
+bundle exec ruby -e 'require "coverage"; Coverage.start(lines: true); require "rspec/core"; exit_code = RSpec::Core::Runner.run(["spec/unit/cookbook_uploader_spec.rb"], $stderr, $stdout); result = Coverage.result; project = result.select { |file, _| file.start_with?(Dir.pwd + "/lib/") || file.start_with?(Dir.pwd + "/chef-config/lib/") || file.start_with?(Dir.pwd + "/chef-utils/lib/") }; covered = 0; total = 0; project.each_value do |stats| lines = stats[:lines] || []; lines.each { |n| next if n.nil?; total += 1; covered += 1 if n > 0 }; end; pct = total.zero? ? 0.0 : (covered * 100.0 / total); puts "TOTAL_COVERAGE=#{format("%.2f", pct)}"; puts "COVERED_LINES=#{covered}"; puts "TOTAL_LINES=#{total}"; exit exit_code'
+```
+
+### Rollback
+
+Revert the workflow addition in `.github/workflows/lint.yml` and remove this section from
+`ai-track-docs/build-test.md`.
