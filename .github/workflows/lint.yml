@@ -27,6 +27,21 @@ jobs:
           bundle install
           bundle exec cookstyle --chefstyle -c .rubocop.yml
 
+  cookstyle-strict-spec-unit-tasks:
+    runs-on: ubuntu-latest
+    name: Cookstyle strict (spec/unit/tasks)
+    env:
+      BUNDLE_WITHOUT: ruby_shadow:packaging
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4
+          bundler-cache: false
+      - run: |
+          bundle install
+          bundle exec cookstyle --chefstyle -c .rubocop-strict-spec-unit-tasks.yml spec/unit/tasks
+
   spellcheck:
     runs-on: ubuntu-latest
     steps:
