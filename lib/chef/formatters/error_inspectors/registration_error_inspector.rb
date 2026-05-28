@@ -1,3 +1,5 @@
+require_relative "api_error_formatting"
+require_relative "base_error_inspector"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
@@ -11,16 +13,7 @@ class Chef
       # slightly tweaked to talk about validation keys instead of other keys.
       class RegistrationErrorInspector
         include APIErrorFormatting
-
-        attr_reader :exception
-        attr_reader :node_name
-        attr_reader :config
-
-        def initialize(node_name, exception, config)
-          @node_name = node_name
-          @exception = exception
-          @config = config
-        end
+        include BaseErrorInspector
 
         def add_explanation(error_description)
           case exception
