@@ -44,3 +44,14 @@ jobs:
       - name: Linelint
         uses: fernandrone/linelint@master
         id: linelint
+
+  architecture-diagram:
+    runs-on: ubuntu-latest
+    name: Validate architecture Mermaid diagram
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Render architecture diagram
+        run: |
+          chmod +x scripts/validate_architecture_diagram.sh
+          scripts/validate_architecture_diagram.sh
