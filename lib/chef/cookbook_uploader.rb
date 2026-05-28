@@ -45,6 +45,9 @@ class Chef
     end
 
     def upload_cookbooks
+      # Record start time for structured latency log emitted at completion.
+      upload_started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
       # Syntax Check
       validate_cookbooks unless opts[:skip_syntax_check]
       # generate checksums of cookbook files and create a sandbox
@@ -110,6 +113,8 @@ class Chef
         end
       end
 
+      upload_elapsed_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - upload_started_at) * 1000.0
+      Chef::Log.info(format("op=cookbook_upload status=ok cookbooks=%d elapsed_ms=%.3f", cookbooks.size, upload_elapsed_ms))
       Chef::Log.info("Upload complete!")
     end
 
