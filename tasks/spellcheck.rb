@@ -18,6 +18,7 @@
 # Shared config filename used by both validation and error messages.
 CSPELL_CONFIG_FILE = "cspell.json".freeze unless defined?(CSPELL_CONFIG_FILE)
 SPELLCHECK_STRUCTURED_LOGS_ENV = "SPELLCHECK_STRUCTURED_LOGS".freeze unless defined?(SPELLCHECK_STRUCTURED_LOGS_ENV)
+require "json"
 
 namespace :spellcheck do
   # Helper to read a file with 1 retry for transient failures (lock/permission issues).
@@ -46,7 +47,6 @@ namespace :spellcheck do
   task prereqs: %i{cspell_check config_check}
 
   task :config_check do
-    require "json"
     op_name = "spellcheck_config_check"
     started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     structured_logs_enabled = ENV.fetch(SPELLCHECK_STRUCTURED_LOGS_ENV, "1") != "0"
@@ -58,18 +58,20 @@ namespace :spellcheck do
       puts format("op=%s status=%s elapsed_ms=%.3f", op_name, status, elapsed_ms)
     end
 
-    # Fail fast with a clear message before attempting parse.
-    unless File.readable?(CSPELL_CONFIG_FILE)
+    begin
+      # Read the config directly and rescue missing-file errors to avoid a redundant pre-check.
+      config_content = read_file_with_retry(CSPELL_CONFIG_FILE)
+    rescue Errno::ENOENT
       emit_structured_log.call("error")
       abort "Spellcheck config file '#{CSPELL_CONFIG_FILE}' not found, skipping spellcheck"
+    rescue StandardError
+      emit_structured_log.call("error")
+      abort "Failed to parse config file '#{CSPELL_CONFIG_FILE}', skipping spellcheck"
     end
 
     begin
-      # Use retry helper to handle transient file read failures.
-      config_content = read_file_with_retry(CSPELL_CONFIG_FILE)
       parsed_config = JSON.parse(config_content)
-    rescue StandardError
-      # Keep this broad so malformed JSON and read-time errors are surfaced uniformly.
+    rescue JSON::ParserError
       emit_structured_log.call("error")
       abort "Failed to parse config file '#{CSPELL_CONFIG_FILE}', skipping spellcheck"
     end
