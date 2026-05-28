@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.88 -->
-## [v18.10.88](https://github.com/chef/chef/tree/v18.10.88) (2026-05-28)
+<!-- latest_release 18.10.89 -->
+## [v18.10.89](https://github.com/chef/chef/tree/v18.10.89) (2026-05-28)
 
 #### Merged Pull Requests
-- [chef-18] Backport AlmaLinux 10 chrony exemption [#16032](https://github.com/chef/chef/pull/16032) ([tpowell-progress](https://github.com/tpowell-progress))
+- [chef-18] Added directory_specs and client_rb_mode properties to the chef_client_config resource [#16025](https://github.com/chef/chef/pull/16025) ([LoboDorado](https://github.com/LoboDorado))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] Added directory_specs and client_rb_mode properties to the chef_client_config resource [#16025](https://github.com/chef/chef/pull/16025) ([LoboDorado](https://github.com/LoboDorado)) <!-- 18.10.89 -->
 - [chef-18] Backport AlmaLinux 10 chrony exemption [#16032](https://github.com/chef/chef/pull/16032) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.88 -->
 - Document CVE PR label requirements [chef-18] [#16034](https://github.com/chef/chef/pull/16034) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.87 -->
 - Bump train-core from 3.16.2 to 3.16.3 [#15976](https://github.com/chef/chef/pull/15976) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.86 -->
