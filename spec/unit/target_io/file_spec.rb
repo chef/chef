@@ -21,8 +21,41 @@ RSpec.describe TargetIO::File do
   let(:path) { "/tmp/foo" }
 
   describe ".method_missing dispatch" do
+    context "when target mode is enabled and the helper flag is on" do
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(true)
+      end
+
+      it "selects backend via the feature flag helper" do
+        expect(TargetIO::FeatureFlags).to receive(:choose_backend)
+          .with(name: "TargetIO::File", target_backend: TargetIO::TrainCompat::File, local_backend: ::File)
+          .and_return(TargetIO::TrainCompat::File)
+        expect(TargetIO::TrainCompat::File).to receive(:exist?).with(path).and_return(true)
+
+        expect(described_class.exist?(path)).to be true
+      end
+    end
+
+    context "when target mode is enabled and the helper flag is off" do
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
+
+      it "keeps the legacy backend switch" do
+        expect(TargetIO::FeatureFlags).not_to receive(:choose_backend)
+        expect(TargetIO::TrainCompat::File).to receive(:exist?).with(path).and_return(true)
+
+        expect(described_class.exist?(path)).to be true
+      end
+    end
+
     context "when target mode is enabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(true) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to TargetIO::TrainCompat::File" do
         expect(TargetIO::TrainCompat::File).to receive(:exist?).with(path).and_return(true)
@@ -48,7 +81,10 @@ RSpec.describe TargetIO::File do
     end
 
     context "when target mode is disabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(false) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(false)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to ::File" do
         expect(::File).to receive(:exist?).with(path).and_return(false)

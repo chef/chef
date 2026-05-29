@@ -21,8 +21,27 @@ RSpec.describe TargetIO::FileUtils do
   let(:dir_path) { "/new/dir" }
 
   describe ".method_missing dispatch" do
+    context "when helper flag is enabled" do
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(true)
+      end
+
+      it "uses the helper to choose backend" do
+        expect(TargetIO::FeatureFlags).to receive(:choose_backend)
+          .with(name: "TargetIO::FileUtils", target_backend: TargetIO::TrainCompat::FileUtils, local_backend: ::FileUtils)
+          .and_return(TargetIO::TrainCompat::FileUtils)
+        expect(TargetIO::TrainCompat::FileUtils).to receive(:mkdir_p).with(dir_path).and_return(nil)
+
+        described_class.mkdir_p(dir_path)
+      end
+    end
+
     context "when target mode is enabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(true) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to TargetIO::TrainCompat::FileUtils" do
         expect(TargetIO::TrainCompat::FileUtils).to receive(:mkdir_p).with(dir_path).and_return(nil)
@@ -36,7 +55,10 @@ RSpec.describe TargetIO::FileUtils do
     end
 
     context "when target mode is disabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(false) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(false)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to ::FileUtils" do
         expect(::FileUtils).to receive(:mkdir_p).with(dir_path).and_return([dir_path])

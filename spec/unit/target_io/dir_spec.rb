@@ -19,8 +19,27 @@ require "chef/target_io"
 
 RSpec.describe TargetIO::Dir do
   describe ".method_missing dispatch" do
+    context "when helper flag is enabled" do
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(true)
+      end
+
+      it "uses the helper to choose backend" do
+        expect(TargetIO::FeatureFlags).to receive(:choose_backend)
+          .with(name: "TargetIO::Dir", target_backend: TargetIO::TrainCompat::Dir, local_backend: ::Dir)
+          .and_return(TargetIO::TrainCompat::Dir)
+        expect(TargetIO::TrainCompat::Dir).to receive(:entries).with("/etc").and_return([".", ".."])
+
+        expect(described_class.entries("/etc")).to eq([".", ".."])
+      end
+    end
+
     context "when target mode is enabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(true) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to TargetIO::TrainCompat::Dir" do
         expect(TargetIO::TrainCompat::Dir).to receive(:entries).with("/etc").and_return([".", ".."])
@@ -34,7 +53,10 @@ RSpec.describe TargetIO::Dir do
     end
 
     context "when target mode is disabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(false) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(false)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to ::Dir" do
         expect(::Dir).to receive(:exist?).with("/etc").and_return(true)

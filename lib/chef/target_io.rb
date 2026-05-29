@@ -1,4 +1,5 @@
 require_relative "target_io/support"
+require_relative "target_io/feature_flags"
 
 require_relative "target_io/dir"
 require_relative "target_io/etc"

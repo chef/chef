@@ -22,8 +22,27 @@ RSpec.describe TargetIO::IO do
   let(:hosts_content) { "127.0.0.1 localhost" }
 
   describe ".method_missing dispatch" do
+    context "when helper flag is enabled" do
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(true)
+      end
+
+      it "uses the helper to choose backend" do
+        expect(TargetIO::FeatureFlags).to receive(:choose_backend)
+          .with(name: "TargetIO::IO", target_backend: TargetIO::TrainCompat::IO, local_backend: ::IO)
+          .and_return(TargetIO::TrainCompat::IO)
+        expect(TargetIO::TrainCompat::IO).to receive(:read).with(hosts_path).and_return(hosts_content)
+
+        expect(described_class.read(hosts_path)).to eq(hosts_content)
+      end
+    end
+
     context "when target mode is enabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(true) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to TargetIO::TrainCompat::IO" do
         expect(TargetIO::TrainCompat::IO).to receive(:read).with(hosts_path).and_return(hosts_content)
@@ -32,7 +51,10 @@ RSpec.describe TargetIO::IO do
     end
 
     context "when target mode is disabled" do
-      before { allow(ChefConfig::Config).to receive(:target_mode?).and_return(false) }
+      before do
+        allow(ChefConfig::Config).to receive(:target_mode?).and_return(false)
+        allow(TargetIO::FeatureFlags).to receive(:target_io_backend_helper_enabled?).and_return(false)
+      end
 
       it "delegates to ::IO" do
         expect(::IO).to receive(:read).with(hosts_path).and_return(hosts_content)
