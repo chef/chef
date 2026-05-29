@@ -58,6 +58,16 @@ bundle exec rake spellcheck 2>&1 | rg "op=spellcheck_"
 - Prefer `bundle exec` to ensure commands run against the project's locked gem set.
 - If a task is not available in your checkout, list tasks with `bundle exec rake -T`.
 
+## API Boundary Contract Validation
+
+- Scoped process and rationale for `Chef::ApiClient::Registration` boundary updates:
+	- `ai-track-docs/api-client-registration-boundary-validation.md`
+- Focused command:
+
+```bash
+bundle exec ruby -S rspec --format progress spec/unit/api_client/registration_spec.rb
+```
+
 ## Dependency Notes
 
 - Critical dependency inventory and minimal pinning guidance are documented in `ai-track-docs/dependency-notes.md`.
