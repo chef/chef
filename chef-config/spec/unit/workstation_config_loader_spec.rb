@@ -391,6 +391,16 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
           config_loader.load
           expect(ChefConfig::Config.config_d_file_evaluated).to be(true)
         end
+
+        it "loads config files in lexical order" do
+          File.write(File.join(tempdir, "20-later.rb"), "config_d_order << 'later'")
+          File.write(File.join(tempdir, "10-first.rb"), "config_d_order << 'first'")
+          ChefConfig::Config[:config_d_order] = []
+
+          config_loader.load
+
+          expect(ChefConfig::Config.config_d_order).to eq(%w{first later})
+        end
       end
 
       context "and has a syntax error" do
@@ -417,15 +427,30 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
           expect(ChefConfig::Config.config_d_file_evaluated).to be(true)
         end
       end
+
+      context "has a directory ending in .rb" do
+        let(:config_content) { "config_d_file_evaluated(true)" }
+
+        before do
+          Dir.mkdir(File.join(tempdir, "ignored.rb"))
+        end
+
+        it "does not try to load the directory" do
+          expect { config_loader.load }.not_to raise_error
+          expect(ChefConfig::Config.config_d_file_evaluated).to be(true)
+        end
+      end
     end
 
     context "when the conf.d directory does not exist" do
       before do
         ChefConfig::Config[:config_d_dir] = "/nope/nope/nope/nope/notdoingit"
+        allow(config_loader).to receive(:config_location).and_return(nil)
       end
 
       it "does not load anything" do
         expect(config_loader).not_to receive(:apply_config)
+        expect { config_loader.load }.not_to raise_error
       end
     end
   end
