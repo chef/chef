@@ -66,8 +66,17 @@ class Chef
           Chef::Log.warn("Response: HTTP #{e.response.code} - #{e}")
           retry
         end
+        assert_private_key_present!
         write_key
         client
+      end
+
+      def assert_private_key_present!
+        return if self_generate_keys?
+        return if private_key && !private_key.empty?
+
+        raise Chef::Exceptions::InvalidPrivateKey,
+          "Server response did not include a private key for client '#{name}'"
       end
 
       def assert_destination_writable!

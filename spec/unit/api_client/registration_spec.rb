@@ -191,6 +191,44 @@ describe Chef::ApiClient::Registration do
         end
       end
     end
+
+    context "when create fails with a non-conflict client error" do
+      let(:response_401) { Net::HTTPUnauthorized.new("1.1", "401", "Unauthorized") }
+      let(:exception_401) { Net::HTTPClientException.new("401 unauthorized", response_401) }
+
+      before do
+        expect(http_mock).to receive(:post)
+          .with("clients", expected_post_data)
+          .and_raise(exception_401)
+        expect(http_mock).not_to receive(:put)
+      end
+
+      it "re-raises and does not attempt update" do
+        expect { registration.run }.to raise_error(Net::HTTPClientException)
+      end
+    end
+  end
+
+  describe "api boundary helpers" do
+    it "extracts private_key from chef_key response payload" do
+      response = {
+        "chef_key" => {
+          "private_key" => "--chef-key-private--",
+        },
+      }
+
+      expect(registration.api_client_key(response, "private_key")).to eq("--chef-key-private--")
+    end
+
+    it "maps mkdir permission failures to CannotWritePrivateKey" do
+      destination_dir = File.dirname(File.expand_path(key_location))
+      allow(File).to receive(:exist?).and_call_original
+      allow(File).to receive(:exist?).with(destination_dir).and_return(false)
+      allow(FileUtils).to receive(:mkdir_p).with(destination_dir).and_raise(Errno::EACCES)
+
+      expect { registration.assert_destination_writable! }
+        .to raise_error(Chef::Exceptions::CannotWritePrivateKey, /can't create the configuration directory/i)
+    end
   end
 
   describe "when writing the private key to disk" do
@@ -271,6 +309,48 @@ describe Chef::ApiClient::Registration do
       expect(http_mock).to receive(:post).exactly(6).times.and_raise(exception_500)
 
       expect { registration.run }.to raise_error(Net::HTTPFatalError)
+    end
+
+    context "with explicit retry override" do
+      before do
+        Chef::Config[:client_registration_retries] = 2
+      end
+
+      after do
+        Chef::Config[:client_registration_retries] = nil
+      end
+
+      it "honors configured retries and does not write a key on failure" do
+        response_500 = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
+        exception_500 = Net::HTTPFatalError.new("500 Internal Server Error", response_500)
+
+        expect(http_mock).to receive(:post).exactly(3).times.and_raise(exception_500)
+        expect(registration).not_to receive(:write_key)
+
+        expect { registration.run }.to raise_error(Net::HTTPFatalError)
+        expect(File).not_to exist(key_location)
+      end
+    end
+
+    context "when server-generated key is missing from response" do
+      let(:response_without_private_key) do
+        {
+          "uri" => "https://chef.local/clients/#{client_name}",
+        }
+      end
+
+      before do
+        Chef::Config[:local_key_generation] = false
+        expect(OpenSSL::PKey::RSA).not_to receive(:generate)
+      end
+
+      it "fails fast with InvalidPrivateKey and does not write a key file" do
+        expect(http_mock).to receive(:post).ordered.and_return(response_without_private_key)
+        expect(registration).not_to receive(:write_key)
+
+        expect { registration.run }.to raise_error(Chef::Exceptions::InvalidPrivateKey, /did not include a private key/)
+        expect(File).not_to exist(key_location)
+      end
     end
 
   end
