@@ -93,6 +93,25 @@ RSpec.describe TargetIO::TrainCompat::FileUtils do
       expect(transport_connection).not_to receive(:run_command)
       described_class.cp("/src", "/dest", noop: true)
     end
+
+    it "retries once on transient errors and succeeds" do
+      allow(TargetIO::Resilience).to receive(:enabled?).and_return(true)
+      allow(TargetIO::Resilience).to receive(:max_attempts).and_return(2)
+      allow(TargetIO::Resilience).to receive(:timeout_seconds).and_return(0.1)
+      allow(TargetIO::Resilience).to receive(:retry_delay_seconds).and_return(0)
+      allow(TargetIO::Resilience).to receive(:sleep_for)
+
+      first = true
+      allow(transport_connection).to receive(:run_command).with("cp /src /dest") do
+        if first
+          first = false
+          raise RuntimeError, "temporary cp error"
+        end
+        cmd_ok
+      end
+
+      expect { described_class.cp("/src", "/dest") }.not_to raise_error
+    end
   end
 
   # ─────────────────────────────────────────────────────────────────────────────

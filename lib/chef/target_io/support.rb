@@ -1,4 +1,5 @@
 require "tempfile" unless defined?(::Tempfile)
+require_relative "resilience"
 
 module TargetIO
   module Support
@@ -56,7 +57,9 @@ module TargetIO
     end
 
     def run_command(cmd)
-      transport_connection.run_command(cmd)
+      TargetIO::Resilience.with_timeout_and_backoff(operation: "run_command #{cmd}") do
+        transport_connection.run_command(cmd)
+      end
     end
 
     def sudo?

@@ -87,6 +87,16 @@ RSpec.describe TargetIO::Support do
       expect(transport_connection).to receive(:run_command).with("ls -la /tmp").and_return(result)
       expect(helper.run_command("ls -la /tmp")).to eq(result)
     end
+
+    it "routes execution through the resilience helper" do
+      result = double("cmd_result", exit_status: 0, stdout: "output\n")
+      expect(TargetIO::Resilience).to receive(:with_timeout_and_backoff)
+        .with(operation: "run_command ls -la /tmp")
+        .and_yield
+      expect(transport_connection).to receive(:run_command).with("ls -la /tmp").and_return(result)
+
+      expect(helper.run_command("ls -la /tmp")).to eq(result)
+    end
   end
 
   # ─────────────────────────────────────────────────────────────────────────────

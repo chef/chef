@@ -42,6 +42,25 @@ RSpec.describe TargetIO::TrainCompat::Dir do
         .with("ls -1a /etc").and_return(double(stdout: ".\n..\nhosts\npasswd\n"))
       expect(described_class.entries("/etc")).to eq([".", "..", "hosts", "passwd"])
     end
+
+    it "retries once on timeout and succeeds" do
+      allow(TargetIO::Resilience).to receive(:enabled?).and_return(true)
+      allow(TargetIO::Resilience).to receive(:max_attempts).and_return(2)
+      allow(TargetIO::Resilience).to receive(:timeout_seconds).and_return(0.1)
+      allow(TargetIO::Resilience).to receive(:retry_delay_seconds).and_return(0)
+      allow(TargetIO::Resilience).to receive(:sleep_for)
+
+      first = true
+      allow(transport_connection).to receive(:run_command).with("ls -1a /etc") do
+        if first
+          first = false
+          raise Timeout::Error, "timed out"
+        end
+        double(stdout: ".\n..\nresolv.conf\n")
+      end
+
+      expect(described_class.entries("/etc")).to eq([".", "..", "resolv.conf"])
+    end
   end
 
   # ─────────────────────────────────────────────────────────────────────────────
