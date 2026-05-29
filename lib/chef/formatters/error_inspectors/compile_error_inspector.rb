@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require_relative "instrumentation"
+
 class Chef
   module Formatters
     module ErrorInspectors
@@ -24,6 +26,7 @@ class Chef
       # Wraps exceptions that occur during the compile phase of a Chef run and
       # tries to find the code responsible for the error.
       class CompileErrorInspector
+        include Instrumentation
 
         attr_reader :path
         attr_reader :exception
@@ -37,6 +40,7 @@ class Chef
         end
 
         def add_explanation(error_description)
+          log_inspector_invocation
           error_description.section(exception.class.name, exception.message)
 
           if found_error_in_cookbooks?

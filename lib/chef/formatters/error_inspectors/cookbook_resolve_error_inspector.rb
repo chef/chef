@@ -17,11 +17,13 @@
 #
 
 require_relative "api_error_formatting"
+require_relative "instrumentation"
 
 class Chef
   module Formatters
     module ErrorInspectors
       class CookbookResolveErrorInspector
+        include Instrumentation
 
         attr_reader :exception
         attr_reader :expanded_run_list
@@ -34,6 +36,7 @@ class Chef
         end
 
         def add_explanation(error_description)
+          log_inspector_invocation
           case exception
           when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)

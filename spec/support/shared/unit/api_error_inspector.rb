@@ -187,4 +187,15 @@ shared_examples_for "an api error inspector" do
     end
   end
 
+  describe "instrumentation" do
+    it "logs inspector invocation details" do
+      @exception = RuntimeError.new("(exception) something went wrong")
+      @inspector = described_class.new(@node_name, @exception, @config)
+
+      expect(Chef::Log).to receive(:debug).with(include("event=\"error_inspector.add_explanation\"", "exception_class=\"RuntimeError\"", "node_name=\"test-node.example.com\""))
+
+      @inspector.add_explanation(@description)
+    end
+  end
+
 end

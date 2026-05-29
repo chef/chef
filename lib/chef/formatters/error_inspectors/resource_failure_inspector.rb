@@ -17,11 +17,13 @@
 # limitations under the License.
 #
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require_relative "instrumentation"
 
 class Chef
   module Formatters
     module ErrorInspectors
       class ResourceFailureInspector
+        include Instrumentation
 
         attr_reader :resource
         attr_reader :action
@@ -34,6 +36,7 @@ class Chef
         end
 
         def add_explanation(error_description)
+          log_inspector_invocation
           error_description.section(exception.class.name, exception.message)
 
           unless filtered_bt.empty?

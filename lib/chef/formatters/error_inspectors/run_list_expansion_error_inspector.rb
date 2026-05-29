@@ -18,6 +18,7 @@
 #
 
 require_relative "api_error_formatting"
+require_relative "instrumentation"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
@@ -26,6 +27,7 @@ class Chef
       class RunListExpansionErrorInspector
 
         include APIErrorFormatting
+        include Instrumentation
 
         attr_reader :exception
         attr_reader :node
@@ -35,6 +37,7 @@ class Chef
         end
 
         def add_explanation(error_description)
+          log_inspector_invocation
           case exception
           when Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError
             error_description.section("Networking Error:", <<~E)

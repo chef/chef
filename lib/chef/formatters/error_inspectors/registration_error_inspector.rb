@@ -1,3 +1,5 @@
+require_relative "api_error_formatting"
+require_relative "instrumentation"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
@@ -11,6 +13,7 @@ class Chef
       # slightly tweaked to talk about validation keys instead of other keys.
       class RegistrationErrorInspector
         include APIErrorFormatting
+        include Instrumentation
 
         attr_reader :exception
         attr_reader :node_name
@@ -23,6 +26,7 @@ class Chef
         end
 
         def add_explanation(error_description)
+          log_inspector_invocation
           case exception
           when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)

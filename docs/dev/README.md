@@ -31,3 +31,4 @@ A good first start is our [How Chef Infra Is Built](./design_documents/how_chef_
 - [Client Exit Codes](./design_documents/client_exit_codes.md)
 - [Server Enforced Recipes](./design_documents/server_enforced_recipes.md)
 - [Bootstrap with Train](./design_documents/bootstrap_with_train.md)
+- [Error Inspector Instrumentation](./design_documents/error_inspector_instrumentation.md)

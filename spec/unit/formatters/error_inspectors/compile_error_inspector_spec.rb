@@ -55,6 +55,17 @@ describe Chef::Formatters::ErrorInspectors::CompileErrorInspector do
 
   subject(:inspector) { described_class.new(path_to_failed_file, exception) }
 
+  describe "instrumentation" do
+    let(:trace) { ["/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb:2:in `from_file'"] }
+    let(:path_to_failed_file) { "/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb" }
+
+    it "logs inspector invocation details" do
+      expect(Chef::Log).to receive(:debug).with(include("event=\"error_inspector.add_explanation\"", "path=\"/tmp/kitchen/cache/cookbooks/foo/recipes/default.rb\"", "exception_class=\"NoMethodError\""))
+
+      inspector.add_explanation(description)
+    end
+  end
+
   describe "finding the code responsible for the error" do
 
     context "when the stacktrace includes cookbook files" do

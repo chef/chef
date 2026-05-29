@@ -49,6 +49,17 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
 
   end
 
+  describe "instrumentation" do
+    it "logs inspector invocation details" do
+      @exception = RuntimeError.new("something broke")
+      @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
+
+      expect(Chef::Log).to receive(:debug).with(include("event=\"error_inspector.add_explanation\"", "node_name=\"unit-test.example.com\"", "exception_class=\"RuntimeError\""))
+
+      @inspector.add_explanation(@description)
+    end
+  end
+
   describe "when explaining an HTTP 403 error" do
     before do
 
