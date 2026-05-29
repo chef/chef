@@ -84,6 +84,7 @@ module ChefConfig
         apply_config(IO.read(config_location), config_location)
       end
 
+      # DotD applies only regular *.rb files and loads them in deterministic lexical order.
       load_dot_d(Config[:config_d_dir]) if Config[:config_d_dir]
 
       apply_defaults

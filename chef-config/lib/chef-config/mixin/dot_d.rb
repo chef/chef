@@ -20,13 +20,14 @@ module ChefConfig
   module Mixin
     module DotD
       # Find available configuration files in a `.d/` style include directory.
-      # Make sure we exclude anything that's not a file so we avoid directories ending in .rb (just in case)
+      # Files are returned in deterministic lexical order.
+      # Make sure we exclude anything that's not a file so we avoid directories ending in .rb (just in case).
       #
       # @api internal
       # @param path [String] Base .d/ path to load from.
       # @return [Array<String>]
       def find_dot_d(path)
-        Dir["#{PathHelper.escape_glob_dir(path)}/*.rb"].select { |entry| File.file?(entry) }.sort
+        dot_d_entries(path).select { |entry| File.file?(entry) }.sort
       end
 
       # Load configuration from a `.d/` style include directory.
@@ -36,8 +37,22 @@ module ChefConfig
       # @return [void]
       def load_dot_d(path)
         find_dot_d(path).each do |conf|
-          apply_config(IO.read(conf), conf)
+          apply_dot_d_config(conf)
         end
+      end
+
+      private
+
+      def dot_d_entries(path)
+        Dir[dot_d_glob(path)]
+      end
+
+      def dot_d_glob(path)
+        "#{PathHelper.escape_glob_dir(path)}/*.rb"
+      end
+
+      def apply_dot_d_config(path)
+        apply_config(IO.read(path), path)
       end
     end
   end
