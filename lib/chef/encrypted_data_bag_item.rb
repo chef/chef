@@ -128,6 +128,7 @@ class Chef::EncryptedDataBagItem
 
   def self.load_secret(path = nil)
     require "open-uri" unless defined?(OpenURI)
+    require "uri"
     path ||= Chef::Config[:encrypted_data_bag_secret]
     unless path
       raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(ChefConfig::Config.etc_chef_dir) + "/encrypted_data_bag_secret"}"
@@ -137,11 +138,23 @@ class Chef::EncryptedDataBagItem
              when %r{^\w+://}
                # We have a remote key
                begin
-                 Kernel.open(path).read.strip
+                 uri = URI.parse(path)
+                 unless uri.is_a?(URI::HTTP) && uri.host
+                   raise ArgumentError, "Remote key URL must use http or https and include a host: '#{path}'"
+                 end
+                 if uri.user || uri.password
+                   raise ArgumentError, "Remote key URL must not include user credentials: '#{path}'"
+                 end
+
+                 URI.open(uri, open_timeout: 5, read_timeout: 5).read.strip
+               rescue URI::InvalidURIError
+                 raise ArgumentError, "Remote key URL is invalid: '#{path}'"
                rescue Errno::ECONNREFUSED
                  raise ArgumentError, "Remote key not available from '#{path}'"
                rescue OpenURI::HTTPError
                  raise ArgumentError, "Remote key not found at '#{path}'"
+               rescue Timeout::Error
+                 raise ArgumentError, "Remote key request timed out for '#{path}'"
                end
              else
                unless File.exist?(path)

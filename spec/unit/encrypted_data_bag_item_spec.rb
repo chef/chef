@@ -428,11 +428,27 @@ describe Chef::EncryptedDataBagItem do
 
     context "path argument is a URL" do
       before do
-        allow(Kernel).to receive(:open).with("http://www.opscode.com/").and_return(StringIO.new(secret))
+        allow(URI).to receive(:open)
+          .with(instance_of(URI::HTTP), open_timeout: 5, read_timeout: 5)
+          .and_return(StringIO.new(secret))
       end
 
       it "reads from the URL" do
         expect(Chef::EncryptedDataBagItem.load_secret("http://www.opscode.com/")).to eq secret
+      end
+    end
+
+    context "path argument is a URL with an unsupported scheme" do
+      it "rejects the URL" do
+        expect { Chef::EncryptedDataBagItem.load_secret("ftp://www.opscode.com/secret") }
+          .to raise_error(ArgumentError, /must use http or https/)
+      end
+    end
+
+    context "path argument is a URL with embedded credentials" do
+      it "rejects the URL" do
+        expect { Chef::EncryptedDataBagItem.load_secret("https://user:pass@www.opscode.com/secret") }
+          .to raise_error(ArgumentError, /must not include user credentials/)
       end
     end
   end
