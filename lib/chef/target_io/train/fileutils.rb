@@ -1,5 +1,8 @@
 require_relative "../support"
 
+# TargetIO::Support#run_command is a transport primitive, not Chef's removed shell helper.
+# rubocop:disable Chef/Deprecations/UsesRunCommandHelper
+
 module TargetIO
   module TrainCompat
     class FileUtils
@@ -52,7 +55,7 @@ module TargetIO
         end
         alias_method :copy, :cp
 
-        def cp_lr(src, dest, noop: nil, verbose: nil, dereference_root: true, remove_destination: false)
+        def cp_lr(src, dest, noop: nil, verbose: nil, _dereference_root: true, remove_destination: false)
           cmd = "cp -lr#{remove_destination ? " --remove-destination" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
@@ -61,7 +64,7 @@ module TargetIO
           run_command(cmd)
         end
 
-        def cp_r(src, dest, preserve: nil, noop: nil, verbose: nil, dereference_root: true, remove_destination: nil)
+        def cp_r(src, dest, preserve: nil, noop: nil, verbose: nil, _dereference_root: true, remove_destination: nil)
           cmd = "cp -r#{preserve ? "p" : ""}#{remove_destination ? " --remove-destination" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
@@ -132,7 +135,7 @@ module TargetIO
         alias_method :makedirs, :mkdir_p
         alias_method :mkpath, :mkdir_p
 
-        def mv(src, dest, force: nil, noop: nil, verbose: nil, secure: nil)
+        def mv(src, dest, force: nil, noop: nil, verbose: nil, _secure: nil)
           cmd = "mv#{force ? " -f" : ""} #{[src, dest].flatten.join(" ")}"
 
           Chef::Log.debug cmd if verbose
@@ -150,11 +153,11 @@ module TargetIO
           run_command(cmd)
         end
 
-        def rm_f(list, force: nil, noop: nil, verbose: nil, secure: nil)
+        def rm_f(list, _force: nil, noop: nil, verbose: nil, _secure: nil)
           rm(list, force: true, noop: noop, verbose: verbose)
         end
 
-        def rm_r(list, force: nil, noop: nil, verbose: nil, secure: nil)
+        def rm_r(list, force: nil, noop: nil, verbose: nil, _secure: nil)
           cmd = "rm -r#{force ? "f" : ""} #{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
@@ -163,14 +166,14 @@ module TargetIO
           run_command(cmd)
         end
 
-        def rm_rf(list, noop: nil, verbose: nil, secure: nil)
-          rm_r(list, force: true, noop: noop, verbose: verbose, secure: secure)
+        def rm_rf(list, noop: nil, verbose: nil, _secure: nil)
+          rm_r(list, force: true, noop: noop, verbose: verbose)
         end
         alias_method :remove_entry, :rm_rf
         alias_method :rmtree, :rm_rf
         alias_method :safe_unlink, :rm_rf
 
-        def rmdir(list, parents: nil, noop: nil, verbose: nil)
+        def rmdir(list, parents: nil, noop: nil, _verbose: nil)
           cmd = "rmdir #{parents ? "-p " : ""}#{Array(list).join(" ")}"
 
           Chef::Log.debug cmd if verbose
@@ -199,3 +202,4 @@ module TargetIO
     end
   end
 end
+# rubocop:enable Chef/Deprecations/UsesRunCommandHelper

@@ -59,7 +59,6 @@ module TargetIO
         def __parse_passwd_line(line)
           x = line.split(":")
           {
-            # rubocop:disable Layout/AlignHash
             "user"     => x.at(0),
             "password" => x.at(1),
             "uid"      => x.at(2),
@@ -95,7 +94,6 @@ module TargetIO
         def __parse_group_line(line)
           x = line.split(":")
           {
-            # rubocop:disable Layout/AlignHash
             "name"     => x.at(0),
             "password" => x.at(1),
             "gid"      => x.at(2),

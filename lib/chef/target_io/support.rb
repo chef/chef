@@ -51,7 +51,8 @@ module TargetIO
 
       staging_dir = ::File.dirname(filename)
       ::TargetIO::FileUtils.rmdir(staging_dir)
-    rescue Errno::ENOENT
+    rescue Errno::ENOENT => e
+      Chef::Log.debug("TargetIO staging cleanup skipped for missing path #{filename}: #{e.message}")
     end
 
     def run_command(cmd)

@@ -3,6 +3,9 @@ require_relative "fileutils"
 
 require_relative "../support"
 
+# TargetIO::Support#run_command is a transport primitive, not Chef's removed shell helper.
+# rubocop:disable Chef/Deprecations/UsesRunCommandHelper
+
 module TargetIO
   module TrainCompat
     class Dir
@@ -54,7 +57,7 @@ module TargetIO
         end
 
         # Borrowed and adapted from Ruby's Dir::tmpdir and Dir::mktmpdir
-        def mktmpdir(prefix_suffix = nil, *rest, **options)
+        def mktmpdir(prefix_suffix = nil, *_rest, **_options)
           prefix, suffix = ::File.basename(prefix_suffix || "d")
           random = (::Random.urandom(4).unpack1("L") % 36**6).to_s(36)
 
@@ -84,3 +87,4 @@ module TargetIO
     end
   end
 end
+# rubocop:enable Chef/Deprecations/UsesRunCommandHelper

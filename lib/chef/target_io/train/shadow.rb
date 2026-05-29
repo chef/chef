@@ -36,7 +36,6 @@ module TargetIO
           def __parse_shadow_line(line)
             x = line.split(":")
             {
-              # rubocop:disable Layout/AlignHash
               "sp_namp"   => x.at(0),
               "sp_pwdp"   => x.at(1),
               "sp_lstchg" => x.at(2),

@@ -1,5 +1,8 @@
 require_relative "../support"
 
+# TargetIO::Support#run_command is a transport primitive, not Chef's removed shell helper.
+# rubocop:disable Chef/Deprecations/UsesRunCommandHelper
+
 module TargetIO
   module TrainCompat
     class HTTP
@@ -115,3 +118,4 @@ module TargetIO
     end
   end
 end
+# rubocop:enable Chef/Deprecations/UsesRunCommandHelper

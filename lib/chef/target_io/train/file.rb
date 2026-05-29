@@ -1,5 +1,8 @@
 require_relative "../support"
 
+# TargetIO::Support#run_command is a transport primitive, not Chef's removed shell helper.
+# rubocop:disable Chef/Deprecations/UsesRunCommandHelper
+
 module TargetIO
   module TrainCompat
     class File
@@ -174,7 +177,7 @@ module TargetIO
 
           # Non-IO methods can be issued locally
           elsif nonio.include? m
-            ::File.send(m, *args, **kwargs) # TODO: pass block
+            ::File.send(m, *args, **kwargs, &block)
 
           elsif passthru.include? m
             Chef::Log.debug "File::#{m} passed to Train.file.#{m}"
@@ -182,7 +185,7 @@ module TargetIO
             file_name, other_args = args[0], args[1..]
 
             file = transport_connection.file(file_name)
-            file.send(m, *other_args, **kwargs) # block?
+            file.send(m, *other_args, **kwargs, &block)
 
           elsif m == :mtime
             # Solve a data type disparity between Train.file and File
@@ -198,7 +201,7 @@ module TargetIO
             new_method = redirect_utils[m]
             Chef::Log.debug "File::#{m} redirected to TargetIO::FileUtils.#{new_method}"
 
-            ::TargetIO::FileUtils.send(new_method, *args, **kwargs) # TODO: pass block
+            ::TargetIO::FileUtils.send(new_method, *args, **kwargs, &block)
 
           elsif redirect_train.key?(m)
             new_method = redirect_train[m]
@@ -207,7 +210,7 @@ module TargetIO
             file_name, other_args = args[0], args[1..]
 
             file = transport_connection.file(file_name)
-            file.send(redirect_train[m], *other_args, **kwargs) # TODO: pass block
+            file.send(redirect_train[m], *other_args, **kwargs, &block)
 
           else
             raise "Unsupported File method #{m}"
@@ -217,3 +220,4 @@ module TargetIO
     end
   end
 end
+# rubocop:enable Chef/Deprecations/UsesRunCommandHelper
