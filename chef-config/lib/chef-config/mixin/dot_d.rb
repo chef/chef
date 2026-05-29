@@ -20,6 +20,7 @@ module ChefConfig
   module Mixin
     module DotD
       # Find available configuration files in a `.d/` style include directory.
+      # Only top-level `*.rb` files are considered (no recursive traversal).
       # Files are returned in deterministic lexical order.
       # Make sure we exclude anything that's not a file so we avoid directories ending in .rb (just in case).
       #
@@ -31,6 +32,7 @@ module ChefConfig
       end
 
       # Load configuration from a `.d/` style include directory.
+      # Exceptions from apply_config are allowed to bubble up to the caller.
       #
       # @api internal
       # @param path [String] Base .d/ path to load from.

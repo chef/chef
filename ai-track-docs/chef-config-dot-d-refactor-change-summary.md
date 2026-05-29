@@ -1,5 +1,8 @@
 # chef-config DotD Scoped Refactor Summary
 
+Related maintainability guide:
+- ai-track-docs/chef-config-workstation-dotd-maintainability.md
+
 ## Scope
 - Subsystem: chef-config
 - Folder focus: chef-config/lib/chef-config/mixin and related loader integration tests
