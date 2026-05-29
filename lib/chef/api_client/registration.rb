@@ -138,15 +138,11 @@ class Chef
       end
 
       def api_client_key(response, key_name)
-        if response[key_name]
-          if response[key_name].respond_to?(:to_pem)
-            response[key_name].to_pem
-          else
-            response[key_name]
-          end
-        elsif response["chef_key"]
-          response["chef_key"][key_name]
-        end
+        value = response[key_name]
+        return value.respond_to?(:to_pem) ? value.to_pem : value if value
+
+        chef_key = response["chef_key"]
+        chef_key && chef_key[key_name]
       end
 
       def put_data
@@ -183,7 +179,7 @@ class Chef
 
       def private_key
         if self_generate_keys?
-          generated_private_key.to_pem
+          @generated_private_key_pem ||= generated_private_key.to_pem
         else
           @server_generated_private_key
         end
@@ -194,7 +190,7 @@ class Chef
       end
 
       def generated_public_key
-        generated_private_key.public_key.to_pem
+        @generated_public_key ||= generated_private_key.public_key.to_pem
       end
 
       def file_flags

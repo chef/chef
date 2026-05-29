@@ -210,6 +210,15 @@ describe Chef::ApiClient::Registration do
   end
 
   describe "api boundary helpers" do
+    it "prefers top-level key over chef_key fallback" do
+      response = {
+        "private_key" => "top-level-private",
+        "chef_key" => { "private_key" => "nested-private" },
+      }
+
+      expect(registration.api_client_key(response, "private_key")).to eq("top-level-private")
+    end
+
     it "extracts private_key from chef_key response payload" do
       response = {
         "chef_key" => {
@@ -218,6 +227,26 @@ describe Chef::ApiClient::Registration do
       }
 
       expect(registration.api_client_key(response, "private_key")).to eq("--chef-key-private--")
+    end
+
+    it "memoizes generated public key PEM" do
+      private_key_double = double("RSA private key")
+      public_key_double = double("RSA public key")
+
+      allow(registration).to receive(:generated_private_key).and_return(private_key_double)
+      allow(private_key_double).to receive(:public_key).and_return(public_key_double)
+      expect(public_key_double).to receive(:to_pem).once.and_return("memoized-public")
+
+      2.times { expect(registration.generated_public_key).to eq("memoized-public") }
+    end
+
+    it "memoizes generated private key PEM" do
+      private_key_double = double("RSA private key")
+
+      allow(registration).to receive(:generated_private_key).and_return(private_key_double)
+      expect(private_key_double).to receive(:to_pem).once.and_return("memoized-private")
+
+      2.times { expect(registration.private_key).to eq("memoized-private") }
     end
 
     it "maps mkdir permission failures to CannotWritePrivateKey" do
