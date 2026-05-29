@@ -1,0 +1,37 @@
+flowchart TD
+    S["chef-config subsystem"]
+    L["chef-config/lib"]
+    SP["chef-config/spec"]
+    GS["chef-config/chef-config.gemspec"]
+    G["chef-config/Gemfile"]
+
+    S --> L
+    S --> SP
+    S --> GS
+    S --> G
+    L1["chef-config/lib/chef-config.rb"]
+    L --> L1
+    L2["chef-config/lib/chef-config/config.rb"]
+    L --> L2
+    L3["chef-config/lib/chef-config/exceptions.rb"]
+    L --> L3
+    L4["chef-config/lib/chef-config/fips.rb"]
+    L --> L4
+    L5["chef-config/lib/chef-config/logger.rb"]
+    L --> L5
+    L6["chef-config/lib/chef-config/mixin/credentials.rb"]
+    L --> L6
+    L7["chef-config/lib/chef-config/mixin/dot_d.rb"]
+    L --> L7
+    L8["chef-config/lib/chef-config/mixin/fuzzy_hostname_matcher.rb"]
+    L --> L8
+    L9["chef-config/lib/chef-config/mixin/train_transport.rb"]
+    L --> L9
+    L10["chef-config/lib/chef-config/path_helper.rb"]
+    L --> L10
+    L11["chef-config/lib/chef-config/version.rb"]
+    L --> L11
+    L12["chef-config/lib/chef-config/windows.rb"]
+    L --> L12
+    L13["chef-config/lib/chef-config/workstation_config_loader.rb"]
+    L --> L13
