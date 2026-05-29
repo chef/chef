@@ -43,9 +43,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
-  s.add_dependency "train-core", "~> 3.13", ">= 3.13.4" # Updated to be compatible with InSpec 7
-  s.add_dependency "train-winrm", ">= 0.2.17"
-  s.add_dependency "train-rest", ">= 0.4.1" # target mode with rest APIs
+  s.add_dependency "train-core", "~> 3.13", ">= 3.16.3" # pinned minimum to currently validated target-mode stack
+  s.add_dependency "train-winrm", ">= 0.4.3"
+  s.add_dependency "train-rest", ">= 0.5.0" # target mode with rest APIs
 
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
