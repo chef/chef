@@ -336,8 +336,7 @@ describe Chef::Mixin::Template, "render_template" do
       huge_message = "undefined method `platform?' for " + ("x" * 20_000)
       original_exception = double("exception",
         message: huge_message,
-        backtrace: ["(erubis):1"]
-      )
+        backtrace: ["(erubis):1"])
       template_error = Chef::Mixin::Template::TemplateError.new(
         original_exception, "<%= platform? %>", {}, {}
       )
@@ -351,8 +350,7 @@ describe Chef::Mixin::Template, "render_template" do
     it "should not truncate short error messages" do
       original_exception = double("exception",
         message: "undefined method `platform?'",
-        backtrace: ["(erubis):1"]
-      )
+        backtrace: ["(erubis):1"])
       template_error = Chef::Mixin::Template::TemplateError.new(
         original_exception, "<%= platform? %>", {}, {}
       )
