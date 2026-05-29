@@ -93,6 +93,12 @@ class Chef
           @_extension_modules = []
         end
 
+        # Provide a compact inspect so exception messages do not dump the full
+        # template context, including node attributes and secrets.
+        def inspect
+          "#<#{self.class} template_name=#{@template_name.inspect} cookbook_name=#{@cookbook_name.inspect}>"
+        end
+
         ###
         # USER FACING API
         ###
@@ -220,8 +226,15 @@ class Chef
           @original_exception, @template, @context, @options = original_exception, template, context, options
         end
 
+        MAX_MESSAGE_LENGTH = 10_000
+
         def message
-          @original_exception.message
+          msg = @original_exception.message
+          if msg.length > MAX_MESSAGE_LENGTH
+            msg[0, MAX_MESSAGE_LENGTH] + "\n... [truncated #{msg.length - MAX_MESSAGE_LENGTH} characters]"
+          else
+            msg
+          end
         end
 
         def line_number

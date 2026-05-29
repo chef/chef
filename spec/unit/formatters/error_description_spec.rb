@@ -110,7 +110,6 @@ describe Chef::Formatters::ErrorDescription do
 
         END
       end
-
     end
 
     context "when node object is available" do
@@ -119,23 +118,36 @@ describe Chef::Formatters::ErrorDescription do
         # reset on global values.
         Chef.set_node({ "platform" => "openvms", "platform_version" => "8.4-2L1" })
         subject.display(out)
-        expect(out.out.string).to eq <<~END
-          ================================================================================
-          test title
-          ================================================================================
+        expect(out.out.string).to eq(
+          "================================================================================\n" \
+          "test title\n" \
+          "================================================================================\n\n" \
+          "System Info:\n" \
+          "------------\n" \
+          "chef_version=1.2.3\n" \
+          "platform=openvms\n" \
+          "platform_version=8.4-2L1\n" \
+          "ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]\n" \
+          "program_name=chef-client\n" \
+          "executable=/test/bin/chef-client\n\n"
+        )
+      end
+    end
 
-          System Info:
-          ------------
-          chef_version=1.2.3
-          platform=openvms
-          platform_version=8.4-2L1
-          ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
-          program_name=chef-client
-          executable=/test/bin/chef-client
+    context "when a section has excessively long text" do
+      let(:huge_text) { "x" * 50_000 }
 
-        END
+      before do
+        subject.section("Huge Section", huge_text)
       end
 
+      it "should truncate the section text to MAX_DISPLAY_TEXT_LENGTH" do
+        subject.display(out)
+        output = out.out.string
+        expect(output).to include("Huge Section")
+        expect(output).to include("[truncated")
+        expect(output.length).to be < (Chef::Formatters::ErrorDescription::MAX_DISPLAY_TEXT_LENGTH + 1000)
+      end
     end
   end
 end
