@@ -312,6 +312,23 @@ describe Chef::Mixin::Template, "render_template" do
         expect(@exception.to_s).to include("  2: bar\n  3: baz\n  4: <%= this_is_not_defined %>\n  5: quin\n  6: qunx")
         expect(@exception.to_s).to include(@exception.original_exception.backtrace.first)
       end
+
+      it "does not dump large node data in end-to-end template error output" do
+        @context[:node] = { "platform" => "centos", "large_data" => "x" * 100_000 }
+        @context[:template_name] = "test.erb"
+        @context[:cookbook_name] = "my_cookbook"
+
+        begin
+          @context.render_template_from_string("<%= this_is_not_defined %>")
+        rescue Chef::Mixin::Template::TemplateError => e
+          output = e.to_s
+          expect(output).to include("undefined local variable or method")
+          expect(output).to include("my_cookbook")
+          expect(output).to include("test.erb")
+          expect(output).not_to include("large_data")
+          expect(output.length).to be < 12_000
+        end
+      end
     end
   end
 
