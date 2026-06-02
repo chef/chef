@@ -1,6 +1,6 @@
 # Contributing to Chef Projects
 
-We're glad you want to contribute to a Chef project! This document will help answer common questions you may have during your first contribution.
+We're glad you want to contribute to a Chef project! This document will help answer common questions you may have during your first contribution. 
 
 ## Submitting Issues
 
