@@ -271,7 +271,16 @@ class Chef
         end
 
         def to_s
-          "\n\n#{self.class} (#{message}) #{source_location}:\n\n" +
+          location_parts = []
+          if @context.respond_to?(:cookbook_name) && @context.cookbook_name
+            location_parts << "cookbook: #{@context.cookbook_name}"
+          end
+          if @context.respond_to?(:template_name) && @context.template_name
+            location_parts << "template: #{@context.template_name}"
+          end
+          location_hint = location_parts.empty? ? "" : " (#{location_parts.join(', ')})"
+
+          "\n\n#{self.class} (#{message}) #{source_location}#{location_hint}:\n\n" +
             "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"
         end
       end
