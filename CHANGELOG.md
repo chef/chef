@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.90 -->
-## [v18.10.90](https://github.com/chef/chef/tree/v18.10.90) (2026-05-29)
+<!-- latest_release 18.10.91 -->
+## [v18.10.91](https://github.com/chef/chef/tree/v18.10.91) (2026-06-02)
 
 #### Merged Pull Requests
-- Updating Rack via Chef-Zero [#16054](https://github.com/chef/chef/pull/16054) ([johnmccrae](https://github.com/johnmccrae))
+- Bump actions/labeler from 6.0.1 to 6.1.0 [#15990](https://github.com/chef/chef/pull/15990) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump actions/labeler from 6.0.1 to 6.1.0 [#15990](https://github.com/chef/chef/pull/15990) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.91 -->
 - Updating Rack via Chef-Zero [#16054](https://github.com/chef/chef/pull/16054) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.90 -->
 - [chef-18] Added directory_specs and client_rb_mode properties to the chef_client_config resource [#16025](https://github.com/chef/chef/pull/16025) ([LoboDorado](https://github.com/LoboDorado)) <!-- 18.10.89 -->
 - [chef-18] Backport AlmaLinux 10 chrony exemption [#16032](https://github.com/chef/chef/pull/16032) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.88 -->
