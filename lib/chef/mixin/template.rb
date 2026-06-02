@@ -278,7 +278,7 @@ class Chef
           if @context.respond_to?(:template_name) && @context.template_name
             location_parts << "template: #{@context.template_name}"
           end
-          location_hint = location_parts.empty? ? "" : " (#{location_parts.join(', ')})"
+          location_hint = location_parts.empty? ? "" : " (#{location_parts.join(", ")})"
 
           "\n\n#{self.class} (#{message}) #{source_location}#{location_hint}:\n\n" +
             "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"
