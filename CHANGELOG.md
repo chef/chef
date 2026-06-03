@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.24 -->
-## [v19.3.24](https://github.com/chef/chef/tree/v19.3.24) (2026-05-28)
+<!-- latest_release 19.3.25 -->
+## [v19.3.25](https://github.com/chef/chef/tree/v19.3.25) (2026-06-03)
 
 #### Merged Pull Requests
-- Fixing chocolatey download bug (cherry-pick from chef-18 PR #15925) [#16036](https://github.com/chef/chef/pull/16036) ([johnmccrae](https://github.com/johnmccrae))
+- Disable chrony kitchen test for Rocky Linux 10 [#16082](https://github.com/chef/chef/pull/16082) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable chrony kitchen test for Rocky Linux 10 [#16082](https://github.com/chef/chef/pull/16082) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.25 -->
 - Fixing chocolatey download bug (cherry-pick from chef-18 PR #15925) [#16036](https://github.com/chef/chef/pull/16036) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.24 -->
 - Automatically skip version bumps if CI files [#15687](https://github.com/chef/chef/pull/15687) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.23 -->
 - Obvious fix: Fix sysctl resource idempotency [#16035](https://github.com/chef/chef/pull/16035) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.3.22 -->
