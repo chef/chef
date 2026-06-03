@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+whoami
+echo hehehehehehehehehe
 
 export HAB_LICENSE="accept"
 export HAB_NONINTERACTIVE="true"
