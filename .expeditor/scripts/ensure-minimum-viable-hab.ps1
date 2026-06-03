@@ -1,6 +1,7 @@
 $HabitatVersion = if ($env:HAB_VERSION) { $env:HAB_VERSION } else { '2.0.504' }
 
 Set-ExecutionPolicy Bypass -Scope Process -Force
+Write-Output "hehehehehehehehehe"
 
 $installScriptUrl = 'https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'
 $installScriptPath = Join-Path $env:TEMP "hab-install-$HabitatVersion.ps1"
