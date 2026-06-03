@@ -118,19 +118,21 @@ describe Chef::Formatters::ErrorDescription do
         # reset on global values.
         Chef.set_node({ "platform" => "openvms", "platform_version" => "8.4-2L1" })
         subject.display(out)
-        expect(out.out.string).to eq(
-          "================================================================================\n" \
-          "test title\n" \
-          "================================================================================\n\n" \
-          "System Info:\n" \
-          "------------\n" \
-          "chef_version=1.2.3\n" \
-          "platform=openvms\n" \
-          "platform_version=8.4-2L1\n" \
-          "ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]\n" \
-          "program_name=chef-client\n" \
-          "executable=/test/bin/chef-client\n\n"
-        )
+        expect(out.out.string).to eq <<~END
+          ================================================================================
+          test title
+          ================================================================================
+
+          System Info:
+          ------------
+          chef_version=1.2.3
+          platform=openvms
+          platform_version=8.4-2L1
+          ruby=ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
+          program_name=chef-client
+          executable=/test/bin/chef-client
+
+        END
       end
     end
 
