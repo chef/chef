@@ -178,8 +178,11 @@ describe Chef::CookbookSynchronizer do
   context "#remove_deleted_files" do
     let(:file_cache) { double("Chef::FileCache with files from unused cookbooks") }
 
+    let(:valid1_cookbook) { double("valid1 cookbook", manifest: { "all_files" => [{ "path" => "recipes/default.rb" }] }) }
+    let(:valid2_cookbook) { double("valid2 cookbook", manifest: { "all_files" => [{ "path" => "recipes/default.rb" }] }) }
+
     let(:cookbook_manifest) do
-      { "valid1" => {}, "valid2" => {} }
+      { "valid1" => valid1_cookbook, "valid2" => valid2_cookbook }
     end
 
     it "removes only deleted files" do
@@ -191,7 +194,6 @@ describe Chef::CookbookSynchronizer do
       # valid2 is a cookbook not in our run_list (we're simulating an override run_list where valid2 needs to be preserved)
       expect(synchronizer).to receive(:have_cookbook?).with("valid2").at_least(:once).and_return(false)
       expect(file_cache).to receive(:delete).with("cookbooks/valid1/recipes/deleted.rb")
-      expect(synchronizer).to receive(:cookbook_segment).with("valid1", "recipes").at_least(:once).and_return([ { "path" => "recipes/default.rb" }])
       allow(synchronizer).to receive(:cache).and_return(file_cache)
       synchronizer.remove_deleted_files
     end
