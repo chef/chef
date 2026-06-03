@@ -93,6 +93,12 @@ class Chef
           @_extension_modules = []
         end
 
+        # Provide a compact inspect so exception messages do not dump the full
+        # template context, including node attributes and secrets.
+        def inspect
+          "#<#{self.class} template_name=#{@template_name.inspect} cookbook_name=#{@cookbook_name.inspect}>"
+        end
+
         ###
         # USER FACING API
         ###
@@ -220,8 +226,15 @@ class Chef
           @original_exception, @template, @context, @options = original_exception, template, context, options
         end
 
+        MAX_MESSAGE_LENGTH = 10_000
+
         def message
-          @original_exception.message
+          msg = @original_exception.message
+          if msg.length > MAX_MESSAGE_LENGTH
+            msg[0, MAX_MESSAGE_LENGTH] + "\n... [truncated #{msg.length - MAX_MESSAGE_LENGTH} characters]"
+          else
+            msg
+          end
         end
 
         def line_number
@@ -258,7 +271,16 @@ class Chef
         end
 
         def to_s
-          "\n\n#{self.class} (#{message}) #{source_location}:\n\n" +
+          location_parts = []
+          if @context.respond_to?(:cookbook_name) && @context.cookbook_name
+            location_parts << "cookbook: #{@context.cookbook_name}"
+          end
+          if @context.respond_to?(:template_name) && @context.template_name
+            location_parts << "template: #{@context.template_name}"
+          end
+          location_hint = location_parts.empty? ? "" : " (#{location_parts.join(", ")})"
+
+          "\n\n#{self.class} (#{message}) #{source_location}#{location_hint}:\n\n" +
             "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"
         end
       end
