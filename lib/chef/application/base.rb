@@ -220,9 +220,7 @@ class Chef::Application::Base < Chef::Application
     short: "-t TARGET",
     long: "--target TARGET",
     description: "Target #{ChefUtils::Dist::Infra::PRODUCT} against a remote system or device",
-    proc: lambda { |target|
-      target
-    }
+    proc: lambda { |target| target }
 
   option :disable_config,
     long: "--disable-config",
