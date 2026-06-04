@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.94 -->
-## [v18.10.94](https://github.com/chef/chef/tree/v18.10.94) (2026-06-04)
+<!-- latest_release 18.10.95 -->
+## [v18.10.95](https://github.com/chef/chef/tree/v18.10.95) (2026-06-04)
 
 #### Merged Pull Requests
-- [chef-18] Disable chrony kitchen test for Rocky Linux 10 [#16084](https://github.com/chef/chef/pull/16084) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef 18] CHEF-14144: Limit excessive output from template errors (#16073) [#16087](https://github.com/chef/chef/pull/16087) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Chef 18] CHEF-14144: Limit excessive output from template errors (#16073) [#16087](https://github.com/chef/chef/pull/16087) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.95 -->
 - [chef-18] Disable chrony kitchen test for Rocky Linux 10 [#16084](https://github.com/chef/chef/pull/16084) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.94 -->
 - Update uuidtools requirement from &gt;= 2.1.5, &lt; 3.0 to &gt;= 2.1.5, &lt; 4.0 [#16056](https://github.com/chef/chef/pull/16056) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.93 -->
 - Bump chef-zero from 15.1.0 to 15.1.11 [#16057](https://github.com/chef/chef/pull/16057) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.92 -->
