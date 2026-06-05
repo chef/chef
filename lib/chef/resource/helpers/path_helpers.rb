@@ -29,8 +29,8 @@ class Chef
         # return path for any bin/chef-* names
         return path.sub(bin, ChefUtils::Dist::Infra::CLIENT) if bin =~ /^chef-[a-z-]+$/
 
-        # Return empty string if no valid path is found
-        ""
+        # Fall back to legacy path if no valid path is found
+        which(ChefUtils::Dist::Infra::CLIENT)
       end
 
       # once the binstubs under hab package have been fixed,
