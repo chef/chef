@@ -1,4 +1,3 @@
-export HAB_BLDR_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
 _chef_client_ruby="core/ruby3_4/3.4.2"
 pkg_name="chef-infra-client"
@@ -12,9 +11,14 @@ pkg_bin_dirs=(
 )
 pkg_build_deps=(
   core/make
-  core/xcode
+  core/clang
   core/git
 )
+
+pkg_bin_dirs=(bin)
+pkg_include_dirs=(include)
+pkg_lib_dirs=(lib64)
+pkg_pconfig_dirs=(lib64/pkgconfig)
 
 pkg_deps=(
   $_chef_client_ruby
@@ -32,28 +36,17 @@ pkg_deps=(
 pkg_svc_user=root
 pkg_svc_group=root
 
-# Sandbox profile for macOS builds.
-# core/xcode's RUNTIME_SANDBOX already covers:
-#   file*/process-exec/process-fork/network-outbound for /usr/lib, /System/Library,
-#   /Library/Apple, /Applications/Xcode.app, and /private/var/folders (clang temp artifacts).
-# We add only what xcode does not cover: write access to our build paths, broad
-# process-exec/fork/network for Ruby+bundler+gem-fetch, and Ruby IPC primitives.
-# Note: /tmp is a symlink to /private/tmp on macOS; the kernel resolves it before
-# sandbox path matching, so /private/tmp covers /tmp accesses as well.
+# (allow file-read-data (subpath \"/opt/hab\"))
+# (allow file-read-data (subpath \"/private/var\"))
+# (allow file-read-data (subpath \"/dev\"))
+# (allow file-read-data (subpath \"/usr/share\"))
+# (allow file* (subpath \"/Users\"))
+# We need the following setting as the 'git commands keep cribbing if we miss
+# some read permissions.
 buildtime_sandbox() {
 	echo "(version 1)
 (allow file-read*)
-(allow file* (subpath \"/Users\"))
-(allow file* (subpath \"/opt/hab\"))
-(allow file* (subpath \"/private/var/root\"))
-(allow file* (subpath \"/private/tmp\"))
 (allow process-exec*)
-(allow process-fork)
-(allow signal)
-(allow mach*)
-(allow ipc*)
-(allow sysctl-read)
-(allow network-outbound)
 "
 }
 
