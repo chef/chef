@@ -150,8 +150,9 @@ class Chef
 
         if !!results
           @raw_key = results
-        elsif key_file == nil? && raw_key == nil?
+        elsif key_file.nil? && raw_key.nil?
           puts "\nNo key detected\n"
+          return
         elsif !!key_file
           @raw_key = IO.read(key_file).strip
         elsif !!raw_key
@@ -305,14 +306,26 @@ class Chef
 
           if !!check_certstore_for_key(client_name)
             ps_blob = powershell_exec!(get_the_key_ps(client_name, password)).result
+            # ps_blob can be false when the PowerShell Catch block fires (e.g. cert export
+            # race condition or temporary store lock). Guard before calling Hash#[] to
+            # avoid NoMethodError: undefined method `[]' for false:FalseClass.
+            return false unless ps_blob.is_a?(Hash) && ps_blob["PSPath"]
+
             file_path = ps_blob["PSPath"].split("::")[1]
-            pkcs = OpenSSL::PKCS12.new(File.binread(file_path), password)
+
+            # Use begin/ensure to guarantee the unique temp file is deleted even if
+            # File.binread or OpenSSL::PKCS12.new raises an exception, preventing
+            # orphaned PFX files on disk.
+            begin
+              pkcs = OpenSSL::PKCS12.new(File.binread(file_path), password)
+            ensure
+              File.delete(file_path) if File.exist?(file_path)
+            end
 
             # We check the pfx we just extracted the private key from
             # if that cert is expiring in 7 days or less we generate a new pfx/p12 object
             # then we post the new public key from that to the client endpoint on
             # chef server.
-            File.delete(file_path)
             key_expiring = is_certificate_expiring?(pkcs)
             if key_expiring
               powershell_exec!(delete_old_key_ps(client_name))
@@ -338,7 +351,7 @@ class Chef
             Try {
               $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText;
               $cert = Get-ChildItem -path cert:\\#{store}\\My -Recurse | Where-Object { $_.Subject -match "chef-#{client_name}$" } -ErrorAction Stop;
-              $tempfile = [System.IO.Path]::GetTempPath() + "export_pfx.pfx";
+              $tempfile = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.IO.Path]::GetRandomFileName() + ".pfx");
               Export-PfxCertificate -Cert $cert -Password $my_pwd -FilePath $tempfile;
             }
             Catch {
