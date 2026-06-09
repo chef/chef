@@ -1,5 +1,6 @@
+export HAB_BLDR_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
-_chef_client_ruby="core/ruby3_4/3.4.2"
+_chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
@@ -36,11 +37,6 @@ pkg_deps=(
 pkg_svc_user=root
 pkg_svc_group=root
 
-# (allow file-read-data (subpath \"/opt/hab\"))
-# (allow file-read-data (subpath \"/private/var\"))
-# (allow file-read-data (subpath \"/dev\"))
-# (allow file-read-data (subpath \"/usr/share\"))
-# (allow file* (subpath \"/Users\"))
 # We need the following setting as the 'git commands keep cribbing if we miss
 # some read permissions.
 buildtime_sandbox() {
