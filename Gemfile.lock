@@ -46,7 +46,7 @@ PATH
       chef-config (= 18.10.97)
       chef-utils (= 18.10.97)
       chef-vault
-      chef-zero (>= 15.0.21, < 15.2)
+      chef-zero (~> 15.1.11)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 2.1.0, != 1.4.0)
       erubis (~> 2.7)
@@ -82,7 +82,7 @@ PATH
       chef-powershell (~> 18.6.0)
       chef-utils (= 18.10.97)
       chef-vault
-      chef-zero (>= 15.0.21, < 15.2)
+      chef-zero (~> 15.1.11)
       corefoundation (~> 0.3.4)
       diff-lcs (>= 1.2.4, < 2.1.0, != 1.4.0)
       erubis (~> 2.7)

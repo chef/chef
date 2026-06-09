@@ -27,6 +27,14 @@ describe Chef::Mixin::PowershellOut, :windows_only do
   end
 
   describe "#powershell_out" do
+    it "ensures that the runtime dependencies are available" do
+      unless chef_powershell_gem_available?
+        raise <<~ERROR
+          The Chef PowerShell gem is not available. Please install it to run these tests.
+        ERROR
+      end
+    end
+
     it "runs a command and returns the shell_out object" do
       ret = double("Mixlib::ShellOut")
       expect(object).to receive(:shell_out).with(
@@ -54,7 +62,6 @@ describe Chef::Mixin::PowershellOut, :windows_only do
     end
 
     it "raises error if interpreter is invalid" do
-      ret = double("Mixlib::ShellOut")
       expect { object.powershell_out("Get-Process", :blah, timeout: 600) }.to raise_error(ArgumentError)
     end
 

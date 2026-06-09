@@ -14,26 +14,60 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def load_dlls(match_path)
+# Helper to verify that required runtime dependencies exist alongside a DLL
+def verify_dependencies_for_dll(dll_dir, dll_name)
+  required_runtimes = ["vcruntime140.dll", "msvcp140.dll"]
+
+  missing_runtimes = required_runtimes.select do |runtime_dll|
+    !File.exist?(File.join(dll_dir, runtime_dll))
+  end
+
+  if missing_runtimes.any?
+    $stderr.puts "\n!!!!"
+    $stderr.puts "CRITICAL ERROR: Missing required runtime dependencies for #{dll_name}"
+    $stderr.puts "Location: #{dll_dir}"
+    $stderr.puts "Missing DLLs: #{missing_runtimes.join(", ")}"
+    $stderr.puts "\nThis will cause PowerShell tests to fail or behave unexpectedly."
+    $stderr.puts "!!!!\n"
+    return false
+  end
+
+  true
+end
+
+def load_dlls(match_path, is_powershell_dll = false)
   require "ruby_installer"
   matched_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}").map { |f| File.expand_path(f) }
   if matched_paths.empty?
-    $stderr.puts <<~EOL
+    error_msg = <<~EOL
       !!!!
         We couldn't find any matches for #{match_path} in #{Gem.dir} or C:/hab
 
-        If this is running in a CI/CD environment, this may end up causing failures
-        in the tests. If this is not running in a CI/CD
-        environment then it may be safe to ignore this. That is especially true if
-        you're not using the Ruby Installer as your Ruby runtime.
+        If this is running in a CI/CD environment, this will cause test failures.
+        If this is not running in a CI/CD environment then it may be safe to ignore this
+        (only if you're not using the Ruby Installer as your Ruby runtime).
       !!!!
     EOL
+    $stderr.puts error_msg
+
+    # For PowerShell DLL, this is a critical error - fail fast
+    if is_powershell_dll
+      raise "CRITICAL: Required runtime DLLs missing for PowerShell - tests will fail"
+    end
+
     return
   end
 
   $stderr.puts "\nFound the following dll paths:\n\n#{matched_paths.map { |f| "- #{f}\n" }.join}\n\n"
   dll_path = matched_paths.first
   dll_dir = File.dirname(dll_path)
+
+  # Verify runtime dependencies are present for PowerShell DLL
+  if is_powershell_dll
+    unless verify_dependencies_for_dll(dll_dir, File.basename(dll_path))
+      raise "CRITICAL: Required runtime DLLs missing for PowerShell - tests will fail"
+    end
+  end
 
   if defined?(RubyInstaller::Build) && RubyInstaller::Build.methods.include?(:add_dll_directory)
     $stderr.puts "Adding #{dll_dir} as a DLL load path using RubyInstaller::Build#add_dll_directory"
@@ -50,5 +84,5 @@ end
 
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   load_dlls("libarchive.dll")
-  load_dlls("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll")
+  load_dlls("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll", true)
 end
