@@ -255,10 +255,10 @@ class Chef
             # NOABSOLUTEPATHS blocks absolute-path entries, SECURE_SYMLINKS prevents
             # symlink attacks. Combined with the check below in archive.each_entry
             # they safeguard against Zip Slip / CWE-22 attacks.
-            security_flags = Archive::EXTRACT_SECURE_NODOTDOT         |
-                             Archive::EXTRACT_SECURE_NOABSOLUTEPATHS  |
-                             Archive::EXTRACT_SECURE_SYMLINKS
-            all_flags   = user_flags | security_flags
+            security_flags = Archive::EXTRACT_SECURE_NODOTDOT |
+              Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
+              Archive::EXTRACT_SECURE_SYMLINKS
+            all_flags = user_flags | security_flags
             dest_realpath = ::File.expand_path(dest)
 
             Dir.chdir(dest) do
