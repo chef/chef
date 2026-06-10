@@ -25,7 +25,7 @@ rescue LoadError
     EXTRACT_TIME               = 0x0004
     EXTRACT_SECURE_NODOTDOT    = 0x0200
     EXTRACT_SECURE_NOABSOLUTEPATHS = 0x10000
-    EXTRACT_SECURE_SYMLINKS    = 0x0100
+    EXTRACT_SECURE_SYMLINKS = 0x0100
     class Reader
       def close; end
       def each_entry; end
@@ -36,10 +36,10 @@ end
 
 # Expected flags passed to archive.extract after the CHEF-32355 security fix.
 # = EXTRACT_TIME | EXTRACT_SECURE_NODOTDOT | EXTRACT_SECURE_NOABSOLUTEPATHS | EXTRACT_SECURE_SYMLINKS
-ARCHIVE_EXTRACT_EXPECTED_FLAGS = Archive::EXTRACT_TIME               |
-                                  Archive::EXTRACT_SECURE_NODOTDOT    |
-                                  Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
-                                  Archive::EXTRACT_SECURE_SYMLINKS
+ARCHIVE_EXTRACT_EXPECTED_FLAGS = Archive::EXTRACT_TIME |
+  Archive::EXTRACT_SECURE_NODOTDOT |
+  Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
+  Archive::EXTRACT_SECURE_SYMLINKS
 
 describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_windows do
   let(:node) { Chef::Node.new }
@@ -64,9 +64,9 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
   let(:archive_entry_4) { instance_double("Archive::Entry", pathname: "folder-1/folder-2/file-2.txt", mtime: entry_time) }
 
   # Traversal entries for CHEF-32355 path traversal tests
-  let(:traversal_entry_dotdot)   { instance_double("Archive::Entry", pathname: "../pwned.txt",  mtime: entry_time) }
+  let(:traversal_entry_dotdot)   { instance_double("Archive::Entry", pathname: "../pwned.txt", mtime: entry_time) }
   let(:traversal_entry_absolute) { instance_double("Archive::Entry", pathname: "/etc/pwned.txt", mtime: entry_time) }
-  let(:archive_reader_traversal)  { instance_double("Archive::Reader", close: nil) }
+  let(:archive_reader_traversal) { instance_double("Archive::Reader", close: nil) }
 
   let(:archive_reader_with_strip_components_1) { instance_double("Archive::Reader", close: nil) }
   let(:archive_entry_2_s1) { instance_double("Archive::Entry", pathname: "file-1.txt", mtime: entry_time) }
