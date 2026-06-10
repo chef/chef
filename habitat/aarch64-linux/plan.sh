@@ -75,6 +75,16 @@ do_setup_environment() {
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
+
+  # Ensure Habitat's glibc lib dir is in LD_LIBRARY_PATH at runtime so that
+  # native gem extension compilation succeeds on platforms with an older system
+  # glibc (e.g. Rocky Linux 9 ships glibc 2.34, but Habitat's libruby.so.3.4
+  # requires GLIBC_2.38).  When mkmf compiles and runs its conftest binary
+  # during `gem install`, it loads libruby.so.3.4 which in turn requires
+  # glibc symbols not present in the system libm/libc.  Adding Habitat's glibc
+  # lib dir here ensures subprocesses spawned by chef-client (including gem
+  # native extension builds) find the correct glibc before the system one.
+  push_runtime_env LD_LIBRARY_PATH "$(pkg_path_for core/glibc)/lib"
 }
 
 do_prepare() {
