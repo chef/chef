@@ -63,6 +63,12 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
+# OpenTelemetry tracing support for Chef::Telemetry::OtelHandler. The handler
+# soft-requires these, so they only need to be present when tracing is enabled
+# (and in development/test for the handler specs).
+gem "opentelemetry-sdk", "~> 1.4", group: %i{development test packaging}
+gem "opentelemetry-exporter-otlp", "~> 0.29", group: :packaging
+
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
