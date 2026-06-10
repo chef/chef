@@ -17,7 +17,6 @@ $pkg_deps=@(
   "core/libarchive"
   "core/zlib"
   "chef/ruby31-plus-devkit"
-  "chef/chef-powershell-shim"
   "core/visual-cpp-redist-2015/14.0.24215/20240108064521"
 )
 $pkg_build_deps=@( "core/git")
