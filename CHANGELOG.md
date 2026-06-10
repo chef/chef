@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.96 -->
-## [v18.10.96](https://github.com/chef/chef/tree/v18.10.96) (2026-06-08)
+<!-- latest_release 18.10.97 -->
+## [v18.10.97](https://github.com/chef/chef/tree/v18.10.97) (2026-06-10)
 
 #### Merged Pull Requests
-- [CHEF-18] CHEF-32929: Fix intermittent NoMethodError in authenticator retrieve_certificate_key on Windows [#16076](https://github.com/chef/chef/pull/16076) ([neha-p6](https://github.com/neha-p6))
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5… [#16096](https://github.com/chef/chef/pull/16096) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5… [#16096](https://github.com/chef/chef/pull/16096) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.97 -->
 - [CHEF-18] CHEF-32929: Fix intermittent NoMethodError in authenticator retrieve_certificate_key on Windows [#16076](https://github.com/chef/chef/pull/16076) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.96 -->
 - [Chef 18] CHEF-14144: Limit excessive output from template errors (#16073) [#16087](https://github.com/chef/chef/pull/16087) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.95 -->
 - [chef-18] Disable chrony kitchen test for Rocky Linux 10 [#16084](https://github.com/chef/chef/pull/16084) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.94 -->
