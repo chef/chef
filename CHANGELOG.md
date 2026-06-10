@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.27 -->
-## [v19.3.27](https://github.com/chef/chef/tree/v19.3.27) (2026-06-03)
+<!-- latest_release 19.3.28 -->
+## [v19.3.28](https://github.com/chef/chef/tree/v19.3.28) (2026-06-10)
 
 #### Merged Pull Requests
-- CHEF-14144: Limit excessive output from template errors [#16073](https://github.com/chef/chef/pull/16073) ([tpowell-progress](https://github.com/tpowell-progress))
+- CHEF-32929: Fix intermittent NoMethodError race condition in authenticator on Windows (Chef 19) [#16091](https://github.com/chef/chef/pull/16091) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-32929: Fix intermittent NoMethodError race condition in authenticator on Windows (Chef 19) [#16091](https://github.com/chef/chef/pull/16091) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.28 -->
 - CHEF-14144: Limit excessive output from template errors [#16073](https://github.com/chef/chef/pull/16073) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.27 -->
 - tweaking the mcp settings for both cli and vscode [#16083](https://github.com/chef/chef/pull/16083) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.26 -->
 - Disable chrony kitchen test for Rocky Linux 10 [#16082](https://github.com/chef/chef/pull/16082) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.25 -->
