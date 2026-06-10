@@ -59,17 +59,10 @@ class Chef
 
       private
 
-      MAX_DISPLAY_TEXT_LENGTH = 10_000
-
       def display_section(heading, text, out)
         out.puts heading
         out.puts "-" * heading.size
-        if text.is_a?(String) && text.length > MAX_DISPLAY_TEXT_LENGTH
-          out.puts text[0, MAX_DISPLAY_TEXT_LENGTH]
-          out.puts "\n... [truncated #{text.length - MAX_DISPLAY_TEXT_LENGTH} characters of output]"
-        else
-          out.puts text
-        end
+        out.puts text
         out.puts "\n"
       end
 

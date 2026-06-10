@@ -1,0 +1,36 @@
+# AIX Gem Pin Overrides
+#
+# Single source of truth for AIX-specific gem version constraints.
+# Both scripts/sync_aix_lockfile.rb and scripts/check_aix_lockfile.rb
+# load this file.
+#
+# Add an entry here when a gem in Gemfile.lock cannot be used as-is on
+# powerpc-ibm-aix and a specific older version must be used instead.
+#
+# Format:
+#   gems:
+#     - name: <gem-name>
+#       version: "<x.y.z>"
+#       reason: "<why AIX needs this specific version>"
+#
+# Run scripts/sync_aix_lockfile.rb after editing this file.
+#
+gems:
+  - name: mixlib-shellout
+    version: "3.3.9"
+    reason: "3.4.x declares required_ruby_version >= 3.1; AIX omnibus toolchain ships Ruby 3.0.3"
+  - name: date
+    version: "3.2.2"
+    reason: "3.3.x+ uses C++20 designated initializers (.field = value), incompatible with AIX xlC_r 13.x"
+  - name: unf_ext
+    version: "0.0.8.2"
+    reason: "0.0.9.x uses C++11 features incompatible with AIX xlC_r 13.x"
+  - name: ffi
+    version: "1.16.3"
+    reason: "1.17.x fails to compile on AIX powerpc with xlC_r"
+  - name: bigdecimal
+    version: "3.1.9"
+    reason: "4.x references __builtin_unreachable (GCC intrinsic not available on AIX xlC_r)"
+  - name: vault
+    version: "0.18.2"
+    reason: "0.19.0+ uses Ruby 3.1+ keyword argument shorthand (pool_size:) syntax incompatible with Ruby 3.0.3"
