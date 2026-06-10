@@ -619,6 +619,113 @@ describe Chef::Provider::Package::Rubygems do
       end
     end
 
+    context "when in Habitat installation" do
+      let(:bindir) { "/hab/pkgs/core/ruby3_4/3.4.8/20260508045659/bin" }
+      let(:pkg_dir) { "/hab/pkgs/core/ruby3_4/3.4.8/20260508045659" }
+      let(:runtime_deps_file) { "#{pkg_dir}/RUNTIME_DEPS" }
+
+      describe "#is_habitat?" do
+        it "returns true when bindir is under /hab/pkgs/" do
+          expect(provider.is_habitat?).to be true
+        end
+      end
+
+      describe "#is_omnibus?" do
+        it "returns false for a Habitat installation" do
+          expect(provider.is_omnibus?).to be false
+        end
+      end
+
+      describe "#habitat_runtime_lib_dirs" do
+        context "when RUNTIME_DEPS file exists" do
+          let(:runtime_deps_content) do
+            "core/glibc/2.41/20250627111239\ncore/gmp/6.3.0/20250627131712\ncore/openssl/3.5.6/20260420112454\n"
+          end
+
+          before do
+            allow(File).to receive(:exist?).and_call_original
+            allow(File).to receive(:exist?).with(runtime_deps_file).and_return(true)
+            allow(File).to receive(:read).with(runtime_deps_file).and_return(runtime_deps_content)
+            allow(Dir).to receive(:exist?).and_call_original
+            allow(Dir).to receive(:exist?).with("#{pkg_dir}/lib").and_return(true)
+            allow(Dir).to receive(:exist?).with("/hab/pkgs/core/glibc/2.41/20250627111239/lib").and_return(true)
+            allow(Dir).to receive(:exist?).with("/hab/pkgs/core/gmp/6.3.0/20250627131712/lib").and_return(true)
+            allow(Dir).to receive(:exist?).with("/hab/pkgs/core/openssl/3.5.6/20260420112454/lib").and_return(false)
+          end
+
+          it "includes the ruby package lib dir" do
+            expect(provider.habitat_runtime_lib_dirs).to include("#{pkg_dir}/lib")
+          end
+
+          it "includes lib dirs for existing transitive deps" do
+            dirs = provider.habitat_runtime_lib_dirs
+            expect(dirs).to include("/hab/pkgs/core/glibc/2.41/20250627111239/lib")
+            expect(dirs).to include("/hab/pkgs/core/gmp/6.3.0/20250627131712/lib")
+          end
+
+          it "skips lib dirs that do not exist on disk" do
+            expect(provider.habitat_runtime_lib_dirs).not_to include("/hab/pkgs/core/openssl/3.5.6/20260420112454/lib")
+          end
+        end
+
+        context "when RUNTIME_DEPS file is absent" do
+          before do
+            allow(File).to receive(:exist?).and_call_original
+            allow(File).to receive(:exist?).with(runtime_deps_file).and_return(false)
+          end
+
+          it "returns an empty array" do
+            expect(provider.habitat_runtime_lib_dirs).to eq([])
+          end
+        end
+      end
+
+      describe "#habitat_gem_env" do
+        let(:runtime_deps_content) { "core/glibc/2.41/20250627111239\n" }
+
+        before do
+          allow(File).to receive(:exist?).and_call_original
+          allow(File).to receive(:exist?).with(runtime_deps_file).and_return(true)
+          allow(File).to receive(:read).with(runtime_deps_file).and_return(runtime_deps_content)
+          allow(Dir).to receive(:exist?).and_call_original
+          allow(Dir).to receive(:exist?).with("#{pkg_dir}/lib").and_return(true)
+          allow(Dir).to receive(:exist?).with("/hab/pkgs/core/glibc/2.41/20250627111239/lib").and_return(true)
+          allow(ENV).to receive(:fetch).and_call_original
+          allow(ENV).to receive(:fetch).with("LD_LIBRARY_PATH", "").and_return("")
+        end
+
+        it "returns a hash with LD_LIBRARY_PATH set" do
+          env = provider.habitat_gem_env
+          expect(env).to be_a(Hash)
+          expect(env["LD_LIBRARY_PATH"]).to include("#{pkg_dir}/lib")
+          expect(env["LD_LIBRARY_PATH"]).to include("/hab/pkgs/core/glibc/2.41/20250627111239/lib")
+        end
+
+        it "preserves existing LD_LIBRARY_PATH entries without duplication" do
+          allow(ENV).to receive(:fetch).with("LD_LIBRARY_PATH", "").and_return("/opt/oracle/instantclient")
+          env = provider.habitat_gem_env
+          expect(env["LD_LIBRARY_PATH"]).to include("/opt/oracle/instantclient")
+          # Should not duplicate
+          parts = env["LD_LIBRARY_PATH"].split(":")
+          expect(parts).to eq(parts.uniq)
+        end
+      end
+    end
+
+    context "when not in Habitat installation (standard bindir)" do
+      describe "#is_habitat?" do
+        it "returns false for an Omnibus installation" do
+          expect(provider.is_habitat?).to be false
+        end
+      end
+
+      describe "#habitat_gem_env" do
+        it "returns nil so shell_out! inherits the parent environment unchanged" do
+          expect(provider.habitat_gem_env).to be_nil
+        end
+      end
+    end
+
     it "converts the new resource into a gem dependency" do
       expect(provider.gem_dependency).to eq(gem_dep)
     end

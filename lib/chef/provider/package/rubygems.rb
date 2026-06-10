@@ -498,6 +498,54 @@ class Chef
           end
         end
 
+        # Returns true when Chef is running under a Habitat-based installation.
+        # Habitat installs Ruby under /hab/pkgs/<origin>/<pkg>/<ver>/<rel>/bin.
+        def is_habitat?
+          RbConfig::CONFIG["bindir"].start_with?("/hab/pkgs/")
+        end
+
+        # Returns the list of existing library directories from the Habitat Ruby
+        # package's transitive runtime dependencies.  These paths must be present
+        # in LD_LIBRARY_PATH when compiling native gem extensions so that test
+        # binaries (e.g. mkmf's conftest) can load Habitat-built libraries
+        # (including Habitat's own glibc) instead of the potentially older system
+        # glibc.  Without this, gems with native extensions fail to build on
+        # platforms whose system glibc is older than what the Habitat Ruby was
+        # compiled against (e.g. Rocky Linux 9 / glibc 2.34 vs GLIBC_2.38).
+        def habitat_runtime_lib_dirs
+          # /hab/pkgs/core/ruby3_4/VER/REL/bin -> /hab/pkgs/core/ruby3_4/VER/REL
+          pkg_dir = ::File.dirname(RbConfig::CONFIG["bindir"])
+          runtime_deps_file = ::File.join(pkg_dir, "RUNTIME_DEPS")
+          return [] unless ::File.exist?(runtime_deps_file)
+
+          dirs = []
+          # Include the ruby package's own lib dir first.
+          dirs << ::File.join(pkg_dir, "lib")
+          # Each line in RUNTIME_DEPS has the form "origin/pkg/ver/rel".
+          ::File.read(runtime_deps_file).strip.split("\n").each do |dep|
+            lib_dir = "/hab/pkgs/#{dep}/lib"
+            dirs << lib_dir if ::Dir.exist?(lib_dir)
+          end
+          dirs
+        end
+
+        # Returns an env hash that ensures Habitat runtime library dirs are
+        # present in LD_LIBRARY_PATH when spawning gem install/uninstall
+        # subprocesses, allowing native extension compilation to succeed on
+        # platforms with an older system glibc.  Returns nil when not running
+        # under Habitat so that the existing behavior (env: nil = inherit) is
+        # preserved.
+        def habitat_gem_env
+          return nil unless is_habitat?
+
+          lib_dirs = habitat_runtime_lib_dirs
+          return nil if lib_dirs.empty?
+
+          existing = ENV.fetch("LD_LIBRARY_PATH", "")
+          all_dirs = (lib_dirs + existing.split(":")).uniq.reject(&:empty?)
+          { "LD_LIBRARY_PATH" => all_dirs.join(":") }
+        end
+
         def find_gem_by_path
           which("gem", extra_path: RbConfig::CONFIG["bindir"])
         end
@@ -657,9 +705,9 @@ class Chef
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
           if !version.nil? && !version.empty?
-            shell_out!("#{gem_binary_path} install #{name} -q #{rdoc_string} -v \"#{version}\"#{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install #{name} -q #{rdoc_string} -v \"#{version}\"#{src_str}#{opts}", env: habitat_gem_env)
           else
-            shell_out!("#{gem_binary_path} install \"#{name}\" -q #{rdoc_string} #{src_str}#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} install \"#{name}\" -q #{rdoc_string} #{src_str}#{opts}", env: habitat_gem_env)
           end
         end
 
@@ -683,9 +731,9 @@ class Chef
 
         def uninstall_via_gem_command(name, version)
           if version
-            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -v \"#{version}\"#{opts}", env: habitat_gem_env)
           else
-            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", env: nil)
+            shell_out!("#{gem_binary_path} uninstall #{name} -q -x -I -a#{opts}", env: habitat_gem_env)
           end
         end
 
