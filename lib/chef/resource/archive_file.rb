@@ -174,7 +174,7 @@ class Chef
             dest_realpath = ::File.expand_path(new_resource.destination)
             Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components) do |archive|
               archive.each_entry do |e|
-                # Validate path is within destination before chowning.
+                # Validate path is within destination before chown-ing.
                 # Use expand_path for security check, original string for the chown call.
                 chown_path_expanded = ::File.expand_path("#{new_resource.destination}/#{e.pathname}")
                 next unless chown_path_expanded.start_with?(dest_realpath + ::File::SEPARATOR) || chown_path_expanded == dest_realpath
