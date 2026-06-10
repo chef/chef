@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef-licensing", "~> 1.0"
 
-  s.add_dependency "chef-zero", ">= 15.0.21", "< 15.2.0" # for knife zero
+  s.add_dependency "chef-zero", "~> 15.0.21" # for knife zero
 
   s.bindir       = "bin"
   s.executables  = %w{ knife }

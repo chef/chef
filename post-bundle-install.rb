@@ -20,13 +20,19 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   next if %w{chef chef-universal-mingw-ucrt proxifier}.include?(gem_name)
 
-  next if gem_name.match?(/ruby.shadow/) && RUBY_PLATFORM =~ /aix|mswin|mingw|windows/
+  next if gem_name.match?(/ruby.shadow/) && (RUBY_PLATFORM.include?("aix") || RUBY_PLATFORM =~ /mswin|mingw|windows/)
 
   puts "re-installing #{gem_name}..."
 
   Dir.chdir(gempath) do
     system("gem build #{gem_name}.gemspec") or raise "gem build failed"
-    system("gem install #{gem_name}*.gem --conservative --minimal-deps --no-document") or raise "gem install failed"
+    # On AIX (Ruby 3.0.3), git-sourced gems often declare required_ruby_version >= 3.1.0.
+    # Without --ignore-dependencies, gem install falls back to rubygems.org and installs
+    # the wrong gem version with different dependency constraints (e.g. rest-client on
+    # rubygems.org requires http-accept >= 1.7.0, < 2.0 instead of ~> 2.1.0).
+    # Use --ignore-dependencies on AIX since all deps are already installed by bundle install.
+    install_flags = RUBY_PLATFORM.include?("aix") ? "--ignore-dependencies --no-document" : "--conservative --minimal-deps --no-document"
+    system("gem install #{gem_name}*.gem #{install_flags}") or raise "gem install failed"
   end
 end
 
@@ -109,26 +115,33 @@ default_gem_list = {
   uri: "0.12.4",
 }
 
-default_gem_list.each do |gem_name, version|
-  # Handle resolv gem conflict with default gem
-  puts "Checking #{gem_name} gem installation..."
-  gem_info = `gem info #{gem_name}`
+# On AIX, the omnibus toolchain/foundation ships Ruby 3.0.3.  Replacing the
+# default resolv gem with a newer version (0.7.x) causes
+# "undefined method 'request' for nil:NilClass" in RubyGems' HTTP client
+# because the newer resolv changes internal APIs that RubyGems 3.0 expects.
+# Skip the default-gem replacement on AIX to keep the default gems intact.
+unless RUBY_PLATFORM.include?("aix")
+  default_gem_list.each do |gem_name, version|
+    # Handle resolv gem conflict with default gem
+    puts "Checking #{gem_name} gem installation..."
+    gem_info = `gem info #{gem_name}`
 
-  if gem_info.include?("default):") && gem_info.match?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
-    # Extract the default gem path
-    default_path = gem_info.match(/default\): (.+)$/)[1]
+    if gem_info.include?("default):") && gem_info.match?(/#{gem_name} \([0-9., ]*#{version}[0-9., ]*\)/)
+      # Extract the default gem path
+      default_path = gem_info.match(/default\): (.+)$/)[1]
 
-    if default_path
-      gemspec_path = File.join(default_path.strip, "specifications", "default", "#{gem_name}-#{version}.gemspec")
+      if default_path
+        gemspec_path = File.join(default_path.strip, "specifications", "default", "#{gem_name}-#{version}.gemspec")
 
-      if File.exist?(gemspec_path)
-        puts "Removing default #{gem_name} gemspec: #{gemspec_path}"
-        File.delete(gemspec_path)
+        if File.exist?(gemspec_path)
+          puts "Removing default #{gem_name} gemspec: #{gemspec_path}"
+          File.delete(gemspec_path)
+        end
       end
-    end
 
-    puts "Installing #{gem_name} gem..."
-    system("gem install #{gem_name}") or raise "gem install #{gem_name} failed" # NOSONAR
-    puts "#{gem_name} gem installed successfully"
+      puts "Installing #{gem_name} gem..."
+      system("gem install #{gem_name}") or raise "gem install #{gem_name} failed" # NOSONAR
+      puts "#{gem_name} gem installed successfully"
+    end
   end
 end
