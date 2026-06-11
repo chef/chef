@@ -306,7 +306,19 @@ class Chef
         end
 
         def keyring_path
-          "/etc/apt/keyrings/#{new_resource.repo_name}.gpg"
+          "#{prefix}/etc/apt/keyrings/#{new_resource.repo_name}.gpg"
+        end
+
+        # Get the argument to use for the --keyring
+        # argument to gpg for a specific path.
+        #
+        # This ensures we use the right format for newer versions of apt.
+        def keyring_arg(path)
+          if apt_version > 2
+            "gnupg-ring:" + path
+          else
+            path
+          end
         end
 
         # Get the current APT version, this is important for creating keyring files,
@@ -329,7 +341,6 @@ class Chef
           key_name = key.gsub(/[^0-9A-Za-z\-]/, "_")
           keyfile_tmp_path = ::File.join(Chef::Config[:file_cache_path], key_name)
           keyfile_path = keyring_path
-          gpg_keyring_prefix = apt_version > 2 ? "gnupg-ring:" : ""
           tmp_dir = TargetIO::Dir.mktmpdir(".gpg")
           at_exit { TargetIO::FileUtils.remove_entry(tmp_dir) }
 
@@ -348,7 +359,7 @@ class Chef
             end
 
             execute "import #{keyfile_path}" do
-              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", "#{gpg_keyring_prefix}#{keyfile_path}", keyfile_tmp_path ]
+              command [ "gpg", "--import", "--batch", "--yes", "--no-default-keyring", "--keyring", "#{keyring_arg(keyfile_path)}", keyfile_tmp_path ]
               default_env true
               sensitive new_resource.sensitive
               action :nothing
@@ -430,7 +441,7 @@ class Chef
         def install_key_from_keyserver_to_keyring(key, keyserver, keyring)
           keyserver = "hkp://#{keyserver}:80" unless keyserver.start_with?("hkp://")
 
-          cmd = "gpg --no-default-keyring --keyring #{keyring}"
+          cmd = "gpg --no-default-keyring --keyring #{keyring_arg(keyring)}"
           cmd << " --keyserver-options http-proxy=#{new_resource.key_proxy}" if new_resource.key_proxy
           cmd << " --keyserver #{keyserver}"
           cmd << " --recv #{key}"
