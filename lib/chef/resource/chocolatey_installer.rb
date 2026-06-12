@@ -73,7 +73,7 @@ class Chef
       property :proxy_user, String,
         description: "The username to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_password are set"
 
-      property :proxy_password, String,
+      property :proxy_password, String, sensitive: true,
         description: "The password to use to build a proxy credential with. Will be consumed by the proxy_credential property if both this property and proxy_user are set"
 
       load_current_value do

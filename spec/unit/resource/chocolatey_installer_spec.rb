@@ -218,4 +218,10 @@ describe Chef::Resource::ChocolateyInstaller do
       end
     end
   end
+
+  describe "sensitive property masking" do
+    it "marks proxy_password as sensitive" do
+      expect(Chef::Resource::ChocolateyInstaller.properties[:proxy_password].sensitive?).to be true
+    end
+  end
 end
