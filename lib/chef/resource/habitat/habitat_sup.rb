@@ -130,10 +130,10 @@ class Chef
       property :auto_update, [true, false], default: false,
       description: "Passes `--auto-update`. This will set the Habitat supervisor to automatically update itself any time a stable version has been released."
 
-      property :auth_token, String,
+      property :auth_token, String, sensitive: true,
       description: "Auth token for accessing a private organization on bldr. This value is templated into the appropriate service file."
 
-      property :gateway_auth_token, String,
+      property :gateway_auth_token, String, sensitive: true,
       description: "Auth token for accessing the supervisor's HTTP gateway. This value is templated into the appropriate service file."
 
       property :update_condition, String,
