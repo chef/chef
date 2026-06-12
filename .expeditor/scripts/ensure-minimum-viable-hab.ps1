@@ -16,24 +16,19 @@ function Install-HabitatVersion {
     }
 }
 
+Write-Host "--- :habicat: Ensuring minimum viable habitat installation.."
+
 try {
     [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]$HabitatVersion) {
-        Write-Host "--- :habicat: Installing Habitat $HabitatVersion"
-        Install-HabitatVersion
-    } elseif ($hab_version -gt [Version]$HabitatVersion) {
-        Write-Host "--- :habicat: Habitat $hab_version detected (greater than required $HabitatVersion). Removing with prejudice..."
-        $habPath = (Get-Command hab -ErrorAction SilentlyContinue).Source | Split-Path -Parent
-        if ($habPath) {
-            Remove-Item -Path $habPath -Recurse -Force -ErrorAction Continue
-            Write-Host "--- :habicat: Deleted Habitat from $habPath"
-        }
+        Write-Host "--- :habicat: Habitat $hab_version detected (below minimum $HabitatVersion). Installing..."
         Install-HabitatVersion
     } else {
-        Write-Host "--- :habicat: :thumbsup: Habitat $HabitatVersion is already installed"
+        Write-Host "--- :habicat: :thumbsup: Habitat $hab_version is installed (>= $HabitatVersion)"
     }
 }
 catch {
+    Write-Host "hab not found or version check failed: $_"
     Write-Host "--- :habicat: Installing Habitat $HabitatVersion..."
     Install-HabitatVersion
 }
