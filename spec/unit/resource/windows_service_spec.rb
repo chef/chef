@@ -119,4 +119,10 @@ describe Chef::Resource::WindowsService, "initialize" do
     resource.run_as_user = "JohnDoe"
     expect(resource.run_as_user).to eq("johndoe")
   end
+
+  describe "sensitive property masking" do
+    it "marks run_as_password as sensitive" do
+      expect(Chef::Resource::WindowsService.properties[:run_as_password].sensitive?).to be true
+    end
+  end
 end
