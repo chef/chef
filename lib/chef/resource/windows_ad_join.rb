@@ -65,7 +65,7 @@ class Chef
         description: "The domain user that will be used to join the domain.",
         required: true
 
-      property :domain_password, String,
+      property :domain_password, String, sensitive: true,
         description: "The password for the domain user. Note that this resource is set to hide sensitive information by default. ",
         required: true
 
