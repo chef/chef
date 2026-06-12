@@ -37,4 +37,10 @@ describe Chef::Resource::ChefVaultSecret do
     expect { resource.action :create_if_missing }.not_to raise_error
     expect { resource.action :delete }.not_to raise_error
   end
+
+  describe "sensitive property masking" do
+    it "marks raw_data as sensitive" do
+      expect(Chef::Resource::ChefVaultSecret.properties[:raw_data].sensitive?).to be true
+    end
+  end
 end
