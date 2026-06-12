@@ -65,7 +65,7 @@ class Chef
         description: "The source file (for `create` and `acl_add`), thumbprint (for `delete`, `export`, and `acl_add`), or subject (for `delete` or `export`) if it differs from the resource block's name.",
         name_property: true
 
-      property :pfx_password, String,
+      property :pfx_password, String, sensitive: true,
         description: "The password to access the object with if it is a PFX file."
 
       property :private_key_acl, Array,
