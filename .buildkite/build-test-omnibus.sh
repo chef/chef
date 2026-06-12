@@ -241,8 +241,9 @@ then
     fi
     # AIX ships an older omnibus toolchain with Ruby 3.0; chef-foundation
     # builds for AIX lag behind the main release — use the latest available.
+    # 3.2.38 is stable-only; current channel starts at 3.2.41.
     if [[ $platform == *"aix"* ]]; then
-      cf_version="3.2.38"
+      cf_version="3.2.41"
     else
       cf_version="$CHEF_FOUNDATION_VERSION"
     fi
