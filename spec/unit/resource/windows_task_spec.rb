@@ -400,4 +400,10 @@ describe Chef::Resource::WindowsTask, :windows_only do
       expect(resource.send(:sec_to_dur, 604801)).to eql("PT604801S")
     end
   end
+
+  describe "sensitive property masking" do
+    it "marks password as sensitive" do
+      expect(Chef::Resource::WindowsTask.properties[:password].sensitive?).to be true
+    end
+  end
 end
