@@ -102,7 +102,7 @@ class Chef
       property :key_file, String,
         description: "The path to a certificate key file on the filesystem. If the `key_file` property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the `key_file` property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
 
-      property :key_pass, String,
+      property :key_pass, String, sensitive: true,
         description: "The passphrase for an existing key's passphrase."
 
       property :key_type, String,
