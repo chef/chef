@@ -59,7 +59,7 @@ class Chef
         introduced: "15.3",
         description: "The username to authenticate feeds."
 
-      property :password, String,
+      property :password, String, sensitive: true,
         introduced: "15.3",
         description: "The password to authenticate to the source."
 
