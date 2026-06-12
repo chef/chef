@@ -40,4 +40,14 @@ describe Chef::Resource::OpensslEcPublicKey do
   it "has a default mode of '0640'" do
     expect(resource.mode).to eql("0640")
   end
+
+  describe "sensitive property masking" do
+    it "marks private_key_content as sensitive" do
+      expect(Chef::Resource::OpensslEcPublicKey.properties[:private_key_content].sensitive?).to be true
+    end
+
+    it "marks private_key_pass as sensitive" do
+      expect(Chef::Resource::OpensslEcPublicKey.properties[:private_key_pass].sensitive?).to be true
+    end
+  end
 end
