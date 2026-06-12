@@ -65,7 +65,7 @@ class Chef
       property :search, String, default: "*:*", desired_state: false,
         description: "Search query that would match the same used for the clients, gets stored as a field in the item."
 
-      property :raw_data, [Hash, Mash], default: {},
+      property :raw_data, [Hash, Mash], default: {}, sensitive: true, desired_state: false,
         description: "The raw data, as a Ruby Hash, that will be stored in the item."
 
       property :environment, [String, NilClass], desired_state: false,
