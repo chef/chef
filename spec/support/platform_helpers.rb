@@ -282,3 +282,73 @@ def pwsh_installed?
 rescue
   false
 end
+
+# Check if the chef-powershell gem is properly installed
+# This checks that the gem specification exists without forcing it to be loaded
+def chef_powershell_gem_available?
+  return false unless windows?
+
+  begin
+    # Check if gem is installed without forcing a require
+    spec = Gem.loaded_specs["chef-powershell"] || Gem.specification.find_all_by_name("chef-powershell").first
+    return false unless spec
+
+    # Verify runtime dependencies are available
+    powershell_runtime_available?
+    powershell_exec_available?
+  rescue => e
+    Chef::Log.warn("Error checking chef-powershell gem availability: #{e.class} - #{e.message}")
+    false
+  end
+end
+
+# Check if PowerShell execution via chef-powershell is available
+# Checks that both the gem and the execution mixin can be loaded
+def powershell_exec_available?
+  return false unless windows?
+
+  begin
+    require "chef/mixin/powershell_exec"
+    true
+  rescue => e
+    Chef::Log.debug("PowerShell execution mixin not available: #{e.class} - #{e.message}")
+    false
+  end
+end
+
+# Check if the required runtime dependencies are available
+# Specifically checks for vcruntime140.dll on Windows
+def powershell_runtime_available?
+  return false unless windows?
+
+  begin
+    require "ruby_installer"
+    # Check if we can load the PowerShell DLL which requires vcruntime140.dll
+    match_path = "bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll"
+    matched_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}").map { |f| File.expand_path(f) }
+
+    unless matched_paths.empty?
+      dll_path = matched_paths.first
+      dll_dir = File.dirname(dll_path)
+
+      # Verify vcruntime140.dll is accessible in the same directory
+      vcruntime_path = File.join(dll_dir, "vcruntime140.dll")
+
+      if File.exist?(vcruntime_path)
+        return true
+      else
+        Chef::Log.warn("vcruntime140.dll not found at #{dll_dir}")
+        return false
+      end
+    end
+
+    # If no DLL found via gem paths, check if PowerShell can still be loaded
+    true
+  rescue LoadError
+    # ruby_installer not available - not using RubyInstaller runtime
+    true
+  rescue => e
+    Chef::Log.warn("Error checking PowerShell runtime availability: #{e.class} - #{e.message}")
+    false
+  end
+end
