@@ -1,4 +1,6 @@
-export HAB_BLDR_CHANNEL="base-2025"
+export HAB_BLDR_CHANNEL="unstable"
+export HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL="unstable"
+export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
 SRC_PATH="$(dirname "$(dirname "$PLAN_CONTEXT")")"
 _chef_client_ruby="core/ruby3_4/3.4.8"
 pkg_name="chef-infra-client"
@@ -85,9 +87,9 @@ do_prepare() {
   export CPPFLAGS="${CPPFLAGS} ${CFLAGS} -I$(pkg_path_for core/glibc)/include"
   export CFLAGS="${CPPFLAGS}"
   export LDFLAGS="${LDFLAGS} -L$(pkg_path_for core/glibc)/lib"
-  export HAB_BLDR_CHANNEL="base-2025"
+  export HAB_BLDR_CHANNEL="unstable"
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
-  export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="base-2025"
+  export HAB_STUDIO_SECRET_HAB_BLDR_CHANNEL="unstable"
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 
