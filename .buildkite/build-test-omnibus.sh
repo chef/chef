@@ -243,16 +243,16 @@ then
     # chef-foundation with AIX artifacts and lives in stable, not current.
     if [[ $platform == *"aix"* ]]; then
       cf_version="3.2.38"
+      # PR#189: auto-detects AIX and uses stable channel for chef-foundation
+      omnibus_plugin_pin="b6918c1dadd3288a0234be406c75ec3f56655c42"
     else
       cf_version="$CHEF_FOUNDATION_VERSION"
+      omnibus_plugin_pin="v0.2.103"
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.103:"
+    echo "  - chef/omnibus#${omnibus_plugin_pin}:"
     echo "      build: chef"
     echo "      chef-foundation-version: $cf_version"
-    if [[ $platform == *"aix"* ]]; then
-      echo "      chef-foundation-channel: stable"
-    fi
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ "$build_key" == "mac_os_x-13-arm64" ] || [ "$build_key" == "mac_os_x-14-arm64" ]; then
