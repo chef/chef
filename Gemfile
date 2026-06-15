@@ -7,7 +7,7 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "ffi", ">= 1.15.5", "<= 1.17.0"
+gem "ffi", ">= 1.15.5", "<= 1.18.0"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
@@ -38,11 +38,9 @@ group(:omnibus_package, :pry) do
   # Locked because pry-byebug is broken with 13+.
   # some work is ongoing? https://github.com/deivid-rodriguez/pry-byebug/issues/343
   gem "pry", "0.15.2"
-  # byebug does not install on freebsd on ruby 3.0
-  #
-  # byebyg 13 and pry-byebug 3.12 both require Ruby 3.2, so we must
-  # lock them to less than that.
-  unless RUBY_PLATFORM.match?(/freebsd/i)
+  # byebug does not install on freebsd on ruby 3.0; byebug >= 12 requires ruby >= 3.1
+  # which is incompatible with the AIX omnibus toolchain (ruby 3.0.3)
+  unless RUBY_PLATFORM.match?(/freebsd|aix/i)
     gem "byebug", "< 13"
     gem "pry-byebug", "< 3.12"
   end
