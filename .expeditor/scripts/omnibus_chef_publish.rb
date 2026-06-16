@@ -67,7 +67,10 @@ DONE! \\m/
 end
 
 # This publishes the chef gem to artifactory
-if (project_name == "chef") && (ENV['ADHOC'] != 'true')
+# Skip on AIX: the AIX build uses Ruby 3.0.3 and AIX-pinned gem versions;
+# gem publishing is handled by a non-AIX builder to avoid uploading
+# AIX-specific artifacts to the shared omnibus-gems-local repo.
+if (project_name == "chef") && (ENV['ADHOC'] != 'true') && !RUBY_PLATFORM.include?("aix")
   GEM_PACKAGE_PATTERN = '**/[^/]*\.gem'.freeze
   gem_base_name = project_name
   project_source = "#{Omnibus::Config.base_dir}/**/src/#{gem_base_name}"
