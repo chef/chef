@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.29 -->
-## [v19.3.29](https://github.com/chef/chef/tree/v19.3.29) (2026-06-16)
+<!-- latest_release 19.3.30 -->
+## [v19.3.30](https://github.com/chef/chef/tree/v19.3.30) (2026-06-16)
 
 #### Merged Pull Requests
-- fix archive_file path traversal [#16095](https://github.com/chef/chef/pull/16095) ([rishichawda](https://github.com/rishichawda))
+- Bump macOS kitchen.yml fail-after to 2026-07-01 [#16111](https://github.com/chef/chef/pull/16111) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump macOS kitchen.yml fail-after to 2026-07-01 [#16111](https://github.com/chef/chef/pull/16111) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.30 -->
 - fix archive_file path traversal [#16095](https://github.com/chef/chef/pull/16095) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.29 -->
 - CHEF-32929: Fix intermittent NoMethodError race condition in authenticator on Windows (Chef 19) [#16091](https://github.com/chef/chef/pull/16091) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.28 -->
 - CHEF-14144: Limit excessive output from template errors [#16073](https://github.com/chef/chef/pull/16073) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.27 -->
