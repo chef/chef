@@ -255,7 +255,7 @@ GEM
       uuidtools (~> 2.1)
       webrick
     coderay (1.1.3)
-    concurrent-ruby (1.3.6)
+    concurrent-ruby (1.3.7)
     connection_pool (2.5.5)
     cookstyle (8.6.10)
       rubocop (= 1.84.2)
