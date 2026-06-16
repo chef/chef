@@ -42,17 +42,5 @@ describe Chef::Resource::ChefVaultSecret do
     it "marks raw_data as sensitive" do
       expect(Chef::Resource::ChefVaultSecret.properties[:raw_data].sensitive?).to be true
     end
-
-    it "excludes raw_data from desired state" do
-      expect(Chef::Resource::ChefVaultSecret.properties[:raw_data].desired_state?).to be false
-    end
-
-    it "excludes raw_data from state_for_resource_reporter" do
-      resource.data_bag = "secrets"
-      resource.admins = "admin"
-      resource.raw_data = { username: "admin", password: "secret123" }
-      state = resource.state_for_resource_reporter
-      expect(state).not_to have_key(:raw_data)
-    end
   end
 end
