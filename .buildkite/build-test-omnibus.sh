@@ -244,7 +244,7 @@ then
     if [[ $platform == *"aix"* ]]; then
       cf_version="3.2.38"
       # PR#189: auto-detects AIX and uses stable channel for chef-foundation
-      omnibus_plugin_pin="b6918c1dadd3288a0234be406c75ec3f56655c42"
+      omnibus_plugin_pin="v0.2.106"
     else
       cf_version="$CHEF_FOUNDATION_VERSION"
       omnibus_plugin_pin="v0.2.103"
