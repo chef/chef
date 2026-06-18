@@ -4,7 +4,7 @@ set -euo pipefail
 
 hab_target="${1:-x86_64-linux}"
 
-# ensure habitat 2.0.504 is installed
+# ensure minimum viable habitat is installed
 ./.expeditor/scripts/install-hab.sh "$hab_target"
 
 export HAB_ORIGIN='chef'
