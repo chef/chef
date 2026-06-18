@@ -70,13 +70,13 @@ elif [[ $BUILDKITE_ORGANIZATION_SLUG = 'chef' ]] || [[ $BUILDKITE_ORGANIZATION_S
 fi
 
 if [[ "$BUILDKITE_LABEL" =~ [Mm]ac[Oo][Ss]|mac_os_x|darwin ]]; then
-  if ! command -v vault-util-init &>/dev/null; then
-    echo "ERROR: vault-util-init not found on macOS worker" >&2
+  # macOS Anka guests cannot reach AWS SSM or vault directly.
+  # HAB_AUTH_TOKEN is provisioned into the VM image at Packer build time
+  # (see buildkite-platform: 1_images/1_2_core/anka-arm.pkr.hcl).
+  if [[ -z "${HAB_AUTH_TOKEN:-}" ]]; then
+    echo "ERROR: HAB_AUTH_TOKEN must be provisioned by the macOS image" >&2
     exit 1
   fi
-  . vault-util-init
-  HAB_AUTH_TOKEN=$(vault kv get -field auth_token account/static/habitat/chef-ci)
-  export HAB_AUTH_TOKEN
 else
   export HAB_AUTH_TOKEN=$(aws ssm get-parameter --name 'habitat-prod-auth-token' --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
 fi
