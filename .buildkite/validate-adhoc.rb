@@ -37,9 +37,14 @@ win_targets = [
   "windows-2025:single-use-windows-2025"
 ]
 
+mac_targets = [
+  "core-14-arm64:macos-arm64"
+]
+
 # Update target list
 targets.concat(win_targets)
 targets.concat(arm_targets)
+targets.concat(mac_targets)
 
 pipeline = {
   "env" => {
@@ -74,6 +79,24 @@ if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release
     "agents" => {
       "queue" => "habitat-x86_64-windows"
     },
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::macos: Building Habitat package",
+    "commands" => [
+      ". vault-util-init",
+      "./.expeditor/scripts/chef_adhoc_build.sh aarch64-darwin"
+    ],
+    "agents" => {
+      "queue" => "default-macos-arm64-privileged"
+    },
+    "plugins" => {
+     "chef/anka#v0.7.2" => {
+        "vm-name" => "buildkite-core-14-arm64",
+        "always-pull" => true,
+        "wait-network" => true,
+        "inherit-environment-vars" => true
+      }
+    }
   }
 else
   # nightly pipeline, get package from unstable.
