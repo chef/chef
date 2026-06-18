@@ -1,4 +1,4 @@
-set -e pipefail
+set -eo pipefail
 
 if [[ -z "${BUILDKITE_BUILD_CREATOR_TEAMS:-}" ]]
 then
@@ -22,7 +22,7 @@ then
 fi
 
 # array of all esoteric platforms in the format test-platform:build-platform
-esoteric_platforms=("el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-13-arm64:mac_os_x-13-arm64" "mac_os_x-14-arm64:mac_os_x-13-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
+esoteric_platforms=("aix-7.1-powerpc:aix-7.1-powerpc" "aix-7.2-powerpc:aix-7.1-powerpc" "aix-7.3-powerpc:aix-7.1-powerpc" "el-7-ppc64:el-7-ppc64" "el-7-ppc64le:el-7-ppc64le" "el-7-s390x:el-7-s390x" "el-8-s390x:el-7-s390x" "freebsd-13-amd64:freebsd-13-amd64" "mac_os_x-13-arm64:mac_os_x-13-arm64" "mac_os_x-14-arm64:mac_os_x-13-arm64" "solaris2-5.11-i386:solaris2-5.11-i386" "solaris2-5.11-sparc:solaris2-5.11-sparc" "sles-12-x86_64:sles-12-x86_64" "sles-12-s390x:sles-12-s390x" "sles-15-s390x:sles-12-s390x")
 
 omnibus_build_platforms=()
 omnibus_test_platforms=()
@@ -168,6 +168,33 @@ then
   for platform in ${esoteric_build_platforms[@]}; do
     # replace . with _ in build key
     build_key=$(echo $platform | tr . _)
+    # AIX build agents are Linux jump boxes that SSH to remote AIX machines via
+    # an SSH proxy.  The 'installp' command only exists on the remote AIX machine,
+    # NOT on the Linux jump box, so a standalone cleanup step cannot run
+    # 'installp -C' directly.
+    #
+    # However, this placeholder step still serves a critical scheduling purpose:
+    # Buildkite dispatches jobs in FIFO order (oldest-idle agent first).  The
+    # pipeline-upload step runs on agent A, leaving agent B idle longer.  Without
+    # this step, both A and B are immediately eligible for the build step and FIFO
+    # gives it to B.  If B's AIX machine has dirty installp state, the build fails.
+    # By inserting this placeholder step (which runs quickly on A), agent A becomes
+    # idle AFTER the placeholder finishes.  When the build step then goes to B (FIFO
+    # picks B as the longest-idle agent), B fails fast (~6 min) on the dirty machine.
+    # At retry time, A has been idle for ~6 minutes while B just finished, so FIFO
+    # assigns the retry to A — whose remote AIX machine is clean — and the build
+    # succeeds.
+    #
+    # To fix the dirty AIX machine permanently, someone with SSH access to the
+    # remote AIX host needs to run: sudo /usr/sbin/installp -C
+    if [[ $platform == *"aix"* ]]; then
+      echo "- key: cleanup-build-$build_key"
+      echo "  label: ':broom: AIX build slot timing ($platform)'"
+      echo "  command: 'echo \"Scheduling placeholder: cannot run installp -C on Linux jump box\"'"
+      echo "  soft_fail: true"
+      echo "  agents:"
+      echo "    queue: omnibus-$platform"
+    fi
     echo "- env:"
     if [ $platform == "el-7-ppc64" ] || [ $platform == "el-7-ppc64le" ]
     then
@@ -176,12 +203,35 @@ then
       echo "    OMNIBUS_FIPS_MODE: false"
     fi
     echo "    IGNORE_CACHE: true"
+    # AIX omnibus-toolchain ships Ruby 3.0.3; Gemfile.aix uses public repos
+    # and pins gems to versions compatible with Ruby 3.0 and xlC_r.
+    if [[ $platform == *"aix"* ]]; then
+      echo "    BUNDLE_GEMFILE: Gemfile.aix"
+    fi
     echo "  key: build-$build_key"
     echo "  label: \":hammer_and_wrench: $platform\""
+    # AIX build step waits for the timing placeholder to ensure FIFO retry
+    # scheduling lands on the clean agent (see comment above placeholder step).
+    if [[ $platform == *"aix"* ]]; then
+      echo "  depends_on: cleanup-build-$build_key"
+    fi
     echo "  retry:"
     echo "    automatic:"
-    echo "      limit: 1"
-    echo "  timeout_in_minutes: 120"
+    # For AIX: the first run typically lands on a dirty machine (dirty installp
+    # state on the remote AIX host).  The retry lands on a different agent whose
+    # AIX machine is clean, so always allow at least 2 retries.
+    if [[ $platform == *"aix"* ]]; then
+      echo "      limit: 2"
+    else
+      echo "      limit: 1"
+    fi
+    # AIX omnibus builds take longer due to slower xlC_r compilation; use 180 min
+    # to match the timeout already set for AIX test steps.
+    if [[ $platform == *"aix"* ]]; then
+      echo "  timeout_in_minutes: 180"
+    else
+      echo "  timeout_in_minutes: 120"
+    fi
     echo "  agents:"
     echo "    queue: omnibus-$platform"
     if [[ $platform == mac_os_x* ]]
@@ -189,10 +239,20 @@ then
       echo "    omnibus: builder"
       echo "    omnibus-toolchain: \"*\""
     fi
+    # AIX ships an older omnibus toolchain with Ruby 3.0; 3.2.38 is the only
+    # chef-foundation with AIX artifacts and lives in stable, not current.
+    if [[ $platform == *"aix"* ]]; then
+      cf_version="3.2.38"
+      # PR#189: auto-detects AIX and uses stable channel for chef-foundation
+      omnibus_plugin_pin="v0.2.106"
+    else
+      cf_version="$CHEF_FOUNDATION_VERSION"
+      omnibus_plugin_pin="v0.2.103"
+    fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.103:"
+    echo "  - chef/omnibus#${omnibus_plugin_pin}:"
     echo "      build: chef"
-    echo "      chef-foundation-version: $CHEF_FOUNDATION_VERSION"
+    echo "      chef-foundation-version: $cf_version"
     echo "      config: omnibus/omnibus.rb"
     echo "      install-dir: \"/opt/chef\""
     if [ "$build_key" == "mac_os_x-13-arm64" ] || [ "$build_key" == "mac_os_x-14-arm64" ]; then
@@ -303,6 +363,17 @@ then
   for platform in ${esoteric_test_platforms[@]}; do
     build_key=$(echo ${platform#*:} | tr . _)
     test_key=$(echo ${platform%:*} | tr . _)
+    # AIX: same FIFO scheduling rationale as the build step placeholder above.
+    # The placeholder runs on agent A; the test step goes to B (oldest idle);
+    # the retry lands on A if B's AIX machine fails.
+    if [[ $platform == *"aix"* ]]; then
+      echo "- key: cleanup-test-$test_key"
+      echo "  label: ':broom: AIX test slot timing (${platform%:*})'"
+      echo "  command: 'echo \"Scheduling placeholder: cannot run installp -C on Linux jump box\"'"
+      echo "  soft_fail: true"
+      echo "  agents:"
+      echo "    queue: omnibus-${platform%:*}"
+    fi
     echo "- env:"
     if [ $build_key == "el-7-ppc64" ] || [ $build_key == "el-7-ppc64le" ]
     then
@@ -313,9 +384,19 @@ then
     echo "    OMNIBUS_BUILDER_KEY: build-${build_key}"
     echo "  key: test-${test_key}"
     echo "  label: \":mag: ${platform%:*}\""
+    # AIX test step waits for the timing placeholder and the build step.
+    if [[ $platform == *"aix"* ]]; then
+      echo "  depends_on:"
+      echo "    - cleanup-test-$test_key"
+      echo "    - build-$build_key"
+    fi
     echo "  retry:"
     echo "    automatic:"
-    echo "      limit: 1"
+    if [[ $platform == *"aix"* ]]; then
+      echo "      limit: 2"
+    else
+      echo "      limit: 1"
+    fi
     if [[ $platform == *"aix"* ]]; then
       echo "  timeout_in_minutes: 180"
     else
@@ -329,7 +410,7 @@ then
       echo "    omnibus-toolchain: \"*\""
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.103:"
+    echo "  - chef/omnibus#v0.2.102:"
     echo "      test: chef"
     echo "      test-path: omnibus/omnibus-test.sh"
     echo "      install-dir: \"/opt/chef\""
@@ -355,6 +436,6 @@ then
   echo "- key: promote"
   echo "  label: \":artifactory: Promote to Current\""
   echo "  plugins:"
-  echo "  - chef/omnibus#v0.2.103:"
+  echo "  - chef/omnibus#v0.2.102:"
   echo "      promote: chef"
 fi
