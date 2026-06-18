@@ -30,11 +30,17 @@ echo "--- :package: Uploading package"
 cd "${project_root}/results"
 buildkite-agent artifact upload "$pkg_artifact" || error 'unable to upload package'
 
-if [[ "$hab_target" == "aarch64-linux" ]]; then
-  meta_key="INFRA_HAB_ARTIFACT_LINUX_AARCH64"
-else
-  meta_key="INFRA_HAB_ARTIFACT_LINUX"
-fi
+case "$hab_target" in
+  "aarch64-linux")
+    meta_key="INFRA_HAB_ARTIFACT_LINUX_AARCH64"
+    ;;
+  "x86_64-linux")
+    meta_key="INFRA_HAB_ARTIFACT_LINUX"
+    ;;
+  "aarch64-darwin")
+    meta_key="INFRA_HAB_ARTIFACT_DARWIN_ARM64"
+    ;;
+esac
 
 echo "--- Setting ${meta_key} metadata for buildkite agent"
 echo "setting ${meta_key} to $pkg_artifact"
