@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+error() {
+  echo -e "\nERROR: $1\n" >&2
+  exit 1
+}
+
 hab_target="${1:-x86_64-linux}"
 
 # ensure minimum viable habitat is installed
