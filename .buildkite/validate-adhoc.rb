@@ -55,31 +55,31 @@ pipeline = {
 
 # if pipeline slug is chef-chef-main-validate-adhoc, then run buildkite_adhoc_metadata.sh
 if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release)/)
-  pipeline["steps"] << {
-    "label" => ":habicat::linux: Building Habitat package",
-    "command" => "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh x86_64-linux",
-    "agents" => {
-      "queue" => "habitat-x86_64-linux"
-    },
-    "timeout_in_minutes" => 120
-  }
-  pipeline["steps"] << {
-    "label" => ":habicat::linux: Building ARM Habitat package",
-    "commands" => [
-      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
-    ],
-    "agents" => {
-      "queue" => "habitat-aarch64-linux"
-    },
-    "timeout_in_minutes" => 120
-  }
-  pipeline["steps"] << {
-    "label" => ":habicat::windows: Building Habitat package",
-    "command" => "./.expeditor/scripts/chef_adhoc_build.ps1",
-    "agents" => {
-      "queue" => "habitat-x86_64-windows"
-    },
-  }
+  # pipeline["steps"] << {
+  #   "label" => ":habicat::linux: Building Habitat package",
+  #   "command" => "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh x86_64-linux",
+  #   "agents" => {
+  #     "queue" => "habitat-x86_64-linux"
+  #   },
+  #   "timeout_in_minutes" => 120
+  # }
+  # pipeline["steps"] << {
+  #   "label" => ":habicat::linux: Building ARM Habitat package",
+  #   "commands" => [
+  #     "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
+  #   ],
+  #   "agents" => {
+  #     "queue" => "habitat-aarch64-linux"
+  #   },
+  #   "timeout_in_minutes" => 120
+  # }
+  # pipeline["steps"] << {
+  #   "label" => ":habicat::windows: Building Habitat package",
+  #   "command" => "./.expeditor/scripts/chef_adhoc_build.ps1",
+  #   "agents" => {
+  #     "queue" => "habitat-x86_64-windows"
+  #   },
+  # }
   pipeline["steps"] << {
     "label" => ":habicat::macos: Building Habitat package",
     "commands" => [
