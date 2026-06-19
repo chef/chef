@@ -20,9 +20,13 @@ git_thing = ARGV.shift
 build_dir = Dir.pwd
 
 env = {
+  # Chef's rest-client fork requires http-accept (~> 2.1.0). Without injecting the fork here,
+  # external test bundles resolve the official rest-client which requires http-accept < 2.0,
+  # conflicting with the constraint in chef.gemspec. See: CHEF-35270
   "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'; " \
     "gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'main'; " \
-    "gem 'ffi-yajl', '2.6.0'", # hold ffi-yajl back until chef/chef Gemfile.lock is upgraded to 2.7.5 or later
+    "gem 'ffi-yajl', '2.6.0'; " \
+    "gem 'rest-client', git: 'https://github.com/chef/rest-client', branch: 'jfm/ucrt_update1'",
   "CHEF_LICENSE" => "accept-no-persist",
 }
 

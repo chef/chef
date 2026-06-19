@@ -80,6 +80,15 @@ Gem::Specification.new do |s|
 
   s.add_dependency "proxifier2", "~> 1.1"
 
+  # Explicitly pin http-accept to prevent a Gem::LoadError version conflict on Windows.
+  # Chef uses a fork of rest-client (Gemfile) that requires http-accept (~> 2.1.0), but the
+  # official rest-client gem on RubyGems.org allows http-accept >= 1.7.0, < 2.0. If a user
+  # installs the official rest-client into Chef's gem environment, it pulls in http-accept-1.7.0,
+  # which conflicts with the version appbundler pins in the chef-client binstub.
+  # Declaring this as a direct dependency ensures the correct version is always enforced.
+  # See: https://progresssoftware.atlassian.net/browse/CHEF-35270
+  s.add_dependency "http-accept", "~> 2.1"
+
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
   s.add_dependency "vault", ">= 0.18.2", "< 0.21.0" # hashi vault official client gem
