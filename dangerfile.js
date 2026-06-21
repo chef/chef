@@ -63,5 +63,109 @@ if (danger.git.modified_files.includes("Gemfile.lock") &&
     }
 }
 
+// Check if PR description has been properly filled out
+async function checkPRDescription() {
+    const body = danger.github.pr.body || ""
+
+    if (danger.github.pr.user.type === "Bot") {
+        return
+    }
+
+    // Extract the Description section (between "Description" and "Related Issue" or "Types of changes" headers)
+    const descriptionMatch = body.match(/##?\s*Description\s*\n([\s\S]*?)(?=##?\s*(?:Related Issue|Types of changes)|$)/i)
+
+    if (!descriptionMatch) {
+        fail("❌ PR description is missing a 'Description' section. Please provide a description of your changes.")
+        return
+    }
+
+    const descriptionSection = descriptionMatch[1].trim()
+
+    // Remove HTML comments to get the actual content
+    const contentWithoutComments = descriptionSection.replace(/<!---.*?--->/gs, '').replace(/<!--.*?-->/gs, '').trim()
+
+    // Check if description still contains the template text
+    const templateText = "Describe your changes in detail, what problems does it solve?"
+    if (descriptionSection.includes(templateText)) {
+        fail("❌ PR description contains unedited template text. Please replace '<!--- Describe your changes in detail, what problems does it solve? --->' with an actual description of your changes.")
+        return
+    }
+
+    // Check if description is empty or too short (less than 20 characters of actual content)
+    if (contentWithoutComments.length < 20) {
+        fail("❌ PR description is too short or empty. Please provide a meaningful description of your changes (at least 20 characters).")
+    }
+}
+
+async function stickyWorkflowChangeReminder() {
+    if (danger.github.pr.user.type === "Bot") {
+        return
+    }
+
+    const workflowChanges = danger.git.modified_files.filter(file =>
+        file.startsWith(".github/workflows/")
+    )
+
+    if (workflowChanges.length === 0) {
+        return
+    }
+
+    const filesList = workflowChanges.map(f => `- \`${f}\``).join("\n")
+
+    const body = `
+### ⚠️ Workflow changes detected
+
+This PR modifies GitHub Actions workflow files:
+
+${filesList}
+
+**Reviewer reminder – please double-check for:**
+- [ ] Changes to **secrets usage** or new secret references
+- [ ] Workflow **permissions** increases (especially \`contents\`, \`actions\`, or \`id-token\`)
+- [ ] Any way secrets could be **exfiltrated** (logs, artifacts, uploads)
+
+These workflow changes are gated for manual approval — please review carefully before approving.
+`
+
+    const api = danger.github.api
+    const issue = danger.github.pr.number
+    const repo = danger.github.thisPR.repo
+    const owner = danger.github.thisPR.owner
+
+    const { data: comments } = await api.issues.listComments({
+        owner,
+        repo,
+        issue_number: issue,
+        per_page: 100,
+    })
+
+    const existing = comments.find(c =>
+        c.user?.login === "github-actions[bot]" &&
+        c.body?.includes("⚠️ Workflow changes detected")
+    )
+
+    if (existing) {
+        await api.issues.updateComment({
+            owner,
+            repo,
+            comment_id: existing.id,
+            body,
+        })
+    } else {
+        await api.issues.createComment({
+            owner,
+            repo,
+            issue_number: issue,
+            body,
+        })
+    }
+}
+
 // Check for chef gem version changes
 schedule(checkChefGemVersions())
+
+// Check PR description
+schedule(checkPRDescription())
+
+// Remind reviewers about workflow changes
+schedule(stickyWorkflowChangeReminder)
