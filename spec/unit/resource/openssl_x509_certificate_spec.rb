@@ -69,4 +69,10 @@ describe Chef::Resource::OpensslX509Certificate do
     expect { resource.mode "644" }.not_to raise_error
     expect { resource.mode 644 }.not_to raise_error
   end
+
+  describe "sensitive property masking" do
+    it "marks key_pass as sensitive" do
+      expect(Chef::Resource::OpensslX509Certificate.properties[:key_pass].sensitive?).to be true
+    end
+  end
 end

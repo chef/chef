@@ -143,7 +143,7 @@ class Chef
         introduced: "17.6",
         description: "A username that, as part of a credential object, is used to register a repository or other package source with."
 
-      property :password, String,
+      property :password, String, sensitive: true,
         introduced: "17.6",
         description: "A password that, as part of a credential object, is used to register a repository or other package source with."
 

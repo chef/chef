@@ -54,7 +54,7 @@ class Chef
       property :username, String,
         description: "The username to use when registering. This property is not applicable if using an activation key. If specified, password and environment properties are also required."
 
-      property :password, String,
+      property :password, String, sensitive: true,
         description: "The password to use when registering. This property is not applicable if using an activation key. If specified, username and environment are also required."
 
       property :system_name, String,

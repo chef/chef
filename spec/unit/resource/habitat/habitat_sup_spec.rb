@@ -17,30 +17,19 @@
 
 require "spec_helper"
 
-describe Chef::Resource::ChefVaultSecret do
-  let(:resource) { Chef::Resource::ChefVaultSecret.new("foo") }
-
-  it "has a resource name of :chef_vault_secret" do
-    expect(resource.resource_name).to eql(:chef_vault_secret)
-  end
-
-  it "sets the default action as :create" do
-    expect(resource.action).to eql([:create])
-  end
-
-  it "id is the name property" do
-    expect(resource.id).to eql("foo")
-  end
-
-  it "supports :create, :create_if_missing, and :delete actions" do
-    expect { resource.action :create }.not_to raise_error
-    expect { resource.action :create_if_missing }.not_to raise_error
-    expect { resource.action :delete }.not_to raise_error
-  end
+describe Chef::Resource::HabitatSup do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::HabitatSup.new("default", run_context) }
 
   describe "sensitive property masking" do
-    it "marks raw_data as sensitive" do
-      expect(Chef::Resource::ChefVaultSecret.properties[:raw_data].sensitive?).to be true
+    it "marks auth_token as sensitive" do
+      expect(Chef::Resource::HabitatSup.properties[:auth_token].sensitive?).to be true
+    end
+
+    it "marks gateway_auth_token as sensitive" do
+      expect(Chef::Resource::HabitatSup.properties[:gateway_auth_token].sensitive?).to be true
     end
   end
 end
