@@ -59,14 +59,15 @@ do_before() {
 
 do_download() {
   pushd $SRC_PATH
+  export HOME=$SRC_PATH # need to set home otherwise fails
   build_line "Setting up the safe directory for the build. $SRC_PATH. $PWD"
-  HOME=$PWD git config --global --add safe.directory $SRC_PATH
+  git config --global --add safe.directory $SRC_PATH
 
-  build_line "$(HOME=$PWD git config -l)"
+  build_line "$(git config -l)"
 
 
   build_line "Locally creating archive of latest repository commit at ${HAB_CACHE_SRC_PATH}/${pkg_filename}"
-  HOME=$PWD git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
+  git archive --format=tar.gz --prefix="${pkg_name}-${pkg_version}/" --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
   build_line "Done"
 
   popd
@@ -87,6 +88,7 @@ do_setup_environment() {
 }
 
 do_prepare() {
+  export HOME=$SRC_PATH # need to set home otherwise ruby and git fail
   export GEM_HOME="${pkg_prefix}/vendor"
   export OPENSSL_DIR="$(pkg_path_for openssl)"
   export OPENSSL_INCLUDE_DIR="$(pkg_path_for openssl)/include"
@@ -95,7 +97,7 @@ do_prepare() {
   export HAB_STUDIO_SECRET_NODE_OPTIONS="--dns-result-order=ipv4first"
   export HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL="base-2025"
   build_line " ** Securing the /src directory"
-  HOME=$SRC_PATH git config --global --add safe.directory /src
+  git config --global --add safe.directory /src
 
   ( cd "$CACHE_PATH"
     bundle config --local build.nokogiri "--use-system-libraries \
