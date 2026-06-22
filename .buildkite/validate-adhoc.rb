@@ -4,17 +4,17 @@ require 'yaml'
 require 'time'
 
 targets = [
-  "amazon-2:centos-7",
-  "centos-7:centos-7",
-  "rhel-9:rhel-9",
-  "debian-9:debian-9",
-  "debian-10:debian-9",
-  "debian-11:debian-9",
-  "ubuntu-2004:ubuntu-2004",
-  "ubuntu-2204:ubuntu-2204",
-  "rocky-8:rocky-8",
-  "rocky-9:rocky-9",
-  "amazon-2023:amazon-2023"
+  # "amazon-2:centos-7",
+  # "centos-7:centos-7",
+  # "rhel-9:rhel-9",
+  # "debian-9:debian-9",
+  # "debian-10:debian-9",
+  # "debian-11:debian-9",
+  # "ubuntu-2004:ubuntu-2004",
+  # "ubuntu-2204:ubuntu-2204",
+  # "rocky-8:rocky-8",
+  # "rocky-9:rocky-9",
+  # "amazon-2023:amazon-2023"
 ]
 
 arm_targets = [
@@ -38,12 +38,12 @@ win_targets = [
 ]
 
 mac_targets = [
-  "core-14-arm64:macos-arm64"
+  "macos-arm64:core-14-arm64"
 ]
 
 # Update target list
-targets.concat(win_targets)
-targets.concat(arm_targets)
+# targets.concat(win_targets)
+# targets.concat(arm_targets)
 targets.concat(mac_targets)
 
 pipeline = {
@@ -101,89 +101,121 @@ else
   # nightly pipeline, get package from unstable.
 end
 
-# pipeline["steps"] << { "wait" => nil }
+pipeline["steps"] << { "wait" => nil }
 
-# targets.each do |target|
-#   platform, queue_platform = target.split(":")
-#   step = {}
+targets.each do |target|
+  platform, queue_platform = target.split(":")
+  step = {}
 
-#   if platform.include?("windows")
-#     step = {
-#       "label" => ":mag::windows:#{platform}",
-#       "key" => "validate-#{platform}",
-#       "retry" => {
-#         "automatic" => {
-#           "limit" => 1
-#         }
-#       },
-#       "agents" => {
-#         "queue" => "#{queue_platform}-privileged"
-#       },
-#       "plugins" => {
-#         "docker#v3.5.0" => {
-#           "image" => "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
-#           "shell" => [
-#             "powershell",
-#             "-Command"
-#           ],
-#           "volumes" => [
-#             "C:\\buildkite-agent:C:\\buildkite-agent"
-#           ],
-#           "environment" => [
-#             'HAB_AUTH_TOKEN',
-#             'BUILDKITE_AGENT_ACCESS_TOKEN',
-#             'AWS_ACCESS_KEY_ID',
-#             'AWS_SECRET_ACCESS_KEY',
-#             'AWS_SESSION_TOKEN',
-#           ],
-#           "propagate-environment" => true
-#         }
-#       },
-#       "commands" => [
-#         "./.expeditor/scripts/validate_adhoc_build.ps1"
-#       ],
-#       "timeout_in_minutes" => 120
-#     }
-#   else
-#     commands = ["sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux"]
-#     agents = {
-#       "queue" => "default-privileged"
-#     }
-#     docker_image = "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}"
+  case platform
+  when /windows/
+    step = {
+      "label" => ":mag::windows:#{platform}",
+      "key" => "validate-#{platform}",
+      "retry" => {
+        "automatic" => {
+          "limit" => 1
+        }
+      },
+      "agents" => {
+        "queue" => "#{queue_platform}-privileged"
+      },
+      "plugins" => {
+        "docker#v3.5.0" => {
+          "image" => "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "shell" => [
+            "powershell",
+            "-Command"
+          ],
+          "volumes" => [
+            "C:\\buildkite-agent:C:\\buildkite-agent"
+          ],
+          "environment" => [
+            'HAB_AUTH_TOKEN',
+            'BUILDKITE_AGENT_ACCESS_TOKEN',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_ACCESS_KEY',
+            'AWS_SESSION_TOKEN',
+          ],
+          "propagate-environment" => true
+        }
+      },
+      "commands" => [
+        "./.expeditor/scripts/validate_adhoc_build.ps1"
+      ],
+      "timeout_in_minutes" => 120
+    }
+  when /linux/
+    commands = [
+      "sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux",
+      "./.expeditor/scripts/validate_adhoc_build.sh x86_64-linux"
+    ]
+    agents = {
+      "queue" => "default-privileged"
+    }
+    docker_image = "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}"
 
-#     if platform.include?("aarch64")
-#       base_platform = platform.sub("-aarch64", "")
-#       commands = ["sudo -E ./.expeditor/scripts/install-hab.sh aarch64-linux"]
-#       agents["queue"] = "default-privileged-aarch64"
-#       docker_image = "chefes/omnibus-toolchain-#{base_platform}:aarch64"
-#     end
-#     commands << "./.expeditor/scripts/validate_adhoc_build.sh"
+    if platform.include?("aarch64")
+      base_platform = platform.sub("-aarch64", "")
+      commands = [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-linux",
+        "./.expeditor/scripts/validate_adhoc_build.sh aarch64-linux"
+      ]
+      agents["queue"] = "default-privileged-aarch64"
+      docker_image = "chefes/omnibus-toolchain-#{base_platform}:aarch64"
+    end
 
-#     step = {
-#       "label" => ":mag::docker:#{platform}",
-#       "key" => "validate-#{platform}",
-#       "retry" => {
-#         "automatic" => {
-#           "limit" => 1
-#         }
-#       },
-#       "agents" => agents,
-#       "plugins" => {
-#         "docker#v3.5.0" => {
-#           "image" => docker_image,
-#           "privileged" => true,
-#           "propagate-environment" => true,
-#           "environment" => [
-#             'HAB_AUTH_TOKEN'
-#           ]
-#         }
-#       },
-#       "commands" => commands,
-#       "timeout_in_minutes" => 120
-#     }
-#   end
+    step = {
+      "label" => ":mag::docker:#{platform}",
+      "key" => "validate-#{platform}",
+      "retry" => {
+        "automatic" => {
+          "limit" => 1
+        }
+      },
+      "agents" => agents,
+      "plugins" => {
+        "docker#v3.5.0" => {
+          "image" => docker_image,
+          "privileged" => true,
+          "propagate-environment" => true,
+          "environment" => [
+            'HAB_AUTH_TOKEN'
+          ]
+        }
+      },
+      "commands" => commands,
+      "timeout_in_minutes" => 120
+    }
+  when /macos/
+    step = {
+      "label" => ":habicat::macos: #{platform}",
+      "key" => "validate-#{platform}",
+      # "retry" => {
+      #   "automatic" => {
+      #     "limit" => 1
+      #   }
+      # },
+      "agents" => {
+        "queue" => "default-macos-arm64-privileged"
+      },
+      "plugins" => {
+        "chef/anka#v0.7.2" => {
+          "vm-name" => "buildkite-core-14-arm64",
+          "always-pull" => true,
+          "wait-network" => true,
+          "inherit-environment-vars" => true
+        }
+      },
+      "commands" => [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-darwin",
+        "./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
+      ],
+      "timeout_in_minutes" => 120
+    }
+  end
 
-#   pipeline["steps"] << step
-# end
+  pipeline["steps"] << step
+end
 
 puts pipeline.to_yaml
