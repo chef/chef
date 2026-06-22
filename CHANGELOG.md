@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.103 -->
-## [v18.10.103](https://github.com/chef/chef/tree/v18.10.103) (2026-06-21)
+<!-- latest_release 18.10.104 -->
+## [v18.10.104](https://github.com/chef/chef/tree/v18.10.104) (2026-06-22)
 
 #### Merged Pull Requests
-- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#16100](https://github.com/chef/chef/pull/16100) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/checkout from 6 to 7 [#16125](https://github.com/chef/chef/pull/16125) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump actions/checkout from 6 to 7 [#16125](https://github.com/chef/chef/pull/16125) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.104 -->
 - Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#16100](https://github.com/chef/chef/pull/16100) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.103 -->
 - Bump train-core from 3.16.3 to 3.16.5 [#16103](https://github.com/chef/chef/pull/16103) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.102 -->
 - Bump danger/danger-js from 13.0.5 to 13.0.8 [#16124](https://github.com/chef/chef/pull/16124) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.101 -->
