@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.34 -->
-## [v19.3.34](https://github.com/chef/chef/tree/v19.3.34) (2026-06-21)
+<!-- latest_release 19.3.35 -->
+## [v19.3.35](https://github.com/chef/chef/tree/v19.3.35) (2026-06-22)
 
 #### Merged Pull Requests
-- Bump aws-sdk-secretsmanager from 1.132.0 to 1.133.0 [#16079](https://github.com/chef/chef/pull/16079) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- set missing sensitive flag for chef resources  [#16107](https://github.com/chef/chef/pull/16107) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- set missing sensitive flag for chef resources  [#16107](https://github.com/chef/chef/pull/16107) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.35 -->
 - Bump aws-sdk-secretsmanager from 1.132.0 to 1.133.0 [#16079](https://github.com/chef/chef/pull/16079) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.34 -->
 - modify habitat version updates [#15995](https://github.com/chef/chef/pull/15995) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.33 -->
 - Bump aws-sdk-s3 from 1.224.0 to 1.226.0 [#16113](https://github.com/chef/chef/pull/16113) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.32 -->
