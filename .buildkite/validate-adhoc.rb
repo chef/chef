@@ -83,7 +83,7 @@ if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release
   pipeline["steps"] << {
     "label" => ":habicat::macos: Building Habitat package",
     "commands" => [
-      "./.expeditor/scripts/chef_adhoc_build.sh aarch64-darwin"
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-darwin"
     ],
     "agents" => {
       "queue" => "default-macos-arm64-privileged"
