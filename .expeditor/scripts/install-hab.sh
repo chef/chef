@@ -5,7 +5,7 @@ set -euo pipefail
 export HAB_LICENSE="accept"
 export HAB_NONINTERACTIVE="true"
 
-HAB_VERSION="${HAB_VERSION:-2.0.504}"
+HAB_VERSION="${HAB_VERSION:-2.1.23}"
 hab_target="$1"
 
 # print error message followed by usage and exit
