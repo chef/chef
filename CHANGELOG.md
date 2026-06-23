@@ -1,18 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.39 -->
-## [v19.3.39](https://github.com/chef/chef/tree/v19.3.39) (2026-06-23)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Update Inspec to 7.1.7 [#16135](https://github.com/chef/chef/pull/16135) ([johnmccrae](https://github.com/johnmccrae))
-- bump required hab in ci to 2.1.23 [#16133](https://github.com/chef/chef/pull/16133) ([rishichawda](https://github.com/rishichawda))
+- update habitat arm package build and promotion step [#15986](https://github.com/chef/chef/pull/15986) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update habitat arm package build and promotion step [#15986](https://github.com/chef/chef/pull/15986) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.39 -->
 - Update Inspec to 7.1.7 [#16135](https://github.com/chef/chef/pull/16135) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.39 -->
 - bump required hab in ci to 2.1.23 [#16133](https://github.com/chef/chef/pull/16133) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.38 -->
 - Bump ohai from `b3a3ae3` to `f96614f` [#16128](https://github.com/chef/chef/pull/16128) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.38 -->
