@@ -31,7 +31,7 @@ end
 group(:packaging) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "= 7.0.107" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "= 7.1.7" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
