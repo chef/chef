@@ -209,7 +209,7 @@ targets.each do |target|
       },
       "commands" => [
         "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-darwin",
-        "./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
+        "sudo -E ./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
       ],
       "timeout_in_minutes" => 120
     }
