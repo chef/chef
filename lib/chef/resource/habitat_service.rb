@@ -118,7 +118,7 @@ class Chef
       property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
         description: "IP address and port used to communicate with the remote supervisor. If this value is invalid, the resource will update the supervisor configuration each time #{ChefUtils::Dist::Server::PRODUCT} runs."
 
-      property :gateway_auth_token, String, desired_state: false,
+      property :gateway_auth_token, String, sensitive: true, desired_state: false,
         description: "Auth token for accessing the remote supervisor's http port."
 
       property :update_condition, [Symbol, String], equal_to: [:latest, "latest", :'track-channel', "track-channel"], default: :latest, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },

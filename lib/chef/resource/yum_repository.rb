@@ -146,14 +146,14 @@ class Chef
       property :options, Hash,
         description: "Specifies the repository options."
 
-      property :password, String,
+      property :password, String, sensitive: true,
         description: "Password to use with the username for basic authentication."
 
       property :priority, String, regex: /^(\d?[1-9]|[0-9][0-9])$/,
         description: "Assigns a priority to a repository where the priority value is between `1` and `99` inclusive. Priorities are used to enforce ordered protection of repositories. Packages from repositories with a lower priority (higher numerical value) will never be used to upgrade packages that were installed from a repository with a higher priority (lower numerical value). The repositories with the lowest numerical priority number have the highest priority.",
         validation_message: "The priority property must be a numeric value from 1-99!"
 
-      property :proxy_password, String,
+      property :proxy_password, String, sensitive: true,
         description: "Password for this proxy."
 
       property :proxy_username, String,

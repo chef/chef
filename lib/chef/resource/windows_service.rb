@@ -228,7 +228,7 @@ class Chef
         default: "localsystem",
         coerce: proc(&:downcase)
 
-      property :run_as_password, String,
+      property :run_as_password, String, sensitive: true,
         description: "The password for the user specified by `run_as_user`.",
         default: ""
     end

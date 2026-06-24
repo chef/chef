@@ -164,7 +164,7 @@ class Chef
         default: lazy { Chef::ReservedNames::Win32::Security::SID.LocalSystem.account_simple_name if ChefUtils.windows_ruby? },
         default_description: "The localized SYSTEM user for the node."
 
-      property :password, String,
+      property :password, String, sensitive: true,
         description: "The user's password. The user property must be set if using this property."
 
       property :run_level, Symbol, equal_to: %i{highest limited},
