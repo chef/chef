@@ -219,21 +219,22 @@ class Chef
         def archive_differs_from_disk?(src, dest)
           modified = false
           dest_realpath = ::File.expand_path(dest)
-          archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
           Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
-          archive.each_entry do |e|
-            pathname = ::File.expand_path(e.pathname, dest_realpath)
-            # Skip archive entries that resolve outside the destination directory.
-            # A traversal entry (e.g. "../escaped") must not influence the mtime
-            # comparison and must never trigger extraction.
-            next unless pathname.start_with?(dest_realpath + ::File::SEPARATOR) || pathname == dest_realpath
+          Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+            archive.each_entry do |e|
+              pathname = ::File.expand_path(e.pathname, dest_realpath)
+              # Skip archive entries that resolve outside the destination directory.
+              # A traversal entry (e.g. "../escaped") must not influence the mtime
+              # comparison and must never trigger extraction.
+              next unless pathname.start_with?(dest_realpath + ::File::SEPARATOR) || pathname == dest_realpath
 
-            if ::File.exist?(pathname)
-              Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
-              modified = true unless ::File.mtime(pathname) == e.mtime
-            else
-              Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
-              modified = true
+              if ::File.exist?(pathname)
+                Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
+                modified = true unless ::File.mtime(pathname) == e.mtime
+              else
+                Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
+                modified = true
+              end
             end
           end
           modified
