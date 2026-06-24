@@ -172,9 +172,16 @@ class Chef
 
         if new_resource.owner || new_resource.group
           converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            archive = Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components)
-            archive.each_entry do |e|
-              FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+            dest_realpath = ::File.expand_path(new_resource.destination)
+            Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components) do |archive|
+              archive.each_entry do |e|
+                # Validate path is within destination before chown-ing.
+                # Use expand_path for security check, original string for the chown call.
+                chown_path_expanded = ::File.expand_path("#{new_resource.destination}/#{e.pathname}")
+                next unless chown_path_expanded.start_with?(dest_realpath + ::File::SEPARATOR) || chown_path_expanded == dest_realpath
+
+                FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+              end
             end
           end
         end
@@ -211,16 +218,23 @@ class Chef
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
           modified = false
-          archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
+          dest_realpath = ::File.expand_path(dest)
           Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
-          archive.each_entry do |e|
-            pathname = ::File.expand_path(e.pathname, dest)
-            if ::File.exist?(pathname)
-              Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
-              modified = true unless ::File.mtime(pathname) == e.mtime
-            else
-              Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
-              modified = true
+          Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+            archive.each_entry do |e|
+              pathname = ::File.expand_path(e.pathname, dest_realpath)
+              # Skip archive entries that resolve outside the destination directory.
+              # A traversal entry (e.g. "../escaped") must not influence the mtime
+              # comparison and must never trigger extraction.
+              next unless pathname.start_with?(dest_realpath + ::File::SEPARATOR) || pathname == dest_realpath
+
+              if ::File.exist?(pathname)
+                Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
+                modified = true unless ::File.mtime(pathname) == e.mtime
+              else
+                Chef::Log.trace("#{pathname} doesn't exist on disk, but exists in the archive")
+                modified = true
+              end
             end
           end
           modified
@@ -235,15 +249,35 @@ class Chef
         # @return [void]
         def extract(src, dest, options = [])
           converge_by("extract #{src} to #{dest}") do
-            flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
+            user_flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|).to_i
+            # Always apply libarchive security flags to prevent path traversal.
+            # These are not user-overridable hence directly added here
+            # instead of options array. NODOTDOT blocks "../" sequences,
+            # NOABSOLUTEPATHS blocks absolute-path entries, SECURE_SYMLINKS prevents
+            # symlink attacks. Combined with the check below in archive.each_entry
+            # they safeguard against Zip Slip / CWE-22 attacks.
+            security_flags = Archive::EXTRACT_SECURE_NODOTDOT |
+              Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
+              Archive::EXTRACT_SECURE_SYMLINKS
+            all_flags = user_flags | security_flags
+            dest_realpath = ::File.expand_path(dest)
 
             Dir.chdir(dest) do
-              archive = Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components)
+              Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
+                archive.each_entry do |e|
+                  # reject any entry whose resolved path
+                  # falls outside the destination directory before calling into libarchive.
+                  entry_realpath = ::File.expand_path(e.pathname, dest_realpath)
+                  unless entry_realpath.start_with?(dest_realpath + ::File::SEPARATOR) || entry_realpath == dest_realpath
+                    raise Chef::Exceptions::ValidationFailed,
+                      "Refusing to extract archive entry #{e.pathname.inspect}: resolved path " \
+                      "#{entry_realpath.inspect} is outside destination #{dest_realpath.inspect}. " \
+                      "This archive may contain a path traversal attack."
+                  end
 
-              archive.each_entry do |e|
-                archive.extract(e, flags.to_i)
+                  archive.extract(e, all_flags)
+                end
               end
-              archive.close
             end
           end
         end

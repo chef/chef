@@ -20,7 +20,12 @@ require "spec_helper"
 begin
   require "ffi-libarchive"
 rescue LoadError
+  # Define stubs so tests can run even when ffi-libarchive is not installed.
   module Archive
+    EXTRACT_TIME               = 0x0004
+    EXTRACT_SECURE_NODOTDOT    = 0x0200
+    EXTRACT_SECURE_NOABSOLUTEPATHS = 0x10000
+    EXTRACT_SECURE_SYMLINKS = 0x0100
     class Reader
       def close; end
       def each_entry; end
@@ -28,6 +33,13 @@ rescue LoadError
     end
   end
 end
+
+# Expected flags passed to archive.extract after the CHEF-32355 security fix.
+# = EXTRACT_TIME | EXTRACT_SECURE_NODOTDOT | EXTRACT_SECURE_NOABSOLUTEPATHS | EXTRACT_SECURE_SYMLINKS
+ARCHIVE_EXTRACT_EXPECTED_FLAGS = Archive::EXTRACT_TIME |
+  Archive::EXTRACT_SECURE_NODOTDOT |
+  Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
+  Archive::EXTRACT_SECURE_SYMLINKS
 
 describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_windows do
   let(:node) { Chef::Node.new }
@@ -50,6 +62,11 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
   let(:archive_entry_2) { instance_double("Archive::Entry", pathname: "folder-1/file-1.txt", mtime: entry_time) }
   let(:archive_entry_3) { instance_double("Archive::Entry", pathname: "folder-1/folder-2/", mtime: entry_time) }
   let(:archive_entry_4) { instance_double("Archive::Entry", pathname: "folder-1/folder-2/file-2.txt", mtime: entry_time) }
+
+  # Traversal entries for CHEF-32355 path traversal tests
+  let(:traversal_entry_dotdot)   { instance_double("Archive::Entry", pathname: "../pwned.txt", mtime: entry_time) }
+  let(:traversal_entry_absolute) { instance_double("Archive::Entry", pathname: "/etc/pwned.txt", mtime: entry_time) }
+  let(:archive_reader_traversal) { instance_double("Archive::Reader", close: nil) }
 
   let(:archive_reader_with_strip_components_1) { instance_double("Archive::Reader", close: nil) }
   let(:archive_entry_2_s1) { instance_double("Archive::Entry", pathname: "file-1.txt", mtime: entry_time) }
@@ -95,7 +112,7 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       allow(File).to receive(:exist?).with(path).and_return(true)
       allow(File).to receive(:exist?).with(destination).and_return(true)
 
-      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 0).and_return(archive_reader)
+      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 0).and_yield(archive_reader)
       allow(archive_reader).to receive(:each_entry)
         .and_yield(archive_entry_1)
         .and_yield(archive_entry_2)
@@ -106,7 +123,7 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       allow(archive_reader).to receive(:extract).with(archive_entry_3, any_args)
       allow(archive_reader).to receive(:extract).with(archive_entry_4, any_args)
 
-      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 1).and_return(archive_reader_with_strip_components_1)
+      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 1).and_yield(archive_reader_with_strip_components_1)
       allow(archive_reader_with_strip_components_1).to receive(:each_entry)
         .and_yield(archive_entry_2_s1)
         .and_yield(archive_entry_3_s1)
@@ -115,7 +132,7 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       allow(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_3_s1, any_args)
       allow(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_4_s1, any_args)
 
-      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 2).and_return(archive_reader_with_strip_components_2)
+      allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 2).and_yield(archive_reader_with_strip_components_2)
       allow(archive_reader_with_strip_components_2).to receive(:each_entry)
         .and_yield(archive_entry_4_s2)
       allow(archive_reader_with_strip_components_2).to receive(:extract).with(archive_entry_4_s2, any_args)
@@ -382,10 +399,10 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       end
 
       it "does not strip any paths" do
-        expect(archive_reader).to receive(:extract).with(archive_entry_1, 4)
-        expect(archive_reader).to receive(:extract).with(archive_entry_2, 4)
-        expect(archive_reader).to receive(:extract).with(archive_entry_3, 4)
-        expect(archive_reader).to receive(:extract).with(archive_entry_4, 4)
+        expect(archive_reader).to receive(:extract).with(archive_entry_1, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
+        expect(archive_reader).to receive(:extract).with(archive_entry_2, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
+        expect(archive_reader).to receive(:extract).with(archive_entry_3, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
+        expect(archive_reader).to receive(:extract).with(archive_entry_4, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
         resource.run_action(:extract)
       end
     end
@@ -396,9 +413,9 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       end
 
       it "strips leading number of paths specified in strip_components" do
-        expect(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_2_s1, 4)
-        expect(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_3_s1, 4)
-        expect(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_4_s1, 4)
+        expect(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_2_s1, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
+        expect(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_3_s1, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
+        expect(archive_reader_with_strip_components_1).to receive(:extract).with(archive_entry_4_s1, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
         resource.run_action(:extract)
       end
     end
@@ -409,8 +426,46 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       end
 
       it "strips leading number of paths specified in strip_components" do
-        expect(archive_reader_with_strip_components_2).to receive(:extract).with(archive_entry_4_s2, 4)
+        expect(archive_reader_with_strip_components_2).to receive(:extract).with(archive_entry_4_s2, ARCHIVE_EXTRACT_EXPECTED_FLAGS)
         resource.run_action(:extract)
+      end
+    end
+
+    context "when archive contains path traversal entries (CHEF-32355)" do
+      before do
+        resource.overwrite(true)
+        allow(Archive::Reader).to receive(:open_filename).with(path, nil, strip_components: 0)
+          .and_yield(archive_reader_traversal)
+      end
+
+      context "with a dot-dot traversal entry (../pwned.txt)" do
+        before do
+          allow(archive_reader_traversal).to receive(:each_entry).and_yield(traversal_entry_dotdot)
+        end
+
+        it "raises Chef::Exceptions::ValidationFailed" do
+          expect { resource.run_action(:extract) }.to raise_error(Chef::Exceptions::ValidationFailed, /path traversal/i)
+        end
+
+        it "does not call archive.extract for the traversal entry" do
+          expect(archive_reader_traversal).not_to receive(:extract)
+          resource.run_action(:extract) rescue Chef::Exceptions::ValidationFailed
+        end
+      end
+
+      context "with an absolute path entry (/etc/pwned.txt)" do
+        before do
+          allow(archive_reader_traversal).to receive(:each_entry).and_yield(traversal_entry_absolute)
+        end
+
+        it "raises Chef::Exceptions::ValidationFailed" do
+          expect { resource.run_action(:extract) }.to raise_error(Chef::Exceptions::ValidationFailed, /path traversal/i)
+        end
+
+        it "does not call archive.extract for the absolute path entry" do
+          expect(archive_reader_traversal).not_to receive(:extract)
+          resource.run_action(:extract) rescue Chef::Exceptions::ValidationFailed
+        end
       end
     end
 
