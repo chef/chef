@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.10.106 -->
-## [v18.10.106](https://github.com/chef/chef/tree/v18.10.106) (2026-06-24)
+<!-- latest_release 18.10.107 -->
+## [v18.10.107](https://github.com/chef/chef/tree/v18.10.107) (2026-06-25)
 
 #### Merged Pull Requests
-- [chef-18] backport chef resource sensitive flag fix [#16138](https://github.com/chef/chef/pull/16138) ([rishichawda](https://github.com/rishichawda))
+- Updating inspec to latest version [#16142](https://github.com/chef/chef/pull/16142) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating inspec to latest version [#16142](https://github.com/chef/chef/pull/16142) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.107 -->
 - [chef-18] backport chef resource sensitive flag fix [#16138](https://github.com/chef/chef/pull/16138) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.106 -->
 - [chef-18] backport archive_file path traversal fix [#16119](https://github.com/chef/chef/pull/16119) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.105 -->
 - Bump actions/checkout from 6 to 7 [#16125](https://github.com/chef/chef/pull/16125) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.104 -->
