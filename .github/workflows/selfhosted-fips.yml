@@ -11,11 +11,14 @@ concurrency:
   group: selfhosted-fips-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   linux:
     strategy:
       fail-fast: false
-    runs-on: [self-hosted, x64, Linux, ubuntu-2404-pro-fips-tester]
+    runs-on: [self-hosted, X64, Linux, azure]
     steps:
       - name: 'If Ruby 3.1 not installed, then install it'
         id: ruby
@@ -41,7 +44,7 @@ jobs:
         run: |
           set +e
           if [ -d "/home/azureuser/actions-runner/_work/chef/chef" ]; then
-            sudo rm -r /home/azureuser/actions-runner/_work/chef/chef/*
+            rm -r /home/azureuser/actions-runner/_work/chef/chef/*
           fi
           set -e
       - name: Check out code
@@ -79,3 +82,235 @@ jobs:
           else
             echo "fips is not enabled"
           fi
+
+  windows:
+    strategy:
+      fail-fast: false
+    runs-on: [self-hosted, X64, Windows, azure]
+    steps:
+      - name: 'Clean up any previous installs'
+        id: cleanup
+        run: |
+          if (Test-Path "C:\actions-runner\_work\chef\chef") {
+            Remove-Item -Recurse -Force "C:\actions-runner\_work\chef\chef\*"
+          }
+      - name: 'Clean up any previous Chef installs'
+        id: cleanup_chef_now
+        run: |
+          if (Test-Path -LiteralPath "C:\opscode") {
+            $chef = Get-WmiObject Win32_Product | Where-Object { $_.Name -like "*Chef*" }
+            if ($chef) {
+                msiexec /x $chef.IdentifyingNumber /qn
+            }
+            Remove-Item -Recurse -Force "C:\opscode" -ErrorAction SilentlyContinue
+          }
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+            clean: false
+      - name: Install Git
+        id: install_git
+        run: |
+          $git_url = "https://api.github.com/repos/git-for-windows/git/releases/latest"
+          $asset = Invoke-RestMethod -Method Get -Uri $git_url | % assets | where name -like "*64-bit.exe"
+          $installer = "$env:temp\$($asset.name)"
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $installer
+          Start-Process -FilePath $installer -ArgumentList "/SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART" -Wait
+          $env:Path += ";C:\Program Files\Git\cmd"
+          Write-Output "Git version:"
+          git --version
+      - name: 'Install Chef/Ohai from Omnitruck'
+        id: install_chef
+        run: |
+          . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+          $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+          chef-client -v
+          ohai -v
+          rake --version
+          bundle -v
+          $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+          chef-client -v
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          ohai -v
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          rake --version
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          bundle -v
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+      - name: 'Upgrade Chef/Ohai via Appbundler'
+        id: upgrade
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:CHEF_LICENSE="accept-no-persist"
+          $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+          New-Item -ItemType Directory -Force -Path C:\Temp | Out-Null
+          $env:TEMP = 'C:\Temp'
+          $env:TMP = 'C:\Temp'
+
+          Write-Output "Using TEMP: $env:TEMP"
+          Write-Output "Using TMP: $env:TMP"
+
+          # Ensure git is reachable for the runner service account.
+          if (-not (Get-Command git.exe -ErrorAction SilentlyContinue)) {
+            $candidateGitDirs = @(
+              'C:\Program Files\Git\cmd',
+              'C:\Program Files\Git\bin',
+              'C:\Program Files\Git\mingw64\bin',
+              'C:\Program Files (x86)\Git\cmd',
+              'C:\Program Files (x86)\Git\bin'
+            )
+
+            foreach ($dir in $candidateGitDirs) {
+              if (Test-Path (Join-Path $dir 'git.exe')) {
+                $env:PATH = "$dir;" + $env:PATH
+                break
+              }
+            }
+          }
+
+          $gitCmd = Get-Command git.exe -ErrorAction SilentlyContinue
+          if (-not $gitCmd) {
+            Write-Error 'git.exe not found. Install Git for Windows or add it to PATH for the runner service account.'
+          }
+          Write-Output "Using git at: $($gitCmd.Source)"
+          git --version
+          if ($LASTEXITCODE -ne 0) { Exit $LASTEXITCODE }
+          ruby -v
+          if ($LASTEXITCODE -ne 0) { Exit $LASTEXITCODE }
+          bundle -v
+          if ($LASTEXITCODE -ne 0) { Exit $LASTEXITCODE }
+
+          $env:BUNDLE_VERBOSE = 'true'
+          $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
+
+          # # The chef-client installer does not put the file 'ansidecl.h' down in the correct location
+          # # This leads to failures during testing. Moving that file to its correct position here.
+          # $output = gci -path C:\opscode\ -file ansidecl.h -Recurse
+
+          # # As of Ruby 3.1, there are 3 ansidecl.h files found in the opscode path
+          # # Grabbing the first (and shortest) path found is a bit of a :fingers-crossed: but
+          # # making the leap that ansidecl.h isn't going to vary in a way that will fail subtly.
+          # if ($output -is [Array]) { $output = $output[0] }
+
+          # $target_path = $($output.Directory.Parent.FullName + "\x86_64-w64-mingw32\include")
+          # Move-Item -Path $output.FullName -Destination $target_path
+
+          # if a different version of ffi-yajl is installed, then libyajl2 needs to be reinstalled
+          # so that libyajldll.a is present in the intermediate build step.
+          # gem list -i libyajl2
+          # if ($LASTEXITCODE -eq 0) {
+          #   gem uninstall -I libyajl2
+          #   If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          # }
+
+          gem install appbundler appbundle-updater --no-doc
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          Write-Output "Installed Chef / Ohai release:"
+          ohai -v
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          chef-client -v
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          chef-apply -e "log 'appbundle overlay looks healthy'"
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+      - name: 'Enable FIPS via windows registry'
+        run: |
+          $oldErrorAction = $ErrorActionPreference
+          $ErrorActionPreference = 'Stop'
+
+          $KeyPath   = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy'
+          $ValueName = 'Enabled'
+          $ValueData = 1
+
+          try {
+              # Ensure the key exists
+              if (-not (Test-Path $KeyPath)) {
+                  New-Item -Path $KeyPath -Force | Out-Null
+              }
+
+              # Create or update the value
+              New-ItemProperty -Path $KeyPath -Name $ValueName -Value $ValueData -PropertyType DWord -Force | Out-Null
+          }
+          finally {
+              $ErrorActionPreference = $oldErrorAction
+          }
+
+          if (-not $?) {
+              throw 'Failed to enable FIPS mode.'
+          }
+      - name: 'Verify FIPS is enabled via Windows registry and .NET'
+        id: run
+        run: |
+          Write-Output "Verifying FIPS mode in Windows via registry - is it enabled?"
+          Write-Host "Detected OS: Windows (Bare Metal Context)" -ForegroundColor Yellow
+
+          # 1. Check Legacy LSA Registry Key
+          $lsaPath   = "HKLM:\System\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy"
+          $lsaValue  = (Get-ItemProperty -Path $lsaPath -Name Enabled -ErrorAction SilentlyContinue).Enabled
+
+          # 2. Check System Group Policy Registry Key (Modern Windows 10/11/Server 2022)
+          # This maps to Group Policy: "System cryptography: Use FIPS compliant algorithms..."
+          $gpoPath   = "HKLM:\System\CurrentControlSet\Control\Lsa"
+          $gpoValue  = (Get-ItemProperty -Path $gpoPath -Name FipsAlgorithmPolicy -ErrorAction SilentlyContinue).FipsAlgorithmPolicy
+
+          # 3. Fallback evaluation for the active .NET Cryptography Factory
+          $netFipsEnabled = [System.Security.Cryptography.CryptoConfig]::AllowOnlyFipsAlgorithms
+
+          # Auditor-grade validation rule:
+          # If the modern GPO key is active OR the legacy key is active OR the active .NET runtime acknowledges it, we are compliant.
+          $isFipsEnforcedOnWindows = ($lsaValue -eq 1) -or ($gpoValue -eq 1) -or ($netFipsEnabled -eq $true)
+
+          if (-not $isFipsEnforcedOnWindows) {
+              throw [System.Security.SecurityException]::new("FIPS Compliance Failure: Windows host does not have FIPS configuration policies enforced.")
+          }
+
+          Write-Output "[INFO] Registry Diagnostics -> LSA: $lsaValue | GPO Policy: $gpoValue | .NET Config: $netFipsEnabled"
+          Write-Output "[SUCCESS] Windows host is strictly enforcing FIPS mode configurations."
+      - name: "Write FIPS Ruby Tester to disk"
+        id: write_fips_helper
+        shell: powershell
+        run: |
+          $temp = Join-Path $env:TEMP "fips_helper.rb"
+
+          @"
+          ruby_block 'verify windows fips state' do
+            action :run
+            block do
+              require "open3"
+
+              ps = <<~EOF
+                try {
+                  [System.Security.Cryptography.MD5]::Create() | Out-Null
+                  Write-Output "FIPS_NOT_ENFORCED"
+                } catch {
+                  Write-Output "FIPS_ENFORCED"
+                }
+              EOF
+
+              stdout, stderr, status = Open3.capture3("powershell.exe", "-NoProfile", "-Command", ps)
+
+              result = stdout.strip
+
+              if result == "FIPS_ENFORCED"
+                Chef::Log.info("[SUCCESS] Windows host is strictly enforcing FIPS mode configurations.")
+              else
+                raise "[FAILURE] Windows host is NOT enforcing FIPS mode."
+              end
+            end
+          end
+          "@ | Set-Content -Path $temp -Encoding UTF8
+
+          Write-Host "Saved helper to $temp"
+      - name: 'Verify FIPS is enabled by testing it with Chef'
+        id: run_ruby_fips_check
+        run: |
+          $env:CHEF_LICENSE="accept-no-persist"
+          $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
+          Write-Output "Does the Chef Client even run with FIPS enabled?"
+          chef-client -v
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
+          $temp_fips_file = Join-Path $env:TEMP "fips_helper.rb"
+          Write-Output "Running Chef FIPS check script with chef-apply: $temp_fips_file"
+          chef-apply $temp_fips_file
+          If ($lastexitcode -ne 0) { Exit $lastexitcode }
