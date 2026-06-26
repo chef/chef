@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v7
-      - uses: danger/danger-js@13.0.8
+      - uses: danger/danger-js@13.0.10
         with:
           args: "--verbose --text-only -f"
         env:
