@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 18.11.0 -->
+## [v18.11.0](https://github.com/chef/chef/tree/v18.11.0) (2026-06-26)
 
 #### Merged Pull Requests
+- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16144](https://github.com/chef/chef/pull/16144) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Updating version for blackduck [#16143](https://github.com/chef/chef/pull/16143) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16144](https://github.com/chef/chef/pull/16144) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.0 -->
 - Updating version for blackduck [#16143](https://github.com/chef/chef/pull/16143) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.107 -->
 - Updating inspec to latest version [#16142](https://github.com/chef/chef/pull/16142) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.107 -->
 - [chef-18] backport chef resource sensitive flag fix [#16138](https://github.com/chef/chef/pull/16138) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.106 -->
