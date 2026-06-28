@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 18.11.2 -->
+## [v18.11.2](https://github.com/chef/chef/tree/v18.11.2) (2026-06-28)
 
 #### Merged Pull Requests
+- Bump concurrent-ruby from 1.3.6 to 1.3.7 [#16114](https://github.com/chef/chef/pull/16114) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - Adding Windows github fips testers [#16136](https://github.com/chef/chef/pull/16136) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump concurrent-ruby from 1.3.6 to 1.3.7 [#16114](https://github.com/chef/chef/pull/16114) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.2 -->
 - Adding Windows github fips testers [#16136](https://github.com/chef/chef/pull/16136) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.1 -->
 - Updating minor version and blackduck [#16146](https://github.com/chef/chef/pull/16146) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.1 -->
 - Bump danger/danger-js from 13.0.8 to 13.0.10 [#16144](https://github.com/chef/chef/pull/16144) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.0 -->
