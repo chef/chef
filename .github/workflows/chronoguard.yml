@@ -10,7 +10,7 @@ jobs:
       checks: read
       contents: read
     steps:
-      - uses: actions/checkout@v6
-      - uses: jaymzh/chronoguard@main
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: jaymzh/chronoguard@d8312ed1b3c2201a82984ab9169287bf66e73c5e # main
         with:
           files: .github/workflows/allchecks.yml, .github/workflows/kitchen.yml, habitat/aarch64-linux/plan.sh

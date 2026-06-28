@@ -50,7 +50,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -137,7 +137,7 @@ jobs:
   #     HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
   #   steps:
   #   - name: Checkout PR code
-  #     uses: actions/checkout@v6
+  #     uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
   #     with:
   #       ref: ${{ github.event.pull_request.head.sha }}
   #       persist-credentials: false
@@ -216,11 +216,11 @@ jobs:
 #      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
 #    steps:
 #      - name: Check out code
-#        uses: actions/checkout@v5
+#        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 #        with:
 #            clean: true
 #      - name: Install Chef
-#        uses: actionshub/chef-install@main
+#        uses: actionshub/chef-install@f3b35943a257c25f3ca69e3b773fa4e0e99b58d6 # main
 #        with:
 #          version: "25.5.1084"
 #      - name: Kitchen Test
@@ -245,13 +245,13 @@ jobs:
   #     GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   #   steps:
   #     - name: Checkout PR code
-  #       uses: actions/checkout@v6
+  #       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
   #       with:
   #         ref: ${{ github.event.pull_request.head.sha }}
   #         persist-credentials: false
   #         clean: true
   #     - name: Install Chef
-  #       uses: actionshub/chef-install@main
+  #       uses: actionshub/chef-install@f3b35943a257c25f3ca69e3b773fa4e0e99b58d6 # main
   #       with:
   #         version: "25.5.1084"
   #     - name: Kitchen Test
@@ -297,7 +297,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -375,7 +375,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -439,7 +439,7 @@ jobs:
 #      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
 #    steps:
 #      - name: Checkout PR code
-#        uses: actions/checkout@v6
+#        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 #        with:
 #          ref: ${{ github.event.pull_request.head.sha }}
 #          persist-credentials: false
@@ -455,7 +455,7 @@ jobs:
 #          sudo vagrant --version
 #          sudo VBoxManage --version
 #      - name: Install Chef
-#        uses: actionshub/chef-install@main
+#        uses: actionshub/chef-install@f3b35943a257c25f3ca69e3b773fa4e0e99b58d6 # main
 #      - name: Kitchen Test
 #        run: |
 #          # To debug, uncomment these
