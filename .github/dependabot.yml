@@ -12,6 +12,9 @@ updates:
       # Due to FIPS builds and having to couple the openssl
       # build itself, we don't let dependabot bump openssl
       - dependency-name: "openssl"
+      - dependency-name: "ffi-yajl"
+        # Locking to 2.x until ffi-yajl 3.x gets the allocator fix https://github.com/chef/ffi-yajl/pull/126 fail-after:2026-08-22
+        versions: ["3.x"]
     # don't automatically rebase on every single time we're out of date with
     # base (whith is always) because it kills CI capacity
     rebase-strategy: disabled
