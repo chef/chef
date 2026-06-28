@@ -17,12 +17,12 @@ jobs:
     env:
       BUNDLE_WITHOUT: ruby_shadow:packaging
     steps:
-      - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1
         with:
           ruby-version: 3.4
           bundler-cache: false
-      - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
+      - uses: r7kamura/rubocop-problem-matchers-action@f8a7c58ca427edfb72c8463afa0c301f74f30c0a # v1  # this shows the failures in the PR
       - run: |
           bundle install
           bundle exec cookstyle --chefstyle -c .rubocop.yml
@@ -30,17 +30,17 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - run: |
           curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
-      - uses: streetsidesoftware/cspell-action@v8.4.0
+      - uses: streetsidesoftware/cspell-action@de2a73e963e7443969755b648a1008f77033c5b2 # v8.4.0
 
   linelint:
     runs-on: ubuntu-latest
     name: Check if all files end in newline
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Linelint
-        uses: fernandrone/linelint@master
+        uses: fernandrone/linelint@7907a5dca0c28ea7dd05c6d8d8cacded713aca11 # master
         id: linelint

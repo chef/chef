@@ -30,7 +30,7 @@ jobs:
       core_changed: ${{ steps.detect.outputs.core_changed }}
       resource_files: ${{ steps.detect.outputs.resource_files }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
 
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           clean: true
 
@@ -102,7 +102,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1
         with:
           ruby-version: "3.4"
           bundler-cache: false
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           clean: true
 
@@ -137,7 +137,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # v1
         with:
           ruby-version: "3.4"
           bundler-cache: false

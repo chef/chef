@@ -23,7 +23,7 @@ jobs:
     steps:
       # Note that we do NOT checkout the PR code, this is actually
       # 'main', but Danger rules can still use the API to read the PR
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: danger/danger-js@13.0.8
         with:
           args: "--verbose --text-only -f"
