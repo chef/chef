@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.3 -->
-## [v18.11.3](https://github.com/chef/chef/tree/v18.11.3) (2026-06-28)
+<!-- latest_release 18.11.4 -->
+## [v18.11.4](https://github.com/chef/chef/tree/v18.11.4) (2026-06-29)
 
 #### Merged Pull Requests
-- Bump chef-vault from 4.2.9 to 4.2.12 [#16129](https://github.com/chef/chef/pull/16129) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [CVE] Bump faraday to 2.14.3 [#16154](https://github.com/chef/chef/pull/16154) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [CVE] Bump faraday to 2.14.3 [#16154](https://github.com/chef/chef/pull/16154) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.4 -->
 - Bump chef-vault from 4.2.9 to 4.2.12 [#16129](https://github.com/chef/chef/pull/16129) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.3 -->
 - Bump concurrent-ruby from 1.3.6 to 1.3.7 [#16114](https://github.com/chef/chef/pull/16114) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.2 -->
 - Adding Windows github fips testers [#16136](https://github.com/chef/chef/pull/16136) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.1 -->
