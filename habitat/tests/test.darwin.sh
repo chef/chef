@@ -40,7 +40,7 @@ done
 export DYLD_LIBRARY_PATH="$(hab pkg path core/libarchive)/lib"
 
 echo "--- :construction: Gotta find RSPEC so testing doesn't immediately fail"
-results=($(find /hab/pkgs -name "rspec" -type f))
+results=($(find /opt/hab/pkgs -name "rspec" -type f))
 echo "${results[1]}"
 
 echo "--- :mag_right: Testing ${pkg_ident} functionality"
