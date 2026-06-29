@@ -80,6 +80,7 @@ do_verify() {
 
 do_setup_environment() {
   push_runtime_env GEM_PATH "${pkg_prefix}/vendor"
+  push_runtime_env GEM_HOME "${pkg_prefix}/vendor"
 
   set_runtime_env APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
