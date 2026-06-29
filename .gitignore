@@ -107,3 +107,4 @@ chef_dictionary.txt
 
 # ignore any gems we build locally
 *.gem
+Gemfile-aix.lock

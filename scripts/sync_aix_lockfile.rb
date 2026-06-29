@@ -2,14 +2,20 @@
 #
 # scripts/sync_aix_lockfile.rb
 #
-# Copies the current Gemfile.lock to Gemfile-aix.lock, then:
+# Copies the current Gemfile.lock to Gemfile-aix.lock.erb, then:
 #   1. Strips Windows-platform binary gem variants (e.g. ffi-1.16.3-x64-mingw-ucrt)
 #   2. Removes Windows-only gem specs entirely (win32-*, chef-powershell, etc.)
 #   3. Removes the Windows-specific chef variant PATH spec
 #   4. Cleans the PLATFORMS section to only include AIX-relevant platforms
 #   5. Re-applies pinned AIX overrides from scripts/aix_gem_pins.yml
+#   6. Replaces path gem versions (chef, chef-bin, chef-config, chef-utils) with
+#      an ERB placeholder (<%= version %>) so the lockfile stays valid across
+#      Expeditor version bumps without manual edits.
 #
-# Run this after any update to Gemfile.lock and commit both files together.
+# The generated Gemfile-aix.lock.erb is committed. At omnibus build time,
+# chef-local-source.rb renders it to Gemfile-aix.lock (gitignored).
+#
+# Run this after any update to Gemfile.lock and commit Gemfile-aix.lock.erb.
 #
 # Usage:
 #   ruby scripts/sync_aix_lockfile.rb
@@ -110,8 +116,21 @@ AIX_PINS.each do |gem_name, version|
   content.gsub!(/^    #{Regexp.escape(gem_name)} \(\S+\)/, "    #{gem_name} (#{version})")
 end
 
-output_path = File.join(REPO_ROOT, "Gemfile-aix.lock")
+# ── 6. Replace path gem versions with ERB placeholder ────────────────────────
+# Reads the current version from VERSION so the substitution works regardless
+# of which Expeditor bump is current. The rendered Gemfile-aix.lock.erb uses
+# <%= version %> which is evaluated at omnibus build time.
+current_version = File.read(File.join(REPO_ROOT, "VERSION")).strip
+PATH_GEMS = %w{chef chef-bin chef-config chef-utils}.freeze
+PATH_GEMS.each do |gem_name|
+  # Match "gem_name (VERSION)" and "gem_name (= VERSION)" in spec blocks
+  content.gsub!(/(\b#{Regexp.escape(gem_name)} \((?:= )?)#{Regexp.escape(current_version)}(\))/) do
+    "#{$1}<%= version %>#{$2}"
+  end
+end
+
+output_path = File.join(REPO_ROOT, "Gemfile-aix.lock.erb")
 File.write(output_path, content)
-puts "Gemfile-aix.lock updated from Gemfile.lock."
+puts "Gemfile-aix.lock.erb updated from Gemfile.lock."
 puts "Diff it with git before committing:"
-puts "  git diff Gemfile-aix.lock"
+puts "  git diff Gemfile-aix.lock.erb"
