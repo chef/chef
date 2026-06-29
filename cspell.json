@@ -1672,6 +1672,7 @@
     "CLA_ARCHIVE.md",
     "**/*.gemspec",
     "**/Gemfile.lock",
+    "**/Gemfile-aix.lock.erb",
     "**/Gemfile",
     ".expeditor/**/*",
     "**/*.yml",
