@@ -1,18 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.40 -->
-## [v19.3.40](https://github.com/chef/chef/tree/v19.3.40) (2026-06-28)
+<!-- latest_release 19.3.41 -->
+## [v19.3.41](https://github.com/chef/chef/tree/v19.3.41) (2026-06-29)
 
 #### Merged Pull Requests
-- Bump chef-vault from 4.2.9 to 4.2.12 [#16127](https://github.com/chef/chef/pull/16127) ([dependabot[bot]](https://github.com/dependabot[bot]))
-- update habitat arm package build and promotion step [#15986](https://github.com/chef/chef/pull/15986) ([rishichawda](https://github.com/rishichawda))
+- fix notice file path and error instead of silent warning [#16153](https://github.com/chef/chef/pull/16153) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix notice file path and error instead of silent warning [#16153](https://github.com/chef/chef/pull/16153) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.41 -->
 - Bump chef-vault from 4.2.9 to 4.2.12 [#16127](https://github.com/chef/chef/pull/16127) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.40 -->
 - update habitat arm package build and promotion step [#15986](https://github.com/chef/chef/pull/15986) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.39 -->
 - Update Inspec to 7.1.7 [#16135](https://github.com/chef/chef/pull/16135) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.39 -->
