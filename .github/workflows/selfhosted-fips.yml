@@ -105,7 +105,7 @@ jobs:
             Remove-Item -Recurse -Force "C:\opscode" -ErrorAction SilentlyContinue
           }
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
             clean: false
       - name: Install Git
