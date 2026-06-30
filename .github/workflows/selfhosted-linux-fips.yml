@@ -9,7 +9,8 @@ name: linux-fips
     branches:
       - main
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: selfhosted-fips-${{ github.ref }} # Since this workflow runs on a self-hosted runner, we want to ensure that only one run executes at a time to avoid conflicts on the runner
@@ -46,12 +47,12 @@ jobs:
           fi
           set -e
 
-      - name: Checkout PR code
+      - name: Checkout trusted code only
         uses: actions/checkout@v6
         with:
-            ref: ${{ github.event.pull_request.head.sha }}
-            persist-credentials: false
-            clean: false
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.sha || github.sha }}
+          persist-credentials: false
+          clean: false
 
       - name: Install Habitat CLI
         run: |
