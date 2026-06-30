@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 18.11.5 -->
+## [v18.11.5](https://github.com/chef/chef/tree/v18.11.5) (2026-06-30)
 
 #### Merged Pull Requests
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5&quot; [#16163](https://github.com/chef/chef/pull/16163) ([tpowell-progress](https://github.com/tpowell-progress))
 - Updating chef version for Blackduck [#16156](https://github.com/chef/chef/pull/16156) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5&quot; [#16163](https://github.com/chef/chef/pull/16163) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.5 -->
 - Updating chef version for Blackduck [#16156](https://github.com/chef/chef/pull/16156) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.4 -->
 - [CVE] Bump faraday to 2.14.3 [#16154](https://github.com/chef/chef/pull/16154) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.4 -->
 - Bump chef-vault from 4.2.9 to 4.2.12 [#16129](https://github.com/chef/chef/pull/16129) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.3 -->
