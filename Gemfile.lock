@@ -55,7 +55,7 @@ PATH
       chef-utils (= 19.3.42)
       chef-vault
       chef-zero (~> 15.1.0)
-      corefoundation (~> 0.3.4)
+      corefoundation (~> 0.3.19)
       csv (~> 3.3.5)
       diff-lcs (~> 1.6.0)
       ed25519 (~> 1.2)
@@ -95,7 +95,7 @@ PATH
       chef-utils (= 19.3.42)
       chef-vault
       chef-zero (~> 15.1.0)
-      corefoundation (~> 0.3.4)
+      corefoundation (~> 0.3.19)
       csv (~> 3.3.5)
       diff-lcs (~> 1.6.0)
       ed25519 (~> 1.2)
@@ -259,7 +259,7 @@ GEM
     connection_pool (2.5.5)
     cookstyle (8.6.10)
       rubocop (= 1.84.2)
-    corefoundation (0.3.13)
+    corefoundation (0.3.19)
       ffi (>= 1.15.0)
     crack (1.0.1)
       bigdecimal
