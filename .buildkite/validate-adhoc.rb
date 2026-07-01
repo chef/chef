@@ -4,17 +4,17 @@ require 'yaml'
 require 'time'
 
 targets = [
-  # "amazon-2:centos-7",
-  # "centos-7:centos-7",
-  # "rhel-9:rhel-9",
-  # "debian-9:debian-9",
-  # "debian-10:debian-9",
-  # "debian-11:debian-9",
-  # "ubuntu-2004:ubuntu-2004",
-  # "ubuntu-2204:ubuntu-2204",
-  # "rocky-8:rocky-8",
-  # "rocky-9:rocky-9",
-  # "amazon-2023:amazon-2023"
+  "amazon-2:centos-7",
+  "centos-7:centos-7",
+  "rhel-9:rhel-9",
+  "debian-9:debian-9",
+  "debian-10:debian-9",
+  "debian-11:debian-9",
+  "ubuntu-2004:ubuntu-2004",
+  "ubuntu-2204:ubuntu-2204",
+  "rocky-8:rocky-8",
+  "rocky-9:rocky-9",
+  "amazon-2023:amazon-2023"
 ]
 
 arm_targets = [
@@ -42,8 +42,8 @@ mac_targets = [
 ]
 
 # Update target list
-# targets.concat(win_targets)
-# targets.concat(arm_targets)
+targets.concat(win_targets)
+targets.concat(arm_targets)
 targets.concat(mac_targets)
 
 pipeline = {
@@ -55,31 +55,31 @@ pipeline = {
 
 # if pipeline slug is chef-chef-main-validate-adhoc, then run buildkite_adhoc_metadata.sh
 if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release)/)
-  # pipeline["steps"] << {
-  #   "label" => ":habicat::linux: Building Habitat package",
-  #   "command" => "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh x86_64-linux",
-  #   "agents" => {
-  #     "queue" => "habitat-x86_64-linux"
-  #   },
-  #   "timeout_in_minutes" => 120
-  # }
-  # pipeline["steps"] << {
-  #   "label" => ":habicat::linux: Building ARM Habitat package",
-  #   "commands" => [
-  #     "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
-  #   ],
-  #   "agents" => {
-  #     "queue" => "habitat-aarch64-linux"
-  #   },
-  #   "timeout_in_minutes" => 120
-  # }
-  # pipeline["steps"] << {
-  #   "label" => ":habicat::windows: Building Habitat package",
-  #   "command" => "./.expeditor/scripts/chef_adhoc_build.ps1",
-  #   "agents" => {
-  #     "queue" => "habitat-x86_64-windows"
-  #   },
-  # }
+  pipeline["steps"] << {
+    "label" => ":habicat::linux: Building Habitat package",
+    "command" => "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh x86_64-linux",
+    "agents" => {
+      "queue" => "habitat-x86_64-linux"
+    },
+    "timeout_in_minutes" => 120
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::linux: Building ARM Habitat package",
+    "commands" => [
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
+    ],
+    "agents" => {
+      "queue" => "habitat-aarch64-linux"
+    },
+    "timeout_in_minutes" => 120
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::windows: Building Habitat package",
+    "command" => "./.expeditor/scripts/chef_adhoc_build.ps1",
+    "agents" => {
+      "queue" => "habitat-x86_64-windows"
+    },
+  }
   pipeline["steps"] << {
     "label" => ":habicat::macos: Building Habitat package",
     "commands" => [
@@ -145,7 +145,33 @@ targets.each do |target|
       ],
       "timeout_in_minutes" => 120
     }
-  when /linux/
+  when /macos/
+    step = {
+      "label" => ":habicat::macos: #{platform}",
+      "key" => "validate-#{platform}",
+      "retry" => {
+        "automatic" => {
+          "limit" => 1
+        }
+      },
+      "agents" => {
+        "queue" => "default-macos-arm64-privileged"
+      },
+      "plugins" => {
+        "chef/anka#v0.7.2" => {
+          "vm-name" => "buildkite-core-14-arm64",
+          "always-pull" => true,
+          "wait-network" => true,
+          "inherit-environment-vars" => true
+        }
+      },
+      "commands" => [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-darwin",
+        "sudo -E ./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
+      ],
+      "timeout_in_minutes" => 120
+    }
+  else
     commands = [
       "sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux",
       "./.expeditor/scripts/validate_adhoc_build.sh x86_64-linux"
@@ -185,32 +211,6 @@ targets.each do |target|
         }
       },
       "commands" => commands,
-      "timeout_in_minutes" => 120
-    }
-  when /macos/
-    step = {
-      "label" => ":habicat::macos: #{platform}",
-      "key" => "validate-#{platform}",
-      # "retry" => {
-      #   "automatic" => {
-      #     "limit" => 1
-      #   }
-      # },
-      "agents" => {
-        "queue" => "default-macos-arm64-privileged"
-      },
-      "plugins" => {
-        "chef/anka#v0.7.2" => {
-          "vm-name" => "buildkite-core-14-arm64",
-          "always-pull" => true,
-          "wait-network" => true,
-          "inherit-environment-vars" => true
-        }
-      },
-      "commands" => [
-        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-darwin",
-        "sudo -E ./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
-      ],
       "timeout_in_minutes" => 120
     }
   end
