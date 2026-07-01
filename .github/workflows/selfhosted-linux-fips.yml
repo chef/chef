@@ -99,6 +99,8 @@ jobs:
           echo "========================================"
           echo ""
 
+          export CHEF_LICENSE_SERVER=$(cat "$GITHUB_WORKSPACE/.expeditor/scripts/chef_license_server_url.txt")
+
           sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client chef-client -z --chef-license accept
 
           # ============================================
