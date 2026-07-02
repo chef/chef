@@ -68,7 +68,7 @@ group(:development, :test) do
   gem "fauxhai-ng" # for chef-utils gem
 end
 
-gem "cookstyle", "~> 8.6"
+gem "cookstyle", "~> 8.7"
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
