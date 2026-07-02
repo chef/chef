@@ -83,6 +83,7 @@ artifact_channels:
   - current
   - stable
   - base-2025
+  - base
 
 subscriptions:
   # These actions are taken, in order they are specified, anytime a Pull Request is merged.
