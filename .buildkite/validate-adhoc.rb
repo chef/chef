@@ -37,9 +37,14 @@ win_targets = [
   "windows-2025:single-use-windows-2025"
 ]
 
+mac_targets = [
+  "macos-arm64:core-14-arm64"
+]
+
 # Update target list
 targets.concat(win_targets)
 targets.concat(arm_targets)
+targets.concat(mac_targets)
 
 pipeline = {
   "env" => {
@@ -75,6 +80,23 @@ if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release
       "queue" => "habitat-x86_64-windows"
     },
   }
+  pipeline["steps"] << {
+    "label" => ":habicat::macos: Building Habitat package",
+    "commands" => [
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-darwin"
+    ],
+    "agents" => {
+      "queue" => "default-macos-arm64-privileged"
+    },
+    "plugins" => {
+     "chef/anka#v0.7.2" => {
+        "vm-name" => "buildkite-core-14-arm64",
+        "always-pull" => true,
+        "wait-network" => true,
+        "inherit-environment-vars" => true
+      }
+    }
+  }
 else
   # nightly pipeline, get package from unstable.
 end
@@ -85,7 +107,8 @@ targets.each do |target|
   platform, queue_platform = target.split(":")
   step = {}
 
-  if platform.include?("windows")
+  case platform
+  when /windows/
     step = {
       "label" => ":mag::windows:#{platform}",
       "key" => "validate-#{platform}",
@@ -122,8 +145,37 @@ targets.each do |target|
       ],
       "timeout_in_minutes" => 120
     }
+  when /macos/
+    step = {
+      "label" => ":habicat::macos: #{platform}",
+      "key" => "validate-#{platform}",
+      "retry" => {
+        "automatic" => {
+          "limit" => 1
+        }
+      },
+      "agents" => {
+        "queue" => "default-macos-arm64-privileged"
+      },
+      "plugins" => {
+        "chef/anka#v0.7.2" => {
+          "vm-name" => "buildkite-core-14-arm64",
+          "always-pull" => true,
+          "wait-network" => true,
+          "inherit-environment-vars" => true
+        }
+      },
+      "commands" => [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-darwin",
+        "sudo -E ./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
+      ],
+      "timeout_in_minutes" => 120
+    }
   else
-    commands = ["sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux"]
+    commands = [
+      "sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux",
+      "./.expeditor/scripts/validate_adhoc_build.sh x86_64-linux"
+    ]
     agents = {
       "queue" => "default-privileged"
     }
@@ -131,11 +183,13 @@ targets.each do |target|
 
     if platform.include?("aarch64")
       base_platform = platform.sub("-aarch64", "")
-      commands = ["sudo -E ./.expeditor/scripts/install-hab.sh aarch64-linux"]
+      commands = [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-linux",
+        "./.expeditor/scripts/validate_adhoc_build.sh aarch64-linux"
+      ]
       agents["queue"] = "default-privileged-aarch64"
       docker_image = "chefes/omnibus-toolchain-#{base_platform}:aarch64"
     end
-    commands << "./.expeditor/scripts/validate_adhoc_build.sh"
 
     step = {
       "label" => ":mag::docker:#{platform}",
