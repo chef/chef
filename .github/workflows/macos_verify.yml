@@ -2,13 +2,15 @@
 name: macos_verify
 
 "on":
-  pull_request:
-    branches: [main, "chef-*"]
+  pull_request_target:
+    branches:
+      - main
   push:
-    branches: [main, "chef-*"]
+    branches:
+      - main
+  workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: macos-verify-${{ github.event.pull_request.number || github.run_id }}
@@ -20,11 +22,19 @@ env:
   FORCE_FFI_YAJL: ext
 
 jobs:
+  workflow_guard:
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
   # ──────────────────────────────────────────────────────────────────
   # Job 1: Integration tests (equivalent to
   #         prep_and_run_tests.sh Integration)
   # ──────────────────────────────────────────────────────────────────
   integration:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -35,6 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
           clean: true
 
       - uses: ruby/setup-ruby@v1
@@ -51,6 +63,9 @@ jobs:
   #         verify-plan.sh)
   # ──────────────────────────────────────────────────────────────────
   habitat-plan:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -67,6 +82,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
           clean: true
 
       - name: Install Habitat CLI
