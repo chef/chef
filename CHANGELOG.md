@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.3.44 -->
+## [v19.3.44](https://github.com/chef/chef/tree/v19.3.44) (2026-07-03)
 
 #### Merged Pull Requests
+- update macos workflow with pull request target [#16173](https://github.com/chef/chef/pull/16173) ([rishichawda](https://github.com/rishichawda))
 - promote to base alongside base-2025 [#15998](https://github.com/chef/chef/pull/15998) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update macos workflow with pull request target [#16173](https://github.com/chef/chef/pull/16173) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.44 -->
 - promote to base alongside base-2025 [#15998](https://github.com/chef/chef/pull/15998) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.43 -->
 - adhoc pipeline build for mac arm [#16130](https://github.com/chef/chef/pull/16130) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.43 -->
 - build aarch64-darwin plan and set up github workflows [#16115](https://github.com/chef/chef/pull/16115) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.42 -->
