@@ -33,7 +33,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           clean: true
 
@@ -65,7 +65,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
       HAB_NONINTERACTIVE: "true"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           clean: true
 

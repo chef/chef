@@ -50,7 +50,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -137,7 +137,7 @@ jobs:
   #     HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
   #   steps:
   #   - name: Checkout PR code
-  #     uses: actions/checkout@v6
+  #     uses: actions/checkout@v7
   #     with:
   #       ref: ${{ github.event.pull_request.head.sha }}
   #       persist-credentials: false
@@ -245,7 +245,7 @@ jobs:
   #     GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   #   steps:
   #     - name: Checkout PR code
-  #       uses: actions/checkout@v6
+  #       uses: actions/checkout@v7
   #       with:
   #         ref: ${{ github.event.pull_request.head.sha }}
   #         persist-credentials: false
@@ -297,7 +297,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -375,7 +375,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
@@ -439,7 +439,7 @@ jobs:
 #      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
 #    steps:
 #      - name: Checkout PR code
-#        uses: actions/checkout@v6
+#        uses: actions/checkout@v7
 #        with:
 #          ref: ${{ github.event.pull_request.head.sha }}
 #          persist-credentials: false
