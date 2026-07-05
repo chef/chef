@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.45 -->
-## [v19.3.45](https://github.com/chef/chef/tree/v19.3.45) (2026-07-05)
+<!-- latest_release 19.3.46 -->
+## [v19.3.46](https://github.com/chef/chef/tree/v19.3.46) (2026-07-05)
 
 #### Merged Pull Requests
-- Fix chronoguard: bump timeout a month [#16171](https://github.com/chef/chef/pull/16171) ([jaymzh](https://github.com/jaymzh))
+- Add a DangerJS check to prevent tests that depend on secrets [#16172](https://github.com/chef/chef/pull/16172) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add a DangerJS check to prevent tests that depend on secrets [#16172](https://github.com/chef/chef/pull/16172) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.46 -->
 - Fix chronoguard: bump timeout a month [#16171](https://github.com/chef/chef/pull/16171) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.45 -->
 - update macos workflow with pull request target [#16173](https://github.com/chef/chef/pull/16173) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.44 -->
 - promote to base alongside base-2025 [#15998](https://github.com/chef/chef/pull/15998) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.43 -->
