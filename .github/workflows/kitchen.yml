@@ -226,7 +226,7 @@ jobs:
 #      - name: Kitchen Test
 #        run: kitchen verify ${{ matrix.os }}
 #
-  # disabled due to no hab support for mac yet - fail-after:2026-07-01
+  # disabled due to no hab support for mac yet - fail-after:2026-08-01
   # mac_arm64:
   #   needs: workflow_guard
   #   permissions:
