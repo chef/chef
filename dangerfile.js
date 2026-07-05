@@ -167,6 +167,93 @@ These workflow changes are gated for manual approval — please review carefully
     }
 }
 
+// Recursively collect all ${{ secrets.X }} names from a parsed YAML value tree
+function collectSecretNames(obj, found = new Set()) {
+    if (typeof obj === 'string') {
+        for (const m of obj.matchAll(/\$\{\{\s*secrets\.(\w+)\s*\}\}/g)) {
+            found.add(m[1])
+        }
+    } else if (Array.isArray(obj)) {
+        for (const item of obj) collectSecretNames(item, found)
+    } else if (obj !== null && typeof obj === 'object') {
+        for (const val of Object.values(obj)) collectSecretNames(val, found)
+    }
+    return found
+}
+
+// Return true if the parsed `on:` value includes a bare `pull_request` trigger
+function triggersPullRequest(on) {
+    if (!on) return false
+    if (typeof on === 'string') return on === 'pull_request'
+    if (Array.isArray(on)) return on.includes('pull_request')
+    if (typeof on === 'object') return 'pull_request' in on
+    return false
+}
+
+// Check for secrets used in pull_request-triggered workflows
+async function checkWorkflowSecretsOnPullRequest() {
+    if (danger.github.pr.user.type === "Bot") {
+        return
+    }
+
+    const workflowFiles = [
+        ...danger.git.created_files,
+        ...danger.git.modified_files,
+    ].filter(f => f.startsWith(".github/workflows/") && f.endsWith(".yml"))
+
+    if (workflowFiles.length === 0) {
+        return
+    }
+
+    const yaml = require('js-yaml')
+    const api = danger.github.api
+    const owner = danger.github.thisPR.owner
+    const repo = danger.github.thisPR.repo
+    const ref = danger.github.pr.head.sha
+
+    for (const file of workflowFiles) {
+        let content
+        try {
+            const { data } = await api.repos.getContent({ owner, repo, path: file, ref })
+            content = Buffer.from(data.content, 'base64').toString('utf-8')
+        } catch (e) {
+            continue
+        }
+
+        let workflow
+        try {
+            workflow = yaml.load(content)
+        } catch (e) {
+            continue
+        }
+
+        if (!workflow || typeof workflow !== 'object') {
+            continue
+        }
+
+        // js-yaml 4.x (YAML 1.2): `on` key is a string → workflow['on']
+        // js-yaml 3.x (YAML 1.1): `on` is a boolean true → key coerces to workflow['true']
+        const triggers = workflow['on'] ?? workflow['true']
+        if (!triggersPullRequest(triggers)) {
+            continue
+        }
+
+        const allSecrets = collectSecretNames(workflow)
+        const badSecrets = [...allSecrets].filter(s => s !== 'GITHUB_TOKEN')
+
+        if (badSecrets.length > 0) {
+            const secretList = badSecrets.map(s => `\`${s}\``).join(', ')
+            fail(
+                `❌ \`${file}\` references secrets (${secretList}) in a \`pull_request\`-triggered workflow. ` +
+                `Secrets are not available to workflows triggered by \`pull_request\` events from forks, ` +
+                `so this will silently break CI for external contributors. ` +
+                `Use \`pull_request_target\` instead (carefully, following GitHub's security guidance), ` +
+                `or restructure the workflow to avoid requiring secrets on the \`pull_request\` trigger.`
+            )
+        }
+    }
+}
+
 // Check for chef gem version changes
 schedule(checkChefGemVersions())
 
@@ -175,3 +262,6 @@ schedule(checkPRDescription())
 
 // Remind reviewers about workflow changes
 schedule(stickyWorkflowChangeReminder)
+
+// Check for secrets in pull_request-triggered workflows
+schedule(checkWorkflowSecretsOnPullRequest())
