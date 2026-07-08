@@ -211,6 +211,7 @@ jobs:
             echo "--- SHA256 Log excerpt ---"
             tail -50 /tmp/chef-client-sha256.log
             echo "--- End SHA256 log ---"
+            exit 1
           fi
           echo ""
 
@@ -225,6 +226,7 @@ jobs:
             echo "--- SHA512 Log excerpt ---"
             tail -50 /tmp/chef-client-sha512.log
             echo "--- End SHA512 log ---"
+            exit 1
           fi
           echo ""
 
