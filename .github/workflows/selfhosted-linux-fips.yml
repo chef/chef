@@ -146,6 +146,28 @@ jobs:
           echo ""
 
           # ============================================
+          # Test 3: SHA512 (should SUCCEED in FIPS mode)
+          # ============================================
+          echo "--- Test 3: SHA512 Digest (should SUCCEED in FIPS mode) ---"
+          mkdir -p /tmp/test_cookbook_sha512/recipes
+          cat > /tmp/test_cookbook_sha512/recipes/default.rb << 'EOF'
+          file "/tmp/test_sha512" do
+            content lazy { OpenSSL::Digest::SHA512.hexdigest("test") }
+          end
+          EOF
+
+          sudo -E bash -c "
+            set -o pipefail
+            hab pkg exec $HAB_ORIGIN/chef-infra-client -- chef-client -z \
+              --config-option cookbook_path=/tmp \
+              -o test_cookbook_sha512 2>&1 | tee /tmp/chef-client-sha512.log
+            echo \$? > /tmp/chef-exit-code-sha512.txt
+          " || true
+
+          EXIT_CODE_SHA512=$(cat /tmp/chef-exit-code-sha512.txt)
+          echo ""
+
+          # ============================================
           # Evaluate Results
           # ============================================
           echo "========================================"
@@ -189,16 +211,30 @@ jobs:
             echo "--- SHA256 Log excerpt ---"
             tail -50 /tmp/chef-client-sha256.log
             echo "--- End SHA256 log ---"
-            exit 1
+          fi
+          echo ""
+
+          # Check Test 3: SHA512 should succeed
+          echo "Test 3 - SHA512 Result:"
+          if [ $EXIT_CODE_SHA512 -eq 0 ]; then
+            echo "*** PASS: SHA512 allowed by FIPS (exit code: $EXIT_CODE_SHA512) ***"
+            SHA512_TEST_PASSED=true
+          else
+            echo "*** FAIL: SHA512 failed (exit code: $EXIT_CODE_SHA512) - FIPS blocking approved algorithm ***"
+            echo ""
+            echo "--- SHA512 Log excerpt ---"
+            tail -50 /tmp/chef-client-sha512.log
+            echo "--- End SHA512 log ---"
           fi
           echo ""
 
           # Final summary
-          if [ "$MD5_TEST_PASSED" = true ] && [ "$SHA256_TEST_PASSED" = true ]; then
+          if [ "$MD5_TEST_PASSED" = true ] && [ "$SHA256_TEST_PASSED" = true ] && [ "$SHA512_TEST_PASSED" = true ]; then
             echo "========================================"
             echo "*** ALL TESTS PASSED: FIPS mode is correctly enforced ***"
             echo "   - MD5 blocked ✓"
             echo "   - SHA256 allowed ✓"
+            echo "   - SHA512 allowed ✓"
             echo "========================================"
             exit 0
           else
@@ -215,8 +251,8 @@ jobs:
           echo "=== Cleaning up test artifacts ==="
 
           # Remove test cookbooks and files
-          sudo rm -rf /tmp/test_cookbook_md5 /tmp/test_cookbook_sha256
-          sudo rm -f /tmp/test_md5 /tmp/test_sha256
+          sudo rm -rf /tmp/test_cookbook_md5 /tmp/test_cookbook_sha256 /tmp/test_cookbook_sha512
+          sudo rm -f /tmp/test_md5 /tmp/test_sha256 /tmp/test_sha512
           sudo rm -f /tmp/chef-client-*.log
           sudo rm -f /tmp/chef-exit-code-*.txt
           sudo rm -f /tmp/client.rb
