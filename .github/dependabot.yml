@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "bundler"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    ignore:
+      # ffi >= 1.17 requires glibc 2.17+ which drops Amazon Linux 2, CentOS 7,
+      # Debian 9, Ubuntu 16.04, and SLES 12.5 — all still supported on chef-18.
+      # See: https://github.com/chef/chef/pull/16163
+      # ponytail: revisit when those platforms are removed from chef-18 support matrix
+      - dependency-name: "ffi"
+        versions: [">= 1.17.0"]
