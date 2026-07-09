@@ -8,6 +8,8 @@ name: windows-fips
   push:
     branches:
       - main
+  # Allows manual workflow testing without having to merge code to main where pull_request_target is used
+  workflow_dispatch:
 
 permissions: {}
 
