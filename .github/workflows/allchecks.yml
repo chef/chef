@@ -15,3 +15,5 @@ jobs:
           # Retry every minute for 30 minutes...
           retries: 90
           verbose: true
+          # ponytail: fail-after:2026-07-22 — self-hosted FIPS runner is intermittently unavailable; re-enable once runner is stable
+          checks_exclude: ".*linux-fips.*"
