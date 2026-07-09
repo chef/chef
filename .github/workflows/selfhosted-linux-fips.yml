@@ -25,7 +25,7 @@ jobs:
     permissions:
       contents: read
 
-  linux:
+  linux-fips:
     needs: workflow_guard
     permissions:
       contents: read
