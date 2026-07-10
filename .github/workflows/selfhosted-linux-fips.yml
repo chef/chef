@@ -52,6 +52,7 @@ jobs:
       - name: Checkout trusted code only
         uses: actions/checkout@v7
         with:
+          allow-unsafe-pr-checkout: true
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.sha || github.sha }}
           persist-credentials: false
           clean: false
