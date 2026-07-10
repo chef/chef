@@ -21,6 +21,7 @@ jobs:
       - name: Checkout base branch
         uses: actions/checkout@v7
         with:
+          allow-unsafe-pr-checkout: true
           ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
           clean: true
