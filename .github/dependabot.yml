@@ -15,6 +15,11 @@ updates:
     # don't automatically rebase on every single time we're out of date with
     # base (whith is always) because it kills CI capacity
     rebase-strategy: disabled
+    groups:
+      aws:
+        patterns: ["aws-sdk-*"]
+      train:
+        patterns: ["train-*"]
 
   - package-ecosystem: bundler
     directory: "/"
@@ -24,6 +29,14 @@ updates:
     open-pull-requests-limit: 20
     labels:
       - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+    groups:
+      aws:
+        patterns: ["aws-sdk-*"]
+      train:
+        patterns: ["train-*"]
     ignore:
         # Due to FIPS builds and having to couple the openssl
         # build itself, we don't let dependabot bump openssl
@@ -42,9 +55,6 @@ updates:
         # on aws-sdk-s3 < 1.219 (see PR #15952) for Chef-18
         dependency-name: "aws-sdk-s3"
         versions: [">= 1.219.0"]
-    # don't automatically rebase on every single time we're out of date with
-    # base (whith is always) because it kills CI capacity
-    rebase-strategy: disabled
 
   - package-ecosystem: bundler
     directory: "/omnibus"
@@ -69,6 +79,10 @@ updates:
     # don't automatically rebase on every single time we're out of date with
     # base (whith is always) because it kills CI capacity
     rebase-strategy: disabled
+    groups:
+      all-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: github-actions
     directory: "/"
@@ -81,3 +95,7 @@ updates:
     # don't automatically rebase on every single time we're out of date with
     # base (whith is always) because it kills CI capacity
     rebase-strategy: disabled
+    groups:
+      all-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
