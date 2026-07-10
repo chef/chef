@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.52 -->
-## [v19.3.52](https://github.com/chef/chef/tree/v19.3.52) (2026-07-10)
+<!-- latest_release 19.3.53 -->
+## [v19.3.53](https://github.com/chef/chef/tree/v19.3.53) (2026-07-10)
 
 #### Merged Pull Requests
-- Bump ohai from `f96614f` to `b703336` [#16140](https://github.com/chef/chef/pull/16140) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16145](https://github.com/chef/chef/pull/16145) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16145](https://github.com/chef/chef/pull/16145) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.53 -->
 - Bump ohai from `f96614f` to `b703336` [#16140](https://github.com/chef/chef/pull/16140) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.52 -->
 - Bump actions/checkout from 6 to 7 [#16126](https://github.com/chef/chef/pull/16126) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.51 -->
 - Update linux-fips name [#16185](https://github.com/chef/chef/pull/16185) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.50 -->
