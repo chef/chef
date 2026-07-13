@@ -1,125 +1,123 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.11 -->
-## [v18.11.11](https://github.com/chef/chef/tree/v18.11.11) (2026-07-10)
-
-#### Merged Pull Requests
-- Bump omnibus submodule to include msys-openssl removal fix [#16192](https://github.com/chef/chef/pull/16192) ([neha-p6](https://github.com/neha-p6))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=18.10.17 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump omnibus submodule to include msys-openssl removal fix [#16192](https://github.com/chef/chef/pull/16192) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.11 -->
-- Bump actions/labeler from 6.1.0 to 6.2.0 [#16186](https://github.com/chef/chef/pull/16186) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.10 -->
-- Suppress future dependabot ffi &gt;= 1.17 on chef-18 [#16175](https://github.com/chef/chef/pull/16175) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.9 -->
-- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5&quot; [#16181](https://github.com/chef/chef/pull/16181) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.8 -->
-- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#16167](https://github.com/chef/chef/pull/16167) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.7 -->
-- update notice file with latest content [#16169](https://github.com/chef/chef/pull/16169) ([rishichawda](https://github.com/rishichawda)) <!-- 18.11.6 -->
-- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5&quot; [#16163](https://github.com/chef/chef/pull/16163) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.5 -->
-- Updating chef version for Blackduck [#16156](https://github.com/chef/chef/pull/16156) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.4 -->
-- [CVE] Bump faraday to 2.14.3 [#16154](https://github.com/chef/chef/pull/16154) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.4 -->
-- Bump chef-vault from 4.2.9 to 4.2.12 [#16129](https://github.com/chef/chef/pull/16129) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.3 -->
-- Bump concurrent-ruby from 1.3.6 to 1.3.7 [#16114](https://github.com/chef/chef/pull/16114) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.2 -->
-- Adding Windows github fips testers [#16136](https://github.com/chef/chef/pull/16136) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.1 -->
-- Updating minor version and blackduck [#16146](https://github.com/chef/chef/pull/16146) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.1 -->
-- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16144](https://github.com/chef/chef/pull/16144) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.0 -->
-- Updating version for blackduck [#16143](https://github.com/chef/chef/pull/16143) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.107 -->
-- Updating inspec to latest version [#16142](https://github.com/chef/chef/pull/16142) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.107 -->
-- [chef-18] backport chef resource sensitive flag fix [#16138](https://github.com/chef/chef/pull/16138) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.106 -->
-- [chef-18] backport archive_file path traversal fix [#16119](https://github.com/chef/chef/pull/16119) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.105 -->
-- Bump actions/checkout from 6 to 7 [#16125](https://github.com/chef/chef/pull/16125) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.104 -->
-- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#16100](https://github.com/chef/chef/pull/16100) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.103 -->
-- Bump train-core from 3.16.3 to 3.16.5 [#16103](https://github.com/chef/chef/pull/16103) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.102 -->
-- Bump danger/danger-js from 13.0.5 to 13.0.8 [#16124](https://github.com/chef/chef/pull/16124) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.101 -->
-- Re-add AIX support for Chef 18 omnibus builds [#16109](https://github.com/chef/chef/pull/16109) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.100 -->
-- fix: add git safe.directory to habitat linux plan do_download [#16121](https://github.com/chef/chef/pull/16121) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.99 -->
-- [BACKPORT] Removing Chef-PowerShell from Habitat [#16092](https://github.com/chef/chef/pull/16092) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.98 -->
-- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5… [#16096](https://github.com/chef/chef/pull/16096) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.97 -->
-- [CHEF-18] CHEF-32929: Fix intermittent NoMethodError in authenticator retrieve_certificate_key on Windows [#16076](https://github.com/chef/chef/pull/16076) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.96 -->
-- [Chef 18] CHEF-14144: Limit excessive output from template errors (#16073) [#16087](https://github.com/chef/chef/pull/16087) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.95 -->
-- [chef-18] Disable chrony kitchen test for Rocky Linux 10 [#16084](https://github.com/chef/chef/pull/16084) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.94 -->
-- Update uuidtools requirement from &gt;= 2.1.5, &lt; 3.0 to &gt;= 2.1.5, &lt; 4.0 [#16056](https://github.com/chef/chef/pull/16056) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.93 -->
-- Bump chef-zero from 15.1.0 to 15.1.11 [#16057](https://github.com/chef/chef/pull/16057) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.92 -->
-- Bump actions/labeler from 6.0.1 to 6.1.0 [#15990](https://github.com/chef/chef/pull/15990) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.91 -->
-- Updating Rack via Chef-Zero [#16054](https://github.com/chef/chef/pull/16054) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.90 -->
-- [chef-18] Added directory_specs and client_rb_mode properties to the chef_client_config resource [#16025](https://github.com/chef/chef/pull/16025) ([LoboDorado](https://github.com/LoboDorado)) <!-- 18.10.89 -->
-- [chef-18] Backport AlmaLinux 10 chrony exemption [#16032](https://github.com/chef/chef/pull/16032) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.88 -->
-- Document CVE PR label requirements [chef-18] [#16034](https://github.com/chef/chef/pull/16034) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.87 -->
-- Bump train-core from 3.16.2 to 3.16.3 [#15976](https://github.com/chef/chef/pull/15976) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.86 -->
-- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#15969](https://github.com/chef/chef/pull/15969) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.85 -->
-- Community omnibus [#16008](https://github.com/chef/chef/pull/16008) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.84 -->
-- [chef-18] [package] Backport: Add DNF5 support to the dnf_package provider [#16007](https://github.com/chef/chef/pull/16007) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.83 -->
-- Update ffi-yajl requirement from ~&gt; 2.2 to &gt;= 2.2, &lt; 4.0 [#16013](https://github.com/chef/chef/pull/16013) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.82 -->
-- [Backport chef-18] Fix: Compliance Phase runs twice when reboot is scheduled during Chef Infra Client run [#15997](https://github.com/chef/chef/pull/15997) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.81 -->
-- fix(kitchen-tests): fix nscd and git cookbook failures [#16010](https://github.com/chef/chef/pull/16010) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.80 -->
-- Removing Kernel 2 support from Testing [#15973](https://github.com/chef/chef/pull/15973) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.79 -->
-- Remove unused dependabot config on chef-18 [#15968](https://github.com/chef/chef/pull/15968) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.78 -->
-- [Chef-18 backport][dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15971](https://github.com/chef/chef/pull/15971) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.77 -->
-- [backport] [chef-18] fix intermittent failures on trusted certs test [#15961](https://github.com/chef/chef/pull/15961) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.76 -->
-- [chef-18 backport] Correcting the Rest Resource [#15970](https://github.com/chef/chef/pull/15970) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.75 -->
-- [chef-18] Lock to specific version of aws-sdk-s3 to keep C7 compat [#15966](https://github.com/chef/chef/pull/15966) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.74 -->
-- Bump ohai from `2b30698` to `31b00ef` [#15965](https://github.com/chef/chef/pull/15965) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.73 -->
-- keyboard bug in reline 0.3.1 [#15963](https://github.com/chef/chef/pull/15963) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.72 -->
-- Bump rake from 13.3.1 to 13.4.2 [#15907](https://github.com/chef/chef/pull/15907) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.71 -->
-- Bump ohai from `7a4e10c` to `2b30698` [#15951](https://github.com/chef/chef/pull/15951) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.70 -->
-- Bump train-core from 3.16.1 to 3.16.2 [#15930](https://github.com/chef/chef/pull/15930) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.69 -->
-- Bump actions/checkout from 5 to 6 [#15954](https://github.com/chef/chef/pull/15954) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.68 -->
-- [chef-18] Lock Gemfile to pry-byebug 3.11 [#15944](https://github.com/chef/chef/pull/15944) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.67 -->
-- Backporting sugarjar config to chef-18 [#15946](https://github.com/chef/chef/pull/15946) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.66 -->
-- Bump wechuli/allcheckspassed from 1 to 2 [#15956](https://github.com/chef/chef/pull/15956) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.65 -->
-- Upgrade the GH labeler - backport to chef-18 [#15960](https://github.com/chef/chef/pull/15960) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.64 -->
-- Bump danger/danger-js from 11.3.1 to 13.0.5 [#15959](https://github.com/chef/chef/pull/15959) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.63 -->
-- Bump streetsidesoftware/cspell-action from 2.12.0 to 8.4.0 [#15955](https://github.com/chef/chef/pull/15955) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.62 -->
-- backport CODEOWNERS changes to chef-18 [#15948](https://github.com/chef/chef/pull/15948) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.61 -->
-- [chef-18] Backport: Don&#39;t waste buildkite time on github-only changes [#15949](https://github.com/chef/chef/pull/15949) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.60 -->
-- Remove code climate from chef-18 [#15939](https://github.com/chef/chef/pull/15939) ([stringsn88keys](https://github.com/stringsn88keys)) <!-- 18.10.59 -->
-- Omnibus privatization submodule [#15659](https://github.com/chef/chef/pull/15659) ([poorndm](https://github.com/poorndm)) <!-- 18.10.58 -->
-- Fixing download bug [#15925](https://github.com/chef/chef/pull/15925) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.57 -->
-- [backport] Fix fedora-42 and opensuse-leap-15 CI failures (cherry-pick from #15902) [#15932](https://github.com/chef/chef/pull/15932) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.56 -->
-- [backport] Pin ntp and openssh cookbook versions to prevent CI breakage [#15931](https://github.com/chef/chef/pull/15931) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.55 -->
-- Bump pry-stack_explorer from 0.6.2 to 0.6.3 [#15877](https://github.com/chef/chef/pull/15877) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.54 -->
-- Revert &quot;Bump tomlrb from 1.3.0 to 2.0.4&quot; [#15857](https://github.com/chef/chef/pull/15857) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.10.53 -->
-- [chef18]Remove msys installed openssl on windows [#15863](https://github.com/chef/chef/pull/15863) ([neha-p6](https://github.com/neha-p6)) <!-- 18.10.52 -->
-- Lock some versions for chef-18 [#15858](https://github.com/chef/chef/pull/15858) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.51 -->
-- Bump tomlrb from 1.3.0 to 2.0.4 [#15808](https://github.com/chef/chef/pull/15808) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.50 -->
-- Updating for CVE-2025-14762 [#15848](https://github.com/chef/chef/pull/15848) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.49 -->
-- [chef-18] update rack to 3.2.6 [#15854](https://github.com/chef/chef/pull/15854) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.48 -->
-- Bump addressable from 2.8.7 to 2.8.9 [#15819](https://github.com/chef/chef/pull/15819) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.47 -->
-- Update diff-lcs requirement from &gt;= 1.2.4, != 1.4.0, &lt; 1.6.0 to &gt;= 1.2.4, != 1.4.0, &lt; 2.1.0 [#15826](https://github.com/chef/chef/pull/15826) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.46 -->
-- [chef-18] Fix invalid TOML in unittest [#15841](https://github.com/chef/chef/pull/15841) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.45 -->
-- Disable Expeditor gem bumps on chef-18 [#15843](https://github.com/chef/chef/pull/15843) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.44 -->
-- Bump pry-stack_explorer from 0.6.1 to 0.6.2 [#15830](https://github.com/chef/chef/pull/15830) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.43 -->
-- Bump cookstyle from 8.6.4 to 8.6.10 [#15810](https://github.com/chef/chef/pull/15810) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.42 -->
-- Bump aws-sdk-secretsmanager from 1.128.0 to 1.129.0 [#15807](https://github.com/chef/chef/pull/15807) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.41 -->
-- Bump net-ssh from 7.3.0 to 7.3.2 [#15818](https://github.com/chef/chef/pull/15818) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.40 -->
-- Update inspec-core requirement from &gt;= 5, &lt; 6 to &gt;= 5, &lt; 8 [#15814](https://github.com/chef/chef/pull/15814) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.39 -->
-- Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15804](https://github.com/chef/chef/pull/15804) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.38 -->
-- Bump ohai from `73fcb7e` to `7a4e10c` [#15805](https://github.com/chef/chef/pull/15805) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.37 -->
-- Update unf_ext requirement from ~&gt; 0.0.8.2 to &gt;= 0.0.8.2, &lt; 0.0.10.0 [#15816](https://github.com/chef/chef/pull/15816) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.36 -->
-- Bump webmock from 3.26.1 to 3.26.2 [#15809](https://github.com/chef/chef/pull/15809) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.35 -->
-- Bump aws-sdk-s3 from 1.213.0 to 1.218.0 [#15832](https://github.com/chef/chef/pull/15832) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.34 -->
-- Bump crack from 0.4.5 to 1.0.1 [#15828](https://github.com/chef/chef/pull/15828) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.33 -->
-- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15829](https://github.com/chef/chef/pull/15829) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.32 -->
-- Update highline requirement from &gt;= 1.6.9, &lt; 3 to &gt;= 1.6.9, &lt; 4 [#15831](https://github.com/chef/chef/pull/15831) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.31 -->
-- Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15802](https://github.com/chef/chef/pull/15802) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.30 -->
-- Bump pry from 0.13.0 to 0.15.2 [#15801](https://github.com/chef/chef/pull/15801) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.29 -->
-- Backport dependabot fixes to chef-18 [#15789](https://github.com/chef/chef/pull/15789) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.28 -->
-- [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.10.27 -->
-- Bump test-kitchen from 3.7.0 to 4.0.0 in /omnibus [#15759](https://github.com/chef/chef/pull/15759) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.10.26 -->
-- [backport] Fix bad platform_family matches [#15742](https://github.com/chef/chef/pull/15742) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.25 -->
-- [chef-18] Backport Actions DCO check to 18 [#15750](https://github.com/chef/chef/pull/15750) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.24 -->
-- Fix Chef-18 CI [#15743](https://github.com/chef/chef/pull/15743) ([jaymzh](https://github.com/jaymzh)) <!-- 18.10.23 -->
-- Updating the github workflow actions [#15734](https://github.com/chef/chef/pull/15734) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.22 -->
-- [backport][chef-18] add a recipe for chrony [#15739](https://github.com/chef/chef/pull/15739) ([rishichawda](https://github.com/rishichawda)) <!-- 18.10.21 -->
-- habitat version pin [#15736](https://github.com/chef/chef/pull/15736) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.10.20 -->
-- Remove release notes actions from Chef 18 [#15546](https://github.com/chef/chef/pull/15546) ([IanMadd](https://github.com/IanMadd)) <!-- 18.10.19 -->
-- Updated train-winrm train-core and chef to latest release for upcoming Knife 18.x release [#15671](https://github.com/chef/chef/pull/15671) ([nikhil2611](https://github.com/nikhil2611)) <!-- 18.10.18 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v18.11.11](https://github.com/chef/chef/tree/v18.11.11) (2026-07-13)
+
+#### Merged Pull Requests
+- Updated train-winrm train-core and chef to latest release for upcoming Knife 18.x release [#15671](https://github.com/chef/chef/pull/15671) ([nikhil2611](https://github.com/nikhil2611))
+- Remove release notes actions from Chef 18 [#15546](https://github.com/chef/chef/pull/15546) ([IanMadd](https://github.com/IanMadd))
+- habitat version pin [#15736](https://github.com/chef/chef/pull/15736) ([johnmccrae](https://github.com/johnmccrae))
+- [backport][chef-18] add a recipe for chrony [#15739](https://github.com/chef/chef/pull/15739) ([rishichawda](https://github.com/rishichawda))
+- Updating the github workflow actions [#15734](https://github.com/chef/chef/pull/15734) ([johnmccrae](https://github.com/johnmccrae))
+- Fix Chef-18 CI [#15743](https://github.com/chef/chef/pull/15743) ([jaymzh](https://github.com/jaymzh))
+- [chef-18] Backport Actions DCO check to 18 [#15750](https://github.com/chef/chef/pull/15750) ([jaymzh](https://github.com/jaymzh))
+- [backport] Fix bad platform_family matches [#15742](https://github.com/chef/chef/pull/15742) ([jaymzh](https://github.com/jaymzh))
+- Bump test-kitchen from 3.7.0 to 4.0.0 in /omnibus [#15759](https://github.com/chef/chef/pull/15759) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef18][file] Only evaluate lazy block once for content [#15715](https://github.com/chef/chef/pull/15715) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Backport dependabot fixes to chef-18 [#15789](https://github.com/chef/chef/pull/15789) ([jaymzh](https://github.com/jaymzh))
+- Bump pry from 0.13.0 to 0.15.2 [#15801](https://github.com/chef/chef/pull/15801) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update vault requirement from ~&gt; 0.18.2 to &gt;= 0.18.2, &lt; 0.21.0 [#15802](https://github.com/chef/chef/pull/15802) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update highline requirement from &gt;= 1.6.9, &lt; 3 to &gt;= 1.6.9, &lt; 4 [#15831](https://github.com/chef/chef/pull/15831) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update win32-eventlog requirement from = 0.6.3 to = 0.6.7 [#15829](https://github.com/chef/chef/pull/15829) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump crack from 0.4.5 to 1.0.1 [#15828](https://github.com/chef/chef/pull/15828) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump aws-sdk-s3 from 1.213.0 to 1.218.0 [#15832](https://github.com/chef/chef/pull/15832) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump webmock from 3.26.1 to 3.26.2 [#15809](https://github.com/chef/chef/pull/15809) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update unf_ext requirement from ~&gt; 0.0.8.2 to &gt;= 0.0.8.2, &lt; 0.0.10.0 [#15816](https://github.com/chef/chef/pull/15816) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ohai from `73fcb7e` to `7a4e10c` [#15805](https://github.com/chef/chef/pull/15805) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update uri requirement from ~&gt; 1.0.4 to &gt;= 1.0.4, &lt; 1.2.0 [#15804](https://github.com/chef/chef/pull/15804) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update inspec-core requirement from &gt;= 5, &lt; 6 to &gt;= 5, &lt; 8 [#15814](https://github.com/chef/chef/pull/15814) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump net-ssh from 7.3.0 to 7.3.2 [#15818](https://github.com/chef/chef/pull/15818) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump aws-sdk-secretsmanager from 1.128.0 to 1.129.0 [#15807](https://github.com/chef/chef/pull/15807) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump cookstyle from 8.6.4 to 8.6.10 [#15810](https://github.com/chef/chef/pull/15810) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump pry-stack_explorer from 0.6.1 to 0.6.2 [#15830](https://github.com/chef/chef/pull/15830) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Disable Expeditor gem bumps on chef-18 [#15843](https://github.com/chef/chef/pull/15843) ([jaymzh](https://github.com/jaymzh))
+- [chef-18] Fix invalid TOML in unittest [#15841](https://github.com/chef/chef/pull/15841) ([jaymzh](https://github.com/jaymzh))
+- Update diff-lcs requirement from &gt;= 1.2.4, != 1.4.0, &lt; 1.6.0 to &gt;= 1.2.4, != 1.4.0, &lt; 2.1.0 [#15826](https://github.com/chef/chef/pull/15826) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump addressable from 2.8.7 to 2.8.9 [#15819](https://github.com/chef/chef/pull/15819) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-18] update rack to 3.2.6 [#15854](https://github.com/chef/chef/pull/15854) ([rishichawda](https://github.com/rishichawda))
+- Updating for CVE-2025-14762 [#15848](https://github.com/chef/chef/pull/15848) ([johnmccrae](https://github.com/johnmccrae))
+- Bump tomlrb from 1.3.0 to 2.0.4 [#15808](https://github.com/chef/chef/pull/15808) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Lock some versions for chef-18 [#15858](https://github.com/chef/chef/pull/15858) ([jaymzh](https://github.com/jaymzh))
+- [chef18]Remove msys installed openssl on windows [#15863](https://github.com/chef/chef/pull/15863) ([neha-p6](https://github.com/neha-p6))
+- Revert &quot;Bump tomlrb from 1.3.0 to 2.0.4&quot; [#15857](https://github.com/chef/chef/pull/15857) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump pry-stack_explorer from 0.6.2 to 0.6.3 [#15877](https://github.com/chef/chef/pull/15877) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [backport] Pin ntp and openssh cookbook versions to prevent CI breakage [#15931](https://github.com/chef/chef/pull/15931) ([johnmccrae](https://github.com/johnmccrae))
+- [backport] Fix fedora-42 and opensuse-leap-15 CI failures (cherry-pick from #15902) [#15932](https://github.com/chef/chef/pull/15932) ([johnmccrae](https://github.com/johnmccrae))
+- Fixing download bug [#15925](https://github.com/chef/chef/pull/15925) ([johnmccrae](https://github.com/johnmccrae))
+- Omnibus privatization submodule [#15659](https://github.com/chef/chef/pull/15659) ([poorndm](https://github.com/poorndm))
+- Remove code climate from chef-18 [#15939](https://github.com/chef/chef/pull/15939) ([stringsn88keys](https://github.com/stringsn88keys))
+- [chef-18] Backport: Don&#39;t waste buildkite time on github-only changes [#15949](https://github.com/chef/chef/pull/15949) ([jaymzh](https://github.com/jaymzh))
+- backport CODEOWNERS changes to chef-18 [#15948](https://github.com/chef/chef/pull/15948) ([jaymzh](https://github.com/jaymzh))
+- Bump streetsidesoftware/cspell-action from 2.12.0 to 8.4.0 [#15955](https://github.com/chef/chef/pull/15955) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump danger/danger-js from 11.3.1 to 13.0.5 [#15959](https://github.com/chef/chef/pull/15959) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Upgrade the GH labeler - backport to chef-18 [#15960](https://github.com/chef/chef/pull/15960) ([jaymzh](https://github.com/jaymzh))
+- Bump wechuli/allcheckspassed from 1 to 2 [#15956](https://github.com/chef/chef/pull/15956) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Backporting sugarjar config to chef-18 [#15946](https://github.com/chef/chef/pull/15946) ([jaymzh](https://github.com/jaymzh))
+- [chef-18] Lock Gemfile to pry-byebug 3.11 [#15944](https://github.com/chef/chef/pull/15944) ([jaymzh](https://github.com/jaymzh))
+- Bump actions/checkout from 5 to 6 [#15954](https://github.com/chef/chef/pull/15954) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core from 3.16.1 to 3.16.2 [#15930](https://github.com/chef/chef/pull/15930) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ohai from `7a4e10c` to `2b30698` [#15951](https://github.com/chef/chef/pull/15951) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump rake from 13.3.1 to 13.4.2 [#15907](https://github.com/chef/chef/pull/15907) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- keyboard bug in reline 0.3.1 [#15963](https://github.com/chef/chef/pull/15963) ([johnmccrae](https://github.com/johnmccrae))
+- Bump ohai from `2b30698` to `31b00ef` [#15965](https://github.com/chef/chef/pull/15965) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-18] Lock to specific version of aws-sdk-s3 to keep C7 compat [#15966](https://github.com/chef/chef/pull/15966) ([jaymzh](https://github.com/jaymzh))
+- [chef-18 backport] Correcting the Rest Resource [#15970](https://github.com/chef/chef/pull/15970) ([neha-p6](https://github.com/neha-p6))
+- [backport] [chef-18] fix intermittent failures on trusted certs test [#15961](https://github.com/chef/chef/pull/15961) ([rishichawda](https://github.com/rishichawda))
+- [Chef-18 backport][dnf/python_helper] Optimize dnf_command to reduce shell_outs [#15971](https://github.com/chef/chef/pull/15971) ([neha-p6](https://github.com/neha-p6))
+- Remove unused dependabot config on chef-18 [#15968](https://github.com/chef/chef/pull/15968) ([jaymzh](https://github.com/jaymzh))
+- Removing Kernel 2 support from Testing [#15973](https://github.com/chef/chef/pull/15973) ([johnmccrae](https://github.com/johnmccrae))
+- fix(kitchen-tests): fix nscd and git cookbook failures [#16010](https://github.com/chef/chef/pull/16010) ([johnmccrae](https://github.com/johnmccrae))
+- [Backport chef-18] Fix: Compliance Phase runs twice when reboot is scheduled during Chef Infra Client run [#15997](https://github.com/chef/chef/pull/15997) ([johnmccrae](https://github.com/johnmccrae))
+- Update ffi-yajl requirement from ~&gt; 2.2 to &gt;= 2.2, &lt; 4.0 [#16013](https://github.com/chef/chef/pull/16013) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-18] [package] Backport: Add DNF5 support to the dnf_package provider [#16007](https://github.com/chef/chef/pull/16007) ([jaymzh](https://github.com/jaymzh))
+- Community omnibus [#16008](https://github.com/chef/chef/pull/16008) ([tpowell-progress](https://github.com/tpowell-progress))
+- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#15969](https://github.com/chef/chef/pull/15969) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core from 3.16.2 to 3.16.3 [#15976](https://github.com/chef/chef/pull/15976) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Document CVE PR label requirements [chef-18] [#16034](https://github.com/chef/chef/pull/16034) ([tpowell-progress](https://github.com/tpowell-progress))
+- [chef-18] Backport AlmaLinux 10 chrony exemption [#16032](https://github.com/chef/chef/pull/16032) ([tpowell-progress](https://github.com/tpowell-progress))
+- [chef-18] Added directory_specs and client_rb_mode properties to the chef_client_config resource [#16025](https://github.com/chef/chef/pull/16025) ([LoboDorado](https://github.com/LoboDorado))
+- Updating Rack via Chef-Zero [#16054](https://github.com/chef/chef/pull/16054) ([johnmccrae](https://github.com/johnmccrae))
+- Bump actions/labeler from 6.0.1 to 6.1.0 [#15990](https://github.com/chef/chef/pull/15990) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump chef-zero from 15.1.0 to 15.1.11 [#16057](https://github.com/chef/chef/pull/16057) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update uuidtools requirement from &gt;= 2.1.5, &lt; 3.0 to &gt;= 2.1.5, &lt; 4.0 [#16056](https://github.com/chef/chef/pull/16056) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-18] Disable chrony kitchen test for Rocky Linux 10 [#16084](https://github.com/chef/chef/pull/16084) ([tpowell-progress](https://github.com/tpowell-progress))
+- [Chef 18] CHEF-14144: Limit excessive output from template errors (#16073) [#16087](https://github.com/chef/chef/pull/16087) ([tpowell-progress](https://github.com/tpowell-progress))
+- [CHEF-18] CHEF-32929: Fix intermittent NoMethodError in authenticator retrieve_certificate_key on Windows [#16076](https://github.com/chef/chef/pull/16076) ([neha-p6](https://github.com/neha-p6))
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5… [#16096](https://github.com/chef/chef/pull/16096) ([tpowell-progress](https://github.com/tpowell-progress))
+- [BACKPORT] Removing Chef-PowerShell from Habitat [#16092](https://github.com/chef/chef/pull/16092) ([johnmccrae](https://github.com/johnmccrae))
+- fix: add git safe.directory to habitat linux plan do_download [#16121](https://github.com/chef/chef/pull/16121) ([neha-p6](https://github.com/neha-p6))
+- Re-add AIX support for Chef 18 omnibus builds [#16109](https://github.com/chef/chef/pull/16109) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump danger/danger-js from 13.0.5 to 13.0.8 [#16124](https://github.com/chef/chef/pull/16124) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump train-core from 3.16.3 to 3.16.5 [#16103](https://github.com/chef/chef/pull/16103) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#16100](https://github.com/chef/chef/pull/16100) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/checkout from 6 to 7 [#16125](https://github.com/chef/chef/pull/16125) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [chef-18] backport archive_file path traversal fix [#16119](https://github.com/chef/chef/pull/16119) ([rishichawda](https://github.com/rishichawda))
+- [chef-18] backport chef resource sensitive flag fix [#16138](https://github.com/chef/chef/pull/16138) ([rishichawda](https://github.com/rishichawda))
+- Updating inspec to latest version [#16142](https://github.com/chef/chef/pull/16142) ([johnmccrae](https://github.com/johnmccrae))
+- Updating version for blackduck [#16143](https://github.com/chef/chef/pull/16143) ([johnmccrae](https://github.com/johnmccrae))
+- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16144](https://github.com/chef/chef/pull/16144) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Updating minor version and blackduck [#16146](https://github.com/chef/chef/pull/16146) ([johnmccrae](https://github.com/johnmccrae))
+- Adding Windows github fips testers [#16136](https://github.com/chef/chef/pull/16136) ([johnmccrae](https://github.com/johnmccrae))
+- Bump concurrent-ruby from 1.3.6 to 1.3.7 [#16114](https://github.com/chef/chef/pull/16114) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump chef-vault from 4.2.9 to 4.2.12 [#16129](https://github.com/chef/chef/pull/16129) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- [CVE] Bump faraday to 2.14.3 [#16154](https://github.com/chef/chef/pull/16154) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating chef version for Blackduck [#16156](https://github.com/chef/chef/pull/16156) ([johnmccrae](https://github.com/johnmccrae))
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5&quot; [#16163](https://github.com/chef/chef/pull/16163) ([tpowell-progress](https://github.com/tpowell-progress))
+- update notice file with latest content [#16169](https://github.com/chef/chef/pull/16169) ([rishichawda](https://github.com/rishichawda))
+- Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5 [#16167](https://github.com/chef/chef/pull/16167) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Revert &quot;Update ffi requirement from &gt;= 1.15.5, &lt;= 1.16.3 to &gt;= 1.15.5, &lt;= 1.17.5&quot; [#16181](https://github.com/chef/chef/pull/16181) ([johnmccrae](https://github.com/johnmccrae))
+- Suppress future dependabot ffi &gt;= 1.17 on chef-18 [#16175](https://github.com/chef/chef/pull/16175) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump actions/labeler from 6.1.0 to 6.2.0 [#16186](https://github.com/chef/chef/pull/16186) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump omnibus submodule to include msys-openssl removal fix [#16192](https://github.com/chef/chef/pull/16192) ([neha-p6](https://github.com/neha-p6))
+<!-- latest_stable_release -->
+
 ## [v18.10.17](https://github.com/chef/chef/tree/v18.10.17) (2026-02-25)
 
 #### Merged Pull Requests
@@ -142,7 +140,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Updating train-winrm. It was really stale [#15667](https://github.com/chef/chef/pull/15667) ([johnmccrae](https://github.com/johnmccrae))
 - Updating blackduck / Notice file [#15668](https://github.com/chef/chef/pull/15668) ([johnmccrae](https://github.com/johnmccrae))
 - Updating the notice file [#15669](https://github.com/chef/chef/pull/15669) ([johnmccrae](https://github.com/johnmccrae))
-<!-- latest_stable_release -->
 
 ## [v18.9.4](https://github.com/chef/chef/tree/v18.9.4) (2026-01-14)
 
