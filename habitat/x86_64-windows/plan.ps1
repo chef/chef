@@ -228,23 +228,26 @@ function Invoke-Install {
 
 function Invoke-After {
     write-output "*** invoke after"
-    # Trim the fat before packaging
+    # Trim the fat before packaging — all operations are best-effort; failures are logged not fatal.
 
     # We don't need the cache of downloaded .gem files ...
-    if (Test-Path $pkg_prefix/vendor/cache) { Remove-Item $pkg_prefix/vendor/cache -Recurse -Force }
+    if (Test-Path $pkg_prefix/vendor/cache) { Remove-Item $pkg_prefix/vendor/cache -Recurse -Force -ErrorAction SilentlyContinue }
     # ... or bundler's cache of git-ref'd gems
-    if (Test-Path $pkg_prefix/vendor/bundler) { Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force }
+    if (Test-Path $pkg_prefix/vendor/bundler) { Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force -ErrorAction SilentlyContinue }
 
     # We don't need the gem docs.
-    if (Test-Path $pkg_prefix/vendor/doc) { Remove-Item $pkg_prefix/vendor/doc -Recurse -Force }
+    if (Test-Path $pkg_prefix/vendor/doc) { Remove-Item $pkg_prefix/vendor/doc -Recurse -Force -ErrorAction SilentlyContinue }
+
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
-    Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
-        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
-        | Remove-Item -Recurse -Force
-    # Remove the byproducts of compiling gems with extensions
-    Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
-        | Remove-Item -Force
+    if (Test-Path $pkg_prefix/vendor/gems) {
+        Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 -ErrorAction SilentlyContinue `
+            | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
+            | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        # Remove the byproducts of compiling gems with extensions
+        Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse -ErrorAction SilentlyContinue `
+            | Remove-Item -Force -ErrorAction SilentlyContinue
+    }
 
     # Disable long file name support
     try {
