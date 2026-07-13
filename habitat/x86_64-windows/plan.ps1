@@ -231,12 +231,12 @@ function Invoke-After {
     # Trim the fat before packaging
 
     # We don't need the cache of downloaded .gem files ...
-    Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
+    if (Test-Path $pkg_prefix/vendor/cache) { Remove-Item $pkg_prefix/vendor/cache -Recurse -Force }
     # ... or bundler's cache of git-ref'd gems
-    Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
+    if (Test-Path $pkg_prefix/vendor/bundler) { Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force }
 
     # We don't need the gem docs.
-    Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
+    if (Test-Path $pkg_prefix/vendor/doc) { Remove-Item $pkg_prefix/vendor/doc -Recurse -Force }
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
     Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
@@ -247,7 +247,11 @@ function Invoke-After {
         | Remove-Item -Force
 
     # Disable long file name support
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
+    try {
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
+    } catch {
+        Write-BuildLine "Warning: could not reset LongPathsEnabled registry key: $_"
+    }
 }
 
 function Remove-StudioPathFrom {

@@ -15,18 +15,22 @@ pkg_build_deps=(
   core/git
 )
 pkg_deps=(
-  core/glibc
-  $_chef_client_ruby
-  core/libxml2
-  core/libxslt
-  core/libiconv
-  core/xz
-  core/zlib
-  core/openssl
-  core/cacerts
-  core/libffi
-  core/coreutils
-  core/libarchive
+  # ponytail: pinned to old-gen versions consistent with core/ruby31/3.1.7/20250728150529 (glibc/2.35).
+  # ruby31 in stable was built during the refresh_libarchive pass and carries glibc/2.35 transitively.
+  # The other stable packages were later promoted to new-gen (glibc/2.41), causing a runtime dep conflict.
+  # Remove these pins once a new-gen ruby31 (glibc/2.41) is promoted to stable.
+  "core/glibc/2.35/20240105171810"
+  "$_chef_client_ruby"
+  "core/libxml2/2.13.8/20250721104405"
+  "core/libxslt/1.1.42/20250721173944"
+  "core/libiconv/1.16/20240105224847"
+  "core/xz/5.2.5/20240105221157"
+  "core/zlib/1.3/20240105173710"
+  "core/openssl/1.0.2zl/20250306062549"
+  "core/cacerts/2021.10.26/20240105224256"
+  "core/libffi/3.4.2/20240105233930"
+  "core/coreutils/8.32/20240105213308"
+  "core/libarchive/3.8.1/20250728145737"
 )
 pkg_svc_user=root
 
