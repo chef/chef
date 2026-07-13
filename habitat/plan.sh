@@ -35,6 +35,11 @@ pkg_deps=(
 # The x86_64-linux-kernel2 target gets consistent packages from the pipeline channel so
 # does not need pinning. Remove these pins once a new-gen ruby31 (glibc/2.41) lands in stable.
 if [[ "$pkg_target" == "x86_64-linux" ]]; then
+  pkg_build_deps=(
+    "core/make"
+    "core/gcc/9.5.0/20240105175314"
+    "core/git"
+  )
   pkg_deps=(
     "core/glibc/2.35/20240105171810"
     "$_chef_client_ruby"
