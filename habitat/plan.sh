@@ -1,5 +1,6 @@
 _chef_client_ruby="core/ruby31"
 pkg_name="chef-infra-client"
+export HAB_BLDR_CHANNEL="${HAB_BLDR_CHANNEL:-stable}"
 pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Infra Client"

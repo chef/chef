@@ -1,4 +1,4 @@
-$env:HAB_BLDR_CHANNEL = "stable"
+if (-not $env:HAB_BLDR_CHANNEL) { $env:HAB_BLDR_CHANNEL = "stable" }
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"
 $pkg_version=(Get-Content $PLAN_CONTEXT/../../VERSION)
