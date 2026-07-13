@@ -35,6 +35,12 @@ pkg_version() {
 
 do_before() {
   do_default_before
+  local required_hab_version="1.6.1245"
+  local hab_version
+  hab_version=$(hab --version | awk '{print $2}' | cut -d'/' -f1)
+  if [ "$(printf '%s\n' "$required_hab_version" "$hab_version" | sort -V | head -n1)" != "$required_hab_version" ]; then
+    exit_with "Hab version is $hab_version; required $required_hab_version or newer." 1
+  fi
   update_pkg_version
   # We must wait until we update the pkg_version to use the pkg_version
   pkg_filename="${pkg_name}-${pkg_version}.tar.gz"
