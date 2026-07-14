@@ -70,7 +70,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, and plist resources
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
-  s.add_dependency "addressable"
+  s.add_dependency "addressable", ">= 2.9.0"
   s.add_dependency "syslog"
   s.add_dependency "csv", "~> 3.3.5" # really needs to come from inspec?
   s.add_dependency "syslog-logger", "~> 1.6"
