@@ -227,28 +227,62 @@ function Invoke-Install {
     }
 }
 
+function Remove-DirectoryWithRetry {
+    Param(
+        [Parameter(Mandatory=$true)]
+        [String]
+        $Path,
+        [int]
+        $MaxRetries = 5
+    )
+    if (-not (Test-Path $Path)) { return }
+    for ($attempt = 1; $attempt -le $MaxRetries; $attempt++) {
+        try {
+            Remove-Item $Path -Recurse -Force -ErrorAction Stop
+            return
+        } catch {
+            if ($attempt -lt $MaxRetries) {
+                Write-BuildLine " ** Removing ${Path}: attempt $attempt failed, retrying..."
+                Start-Sleep -Seconds 2
+            } else {
+                throw "Failed to remove ${Path} after $MaxRetries attempts: $_"
+            }
+        }
+    }
+}
+
 function Invoke-After {
     write-output "*** invoke after"
     # Trim the fat before packaging
 
-    # We don't need the cache of downloaded .gem files ...
-    Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
-    # ... or bundler's cache of git-ref'd gems
-    Remove-Item $pkg_prefix/vendor/bundler -Recurse -Force
+    # We don't need the cache of downloaded .gem files,
+    # bundler's cache of git-ref'd gems, or the gem docs.
+    foreach ($dir in @("cache", "bundler", "doc")) {
+        write-output "removing vendor/$dir"
+        Remove-DirectoryWithRetry -Path "$pkg_prefix/vendor/$dir"
+    }
 
-    # We don't need the gem docs.
-    Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
+    write-output "removing spec directories from vendored gems"
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
-    Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
-        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }   `
+    $specDirs = Get-ChildItem "$pkg_prefix/vendor/gems" -Filter "spec" -Directory -Recurse -Depth 1 `
+        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }
+    foreach ($specDir in $specDirs) {
+        Remove-DirectoryWithRetry -Path $specDir.FullName
+    }
+
+    write-output "removing .github directories from vendored gems"
+    # Remove .github directories from vendored gems so that GitHub Actions workflow
+    # files are not shipped and do not trigger grype vulnerability reports.
+    Get-ChildItem "$pkg_prefix/vendor/gems" -Filter ".github" -Directory -Recurse `
         | Remove-Item -Recurse -Force
+
+    write-output "removing native extension build byproducts"
     # Remove the byproducts of compiling gems with extensions
-    Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
+    Get-ChildItem "$pkg_prefix/vendor/gems" -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
 
-    # Disable long file name support
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -Force
+    write-output "Invoke-After completed successfully"
 }
 
 function Remove-StudioPathFrom {
