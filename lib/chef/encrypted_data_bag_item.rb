@@ -84,7 +84,7 @@ class Chef::EncryptedDataBagItem
   end
 
   def to_h
-    @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
+    @enc_hash.keys.to_h { |key| [key, self[key]] }
   end
 
   alias_method :to_hash, :to_h
