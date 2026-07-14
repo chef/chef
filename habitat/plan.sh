@@ -31,7 +31,7 @@ pkg_deps=(
 
 # ponytail: x86_64-linux only. ruby31/3.1.7/20250728150529 in stable carries glibc/2.35
 # transitively. New-gen core packages promoted to stable after April 2026 (glibc/2.41)
-# conflict with it (hab exit 31). These are the last-known-good idents from build #457.
+# conflict with it (hab exit 31). These are the last-known-good package IDs from build #457.
 # The x86_64-linux-kernel2 target gets consistent packages from the pipeline channel so
 # does not need pinning. Remove these pins once a new-gen ruby31 (glibc/2.41) lands in stable.
 if [[ "$pkg_target" == "x86_64-linux" ]]; then
