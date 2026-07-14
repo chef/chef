@@ -36,7 +36,7 @@ class Chef
         description: "Specify a Hash of supported mount features.",
         default: lazy { { remount: false } },
         default_description: "{ remount: false }",
-        coerce: proc { |x| x.is_a?(Array) ? x.to_h { |i| [i, true] } : x }
+        coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :password, String,
         description: "Windows only:. Use to specify the password for username.",

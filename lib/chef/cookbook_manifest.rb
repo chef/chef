@@ -299,8 +299,9 @@ class Chef
     end
 
     def extract_checksums_from_manifest(manifest)
-      manifest[:all_files].to_h do |manifest_record|
-        [manifest_record[:checksum], nil]
+      manifest[:all_files].inject({}) do |memo, manifest_record|
+        memo[manifest_record[:checksum]] = nil
+        memo
       end
     end
 
@@ -309,8 +310,9 @@ class Chef
     end
 
     def extract_manifest_records_by_path(manifest)
-      manifest[:all_files].to_h do |manifest_record|
-        [manifest_record[:path], manifest_record]
+      manifest[:all_files].inject({}) do |memo, manifest_record|
+        memo[manifest_record[:path]] = manifest_record
+        memo
       end
     end
 

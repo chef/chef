@@ -98,7 +98,7 @@ class Chef
             end
 
             unless entry.values.all?(Integer)
-              failed_values = entry.values.grep_v(Integer).join(", ")
+              failed_values = entry.values.reject { |val| val.is_a?(Integer) }.join(", ")
               error_msg = "Invalid value(s) (#{failed_values}) for start_calendar_interval item.  Values must be integers!"
               raise Chef::Exceptions::ValidationFailed, error_msg
             end

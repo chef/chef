@@ -72,7 +72,8 @@ class Chef
         # and which packages can be upgrades. We do this by checking if brew_info has an entry
         # via the installed_version helper.
         def upgrade_package(names, versions)
-          upgrade_pkgs, install_pkgs = names.partition { |x| installed_version(x) }
+          upgrade_pkgs = names.select { |x| installed_version(x) }
+          install_pkgs = names.reject { |x| installed_version(x) }
 
           brew_cmd_output("upgrade", options, upgrade_pkgs) unless upgrade_pkgs.empty?
           brew_cmd_output("install", options, install_pkgs) unless install_pkgs.empty?

@@ -42,7 +42,7 @@ class Chef
       # this is a poor API please do not re-use this pattern
       property :supports, Hash, default: { restart: nil, reload: nil, status: nil },
                description: "A list of properties that controls how #{ChefUtils::Dist::Infra::PRODUCT} is to attempt to manage a service: :restart, :reload, :status. For :restart, the init script or other service provider can use a restart command; if :restart is not specified, the #{ChefUtils::Dist::Infra::CLIENT} attempts to stop and then start a service. For :reload, the init script or other service provider can use a reload command. For :status, the init script or other service provider can use a status command to determine if the service is running; if :status is not specified, the #{ChefUtils::Dist::Infra::CLIENT} attempts to match the service_name against the process table as a regular expression, unless a pattern is specified as a parameter property. Default value: { restart: false, reload: false, status: false } for all platforms (except for the Red Hat platform family, which defaults to { restart: false, reload: false, status: true }.)",
-               coerce: proc { |x| x.is_a?(Array) ? x.to_h { |i| [i, true] } : x }
+               coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :service_name, String,
         description: "An optional property to set the service name if it differs from the resource block's name.",

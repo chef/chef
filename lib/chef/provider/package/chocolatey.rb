@@ -395,8 +395,8 @@ class Chef
               Chef::Log.debug("Choco List Command: #{cmd}")
 
               raw = parse_list_output(*cmd)
-              raw.keys.to_h do |name|
-                [name, desired_name_versions[name] || raw[name]]
+              raw.keys.each_with_object({}) do |name, available|
+                available[name] = desired_name_versions[name] || raw[name]
               end
             end
             @@choco_available_packages[new_resource.list_options].merge!(available_versions)

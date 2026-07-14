@@ -122,7 +122,7 @@ class Chef
     # @return [String] JSON formatting of all resources
     def self.inspect(arguments = [], complete: false)
       output = if arguments.empty?
-                 ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.to_h { |klass| [klass.resource_name, extract_resource(klass)] }
+                 ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each_with_object({}) { |klass, acc| acc[klass.resource_name] = extract_resource(klass) }
                else
                  Array(arguments).each_with_object({}) do |arg, acc|
                    if File.directory?(arg)

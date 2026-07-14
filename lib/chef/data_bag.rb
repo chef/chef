@@ -100,12 +100,13 @@ class Chef
             Chef::Util::PathHelper.escape_glob_dir(path), "*"
           )).map { |f| File.basename(f) }.sort
         end
-        names.to_h { |n| [n, n] }
+        names.inject({}) { |h, n| h[n] = n; h }
       else
         if inflate
           # Can't search for all data bags like other objects, fall back to N+1 :(
-          list(false).to_h do |bag_and_uri|
-            [bag_and_uri.first, load(bag_and_uri.first)]
+          list(false).inject({}) do |response, bag_and_uri|
+            response[bag_and_uri.first] = load(bag_and_uri.first)
+            response
           end
         else
           Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data")

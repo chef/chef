@@ -84,8 +84,9 @@ class Chef
           end
 
           def as_ruby
-            members.to_h do |key|
-              [key, get(key)]
+            members.inject({}) do |memo, key|
+              memo[key] = get(key)
+              memo
             end
           end
         end

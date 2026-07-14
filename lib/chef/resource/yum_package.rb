@@ -139,7 +139,7 @@ class Chef
           if v.is_a?(Hash)
             v
           elsif v.is_a?(Array)
-            v.to_h { |arg| [arg, true] }
+            v.each_with_object({}) { |arg, obj| obj[arg] = true }
           elsif v.is_a?(TrueClass) || v.is_a?(FalseClass)
             { before: v, after: v }
           elsif v == :before

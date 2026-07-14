@@ -114,15 +114,17 @@ shared_examples_for "a content deploy strategy" do
     end
 
     def unix_invariant_properties(stat_struct)
-      unix_invariants.to_h do |property|
-        [property, stat_struct.send(property)]
+      unix_invariants.inject({}) do |property_map, property|
+        property_map[property] = stat_struct.send(property)
+        property_map
       end
     end
 
     def win_invariant_properties(sec_obj)
       descriptor = sec_obj.security_descriptor(true)
-      security_descriptor_invariants.to_h do |property|
-        [property, descriptor.send(property)]
+      security_descriptor_invariants.inject({}) do |prop_map, property|
+        prop_map[property] = descriptor.send(property)
+        prop_map
       end
     end
 

@@ -45,8 +45,9 @@ describe Chef::CookbookUploader do
   let(:checksums_of_cookbook_files) { apache2_cookbook.checksums.merge(java_cookbook.checksums) }
 
   let(:checksums_set) do
-    checksums_of_cookbook_files.keys.to_h do |cksum|
-      [cksum, nil]
+    checksums_of_cookbook_files.keys.inject({}) do |set, cksum|
+      set[cksum] = nil
+      set
     end
   end
 
@@ -82,8 +83,9 @@ describe Chef::CookbookUploader do
     end
 
     let(:sandbox_response) do
-      sandbox_checksums = cksums_not_on_remote.to_h do |cksum|
-        [cksum, { "needs_upload" => true, "url" => url_for(cksum) }]
+      sandbox_checksums = cksums_not_on_remote.inject({}) do |cksum_map, cksum|
+        cksum_map[cksum] = { "needs_upload" => true, "url" => url_for(cksum) }
+        cksum_map
       end
       { "checksums" => sandbox_checksums, "uri" => sandbox_commit_uri }
     end

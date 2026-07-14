@@ -605,13 +605,13 @@ class Chef
     # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def relative_paths_by_name(records)
-      records.select { |record| record[:name].end_with?(".rb") }.to_h { |record| [File.basename(record[:name], ".rb"), record[:path]] }
+      records.select { |record| record[:name].end_with?(".rb") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:path]; memo }
     end
 
     # For each manifest record, produce a mapping of base filename (i.e. recipe name
     # or attribute file) to on disk location
     def filenames_by_name(records)
-      records.select { |record| record[:name].end_with?(".rb") }.to_h { |record| [File.basename(record[:name], ".rb"), record[:full_path]] }
+      records.select { |record| record[:name].end_with?(".rb") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
     end
 
     # Filters YAML files from the superset of provided files.
@@ -639,7 +639,7 @@ class Chef
 
     # Filters JSON files from the superset of provided files.
     def json_filenames_by_name(records)
-      records.select { |record| record[:name].end_with?(".json") }.to_h { |record| [File.basename(record[:name], ".json"), record[:full_path]] }
+      records.select { |record| record[:name].end_with?(".json") }.inject({}) { |memo, record| memo[File.basename(record[:name], ".json")] = record[:full_path]; memo }
     end
 
     def file_vendor
