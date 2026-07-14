@@ -5,7 +5,7 @@
 
 # Install Chef Foundation
 echo "--- Installing Chef Foundation"
-curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "current" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+curl -fsSL https://omnitruck.chef.io/chef/install.sh | bash -s -- -c "stable" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
 export PATH="/opt/chef/bin:${PATH}"
 
 echo "--- Container Config..."
