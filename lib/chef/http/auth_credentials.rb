@@ -56,7 +56,7 @@ class Chef
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
         signed = sign_obj.sign(key, use_ssh_agent: @use_ssh_agent).merge({ host: host })
-        signed.inject({}) { |memo, kv| memo[(kv[0].to_s.upcase).to_s] = kv[1]; memo }
+        signed.to_h { |k, v| [k.to_s.upcase.to_s, v] }
       end
 
     end
