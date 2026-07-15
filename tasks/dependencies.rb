@@ -24,7 +24,6 @@ namespace :dependencies do
   desc "Update all dependencies."
   task update: %w{
                     dependencies:update_gemfile_lock
-                    dependencies:update_omnibus_gemfile_lock
                   }
 
   def bundle_update_locked_multiplatform_task(task_name, dir)
@@ -51,6 +50,5 @@ namespace :dependencies do
   end
 
   bundle_update_locked_multiplatform_task :update_gemfile_lock, "."
-  bundle_update_locked_multiplatform_task :update_omnibus_gemfile_lock, "omnibus"
 
 end
