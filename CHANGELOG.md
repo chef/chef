@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.57 -->
-## [v19.3.57](https://github.com/chef/chef/tree/v19.3.57) (2026-07-10)
+<!-- latest_release 19.3.58 -->
+## [v19.3.58](https://github.com/chef/chef/tree/v19.3.58) (2026-07-15)
 
 #### Merged Pull Requests
-- Dependabot: add groups [#16193](https://github.com/chef/chef/pull/16193) ([jaymzh](https://github.com/jaymzh))
+- Updated files for cookstyle [#16201](https://github.com/chef/chef/pull/16201) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updated files for cookstyle [#16201](https://github.com/chef/chef/pull/16201) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.58 -->
 - Dependabot: add groups [#16193](https://github.com/chef/chef/pull/16193) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.57 -->
 - Fix fork workflows [#16194](https://github.com/chef/chef/pull/16194) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.56 -->
 - Bump aws-sdk-s3 from 1.226.0 to 1.227.0 [#16189](https://github.com/chef/chef/pull/16189) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.55 -->
