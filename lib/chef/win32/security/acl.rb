@@ -89,7 +89,7 @@ class Chef
         end
 
         def to_s
-          "[#{join(", ")}]"
+          "[#{collect(&:to_s).join(", ")}]" # rubocop:disable Style/MapJoin
         end
 
         def self.align_dword(size)
