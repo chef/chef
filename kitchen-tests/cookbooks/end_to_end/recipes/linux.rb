@@ -71,6 +71,7 @@ include_recipe "::_chef_gem"
 unless (amazon? && node["platform_version"] >= "2023") ||
     (platform?("almalinux") && node["platform_version"].to_i >= 10) ||
     (platform?("rocky") && node["platform_version"].to_i >= 10) ||
+    (platform?("oracle") && node["platform_version"].to_i >= 10) ||
     (ubuntu? && node["platform_version"].start_with?("20.04")) ||
     (fedora? && node["platform_version"] == "41") # TODO: look into chrony service issue
   include_recipe value_for_platform(
