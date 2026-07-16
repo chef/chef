@@ -192,7 +192,7 @@ describe Chef::Resource::ChocolateyInstaller do
 
           # Per the download_url property description, ChocolateyDownloadUrl is always set
           # when download_url is provided, regardless of file type.
-          expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value https://some.custom.url/install.ps1")
+          expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.custom.url/install.ps1'")
           expect(commands.any? { |c| c.include?("Invoke-Expression") && c.include?("install.ps1") }).to be true
         end
 
@@ -259,8 +259,8 @@ describe Chef::Resource::ChocolateyInstaller do
 
           resource.run_action(:install)
 
-          expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value https://some.custom.url/packages/chocolatey.2.0.0.nupkg")
-          expect(commands).to include("Invoke-WebRequest 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg' -OutFile '#{expected_destination}'")
+          expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg'")
+          expect(commands).to include("Invoke-WebRequest 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg' -UseBasicParsing -OutFile '#{expected_destination}'")
           expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
         end
       end

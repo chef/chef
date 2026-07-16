@@ -116,9 +116,9 @@ class Chef
       def define_resource_requirements
         requirements.assert(:install, :upgrade).each do |a|
           a.assertion do
-            # This is an exclusive OR - XOR - we're trying to coax an error out if one, but not both,
-            # parameters are empty.
-            new_resource.proxy_user.nil? != new_resource.proxy_password.nil?
+            # Both proxy_user and proxy_password must be provided together or not at all.
+            # The assertion must return true when the state is valid (both set or both nil).
+            new_resource.proxy_user.nil? == new_resource.proxy_password.nil?
           end
           a.failure_message(Chef::Exceptions::ValidationFailed, "You must specify both a proxy_user and a proxy_password")
           a.whyrun("Assuming that if you have configured a 'proxy_user' you must also supply a 'proxy_password'")
@@ -127,11 +127,11 @@ class Chef
 
       action :install, description: "Installs Chocolatey package manager" do
         if new_resource.download_url
-          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
+          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value '#{new_resource.download_url}'")
         end
 
         if new_resource.chocolatey_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{new_resource.chocolatey_version}")
+          powershell_exec("Set-Item -path env:ChocolateyVersion -Value '#{new_resource.chocolatey_version}'")
         end
 
         if new_resource.use_native_unzip
@@ -143,11 +143,11 @@ class Chef
         end
 
         if new_resource.proxy_url
-          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{new_resource.proxy_url}")
+          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value '#{new_resource.proxy_url}'")
         end
 
         if new_resource.proxy_user && new_resource.proxy_password
-          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
+          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value '#{new_resource.proxy_user}'; Set-Item -path env:ChocolateyProxyPassword -Value '#{new_resource.proxy_password}'")
         end
 
         # Handle custom download URLs appropriately based on file type
@@ -161,11 +161,11 @@ class Chef
               # nupkg or archive: fully air-gapped environment support.
               # A Chocolatey .nupkg is a ZIP archive containing tools/chocolateyInstall.ps1,
               # which is the actual bootstrapper. Download (if remote), extract, and run it.
-              is_filesystem_path = new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/::]}) || new_resource.download_url.start_with?("\\\\")
+              is_filesystem_path = new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/]}) || new_resource.download_url.start_with?("\\\\")
               nupkg_path = is_filesystem_path ? new_resource.download_url : download_destination
 
               unless is_filesystem_path
-                powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{nupkg_path}'").error!
+                powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -OutFile '#{nupkg_path}'").error!
                 Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
               end
 
@@ -204,11 +204,11 @@ class Chef
                            end
 
         if new_resource.download_url
-          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{new_resource.download_url}")
+          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value '#{new_resource.download_url}'")
         end
 
         if new_resource.chocolatey_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{new_resource.chocolatey_version}")
+          powershell_exec("Set-Item -path env:ChocolateyVersion -Value '#{new_resource.chocolatey_version}'")
         end
 
         if new_resource.use_native_unzip
@@ -220,17 +220,17 @@ class Chef
         end
 
         if new_resource.proxy_url
-          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{new_resource.proxy_url}")
+          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value '#{new_resource.proxy_url}'")
         end
 
         if new_resource.proxy_user && new_resource.proxy_password
-          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{new_resource.proxy_user}; Set-Item -path env:ChocolateyProxyPassword -Value #{new_resource.proxy_password}")
+          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value '#{new_resource.proxy_user}'; Set-Item -path env:ChocolateyProxyPassword -Value '#{new_resource.proxy_password}'")
         end
 
         if proposed_version && existing_version < proposed_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{proposed_version}")
+          powershell_exec("Set-Item -path env:ChocolateyVersion -Value '#{proposed_version}'")
         else
-          powershell_exec("Remove-Item -path env:ChocolateyVersion")
+          powershell_exec("Remove-Item -path env:ChocolateyVersion -ErrorAction SilentlyContinue")
         end
 
         converge_by("upgrade choco version") do
@@ -239,8 +239,8 @@ class Chef
       end
 
       action :uninstall, description: "Uninstall Chocolatey package manager" do
-        path = 'c:\\programdata\\chocolatey\\bin'
-        if File.exists?(path)
+        path = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin"
+        if File.exist?(path)
           converge_by("Uninstall Choco") do
             powershell_code = <<~CODE
               Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
@@ -260,8 +260,9 @@ class Chef
             CODE
             powershell_exec(powershell_code).error!
           end
+        else
+          Chef::Log.warn("Chocolatey is already uninstalled.")
         end
-        Chef::Log.warn("Chocolatey is already uninstalled.")
       end
     end
   end
