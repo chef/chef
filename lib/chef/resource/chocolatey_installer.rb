@@ -171,6 +171,7 @@ class Chef
 
               ps_code = <<~PS
                 # Pre-steps equivalent to those in Chocolatey's install.ps1
+                # We need to enable TLS 1.2 support so we set the SecurityProtocol property with a "bitwise or" operation.
                 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
                 if (-not $env:ChocolateyInstall) {
                   $env:ChocolateyInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
