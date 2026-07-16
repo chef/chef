@@ -239,7 +239,9 @@ class Chef
       end
 
       action :uninstall, description: "Uninstall Chocolatey package manager" do
+        # rubocop:disable Style/StringLiteralsInInterpolation
         path = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin"
+        # rubocop:enable Style/StringLiteralsInInterpolation
         if File.exist?(path)
           converge_by("Uninstall Choco") do
             powershell_code = <<~CODE
