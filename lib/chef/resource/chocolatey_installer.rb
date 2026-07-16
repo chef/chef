@@ -56,7 +56,7 @@ class Chef
       allowed_actions :install, :uninstall, :upgrade
 
       property :download_url, String,
-        description: "The URL to download Chocolatey from. This sets the value of $env:ChocolateyDownloadUrl and causes the installer to choose an alternate download location. If this is not set, Chocolatey installs fall back to the official Chocolatey community repository to download Chocolatey from. It can also be used for offline installation by providing a path to a Chocolatey.nupkg. If the provided URL is a PowerShell script (ending in .ps1), that script will be downloaded and executed directly. If it is any other file type, it will be downloaded to the Chef client directory. ChefConfig::Config.etc_chef_dir(windows: true) is used to find that location."
+        description: "A custom URL or path to a Chocolatey package or install script, for use in air-gapped environments or when hosting your own Chocolatey server. Accepts HTTPS URLs, local drive paths (e.g. C:\\packages\\chocolatey.nupkg), and UNC paths to SMB shares (e.g. \\\\server\\share\\chocolatey.nupkg). If not provided, Chocolatey is installed from the official Chocolatey community repository. This sets the value of $env:ChocolateyDownloadUrl so the Chocolatey installer fetches the package from your specified location. If the value points to a PowerShell script (ending in .ps1), that script will be downloaded and executed directly. If it points to a Chocolatey package (.nupkg or similar), the file contents are extracted and the bundled installer is executed."
 
       property :chocolatey_version, String,
         description: "Specifies a target version of Chocolatey to install. By default, the latest stable version is installed. This will use the value in $env:ChocolateyVersion by default, if that environment variable is present. This parameter is ignored if download_url is set."
@@ -154,15 +154,42 @@ class Chef
         converge_if_changed do
           if new_resource.download_url
             Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
-            # If it's a PowerShell script, execute it directly (original behavior)
+            # If it's a PowerShell script, download and execute it directly
             if download_url_script?
               powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
             else
-              # Assume it's a direct link to a nupkg or other file and handle accordingly
-              destination = download_destination
+              # nupkg or archive: fully air-gapped environment support.
+              # A Chocolatey .nupkg is a ZIP archive containing tools/chocolateyInstall.ps1,
+              # which is the actual bootstrapper. Download (if remote), extract, and run it.
+              is_filesystem_path = new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/::]}) || new_resource.download_url.start_with?("\\\\")
+              nupkg_path = is_filesystem_path ? new_resource.download_url : download_destination
 
-              powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{destination}'").error!
-              Chef::Log.info("Downloaded file from #{new_resource.download_url} to #{destination}")
+              unless is_filesystem_path
+                powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -OutFile '#{nupkg_path}'").error!
+                Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
+              end
+
+              ps_code = <<~PS
+                # Pre-steps equivalent to those in Chocolatey's install.ps1
+                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                if (-not $env:ChocolateyInstall) {
+                  $env:ChocolateyInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
+                  [Environment]::SetEnvironmentVariable('ChocolateyInstall', $env:ChocolateyInstall, 'Machine')
+                }
+                if (-not (Test-Path $env:ChocolateyInstall)) { New-Item -ItemType Directory -Path $env:ChocolateyInstall -Force | Out-Null }
+
+                $nupkgPath = '#{nupkg_path}'
+                $extractPath = Join-Path $env:TEMP 'chocolatey_nupkg_extract'
+                if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
+                $zipPath = "$nupkgPath.zip"
+                Copy-Item $nupkgPath $zipPath
+                Expand-Archive $zipPath $extractPath -Force
+                Remove-Item $zipPath -Force
+                $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
+                if (-not (Test-Path $installScript)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
+                & $installScript
+              PS
+              powershell_exec(ps_code).error!
             end
           else
             powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
