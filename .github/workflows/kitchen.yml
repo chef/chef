@@ -206,59 +206,69 @@ jobs:
   #           Exit 1
   #       }
 
-#  mac_x86_64:
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os:
-#          - macos-15-intel
-#    runs-on: ${{ matrix.os }}
-#    env:
-#      CHEF_LICENSE: accept-no-persist
-#      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-#    steps:
-#      - name: Check out code
-#        uses: actions/checkout@v5
-#        with:
-#            clean: true
-#      - name: Install Chef
-#        uses: actionshub/chef-install@main
-#        with:
-#          version: "25.5.1084"
-#      - name: Kitchen Test
-#        run: kitchen verify ${{ matrix.os }}
-#
-  # disabled due to no hab support for mac yet - fail-after:2026-08-01
-  # mac_arm64:
-  #   needs: workflow_guard
-  #   permissions:
-  #     contents: read
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os:
-  #         - macos-14
-  #         - macos-15
-  #         - macos-26
-  #   runs-on: ${{ matrix.os }}
-  #   env:
-  #     CHEF_LICENSE: accept-no-persist
-  #     KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-  #     GITHUB_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  #   steps:
-  #     - name: Checkout PR code
-  #       uses: actions/checkout@v7
-  #       with:
-  #         allow-unsafe-pr-checkout: true
-  #         ref: ${{ github.event.pull_request.head.sha }}
-  #         persist-credentials: false
-  #         clean: true
-  #     - name: Install Chef
-  #       uses: actionshub/chef-install@main
-  #       with:
-  #         version: "25.5.1084"
-  #     - name: Kitchen Test
-  #       run: kitchen verify ${{ matrix.os }}
+  # end-to-end recipe testing on macOS ARM64 using test-kitchen-enterprise and habitat package of Infra Client
+  mac_arm64:
+    name: mac_arm64_hab
+    needs: workflow_guard
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-14
+          - macos-15
+    runs-on: ${{ matrix.os }}
+    env:
+      CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
+      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: accept-no-persist
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          clean: true
+
+      - name: Install Habitat CLI
+        run: |
+          sudo -E ../.expeditor/scripts/install-hab.sh aarch64-darwin
+          sudo hab license accept
+          hab --version
+
+      - name: Generate Habitat Origin Key
+        run: sudo hab origin key generate "$HAB_ORIGIN"
+
+      - name: Build Habitat Package
+        working-directory: .
+        run: |
+          echo "Building habitat package from habitat/aarch64-darwin"
+          sudo -E hab pkg build habitat/aarch64-darwin
+          source ./results/last_build.env
+          echo "Built package: $pkg_artifact"
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+
+      - name: Install Chef Infra Client from Habitat Package
+        working-directory: .
+        run: |
+          sudo -E hab pkg install kitchen-tests/chef-infra-client-latest.hart --binlink --force
+          echo "Installed Chef Infra Client version:"
+          /usr/local/bin/chef-client --version
+
+      - name: Install Test-Kitchen-Enterprise
+        run: |
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          kitchen --version
+          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+
+      - name: Kitchen Test
+        run: kitchen verify end-to-end-${{ matrix.os }}
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
