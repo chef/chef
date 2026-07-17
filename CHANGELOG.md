@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.12 -->
-## [v18.11.12](https://github.com/chef/chef/tree/v18.11.12) (2026-07-16)
+<!-- latest_release 18.11.13 -->
+## [v18.11.13](https://github.com/chef/chef/tree/v18.11.13) (2026-07-17)
 
 #### Merged Pull Requests
-- Chocolately nupkg files not installing correctly from custom url [#16206](https://github.com/chef/chef/pull/16206) ([johnmccrae](https://github.com/johnmccrae))
+- Caught a number of failure points and corrected them [#16209](https://github.com/chef/chef/pull/16209) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.11.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Caught a number of failure points and corrected them [#16209](https://github.com/chef/chef/pull/16209) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.13 -->
 - Chocolately nupkg files not installing correctly from custom url [#16206](https://github.com/chef/chef/pull/16206) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.12 -->
 <!-- release_rollup -->
 
