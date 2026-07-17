@@ -260,7 +260,7 @@ describe Chef::Resource::ChocolateyInstaller do
           resource.run_action(:install)
 
           expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg'")
-          expect(commands).to include("Invoke-WebRequest 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg' -UseBasicParsing -OutFile '#{expected_destination}'")
+          expect(commands.any? { |c| c.include?("Invoke-WebRequest") && c.include?("https://some.custom.url/packages/chocolatey.2.0.0.nupkg") && c.include?("-UseBasicParsing") && c.include?(expected_destination) }).to be true
           expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
         end
       end
@@ -282,7 +282,47 @@ describe Chef::Resource::ChocolateyInstaller do
       end
     end
   end
+    describe "download_url extension validation" do
+      def build_resource_with_url(url, ctx)
+        r = Chef::Resource::ChocolateyInstaller.new("test_url_validation_#{url.to_s.hash.abs}", ctx)
+        r.download_url = url if url
+        p = r.provider_for_action(:install)
+        allow(r).to receive(:provider_for_action).with(:install).and_return(p)
+        allow(r).to receive(:is_choco_installed?).and_return(false)
+        allow(p).to receive(:powershell_exec).and_return(double("shell_out", error!: nil, result: nil))
+        r
+      end
 
+      it "raises ValidationFailed for a URL with a clearly wrong file extension" do
+        r = build_resource_with_url("https://some.server/packages/chocolatey.html", run_context)
+        expect { r.run_action(:install) }.to raise_error(Chef::Exceptions::ValidationFailed, /\.ps1.*\.nupkg/)
+      end
+
+      it "does not raise ValidationFailed for an OData-style URL with no file extension" do
+        r = build_resource_with_url("https://some.server/api/v2/package/chocolatey/2.7.3", run_context)
+        expect { r.run_action(:install) }.not_to raise_error
+      end
+
+      it "does not raise ValidationFailed for a bare domain URL with no extension" do
+        r = build_resource_with_url("https://some.server/", run_context)
+        expect { r.run_action(:install) }.not_to raise_error
+      end
+
+      it "does not raise ValidationFailed for a valid .nupkg URL" do
+        r = build_resource_with_url("https://some.server/chocolatey.2.7.3.nupkg", run_context)
+        expect { r.run_action(:install) }.not_to raise_error
+      end
+
+      it "does not raise ValidationFailed for a valid .ps1 URL" do
+        r = build_resource_with_url("https://some.server/install.ps1", run_context)
+        expect { r.run_action(:install) }.not_to raise_error
+      end
+
+      it "does not raise ValidationFailed when no download_url is set" do
+        r = build_resource_with_url(nil, run_context)
+        expect { r.run_action(:install) }.not_to raise_error
+      end
+    end
   describe "sensitive property masking" do
     it "marks proxy_password as sensitive" do
       expect(Chef::Resource::ChocolateyInstaller.properties[:proxy_password].sensitive?).to be true

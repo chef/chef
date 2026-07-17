@@ -219,3 +219,4 @@ end
 
 include_recipe "::_chef_gem"
 include_recipe "::_openssl"
+include_recipe "::_chocolatey_installer"

@@ -126,6 +126,23 @@ class Chef
       end
 
       action :install, description: "Installs Chocolatey package manager" do
+        # Validate download_url before setting any env vars or attempting PowerShell execution.
+        # Blocks URLs with a recognizable but wrong file extension (.html, .exe, etc.).
+        # URLs with NO extension (OData-style package API endpoints such as
+        # https://server/api/v2/package/chocolatey/2.7.3) are allowed through — the extension
+        # check is skipped when the URL path has no extension so that NuGet/Artifactory/Nexus
+        # feeds work without requiring a local pre-download.
+        if new_resource.download_url
+          ext = ::File.extname(new_resource.download_url_path).downcase
+          # Block only when a recognizable but wrong file extension is present.
+          # Exemptions: no extension (OData/API endpoints), .ps1, .nupkg, or
+          # a pure-digit segment (e.g. ".3" from a version path like /chocolatey/2.7.3).
+          if !ext.empty? && !ext.match?(/^\.\d+$/) && ext != '.ps1' && ext != '.nupkg'
+            raise Chef::Exceptions::ValidationFailed,
+              "download_url must point to a .ps1 PowerShell install script or a .nupkg Chocolatey package. Got: #{new_resource.download_url}"
+          end
+        end
+
         if new_resource.download_url
           powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value '#{new_resource.download_url}'")
         end
@@ -156,7 +173,7 @@ class Chef
             Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
             # If it's a PowerShell script, download and execute it directly
             if download_url_script?
-              powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
+              powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
             else
               # nupkg or archive: fully air-gapped environment support.
               # A Chocolatey .nupkg is a ZIP archive containing tools/chocolateyInstall.ps1,
@@ -165,7 +182,17 @@ class Chef
               nupkg_path = is_filesystem_path ? new_resource.download_url : download_destination
 
               unless is_filesystem_path
-                powershell_exec("Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -OutFile '#{nupkg_path}'").error!
+                if new_resource.proxy_url && !new_resource.ignore_proxy && new_resource.proxy_user && new_resource.proxy_password
+                  ps_download = <<~DLPS
+                    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                    $proxyCredential = New-Object System.Management.Automation.PSCredential('#{new_resource.proxy_user}', (ConvertTo-SecureString '#{new_resource.proxy_password}' -AsPlainText -Force))
+                    Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -Proxy '#{new_resource.proxy_url}' -ProxyCredential $proxyCredential -OutFile '#{nupkg_path}'
+                  DLPS
+                  powershell_exec(ps_download).error!
+                else
+                  proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy) ? " -Proxy '#{new_resource.proxy_url}'" : ""
+                  powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing#{proxy_param} -OutFile '#{nupkg_path}'").error!
+                end
                 Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
               end
 
@@ -182,7 +209,7 @@ class Chef
                 $nupkgPath = '#{nupkg_path}'
                 $extractPath = Join-Path $env:TEMP 'chocolatey_nupkg_extract'
                 if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
-                $zipPath = "$nupkgPath.zip"
+                $zipPath = Join-Path $env:TEMP 'chocolatey_nupkg.zip'
                 Copy-Item $nupkgPath $zipPath
                 Expand-Archive $zipPath $extractPath -Force
                 Remove-Item $zipPath -Force
@@ -253,7 +280,7 @@ class Chef
                   'PATH',
                   'Machine'
               )
-              $path = ($path.Split(';') | Where-Object { $_ -ne "#{path}" }) -join ";"
+              $path = ($path.Split(';') | Where-Object { $_ -ine "#{path}" }) -join ";"
               [System.Environment]::SetEnvironmentVariable(
                   'PATH',
                   $path,
