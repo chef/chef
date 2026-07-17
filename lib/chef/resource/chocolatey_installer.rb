@@ -269,7 +269,7 @@ class Chef
         # rubocop:disable Style/StringLiteralsInInterpolation
         path = "#{ENV['ALLUSERSPROFILE']}\\chocolatey\\bin"
         # rubocop:enable Style/StringLiteralsInInterpolation
-        if File.exist?(path)
+        if ::File.exist?(path)
           converge_by("Uninstall Choco") do
             powershell_code = <<~CODE
               Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
