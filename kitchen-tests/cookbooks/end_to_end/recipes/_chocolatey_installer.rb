@@ -43,12 +43,12 @@ end
 #    Verify the new URL ends in .nupkg — the resource validates the file extension
 #    and will raise Chef::Exceptions::ValidationFailed if it does not.
 chocolatey_installer "Install Chocolatey from nupkg URL" do
-  action    :install
+  action :install
   download_url "https://packages.chocolatey.org/chocolatey.2.4.2.nupkg"
 end
 
 # 5. Idempotency check after nupkg-URL install.
 chocolatey_installer "Install Chocolatey from nupkg URL (idempotent)" do
-  action    :install
+  action :install
   download_url "https://packages.chocolatey.org/chocolatey.2.4.2.nupkg"
 end

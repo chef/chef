@@ -137,7 +137,7 @@ class Chef
           # Block only when a recognizable but wrong file extension is present.
           # Exemptions: no extension (OData/API endpoints), .ps1, .nupkg, or
           # a pure-digit segment (e.g. ".3" from a version path like /chocolatey/2.7.3).
-          if !ext.empty? && !ext.match?(/^\.\d+$/) && ext != '.ps1' && ext != '.nupkg'
+          if !ext.empty? && !ext.match?(/^\.\d+$/) && ext != ".ps1" && ext != ".nupkg"
             raise Chef::Exceptions::ValidationFailed,
               "download_url must point to a .ps1 PowerShell install script or a .nupkg Chocolatey package. Got: #{new_resource.download_url}"
           end
@@ -183,11 +183,11 @@ class Chef
 
               unless is_filesystem_path
                 if new_resource.proxy_url && !new_resource.ignore_proxy && new_resource.proxy_user && new_resource.proxy_password
-                  ps_download = <<~DLPS
+                  ps_download = <<~EOH
                     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
                     $proxyCredential = New-Object System.Management.Automation.PSCredential('#{new_resource.proxy_user}', (ConvertTo-SecureString '#{new_resource.proxy_password}' -AsPlainText -Force))
                     Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -Proxy '#{new_resource.proxy_url}' -ProxyCredential $proxyCredential -OutFile '#{nupkg_path}'
-                  DLPS
+                  EOH
                   powershell_exec(ps_download).error!
                 else
                   proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy) ? " -Proxy '#{new_resource.proxy_url}'" : ""
