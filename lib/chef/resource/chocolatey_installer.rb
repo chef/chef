@@ -167,62 +167,68 @@ class Chef
           powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value '#{new_resource.proxy_user}'; Set-Item -path env:ChocolateyProxyPassword -Value '#{new_resource.proxy_password}'")
         end
 
-        # Handle custom download URLs appropriately based on file type
-        converge_if_changed do
-          if new_resource.download_url
-            Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
-            # If it's a PowerShell script, download and execute it directly
-            if download_url_script?
-              powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
-            else
-              # nupkg or archive: fully air-gapped environment support.
-              # A Chocolatey .nupkg is a ZIP archive containing tools/chocolateyInstall.ps1,
-              # which is the actual bootstrapper. Download (if remote), extract, and run it.
-              is_filesystem_path = new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/]}) || new_resource.download_url.start_with?("\\\\")
-              nupkg_path = is_filesystem_path ? new_resource.download_url : download_destination
+        # Guard on actual installed state rather than property comparison.
+        # converge_if_changed cannot be used here because download_url is never
+        # loaded as a current value, so it would always fire even when Chocolatey
+        # is already installed — causing the nupkg extract directory to be cleaned
+        # up while its DLLs are still loaded in the PowerShell process.
+        unless is_choco_installed?
+          converge_by("install Chocolatey") do
+            if new_resource.download_url
+              Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
+              # If it's a PowerShell script, download and execute it directly
+              if download_url_script?
+                powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
+              else
+                # nupkg or archive: fully air-gapped environment support.
+                # A Chocolatey .nupkg is a ZIP archive containing tools/chocolateyInstall.ps1,
+                # which is the actual bootstrapper. Download (if remote), extract, and run it.
+                is_filesystem_path = new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/]}) || new_resource.download_url.start_with?("\\\\")
+                nupkg_path = is_filesystem_path ? new_resource.download_url : download_destination
 
-              unless is_filesystem_path
-                if new_resource.proxy_url && !new_resource.ignore_proxy && new_resource.proxy_user && new_resource.proxy_password
-                  ps_download = <<~EOH
-                    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                    $proxyCredential = New-Object System.Management.Automation.PSCredential('#{new_resource.proxy_user}', (ConvertTo-SecureString '#{new_resource.proxy_password}' -AsPlainText -Force))
-                    Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -Proxy '#{new_resource.proxy_url}' -ProxyCredential $proxyCredential -OutFile '#{nupkg_path}'
-                  EOH
-                  powershell_exec(ps_download).error!
-                else
-                  proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy) ? " -Proxy '#{new_resource.proxy_url}'" : ""
-                  powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing#{proxy_param} -OutFile '#{nupkg_path}'").error!
+                unless is_filesystem_path
+                  if new_resource.proxy_url && !new_resource.ignore_proxy && new_resource.proxy_user && new_resource.proxy_password
+                    ps_download = <<~EOH
+                      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                      $proxyCredential = New-Object System.Management.Automation.PSCredential('#{new_resource.proxy_user}', (ConvertTo-SecureString '#{new_resource.proxy_password}' -AsPlainText -Force))
+                      Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -Proxy '#{new_resource.proxy_url}' -ProxyCredential $proxyCredential -OutFile '#{nupkg_path}'
+                    EOH
+                    powershell_exec(ps_download).error!
+                  else
+                    proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy) ? " -Proxy '#{new_resource.proxy_url}'" : ""
+                    powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing#{proxy_param} -OutFile '#{nupkg_path}'").error!
+                  end
+                  Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
                 end
-                Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
+
+                ps_code = <<~PS
+                  # Pre-steps equivalent to those in Chocolatey's install.ps1
+                  # We need to enable TLS 1.2 support so we set the SecurityProtocol property with a "bitwise or" operation.
+                  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                  if (-not $env:ChocolateyInstall) {
+                    $env:ChocolateyInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
+                    [Environment]::SetEnvironmentVariable('ChocolateyInstall', $env:ChocolateyInstall, 'Machine')
+                  }
+                  if (-not (Test-Path $env:ChocolateyInstall)) { New-Item -ItemType Directory -Path $env:ChocolateyInstall -Force | Out-Null }
+
+                  $nupkgPath = '#{nupkg_path}'
+                  $extractPath = Join-Path $env:TEMP 'chocolatey_nupkg_extract'
+                  if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
+                  $zipPath = Join-Path $env:TEMP 'chocolatey_nupkg.zip'
+                  Copy-Item $nupkgPath $zipPath
+                  Expand-Archive $zipPath $extractPath -Force
+                  Remove-Item $zipPath -Force
+                  $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
+                  if (-not (Test-Path $installScript)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
+                  & $installScript
+                PS
+                powershell_exec(ps_code).error!
               end
-
-              ps_code = <<~PS
-                # Pre-steps equivalent to those in Chocolatey's install.ps1
-                # We need to enable TLS 1.2 support so we set the SecurityProtocol property with a "bitwise or" operation.
-                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                if (-not $env:ChocolateyInstall) {
-                  $env:ChocolateyInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
-                  [Environment]::SetEnvironmentVariable('ChocolateyInstall', $env:ChocolateyInstall, 'Machine')
-                }
-                if (-not (Test-Path $env:ChocolateyInstall)) { New-Item -ItemType Directory -Path $env:ChocolateyInstall -Force | Out-Null }
-
-                $nupkgPath = '#{nupkg_path}'
-                $extractPath = Join-Path $env:TEMP 'chocolatey_nupkg_extract'
-                if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
-                $zipPath = Join-Path $env:TEMP 'chocolatey_nupkg.zip'
-                Copy-Item $nupkgPath $zipPath
-                Expand-Archive $zipPath $extractPath -Force
-                Remove-Item $zipPath -Force
-                $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
-                if (-not (Test-Path $installScript)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
-                & $installScript
-              PS
-              powershell_exec(ps_code).error!
+            else
+              powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
             end
-          else
-            powershell_exec("Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))").error!
-          end
-        end
+          end # converge_by
+        end # unless is_choco_installed?
       end
 
       action :upgrade, description: "Upgrades the Chocolatey package manager" do
