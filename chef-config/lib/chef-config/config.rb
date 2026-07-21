@@ -1319,7 +1319,11 @@ module ChefConfig
 
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
-      require "digest/md5" unless defined?(Digest::MD5)
+      # Do not require digest/md5 here: MD5 is not FIPS-approved and is not
+      # available from the OpenSSL FIPS provider. Loading it after FIPS mode
+      # is enabled triggers an EVP_MD_fetch failure in OpenSSL 3.x which can
+      # corrupt provider state and cause all subsequent digest operations
+      # (including FIPS-approved ones like SHA256) to fail.
       # Remove pre-existing constants if they do exist to reduce the
       # amount of log spam and warnings.
       Digest.send(:remove_const, "SHA1") if Digest.const_defined?(:SHA1)
