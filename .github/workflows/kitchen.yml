@@ -230,7 +230,7 @@ jobs:
       HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
