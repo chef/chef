@@ -339,6 +339,29 @@ describe Chef::CookbookManifest do
 
     end
 
+    context "caching relative paths by directory" do
+
+      let(:cookbook_root) { "/tmp/cb" }
+
+      it "computes the relative path only once for files sharing a directory" do
+        expect(Chef::Util::PathHelper).to receive(:relative_path_from).once.and_call_original
+        parse("/tmp/cb/recipes/a.rb")
+        parse("/tmp/cb/recipes/b.rb")
+      end
+
+      it "computes the relative path once per distinct directory" do
+        expect(Chef::Util::PathHelper).to receive(:relative_path_from).twice.and_call_original
+        parse("/tmp/cb/recipes/a.rb")
+        parse("/tmp/cb/templates/b.erb")
+      end
+
+      it "returns the correct per-file path for cached lookups" do
+        expect(parse("/tmp/cb/recipes/a.rb")).to eq(["recipes/a.rb", "recipes/a.rb", "default"])
+        expect(parse("/tmp/cb/recipes/b.rb")).to eq(["recipes/b.rb", "recipes/b.rb", "default"])
+      end
+
+    end
+
   end
 
   describe "providing upstream URLs for save" do
