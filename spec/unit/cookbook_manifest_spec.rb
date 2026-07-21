@@ -182,6 +182,165 @@ describe Chef::CookbookManifest do
     end
   end
 
+  describe "#generate_manifest" do
+
+    context "when the cookbook has no root paths" do
+
+      it "raises if root_paths is empty" do
+        cookbook_version.root_paths = []
+        expect { cookbook_manifest.manifest }.to raise_error(RuntimeError, /does not have root_paths/)
+      end
+
+      it "raises if root_paths is nil" do
+        cookbook_version.root_paths = nil
+        expect { cookbook_manifest.manifest }.to raise_error(RuntimeError, /does not have root_paths/)
+      end
+
+    end
+
+    context "with files on disk" do
+
+      let(:cookbook_root) { Dir.mktmpdir }
+
+      let(:metadata_rb) { File.join(cookbook_root, "metadata.rb") }
+      let(:recipes_dir) { File.join(cookbook_root, "recipes") }
+      let(:default_rb)  { File.join(recipes_dir, "default.rb") }
+
+      before do
+        FileUtils.mkdir_p(recipes_dir)
+        File.write(metadata_rb, "name 'tatft'\n")
+        File.write(default_rb, "# recipe\n")
+        cookbook_version.all_files = [metadata_rb, recipes_dir, default_rb]
+      end
+
+      after do
+        FileUtils.rm_rf(cookbook_root)
+      end
+
+      it "excludes directories from the manifest" do
+        paths = cookbook_manifest.manifest["all_files"].map { |r| r["full_path"] }
+        expect(paths).to match_array([metadata_rb, default_rb])
+      end
+
+      it "builds a record with name, path, checksum, and specificity for each file" do
+        record = cookbook_manifest.manifest["all_files"].find { |r| r["full_path"] == default_rb }
+        expect(record["name"]).to eq("recipes/default.rb")
+        expect(record["path"]).to eq("recipes/default.rb")
+        expect(record["specificity"]).to eq("default")
+        expect(record["checksum"]).to eq(Chef::Digester.generate_md5_checksum_for_file(default_rb))
+      end
+
+      it "namespaces root files under root_files/" do
+        record = cookbook_manifest.manifest["all_files"].find { |r| r["full_path"] == metadata_rb }
+        expect(record["name"]).to eq("root_files/metadata.rb")
+        expect(record["path"]).to eq("metadata.rb")
+      end
+
+      it "maps each checksum to its file in #checksums" do
+        expect(cookbook_manifest.checksums).to eq(
+          Chef::Digester.generate_md5_checksum_for_file(metadata_rb) => metadata_rb,
+          Chef::Digester.generate_md5_checksum_for_file(default_rb) => default_rb
+        )
+      end
+
+      it "keys #manifest_records_by_path by the relative path" do
+        expect(cookbook_manifest.manifest_records_by_path.keys).to match_array(["metadata.rb", "recipes/default.rb"])
+        expect(cookbook_manifest.manifest_records_by_path["recipes/default.rb"]["full_path"]).to eq(default_rb)
+      end
+
+      it "includes metadata and version" do
+        expect(cookbook_manifest.manifest["metadata"]).to eq(metadata)
+        expect(cookbook_manifest.manifest["version"]).to eq("1.2.3")
+      end
+
+      context "when policy mode is disabled" do
+
+        let(:policy_mode) { false }
+
+        it "sets full_name and cookbook_name but no identifier" do
+          expect(cookbook_manifest.manifest["name"]).to eq("tatft-1.2.3")
+          expect(cookbook_manifest.manifest["cookbook_name"]).to eq("tatft")
+          expect(cookbook_manifest.manifest).not_to have_key("identifier")
+        end
+
+      end
+
+      context "when policy mode is enabled" do
+
+        let(:policy_mode) { true }
+
+        it "sets name and identifier but no cookbook_name" do
+          expect(cookbook_manifest.manifest["name"]).to eq("tatft")
+          expect(cookbook_manifest.manifest["identifier"]).to eq(identifier)
+          expect(cookbook_manifest.manifest).not_to have_key("cookbook_name")
+        end
+
+      end
+
+    end
+
+  end
+
+  describe "#parse_file_from_root_paths" do
+
+    def parse(file)
+      cookbook_manifest.send(:parse_file_from_root_paths, file)
+    end
+
+    context "with a single root path" do
+
+      let(:cookbook_root) { "/tmp/cb" }
+
+      it "maps a root file to the root_files/ namespace with default specificity" do
+        expect(parse("/tmp/cb/metadata.rb")).to eq(["root_files/metadata.rb", "metadata.rb", "default"])
+      end
+
+      it "maps a segment file to default specificity" do
+        expect(parse("/tmp/cb/recipes/default.rb")).to eq(["recipes/default.rb", "recipes/default.rb", "default"])
+      end
+
+      it "maps an unscoped files/ entry to root_default specificity" do
+        expect(parse("/tmp/cb/files/foo.txt")).to eq(["files/foo.txt", "files/foo.txt", "root_default"])
+      end
+
+      it "maps an unscoped templates/ entry to root_default specificity" do
+        expect(parse("/tmp/cb/templates/foo.erb")).to eq(["templates/foo.erb", "templates/foo.erb", "root_default"])
+      end
+
+      it "maps a scoped files/<specificity>/ entry to that specificity and flattens the name" do
+        expect(parse("/tmp/cb/files/default/foo.txt")).to eq(["files/foo.txt", "files/default/foo.txt", "default"])
+      end
+
+      it "maps a scoped templates/<specificity>/ entry to that specificity and flattens the name" do
+        expect(parse("/tmp/cb/templates/ubuntu/foo.erb")).to eq(["templates/foo.erb", "templates/ubuntu/foo.erb", "ubuntu"])
+      end
+
+      it "raises when the file is not under any root path" do
+        expect { parse("/etc/passwd") }.to raise_error(RuntimeError, /not under cookbook root paths/)
+      end
+
+    end
+
+    context "with multiple root paths" do
+
+      before { cookbook_version.root_paths = ["/tmp/cb_a", "/tmp/cb_b"] }
+
+      it "resolves a file under the first root path" do
+        expect(parse("/tmp/cb_a/attributes/default.rb")).to eq(["attributes/default.rb", "attributes/default.rb", "default"])
+      end
+
+      it "resolves a file under a non-first root path against the correct root" do
+        expect(parse("/tmp/cb_b/recipes/default.rb")).to eq(["recipes/default.rb", "recipes/default.rb", "default"])
+      end
+
+      it "raises when the file is under none of the root paths" do
+        expect { parse("/tmp/other/recipes/default.rb") }.to raise_error(RuntimeError, /not under cookbook root paths/)
+      end
+
+    end
+
+  end
+
   describe "providing upstream URLs for save" do
 
     context "and policy mode is disabled" do
