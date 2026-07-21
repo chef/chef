@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.61 -->
-## [v19.3.61](https://github.com/chef/chef/tree/v19.3.61) (2026-07-21)
+<!-- latest_release 19.3.62 -->
+## [v19.3.62](https://github.com/chef/chef/tree/v19.3.62) (2026-07-21)
 
 #### Merged Pull Requests
-- fix: Constrain ffi-yajl to &lt; 3.0 for Ruby 3.2+ compatibility [#16152](https://github.com/chef/chef/pull/16152) ([nikhil2611](https://github.com/nikhil2611))
+- Fix chef_client_* resource in non-hab builds [#16089](https://github.com/chef/chef/pull/16089) ([williamtheaker](https://github.com/williamtheaker))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix chef_client_* resource in non-hab builds [#16089](https://github.com/chef/chef/pull/16089) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.3.62 -->
 - fix: Constrain ffi-yajl to &lt; 3.0 for Ruby 3.2+ compatibility [#16152](https://github.com/chef/chef/pull/16152) ([nikhil2611](https://github.com/nikhil2611)) <!-- 19.3.61 -->
 - CHEF-34369: Add macOS ARM64 kitchen test pipeline using Habitat and chef-test-kitchen-enterprise [#16174](https://github.com/chef/chef/pull/16174) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.60 -->
 - Update files after a Grype report suggests issues [#16205](https://github.com/chef/chef/pull/16205) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.59 -->
