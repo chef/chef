@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.3.65 -->
-## [v19.3.65](https://github.com/chef/chef/tree/v19.3.65) (2026-07-22)
+<!-- latest_release 19.4.0 -->
+## [v19.4.0](https://github.com/chef/chef/tree/v19.4.0) (2026-07-22)
 
 #### Merged Pull Requests
-- Lower &#39;No key detected&#39; log level from puts to Chef::Log.debug [#16222](https://github.com/chef/chef/pull/16222) ([neha-p6](https://github.com/neha-p6))
+- Bump actions/checkout from 6 to 7 [#16218](https://github.com/chef/chef/pull/16218) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump actions/checkout from 6 to 7 [#16218](https://github.com/chef/chef/pull/16218) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.0 -->
 - Lower &#39;No key detected&#39; log level from puts to Chef::Log.debug [#16222](https://github.com/chef/chef/pull/16222) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.65 -->
 - Fix FIPS mode on Linux: set OPENSSL_CONF to hab openssl package config [#16221](https://github.com/chef/chef/pull/16221) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.64 -->
 - Ensuring we don&#39;t load a CVE version of concurrent-ruby [#16216](https://github.com/chef/chef/pull/16216) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.63 -->
