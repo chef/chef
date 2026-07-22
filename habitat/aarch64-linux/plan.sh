@@ -75,6 +75,13 @@ do_setup_environment() {
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
+
+  # Override any system OPENSSL_CONF so OpenSSL uses the hab core/openssl
+  # config, which activates the FIPS provider. Without this, a system-level
+  # OPENSSL_CONF (e.g. /etc/github-runner-openssl.cnf) that lacks the FIPS
+  # provider causes ALL digests to fail when fips_mode=true is set —
+  # including FIPS-approved algorithms like SHA256.
+  set_runtime_env -f OPENSSL_CONF "$(pkg_path_for openssl)/ssl/openssl.cnf"
 }
 
 do_prepare() {
