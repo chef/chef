@@ -235,6 +235,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           clean: true
+          allow-unsafe-pr-checkout: true
 
       - name: Install Habitat CLI
         run: |
