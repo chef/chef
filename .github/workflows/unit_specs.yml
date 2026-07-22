@@ -64,7 +64,11 @@ jobs:
       - name: Create unit test node fixtures
         run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
         shell: bash
-      - run: bundle install
+      - name: Bundle install
+        run: |
+          git config --global core.hardlinks false
+          bundle install
+        shell: bash
       - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -135,6 +139,9 @@ jobs:
           echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
       - name: Create unit test node fixtures
         run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
-      - run: bundle install
+      - name: Bundle install
+        run: |
+          git config --global core.hardlinks false
+          bundle install
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs
