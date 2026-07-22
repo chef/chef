@@ -66,6 +66,7 @@ class Chef
       @manifest = nil
       @checksums = nil
       @manifest_records_by_path = nil
+      @relative_dir_cache = Hash.new { |h, k| h[k] = {} }
       true
     end
 
@@ -267,9 +268,21 @@ class Chef
       @manifest = manifest
     end
 
+    # Many files in a cookbook share a directory, and computing a file's path
+    # relative to a root path is expensive in deeply nested directories over
+    # large numbers of files. Cache the relative path per (root path,
+    # directory) and append the file's basename so the expensive computation
+    # runs once per directory instead of once per file.
+    def get_relative_path_from_root(root_path, file)
+      dirname = File.dirname(file)
+      @relative_dir_cache[root_path][dirname] ||=
+        Chef::Util::PathHelper.relative_path_from(root_path, dirname)
+      @relative_dir_cache[root_path][dirname] + File.basename(file)
+    end
+
     def parse_file_from_root_paths(file)
       root_paths.each do |root_path|
-        pathname = Chef::Util::PathHelper.relative_path_from(root_path, file)
+        pathname = get_relative_path_from_root(root_path, file)
 
         parts = pathname.each_filename.take(2)
         # Check if path is actually under root_path
