@@ -101,65 +101,71 @@ jobs:
           echo "OpenSSL FIPS Diagnostics"
           echo "========================================"
 
-          # Step 1: Raw ruby -- no chef requires at all
-          echo "--- Step 1: Bare ruby (no chef requires) ---"
-          sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e '
+          # Write Ruby diagnostic scripts to temp files.
+          # Use <<~'RUBY' so the content can be indented for YAML while the
+          # squiggly heredoc strips the common leading whitespace automatically.
+
+          cat > /tmp/fips_diag_step1.rb <<~'RUBY'
             require "openssl"
-            puts "OpenSSL version:  #{OpenSSL::OPENSSL_LIBRARY_VERSION}"
-            puts "FIPS mode (before set): #{OpenSSL.fips_mode}"
-            puts "OPENSSL_CONF env: #{ENV[\"OPENSSL_CONF\"].inspect}"
+            puts "OpenSSL version:       #{OpenSSL::OPENSSL_LIBRARY_VERSION}"
+            puts "FIPS mode (before):    #{OpenSSL.fips_mode}"
+            puts "OPENSSL_CONF env:      #{ENV['OPENSSL_CONF'].inspect}"
             begin
-              puts "SHA256 before fips_mode=true: #{OpenSSL::Digest::SHA256.hexdigest(\"test\")}"
+              puts "SHA256 before fips=true: #{OpenSSL::Digest::SHA256.hexdigest('test')}"
             rescue => e
-              puts "SHA256 FAILED before fips_mode=true: #{e.class}: #{e.message}"
+              puts "SHA256 FAILED before fips=true: #{e.class}: #{e.message}"
             end
             OpenSSL.fips_mode = true
             puts "FIPS mode (after set): #{OpenSSL.fips_mode}"
             begin
-              puts "SHA256 after fips_mode=true: #{OpenSSL::Digest::SHA256.hexdigest(\"test\")}"
+              puts "SHA256 after fips=true:  #{OpenSSL::Digest::SHA256.hexdigest('test')}"
             rescue => e
-              puts "SHA256 FAILED after fips_mode=true: #{e.class}: #{e.message}"
+              puts "SHA256 FAILED after fips=true: #{e.class}: #{e.message}"
             end
             begin
-              puts "MD5 after fips_mode=true (should fail): #{OpenSSL::Digest::MD5.hexdigest(\"test\")}"
+              puts "MD5 after fips=true (should fail): #{OpenSSL::Digest::MD5.hexdigest('test')}"
             rescue => e
               puts "MD5 BLOCKED (expected): #{e.class}: #{e.message}"
             end
             begin
-              providers = OpenSSL::Provider.provider_names rescue ["(OpenSSL::Provider not available)"]
-              puts "Loaded providers: #{providers.inspect}"
+              puts "Loaded providers: #{OpenSSL::Provider.provider_names.inspect}"
             rescue => e
               puts "Could not list providers: #{e.message}"
             end
-          ' || true
+          RUBY
 
-          # Step 2: After require "chef" but before init_openssl
-          echo ""
-          echo "--- Step 2: After require chef, before init_openssl ---"
-          sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client ruby -e '
+          cat > /tmp/fips_diag_step2.rb <<~'RUBY'
             require "openssl"
             puts "FIPS mode before require chef: #{OpenSSL.fips_mode}"
             begin
-              puts "SHA256 before require chef: #{OpenSSL::Digest::SHA256.hexdigest(\"test\")}"
+              puts "SHA256 before require chef: #{OpenSSL::Digest::SHA256.hexdigest('test')}"
             rescue => e
               puts "SHA256 FAILED before require chef: #{e.class}: #{e.message}"
             end
             require "chef"
             puts "FIPS mode after require chef (before init_openssl): #{OpenSSL.fips_mode}"
             begin
-              puts "SHA256 after require chef: #{OpenSSL::Digest::SHA256.hexdigest(\"test\")}"
+              puts "SHA256 after require chef: #{OpenSSL::Digest::SHA256.hexdigest('test')}"
             rescue => e
               puts "SHA256 FAILED after require chef: #{e.class}: #{e.message}"
             end
-            # Now simulate init_openssl
             Chef::Config.init_openssl
             puts "FIPS mode after init_openssl: #{OpenSSL.fips_mode}"
             begin
-              puts "SHA256 after init_openssl: #{OpenSSL::Digest::SHA256.hexdigest(\"test\")}"
+              puts "SHA256 after init_openssl: #{OpenSSL::Digest::SHA256.hexdigest('test')}"
             rescue => e
               puts "SHA256 FAILED after init_openssl: #{e.class}: #{e.message}"
             end
-          ' || true
+          RUBY
+
+          # Step 1: Bare ruby — no chef requires at all
+          echo "--- Step 1: Bare ruby (no chef requires) ---"
+          sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client ruby /tmp/fips_diag_step1.rb || true
+
+          echo ""
+          # Step 2: After require "chef", then after init_openssl
+          echo "--- Step 2: After require chef, then after init_openssl ---"
+          sudo -E hab pkg exec $HAB_ORIGIN/chef-infra-client ruby /tmp/fips_diag_step2.rb || true
 
           echo "========================================"
           echo "End of Diagnostics"
