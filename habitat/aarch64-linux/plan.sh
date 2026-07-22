@@ -75,6 +75,14 @@ do_setup_environment() {
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
   set_runtime_env LANG "en_US.UTF-8"
   set_runtime_env LC_CTYPE "en_US.UTF-8"
+
+  # Override any system-level OPENSSL_CONF with the hab core/openssl package's
+  # config. The core/openssl openssl.cnf activates the FIPS provider, which is
+  # required for FIPS mode to work correctly. Without this, a host system
+  # OPENSSL_CONF that does not load the FIPS provider causes all digest
+  # operations to fail when fips_mode=true is set — including FIPS-approved
+  # algorithms like SHA256.
+  set_runtime_env -f OPENSSL_CONF "$(pkg_path_for openssl)/ssl/openssl.cnf"
 }
 
 do_prepare() {

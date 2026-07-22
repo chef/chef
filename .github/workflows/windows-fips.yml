@@ -19,7 +19,6 @@ concurrency:
 
 jobs:
   workflow_guard:
-    if: github.event_name == 'pull_request_target'
     uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
     permissions:
       contents: read
