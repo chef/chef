@@ -151,7 +151,7 @@ class Chef
         if !!results
           @raw_key = results
         elsif key_file.nil? && raw_key.nil?
-          puts "\nNo key detected\n"
+          Chef::Log.debug("No key detected")
           return
         elsif !!key_file
           @raw_key = IO.read(key_file).strip
