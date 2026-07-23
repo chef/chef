@@ -12,6 +12,8 @@ param()
 # Global variables and script-wide error handling
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+$DefaultSigningThumbprint = "EEB3EC48AA807336AA732AC9B310131DFAA034D1"
+$DefaultKeypairAlias = "key_1340572417"
 
 # Function definitions
 function Initialize-Environment {
@@ -179,8 +181,18 @@ function Register-SmctlCertificates {
             smksp_registrar.exe register
             if ( -not $? ) { throw "Failed to register certificates" }
     
-            Write-Output "--- Installing Windows package signing certificate using smctl cli"
-            smctl windows certsync --keypair-alias=key_1340572417
+            $keypairAlias = if (-not [string]::IsNullOrWhiteSpace($env:key_pair_alias)) {
+                $env:key_pair_alias.Trim()
+            }
+            elseif (-not [string]::IsNullOrWhiteSpace($env:OMNIBUS_KEYPAIR_ALIAS)) {
+                $env:OMNIBUS_KEYPAIR_ALIAS.Trim()
+            }
+            else {
+                $DefaultKeypairAlias
+            }
+
+            Write-Output "--- Installing Windows package signing certificate using smctl cli (keypair alias: $keypairAlias)"
+            smctl windows certsync --keypair-alias=$keypairAlias
             if ( -not $? ) { throw "Failed to sync certificates using smctl" }   
         }
     }
@@ -210,7 +222,12 @@ function Get-Certificate {
     param()
     
     try {
-        $thumbprint = "33A82DC08CA7C6B370FFD0C958D9EE30187DE9E4"
+        $thumbprint = if (-not [string]::IsNullOrWhiteSpace($env:OMNIBUS_SIGNING_IDENTITY)) {
+            $env:OMNIBUS_SIGNING_IDENTITY.Trim()
+        }
+        else {
+            $DefaultSigningThumbprint
+        }
 
         # List all certificate from the Current User's Personal store by thumbprint
         $certificate = Get-ChildItem -Path Cert:\CurrentUser\My -Recurse | Where-Object { $_.Thumbprint -eq $thumbprint }
