@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.15 -->
-## [v18.11.15](https://github.com/chef/chef/tree/v18.11.15) (2026-07-24)
+<!-- latest_release 18.11.16 -->
+## [v18.11.16](https://github.com/chef/chef/tree/v18.11.16) (2026-07-24)
 
 #### Merged Pull Requests
-- CVE-2026-27820 - Huge upgrade for Zlib  [#16236](https://github.com/chef/chef/pull/16236) ([johnmccrae](https://github.com/johnmccrae))
+- CVE-2026-41316 - Huge upgrade for Erb [#16237](https://github.com/chef/chef/pull/16237) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.11.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CVE-2026-41316 - Huge upgrade for Erb [#16237](https://github.com/chef/chef/pull/16237) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.16 -->
 - CVE-2026-27820 - Huge upgrade for Zlib  [#16236](https://github.com/chef/chef/pull/16236) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.15 -->
 - [Chef18][CookbookManifest] Add relative directory cache [#16215](https://github.com/chef/chef/pull/16215) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 18.11.14 -->
 - Caught a number of failure points and corrected them [#16209](https://github.com/chef/chef/pull/16209) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.13 -->
