@@ -55,6 +55,9 @@ jobs:
       # scc-output-filename: 'scc-output.txt'
       perform-language-linting: false    # Perform language-specific linting and pre-compilation checks
 
+      # grype vulnerability scan on source code (runs on push/merge to main, not on PRs)
+      perform-grype-scan: ${{ github.event_name == 'push' }}
+
       # trufflehog secret scanning
       perform-trufflehog-scan: true
 
