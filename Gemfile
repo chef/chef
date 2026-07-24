@@ -11,6 +11,9 @@ gem "ffi", ">= 1.15.5", "<= 1.18.0"
 # CVE-2026-27820 (CVSS 9.8): buffer overflow in Zlib::GzipReader / zstream_buffer_ungets.
 # Versions <= 3.0.0, 3.1.0-3.1.1, and 3.2.0-3.2.1 are affected. Fixed in 3.2.3.
 gem "zlib", ">= 3.2.3"
+# CVE-2026-41316 (CVSS 8.1): ERB @_init deserialization guard bypass via def_method/def_module/def_class.
+# Versions <= 6.0.3 are affected. Fixed in 4.0.3.1, 4.0.4.1, 6.0.1.1, and 6.0.4.
+gem "erb", ">= 4.0.4.1"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
