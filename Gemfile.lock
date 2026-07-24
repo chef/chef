@@ -516,6 +516,7 @@ GEM
       structured_warnings
     wisper (2.0.1)
     wmi-lite (1.0.7)
+    zlib (3.2.3)
 
 PLATFORMS
   arm64-darwin-21
@@ -549,6 +550,7 @@ DEPENDENCIES
   rspec
   ruby-shadow!
   webmock
+  zlib (>= 3.2.3)
 
 BUNDLED WITH
    2.3.27

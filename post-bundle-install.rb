@@ -113,6 +113,7 @@ end
 default_gem_list = {
   resolv: "0.2.1",
   uri: "0.12.4",
+  zlib: "2.1.1",
 }
 
 # On AIX, the omnibus toolchain/foundation ships Ruby 3.0.3.  Replacing the
