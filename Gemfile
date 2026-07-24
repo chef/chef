@@ -8,6 +8,9 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
 gem "ffi", ">= 1.15.5", "<= 1.18.0"
+# CVE-2026-27820 (CVSS 9.8): buffer overflow in Zlib::GzipReader / zstream_buffer_ungets.
+# Versions <= 3.0.0, 3.1.0-3.1.1, and 3.2.0-3.2.1 are affected. Fixed in 3.2.3.
+gem "zlib", ">= 3.2.3"
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
