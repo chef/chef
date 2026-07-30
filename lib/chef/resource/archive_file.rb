@@ -37,11 +37,17 @@ begin
   # This code dynamically determines the path to archive.dll using the Habitat CLI (`hab pkg path core/libarchive`) and explicitly
   # loads the library using FFI::DynamicLibrary.open. This ensures that the library is correctly loaded in the Habitat environment.
   #
-  # Note: This logic is gated by a check for Habitat-specific environment variables (HAB_CACHE_SRC_PATH or HAB_PKG_PATH) to ensure
-  # that it is only applied in Habitat runs. For other environments (e.g., Omnibus, plain gem installations, or git checkouts),
-  # the default behavior of FFI is sufficient, as the libraries are installed in standard locations or embedded paths that are
-  # included in the default search paths.
-  if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && (ENV["HAB_CACHE_SRC_PATH"] || ENV["HAB_PKG_PATH"])
+  # Note: This logic is gated by a check that we are running from a Habitat package
+  # path to ensure it is only applied in Habitat runs. For other environments
+  # (e.g., Omnibus, plain gem installations, or git checkouts), the default behavior
+  # of FFI is sufficient, as the libraries are installed in standard locations or
+  # embedded paths that are included in the default search paths.
+  # Detect Habitat runtime environment reliably. HAB_CACHE_SRC_PATH is only set
+  # during `hab pkg build` (studio), not at runtime. HAB_PKG_PATH is also not
+  # guaranteed at runtime. Checking __FILE__ is reliable: when chef-client runs
+  # from a Hab package via `hab pkg exec`, this file's path always contains
+  # "hab/pkgs".
+  if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
     require "open3" unless defined?(Open3)
     # Dynamically determine the path to the core/libarchive package

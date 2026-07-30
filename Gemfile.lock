@@ -394,7 +394,7 @@ GEM
     nori (2.9.1)
       bigdecimal
       stringio
-    openssl (3.3.1)
+    openssl (3.3.3)
     ostruct (0.6.3)
     parallel (1.28.0)
     parser (3.3.11.1)
@@ -588,7 +588,7 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (= 7.1.7)
   ohai!
-  openssl (= 3.3.1)
+  openssl (= 3.3.3)
   pry (~> 0.16.0)
   pry-byebug
   pry-stack_explorer
