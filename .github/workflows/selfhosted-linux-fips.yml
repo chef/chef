@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           allow-unsafe-pr-checkout: true
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           clean: false
 
