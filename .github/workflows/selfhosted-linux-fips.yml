@@ -262,11 +262,32 @@ jobs:
           # Remove the installed Chef Infra Client package(s) from /hab/pkgs
           sudo rm -rf /hab/pkgs/$HAB_ORIGIN/chef-infra-client || true
 
-          # Clean up Habitat build artifacts
+          # Clean up Habitat build artifacts (gha origin only)
           sudo rm -rf /hab/cache/artifacts/$HAB_ORIGIN-chef-infra-client-*.hart || true
 
           # Remove origin keys
           sudo rm -f /hab/cache/keys/$HAB_ORIGIN-*.* || true
+
+          # Clean up the Habitat build studio to avoid stale build environments.
+          # The studio mounts /dev/pts and other filesystems inside itself — these
+          # must be unmounted before the directory can be removed, otherwise rm -rf
+          # fails with "Device or resource busy".
+          for studio_dir in /hab/studios/*/; do
+            if [ -d "$studio_dir" ]; then
+              # Unmount any lingering bind mounts inside the studio (reverse order)
+              mount | grep "$studio_dir" | awk '{print $3}' | sort -r | while read -r mnt; do
+                sudo umount -lf "$mnt" 2>/dev/null || true
+              done
+              sudo rm -rf "$studio_dir" || true
+            fi
+          done
+
+          # Remove stale core dependency packages that accumulate across runs
+          # (ruby, openssl and their transitive deps) to force fresh resolution from builder
+          sudo rm -rf /hab/pkgs/core/ruby3_4 || true
+          sudo rm -rf /hab/pkgs/core/openssl || true
+          sudo rm -rf /hab/cache/artifacts/core-ruby3_4-*.hart || true
+          sudo rm -rf /hab/cache/artifacts/core-openssl-*.hart || true
 
           # Clean up any Chef local-mode cache
           sudo rm -rf /root/.chef/local-mode-cache || true
