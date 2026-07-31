@@ -69,7 +69,23 @@ do_verify() {
 }
 
 do_setup_environment() {
+  # Determine Ruby API version for gem paths. Use fallback if detection fails
+  # (pkg_path_for may not be available at top-level before deps are resolved).
+  local ruby_pkg
+  ruby_pkg=$(pkg_path_for "$_chef_client_ruby" 2>/dev/null || echo "")
+  local ruby_gem_version="3.4.0"  # fallback
+  if [[ -n "$ruby_pkg" && -d "$ruby_pkg/lib/ruby/gems" ]]; then
+    local detected_version
+    detected_version=$(ls "$ruby_pkg/lib/ruby/gems" 2>/dev/null | head -n1)
+    if [[ -n "$detected_version" ]]; then
+      ruby_gem_version="$detected_version"
+    fi
+  fi
+  build_line "Using Ruby gem API version: $ruby_gem_version"
+
+  # GEM_PATH: package vendor + chef-cli gem dir
   push_runtime_env GEM_PATH "${pkg_prefix}/vendor"
+  push_runtime_env GEM_PATH "\${HOME}/.chef/ruby/${ruby_gem_version}/gems"
 
   set_runtime_env APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
   set_runtime_env -f SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"

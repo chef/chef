@@ -40,7 +40,14 @@ function Invoke-Begin {
 
 function Invoke-SetupEnvironment {
     write-output "*** Start Invoke-SetupEnvironment Function"
+    
+    # Ruby gem API version - use 3.4.0 as fallback
+    $ruby_gem_version = "3.4.0"
+    Write-BuildLine "Using Ruby gem API version: $ruby_gem_version"
+    
+    # GEM_PATH: package vendor + chef-cli gem dir
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
+    Push-RuntimeEnv -IsPath GEM_PATH "`${HOME}/.chef/ruby/$ruby_gem_version/gems"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     # Set-RuntimeEnv FORCE_FFI_YAJL "ffi" # default: ext - Always use the C-extensions because we use MRI on all the things and C is fast.
@@ -55,8 +62,7 @@ function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$(Get-HabPackagePath xz)/bin"
 
     # Ensure Ruby 3.4 gem paths are properly set up
-    $ruby_version = "3.4.0"
-    Push-RuntimeEnv -IsPath GEM_PATH "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_version"
+    Push-RuntimeEnv -IsPath GEM_PATH "$(Get-HabPackagePath ruby3_4-plus-devkit)/lib/ruby/gems/$ruby_gem_version"
 }
 
 function Invoke-Download() {
