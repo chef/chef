@@ -360,55 +360,31 @@ function Invoke-After {
     Invoke-DevkitSmokeTests
 
     # Trim the fat before packaging
-
     # We don't need the cache of downloaded .gem files ...
+    Write-BuildLine "Removing vendor cache"
     Remove-Item $pkg_prefix/vendor/cache -Recurse -Force
     # ... or bundler's cache of git-ref'd gems
-    $bundlerPath = "$pkg_prefix/vendor/bundler"
-    $maxRetries = 5
-    for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-        try {
-            Remove-Item $bundlerPath -Recurse -Force -ErrorAction Stop
-            break
-        } catch {
-            if ($attempt -lt $maxRetries) {
-                Write-BuildLine " ** Removing ${bundlerPath}: attempt $attempt failed (git subdirectories may be locked), retrying..."
-                Start-Sleep -Seconds 2
-            } else {
-                throw "Failed to remove ${bundlerPath} after $maxRetries attempts: $_"
-            }
-        }
-    }
+    Write-BuildLine "Removing bundler cache"
+    cmd.exe /c RMDIR /S /Q "$($pkg_prefix.Replace('/', '\'))\vendor\bundler"
 
     # We don't need the gem docs.
+    Write-BuildLine "Removing vendor doc"
     Remove-Item $pkg_prefix/vendor/doc -Recurse -Force
     # We don't need to ship the test suites for every gem dependency,
     # only Chef's for package verification.
+    Write-BuildLine "Removing vendored gem specs"
     $specDirs = Get-ChildItem $pkg_prefix/vendor/gems -Filter "spec" -Directory -Recurse -Depth 1 `
-        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" }
-    foreach ($specDir in $specDirs) {
-        $maxRetries = 5
-        for ($attempt = 1; $attempt -le $maxRetries; $attempt++) {
-            try {
-                Remove-Item $specDir.FullName -Recurse -Force -ErrorAction Stop
-                break
-            } catch {
-                if ($attempt -lt $maxRetries) {
-                    Write-BuildLine " ** Invoke-After: removing $($specDir.FullName): attempt $attempt failed, retrying..."
-                    Start-Sleep -Seconds 2
-                } else {
-                    throw "Invoke-After: failed to remove $($specDir.FullName) after $maxRetries attempts: $_"
-                }
-            }
-        }
-    }
+        | Where-Object -FilterScript { $_.FullName -notlike "*chef-$pkg_version*" } `
+        | ForEach-Object { cmd.exe /c RMDIR /S /Q "$($_.FullName)" }
     # Remove .github directories from vendored gems so that GitHub Actions workflow
     # files are not shipped and do not trigger grype vulnerability reports.
     # NOTE: this is temporary and can be removed once upstream dependencies
     # fix their file exclusions.
+    Write-BuildLine "Removing .github directories from vendored gems"
     Get-ChildItem $pkg_prefix/vendor/gems -Filter ".github" -Directory -Recurse `
         | Remove-Item -Recurse -Force
     # Remove the byproducts of compiling gems with extensions
+    Write-BuildLine "Removing byproducts of compiling gems with extensions"
     Get-ChildItem $pkg_prefix/vendor/gems -Include @("gem_make.out", "mkmf.log", "Makefile") -File -Recurse `
         | Remove-Item -Force
 
