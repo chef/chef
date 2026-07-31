@@ -1,13 +1,14 @@
 REM skip this if hab pkg exec has already done it, APPBUNDLER_ALLOW_RVM will be set if hab pkg exec
 IF NOT DEFINED APPBUNDLER_ALLOW_RVM (
   SET "APPBUNDLER_ALLOW_RVM=true"
-  REM Set up GEM_PATH: chef-cli gem dir
+  REM Set up GEM_PATH: vendor (bundled deps) + chef-cli gem dir (plugins)
+  SET "VENDOR_DIR=%~dp0..\vendor"
   SET "RUBY_GEM_VERSION=3.4.0"
   SET "CHEF_CLI_GEM_DIR=%USERPROFILE%\.chef\ruby\%RUBY_GEM_VERSION%\gems"
   IF DEFINED GEM_PATH (
-    SET "GEM_PATH=%CHEF_CLI_GEM_DIR%;%GEM_PATH%"
+    SET "GEM_PATH=%VENDOR_DIR%;%CHEF_CLI_GEM_DIR%;%GEM_PATH%"
   ) ELSE (
-    SET "GEM_PATH=%CHEF_CLI_GEM_DIR%"
+    SET "GEM_PATH=%VENDOR_DIR%;%CHEF_CLI_GEM_DIR%"
   )
   IF EXIST "%~dp0..\RUNTIME_ENVIRONMENT" (
     FOR /F "usebackq tokens=* delims=" %%A IN ("%~dp0..\RUNTIME_ENVIRONMENT") DO (
