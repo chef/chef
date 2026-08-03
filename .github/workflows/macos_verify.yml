@@ -112,3 +112,32 @@ jobs:
         run: |
           source ./results/last_build.env
           sudo -E ./habitat/tests/test.darwin.sh "$pkg_ident"
+
+      - name: Export Habitat Package as macOS Tarball
+        run: |
+          source ./results/last_build.env
+          echo "Exporting $pkg_ident as a tarball for aarch64-darwin..."
+          sudo -E hab pkg export tar "$pkg_ident"
+          tarball=$(find . -maxdepth 1 -name "*.tar.gz" | head -1)
+          echo "MACOS_TARBALL=$tarball" >> "$GITHUB_ENV"
+          echo "Exported tarball: $tarball"
+
+      - name: Upload macOS Tarball as GitHub Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chef-infra-client-aarch64-darwin
+          path: "*.tar.gz"
+          retention-days: 30
+
+      - name: Upload macOS Tarball to S3
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          mkdir -p upload
+          find . -maxdepth 1 -name "*.tar.gz" | xargs -I {} cp {} upload/
+          aws s3 sync upload/ s3://unstable-habitat-tarball/macos/ \
+            --exclude "*" --include "*.tar.gz" \
+            --region us-west-2
+          echo "Uploaded tarball to s3://unstable-habitat-tarball/macos/"

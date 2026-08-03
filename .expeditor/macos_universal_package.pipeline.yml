@@ -1,1 +1,33 @@
-# This pipeline is currently under development.
+# Pipeline to export the macOS (aarch64-darwin) Habitat package for chef-infra-client
+# as a self-contained tarball and upload it to S3 for consumption by migration tooling.
+# This mirrors hab-export-pipeline.yml which does the same for x86_64-linux.
+---
+expeditor:
+  secrets:
+    PIPELINE_HAB_AUTH_TOKEN:
+      path: account/static/habitat/chef-ci
+      field: auth_token
+  accounts:
+    - aws/chef-cd
+  defaults:
+    buildkite:
+      timeout_in_minutes: 60
+      env:
+        HAB_ORIGIN: "chef"
+        PIPELINE_HAB_BLDR_URL: "https://bldr.habitat.sh"
+        HAB_STUDIO_SECRET_HAB_PREFER_LOCAL_CHEF_DEPS: "true"
+        HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: "unstable"
+
+steps:
+
+  - label: "[:mac: build hab-pkg-export-tar aarch64-darwin and upload to :amazon-s3:]"
+    command:
+      - echo "--- exporting aarch64-darwin tarball for chef/chef-infra-client"
+      - hab pkg export tar chef/chef-infra-client --channel unstable --target aarch64-darwin
+      - mkdir -p upload && find . -name "chef-chef-infra-client-*.tar.gz" | grep -E 'chef-chef-infra-client-[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.tar\.gz' | xargs -I {} cp {} upload/
+      - cd upload/ && buildkite-agent artifact upload "*.tar.gz" && aws s3 sync . s3://unstable-habitat-tarball/macos/ --exclude "*" --include "*.tar.gz" --region us-west-2 --profile chef-cd
+
+    expeditor:
+      executor:
+        macos:
+          os-version: "14"
