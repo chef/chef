@@ -33,7 +33,7 @@ From there you should see a zoom link that links you to the meeting.
 - [Win32-TaskScheduler](https://github.com/chef/win32-taskscheduler) ![Open PRs](https://img.shields.io/github/issues-pr/chef/win32-taskscheduler) [Win32-TaskScheduler pull requests](https://github.com/chef/win32-taskscheduler/pulls)
 - [Win32-Process](https://github.com/chef/win32-process) ![Open PRs](https://img.shields.io/github/issues-pr/chef/win32-process) [Win32-Process pull requests](https://github.com/chef/win32-process/pulls)
 - [Win32-Event](https://github.com/chef/win32-event) ![Open PRs](https://img.shields.io/github/issues-pr/chef/win32-event) [Win32-Event pull requests](https://github.com/chef/win32-event/pulls)
-- [Win32-Api](https://github.com/chef/win32-api) ![Open PRs](https://img.shields.io/github/issues-pr/chef/win32-api) [Win32-Api pull requests](https://github.com/chef/win32-api/pulls)
+- [Chef-Win32-Api](https://github.com/chef/chef-win32-api) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef-win32-api) [Chef-Win32-Api pull requests](https://github.com/chef/chef-win32-api/pulls)
 - [Win32-Eventlog](https://github.com/chef/win32-eventlog) ![Open PRs](https://img.shields.io/github/issues-pr/chef/win32-eventlog) [Win32-Eventlog pull requests](https://github.com/chef/win32-eventlog/pulls)
 - [Ffi-Win32-Extensions](https://github.com/chef/ffi-win32-extensions) ![Open PRs](https://img.shields.io/github/issues-pr/chef/ffi-win32-extensions) [Ffi-Win32-Extensions pull requests](https://github.com/chef/ffi-win32-extensions/pulls)
 

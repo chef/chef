@@ -1,17 +1,24 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.4 -->
-## [v19.4.4](https://github.com/chef/chef/tree/v19.4.4) (2026-07-27)
+<!-- latest_release 19.4.11 -->
+## [v19.4.11](https://github.com/chef/chef/tree/v19.4.11) (2026-08-04)
 
 #### Merged Pull Requests
-- Remove experimental tag warning from target mode [#16088](https://github.com/chef/chef/pull/16088) ([tpowell-progress](https://github.com/tpowell-progress))
+- docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.11 -->
+- use rmdir instead of remove-item for windows plans [#16238](https://github.com/chef/chef/pull/16238) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.10 -->
+- Temporarily skip habitat_install archive_file in Windows kitchen [#16249](https://github.com/chef/chef/pull/16249) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.9 -->
+- Widen ffi-yajl version constraint [#16240](https://github.com/chef/chef/pull/16240) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.8 -->
+- Temporarily skip archive_file test in Windows kitchen [#16247](https://github.com/chef/chef/pull/16247) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.7 -->
+- Update Ruby to 3.4.10 in all Habitat plans [#16242](https://github.com/chef/chef/pull/16242) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.6 -->
+- Fix selfhosted-linux-fips to checkout PR head instead of base [#16246](https://github.com/chef/chef/pull/16246) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.5 -->
 - Remove experimental tag warning from target mode [#16088](https://github.com/chef/chef/pull/16088) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.4 -->
 - [CookbookManifest] Add relative directory cache [#16207](https://github.com/chef/chef/pull/16207) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.4.3 -->
 - Fix intermittent git hardlink error during bundle install in gem_tests [#16227](https://github.com/chef/chef/pull/16227) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.2 -->
