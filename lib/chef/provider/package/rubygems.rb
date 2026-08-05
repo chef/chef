@@ -18,6 +18,7 @@
 #
 
 autoload :URI, "uri"
+require "set"
 require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
@@ -561,9 +562,74 @@ class Chef
         end
 
         def gem_sources
-          srcs = [ new_resource.source ]
+          srcs = [ new_resource.source ].flatten.compact.map { |s| with_license_auth(s) }
           srcs << (Chef::Config[:rubygems_url] || "https://rubygems.org") if include_default_source?
-          srcs.flatten.compact
+          srcs.reject { |s| self.class.failed_license_sources.include?(license_source_key(s)) }
+        end
+
+        # Embeds new_resource.license_id as HTTP Basic Auth userinfo on
+        # http(s) source URLs -- the standard rubygems mechanism for
+        # authenticating to a private gem server -- unless the URL already
+        # carries credentials.
+        def with_license_auth(src)
+          return src unless new_resource.license_id && src.is_a?(String)
+
+          uri = URI.parse(src)
+          return src unless %w{http https}.include?(uri.scheme) && uri.user.nil?
+
+          uri.user = new_resource.license_id
+          uri.to_s
+        rescue URI::InvalidURIError
+          # ponytail: non-URL sources (e.g. local .gem paths) are left untouched
+          src
+        end
+
+        # Identity of a source ignoring credentials, used to remember a
+        # licensed source that failed without needing to know its license id.
+        # Returns nil for sources with no embedded credentials (nothing to
+        # remember/exclude) or that aren't URLs.
+        def license_source_key(src)
+          return nil unless src
+
+          uri = URI.parse(src.to_s)
+          return nil unless uri.user
+
+          "#{uri.scheme}://#{uri.host}:#{uri.port}#{uri.path}"
+        rescue URI::InvalidURIError
+          nil
+        end
+
+        def license_source_key_from_error(error)
+          uri = error.respond_to?(:uri) ? error.uri : (error.respond_to?(:source) ? error.source&.uri : nil)
+          license_source_key(uri)
+        end
+
+        ##
+        # Retries once, dropping a proprietary gem source that just failed to
+        # authenticate/fetch from, then remembers it for the remainder of
+        # this chef-client run (ponytail: process-scoped only, resets each
+        # run -- not persisted to disk) so later resources fall straight
+        # through to the remaining gem sources instead of retrying a known-
+        # broken server.
+        def with_license_fallback
+          yield
+        rescue Gem::RemoteFetcher::FetchError, Gem::SourceFetchProblem => e
+          key = license_source_key_from_error(e)
+          raise unless key && !self.class.failed_license_sources.include?(key)
+
+          logger.warn("#{new_resource} failed to fetch from licensed gem source (#{e.message}); falling back to remaining gem sources for the rest of this run.")
+          self.class.failed_license_sources << key
+          yield
+        end
+
+        class << self
+          # ponytail: process-scoped memo (resets every chef-client run,
+          # not persisted to disk) of proprietary gem sources that failed
+          # to authenticate/fetch, so later resources in the same run skip
+          # them instead of retrying.
+          def failed_license_sources
+            @failed_license_sources ||= Set.new
+          end
         end
 
         def load_current_resource
@@ -593,7 +659,7 @@ class Chef
 
         def candidate_version
           @candidate_version ||= if source_is_remote?
-                                   @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
+                                   with_license_fallback { @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s }
                                  else
                                    @gem_env.candidate_version_from_file(gem_dependency, new_resource.source).to_s
                                  end
@@ -614,11 +680,13 @@ class Chef
         def install_package(name, version)
           if source_is_remote? && new_resource.gem_binary.nil?
             if new_resource.options.nil?
-              @gem_env.install(gem_dependency, sources: gem_sources)
+              with_license_fallback { @gem_env.install(gem_dependency, sources: gem_sources) }
             elsif new_resource.options.is_a?(Hash)
-              options = new_resource.options
-              options[:sources] = gem_sources
-              @gem_env.install(gem_dependency, options)
+              with_license_fallback do
+                options = new_resource.options
+                options[:sources] = gem_sources
+                @gem_env.install(gem_dependency, options)
+              end
             else
               install_via_gem_command(name, version)
             end
