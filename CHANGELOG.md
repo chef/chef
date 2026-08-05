@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.11 -->
-## [v19.4.11](https://github.com/chef/chef/tree/v19.4.11) (2026-08-04)
+<!-- latest_release 19.4.12 -->
+## [v19.4.12](https://github.com/chef/chef/tree/v19.4.12) (2026-08-05)
 
 #### Merged Pull Requests
-- docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress))
+- Restore Windows kitchen recipes after upstream libarchive fix [#16250](https://github.com/chef/chef/pull/16250) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Restore Windows kitchen recipes after upstream libarchive fix [#16250](https://github.com/chef/chef/pull/16250) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.12 -->
 - docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.11 -->
 - use rmdir instead of remove-item for windows plans [#16238](https://github.com/chef/chef/pull/16238) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.10 -->
 - Temporarily skip habitat_install archive_file in Windows kitchen [#16249](https://github.com/chef/chef/pull/16249) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.9 -->
