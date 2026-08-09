@@ -1461,6 +1461,40 @@ describe Chef::Resource do
 
         expect(actual_value).to eq("0123")
       end
+
+      it "changes the umask in the block when the umask is an Integer" do
+        resource.umask = 0o123
+
+        block_value = nil
+
+        resource.with_umask do
+          block_value = ::File.umask
+        end
+
+        # Format the returned value so a potential error message is easier to understand.
+        actual_value = block_value.to_s(8).rjust(4, "0")
+
+        expect(actual_value).to eq("0123")
+      end
+
+      it "resets the umask afterwards when the umask is an Integer" do
+        resource.umask = 0o123
+
+        resource.with_umask do
+          "noop"
+        end
+
+        expect(::File.umask).to eq(original_umask)
+      end
+    end
+
+    it "does not mask an error raised while setting the umask" do
+      resource.umask = "0123"
+
+      allow(::File).to receive(:umask).and_call_original
+      allow(::File).to receive(:umask).with(0o123).and_raise(ArgumentError, "boom")
+
+      expect { resource.with_umask { "noop" } }.to raise_error(ArgumentError, "boom")
     end
 
     it "resets the umask afterwards" do
