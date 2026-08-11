@@ -73,6 +73,23 @@ describe Chef::Resource::AptRepository do
     expect(resource.options).to eql(["by-hash=no"])
   end
 
+  it "cache_rebuild defaults to true" do
+    expect(resource.cache_rebuild).to be true
+  end
+
+  it "cache_rebuild_ignore_failure defaults to true" do
+    expect(resource.cache_rebuild_ignore_failure).to be true
+  end
+
+  it "allows setting cache_rebuild_ignore_failure to false" do
+    resource.cache_rebuild_ignore_failure false
+    expect(resource.cache_rebuild_ignore_failure).to be false
+  end
+
+  it "only accepts true or false for cache_rebuild_ignore_failure" do
+    expect { resource.cache_rebuild_ignore_failure "yes" }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
   it "fails if the user provides a repo_name with a forward slash" do
     expect { resource.repo_name "foo/bar" }.to raise_error(ArgumentError)
   end
