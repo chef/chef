@@ -155,8 +155,10 @@ then
       echo "        - AWS_REGION"
       echo "        - AZURE_TENANT_ID"
       echo "        - AZURE_CLIENT_ID"
-      echo "        - AZURE_CLIENT_SECRET"
+      echo "        - AKEYLESS_ACCESS_ID"
+      echo "        - AZURE_CLIENT_SECRET"  
       echo "        - OMNIBUS_AZURE_KEY_VAULT_URL"
+      echo "        - OMNIBUS_DS_PATH"
       echo "        - OMNIBUS_AZURE_CERT_NAME"
       echo "      volumes:"
       echo '        - "c:\\buildkite-agent:c:\\buildkite-agent"'
