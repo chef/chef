@@ -259,7 +259,9 @@ POWERSHELLEOF
   }
   rm -f "$PSCRIPT"
 
-  eval "$(echo "$CREDS" | grep '^AZURE_')"
+  while IFS='=' read -r key value; do
+    [[ "$key" =~ ^AZURE_ ]] && export "$key=$value"
+  done <<< "$(echo "$CREDS" | grep '^AZURE_')"
   unset AKEYLESS_ACCESS_ID
 
   if [[ -z "$AZURE_TENANT_ID" ]] || [[ -z "$AZURE_CLIENT_ID" ]] || [[ -z "$AZURE_CLIENT_SECRET" ]]; then

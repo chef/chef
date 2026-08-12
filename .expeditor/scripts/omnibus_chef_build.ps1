@@ -94,8 +94,8 @@ function Initialize-ProgressSigning {
     Write-Output "--- Initializing Progress EV code signing"
     
     # Use Azure credentials passed from the pre-command hook if present; otherwise fetch from Akeyless.
-    if (-not ([string]::IsNullOrWhiteSpace($env:AZURE_TENANT_ID) -and `
-              [string]::IsNullOrWhiteSpace($env:AZURE_CLIENT_ID) -and `
+    if (-not ([string]::IsNullOrWhiteSpace($env:AZURE_TENANT_ID) -or `
+              [string]::IsNullOrWhiteSpace($env:AZURE_CLIENT_ID) -or `
               [string]::IsNullOrWhiteSpace($env:AZURE_CLIENT_SECRET))) {
         Write-Output "Azure credentials already set (passed from pre-command hook)"
     } else {
@@ -211,14 +211,19 @@ function Sign-ChefPackage {
         $msiPath = Get-ChildItem -Path "C:\omnibus-ruby\chef\pkg\" -Filter "*.msi" -ErrorAction SilentlyContinue | Select-Object -First 1
 
         if (-not $msiPath) {
-            Write-Warning "No MSI file found in C:\omnibus-ruby\chef\pkg\"
-            return
+            Write-Error "No MSI file found in C:\omnibus-ruby\chef\pkg\"
+            exit 1
         }
 
         $msiPath = $msiPath.FullName
         Write-Output "Found MSI: $(Split-Path $msiPath -Leaf)"
 
         $sig = Get-AuthenticodeSignature -FilePath $msiPath
+
+        if ($null -eq $sig.SignerCertificate) {
+            Write-Error "MSI has no signer certificate (file may be unsigned)"
+            exit 1
+        }
 
         Write-Output "  Status:     $($sig.Status)"
         Write-Output "  Subject:    $($sig.SignerCertificate.Subject)"
