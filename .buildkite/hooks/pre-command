@@ -187,3 +187,102 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG"
     
     echo "GITHUB_TOKEN set for private repository access"
 fi
+
+# Fetch Progress EV code signing credentials for Windows builds.
+# chef-18 builds run inside Docker; credentials must be written to BUILDKITE_ENV_FILE
+# before the container starts so the Docker plugin can pass them into the container.
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
+  echo "--- Initializing Progress EV code signing credentials"
+
+  AKEYLESS_ACCESS_ID=$(aws ssm get-parameter \
+    --name "buildkite-akeyless-access-id" \
+    --with-decryption \
+    --query "Parameter.Value" \
+    --output text \
+    --region "${AWS_REGION:-us-west-2}") || {
+    echo "ERROR: Failed to fetch Akeyless access ID from Parameter Store"
+    exit 1
+  }
+
+  [[ -z "$AKEYLESS_ACCESS_ID" ]] && { echo "ERROR: AKEYLESS_ACCESS_ID is empty"; exit 1; }
+  export AKEYLESS_ACCESS_ID
+
+  # Run a temporary PowerShell script to authenticate to Akeyless and fetch the Azure Service
+  # Principal credentials for Progress EV signing. PowerShell is required because akeyless.exe
+  # is a Windows binary and ConvertFrom-Json is needed to parse the dynamic secret JSON response.
+  PSCRIPT="/tmp/akeyless-fetch-creds-$$.ps1"
+  cat > "$PSCRIPT" << 'POWERSHELLEOF'
+$AkeylessExe = $null
+foreach ($candidate in @(
+    "$env:USERPROFILE\.local\bin\akeyless.exe",
+    "$env:USERPROFILE\.akeyless\bin\akeyless.exe"
+)) {
+    if (Test-Path $candidate) { $AkeylessExe = $candidate; break }
+}
+
+if (-not $AkeylessExe) {
+    Write-Error "Akeyless CLI not found in common locations (.local\bin, .akeyless\bin). Ensure it is pre-installed on the Windows agent."
+    exit 1
+}
+
+$AuthOutput = & $AkeylessExe auth --access-id $env:AKEYLESS_ACCESS_ID --access-type aws_iam 2>&1
+if ($LASTEXITCODE -ne 0) { Write-Error "Akeyless auth failed: $AuthOutput"; exit 1 }
+
+$TokenMatch = $AuthOutput | Select-String 'Token:\s+(\S+)'
+if (-not $TokenMatch) { Write-Error "Could not extract Akeyless token from: $AuthOutput"; exit 1 }
+$Token = $TokenMatch.Matches[0].Groups[1].Value
+
+$DsJson = & $AkeylessExe dynamic-secret get-value --name "/DevOps/EvCodeSign/evcodesignservice" --token $Token 2>&1
+if ($LASTEXITCODE -ne 0) { Write-Error "Failed to fetch dynamic secret: $DsJson"; exit 1 }
+
+# Dynamic secret response: {"secret":{"tenantId":"...", "appId":"...", "secretText":"..."}}
+# Fallback handles flat JSON in case the response structure differs
+$Ds = $DsJson | ConvertFrom-Json
+$DsData = if ($Ds.secret -and $Ds.secret -is [PSCustomObject]) { $Ds.secret } else { $Ds }
+
+if (-not $DsData.tenantId -or -not $DsData.appId -or -not $DsData.secretText) {
+    Write-Error "Missing required Azure credentials in dynamic secret response"
+    exit 1
+}
+
+# Output as KEY=VALUE lines for bash eval
+Write-Host "AZURE_TENANT_ID=$($DsData.tenantId)"
+Write-Host "AZURE_CLIENT_ID=$($DsData.appId)"
+Write-Host "AZURE_CLIENT_SECRET=$($DsData.secretText)"
+POWERSHELLEOF
+
+  CREDS=$(powershell -NoProfile -File "$PSCRIPT" 2>&1) || {
+    echo "ERROR: Akeyless credential fetch failed:"
+    echo "$CREDS"
+    rm -f "$PSCRIPT"
+    exit 1
+  }
+  rm -f "$PSCRIPT"
+
+  eval "$(echo "$CREDS" | grep '^AZURE_')"
+  unset AKEYLESS_ACCESS_ID
+
+  if [[ -z "$AZURE_TENANT_ID" ]] || [[ -z "$AZURE_CLIENT_ID" ]] || [[ -z "$AZURE_CLIENT_SECRET" ]]; then
+    echo "ERROR: Failed to extract Azure credentials from Akeyless output"
+    exit 1
+  fi
+
+  echo "Azure credentials retrieved for Progress EV signing"
+
+  export AZURE_TENANT_ID AZURE_CLIENT_ID AZURE_CLIENT_SECRET
+  export OMNIBUS_AZURE_KEY_VAULT_URL="https://caps-evcodesign-useast.vault.azure.net"
+  export OMNIBUS_AZURE_CERT_NAME="psc-evcodesign"
+
+  # Write to BUILDKITE_ENV_FILE so the Docker plugin passes these variables into the container
+  if [[ -n "${BUILDKITE_ENV_FILE:-}" ]]; then
+    {
+      echo "AZURE_TENANT_ID=$AZURE_TENANT_ID"
+      echo "AZURE_CLIENT_ID=$AZURE_CLIENT_ID"
+      echo "AZURE_CLIENT_SECRET=$AZURE_CLIENT_SECRET"
+      echo "OMNIBUS_AZURE_KEY_VAULT_URL=https://caps-evcodesign-useast.vault.azure.net"
+      echo "OMNIBUS_AZURE_CERT_NAME=psc-evcodesign"
+    } >> "$BUILDKITE_ENV_FILE"
+  fi
+
+  echo "Progress EV credentials ready for Docker"
+fi
