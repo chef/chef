@@ -191,7 +191,7 @@ fi
 # Fetch Progress EV code signing credentials for Windows builds.
 # chef-18 builds run inside Docker; credentials must be written to BUILDKITE_ENV_FILE
 # before the container starts so the Docker plugin can pass them into the container.
-if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]; then
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" == "chef" ]]; then
   echo "--- Initializing Progress EV code signing credentials"
 
   AKEYLESS_ACCESS_ID=$(aws ssm get-parameter \
