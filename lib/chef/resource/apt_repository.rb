@@ -176,6 +176,10 @@ class Chef
         description: "Determines whether to rebuild the APT package cache.",
         default: true, desired_state: false
 
+      property :cache_rebuild_ignore_failure, [TrueClass, FalseClass],
+        description: "Determines whether to fail the run if rebuilding the APT package cache fails.",
+        default: true, desired_state: false
+
       property :options, [String, Array],
         description: "Additional options to set for the repository.",
         default: [], coerce: proc { |x| Array(x) }
@@ -554,7 +558,7 @@ class Chef
         end
 
         apt_update new_resource.name do
-          ignore_failure true
+          ignore_failure new_resource.cache_rebuild_ignore_failure
           action :nothing
         end
 
