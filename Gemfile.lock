@@ -527,6 +527,7 @@ GEM
 PLATFORMS
   arm64-darwin-21
   powerpc-aix-7
+  ruby
   x64-mingw-ucrt
 
 DEPENDENCIES
