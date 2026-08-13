@@ -3,11 +3,12 @@
   Chef omnibus build, executed inside a Windows Docker container on the Windows agent.
 
   Credential flow:
-    1. pre-command hook (bash on Windows agent): fetches Azure SP creds via Akeyless,
-       writes them to BUILDKITE_ENV_FILE so the Docker plugin passes them to this container.
-    2. This script (Initialize-ProgressSigning): uses those creds, or fetches fresh ones
-       from Akeyless if not present (fallback for direct container runs).
-    3. omnibus-private windows_base.rb: uses AZURE_* vars to sign the MSI via Azure Key Vault.
+    1. pre-command hook (bash on Windows agent): fetches AKEYLESS_ACCESS_ID from AWS SSM,
+       writes Akeyless metadata (AKEYLESS_ACCESS_ID, OMNIBUS_DS_PATH, OMNIBUS_AZURE_*) to
+       BUILDKITE_ENV_FILE so the Docker plugin passes them into this container.
+    2. This script (Initialize-ProgressSigning): validates the metadata is present. No creds fetched here.
+    3. omnibus-private windows_base.rb: fetches Azure SP creds from Akeyless immediately before
+       signing, sets AZURE_* env vars, and signs the MSI via Azure Key Vault.
 #>
 
 $ErrorActionPreference = "Stop"
@@ -92,86 +93,16 @@ function Initialize-ProgressSigning {
     param()
 
     Write-Output "--- Initializing Progress EV code signing"
-    
-    # Use Azure credentials passed from the pre-command hook if present; otherwise fetch from Akeyless.
-    if (-not ([string]::IsNullOrWhiteSpace($env:AZURE_TENANT_ID) -or `
-              [string]::IsNullOrWhiteSpace($env:AZURE_CLIENT_ID) -or `
-              [string]::IsNullOrWhiteSpace($env:AZURE_CLIENT_SECRET))) {
-        Write-Output "Azure credentials already set (passed from pre-command hook)"
-    } else {
-        Write-Output "Azure credentials not found; fetching from Akeyless..."
-        
-        try {
-            $AkeylessExe = "$env:USERPROFILE\.local\bin\akeyless.exe"
-            if (-not (Test-Path $AkeylessExe)) {
-                throw "Akeyless CLI not found at $AkeylessExe. Ensure it is pre-installed in the agent/container."
-            }
 
-            if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
-                Write-Output "Fetching AKEYLESS_ACCESS_ID from AWS Parameter Store..."
-                $awsRegion = if ($env:AWS_REGION) { $env:AWS_REGION } else { "us-west-2" }
-                $env:AKEYLESS_ACCESS_ID = (& aws ssm get-parameter `
-                    --name "buildkite-akeyless-access-id" `
-                    --with-decryption `
-                    --region $awsRegion `
-                    --query "Parameter.Value" `
-                    --output text).Trim()
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Failed to fetch AKEYLESS_ACCESS_ID from Parameter Store (exit $LASTEXITCODE)"
-                }
-            }
-
-            Write-Output "Authenticating to Akeyless (aws_iam)..."
-            $authOutput = & $AkeylessExe auth --access-id $env:AKEYLESS_ACCESS_ID --access-type aws_iam
-            if ($LASTEXITCODE -ne 0) {
-                throw "Akeyless auth failed (exit $LASTEXITCODE)"
-            }
-            $tokenMatch = $authOutput | Select-String -Pattern 'Token:\s+(\S+)'
-            if (-not $tokenMatch) {
-                throw "Could not extract Akeyless token from auth output"
-            }
-            $akeylessToken = $tokenMatch.Matches[0].Groups[1].Value
-
-            Write-Output "Fetching EV code signing credentials from Akeyless..."
-            $dsJson = & $AkeylessExe dynamic-secret get-value `
-                --name "/DevOps/EvCodeSign/evcodesignservice" `
-                --token $akeylessToken
-            if ($LASTEXITCODE -ne 0) {
-                throw "Failed to fetch EV code signing dynamic secret (exit $LASTEXITCODE)"
-            }
-            
-            # Handle both nested (.secret) and flat JSON response structures
-            $ds = $dsJson | ConvertFrom-Json
-            $dsData = if ($ds.secret -and $ds.secret -is [PSCustomObject]) { $ds.secret } else { $ds }
-            $azureTenantId     = $dsData.tenantId
-            $azureClientId     = $dsData.appId
-            $azureClientSecret = $dsData.secretText
-
-            if (-not $azureTenantId -or -not $azureClientId -or -not $azureClientSecret) {
-                throw "One or more Azure credentials missing from dynamic secret"
-            }
-            Write-Output "[OK] Credentials obtained (expires: $($dsData.endDateTime))"
-
-            # sign uses DefaultAzureCredential which reads AZURE_* env vars; az login not needed
-            Write-Output "[OK] Azure credentials ready for DefaultAzureCredential"
-
-            if (-not (Get-Command sign -ErrorAction SilentlyContinue)) {
-                throw "'sign' tool not found in PATH. Ensure it is pre-installed in the container/agent."
-            }
-            Write-Output "[OK] sign tool available"
-
-            $env:AZURE_TENANT_ID     = $azureTenantId
-            $env:AZURE_CLIENT_ID     = $azureClientId
-            $env:AZURE_CLIENT_SECRET = $azureClientSecret
-
-            Write-Output "[OK] Azure credentials set for Progress EV signing"
-
-        } catch {
-            Write-Error "Failed to fetch Azure credentials: $_"
-            exit 1
-        }
+    # windows_base.rb fetches Azure credentials from Akeyless at signing time.
+    # This function only validates that the required Akeyless metadata is present.
+    if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
+        throw "AKEYLESS_ACCESS_ID is not set. The pre-command hook must write it to BUILDKITE_ENV_FILE."
     }
-    
+    if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
+        throw "OMNIBUS_DS_PATH is not set. The pre-command hook must write it to BUILDKITE_ENV_FILE."
+    }
+
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_KEY_VAULT_URL)) {
         $env:OMNIBUS_AZURE_KEY_VAULT_URL = "https://caps-evcodesign-useast.vault.azure.net"
     }
@@ -179,7 +110,7 @@ function Initialize-ProgressSigning {
         $env:OMNIBUS_AZURE_CERT_NAME = "psc-evcodesign"
     }
 
-    Write-Output "Progress EV signing ready: $env:OMNIBUS_AZURE_KEY_VAULT_URL / $env:OMNIBUS_AZURE_CERT_NAME"
+    Write-Output "[OK] Akeyless signing metadata present; Azure credentials will be fetched by windows_base.rb at signing time"
 }
 
 function Sign-ChefPackage {
