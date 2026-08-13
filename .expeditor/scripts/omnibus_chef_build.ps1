@@ -3,10 +3,10 @@
   Chef omnibus build, executed inside a Windows Docker container on the Windows agent.
 
   Credential flow:
-    1. pre-command hook (bash on Windows agent): fetches AKEYLESS_ACCESS_ID from AWS SSM,
-       writes Akeyless metadata (AKEYLESS_ACCESS_ID, OMNIBUS_DS_PATH, OMNIBUS_AZURE_*) to
-       BUILDKITE_ENV_FILE so the Docker plugin passes them into this container.
-    2. This script (Initialize-ProgressSigning): validates the metadata is present. No creds fetched here.
+    1. pre-command hook (bash on Windows agent): optionally writes AKEYLESS_ACCESS_ID +
+       OMNIBUS_DS_PATH to BUILDKITE_ENV_FILE for injection via the Docker plugin.
+    2. This script (Initialize-ProgressSigning): uses injected values if present; otherwise
+       fetches AKEYLESS_ACCESS_ID from AWS SSM directly (container always has AWS creds).
     3. omnibus-private windows_base.rb: fetches Azure SP creds from Akeyless immediately before
        signing, sets AZURE_* env vars, and signs the MSI via Azure Key Vault.
 #>
@@ -94,15 +94,26 @@ function Initialize-ProgressSigning {
 
     Write-Output "--- Initializing Progress EV code signing"
 
-    # windows_base.rb fetches Azure credentials from Akeyless at signing time.
-    # This function only validates that the required Akeyless metadata is present.
+    # Fetch AKEYLESS_ACCESS_ID from SSM if not already injected via BUILDKITE_ENV_FILE.
+    # The container always has AWS credentials (AWS_ACCESS_KEY_ID/SECRET/SESSION_TOKEN).
     if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
-        throw "AKEYLESS_ACCESS_ID is not set. The pre-command hook must write it to BUILDKITE_ENV_FILE."
-    }
-    if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
-        throw "OMNIBUS_DS_PATH is not set. The pre-command hook must write it to BUILDKITE_ENV_FILE."
+        Write-Output "AKEYLESS_ACCESS_ID not in environment; fetching from AWS SSM..."
+        $awsRegion = if ($env:AWS_REGION) { $env:AWS_REGION } else { "us-west-2" }
+        $env:AKEYLESS_ACCESS_ID = (& aws ssm get-parameter `
+            --name "buildkite-akeyless-access-id" `
+            --with-decryption `
+            --region $awsRegion `
+            --query "Parameter.Value" `
+            --output text 2>&1).Trim()
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
+            throw "Failed to fetch AKEYLESS_ACCESS_ID from Parameter Store (exit $LASTEXITCODE)"
+        }
+        Write-Output "[OK] AKEYLESS_ACCESS_ID fetched from SSM"
     }
 
+    if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
+        $env:OMNIBUS_DS_PATH = "/DevOps/EvCodeSign/evcodesignservice"
+    }
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_KEY_VAULT_URL)) {
         $env:OMNIBUS_AZURE_KEY_VAULT_URL = "https://caps-evcodesign-useast.vault.azure.net"
     }
@@ -110,7 +121,7 @@ function Initialize-ProgressSigning {
         $env:OMNIBUS_AZURE_CERT_NAME = "psc-evcodesign"
     }
 
-    Write-Output "[OK] Akeyless signing metadata present; Azure credentials will be fetched by windows_base.rb at signing time"
+    Write-Output "[OK] Akeyless signing metadata ready; Azure credentials will be fetched by windows_base.rb at signing time"
 }
 
 function Sign-ChefPackage {
