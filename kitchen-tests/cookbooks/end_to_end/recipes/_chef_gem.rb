@@ -58,7 +58,7 @@ if platform_family?("rhel", "fedora", "debian", "amazon", "suse")
     "debian" => "libpq-dev",
     "rhel" => "libpq-devel",
     "fedora" => "libpq-devel",
-    "suse" => "libpq5-devel",
+    "suse" => "postgresql-devel",
     "amazon" => "libpq-devel"
   )
 
