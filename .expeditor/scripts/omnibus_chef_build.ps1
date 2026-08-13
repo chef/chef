@@ -115,14 +115,14 @@ function Initialize-ProgressSigning {
                     --with-decryption `
                     --region $awsRegion `
                     --query "Parameter.Value" `
-                    --output text 2>&1).Trim()
+                    --output text).Trim()
                 if ($LASTEXITCODE -ne 0) {
-                    throw "Failed to fetch AKEYLESS_ACCESS_ID from Parameter Store: $env:AKEYLESS_ACCESS_ID"
+                    throw "Failed to fetch AKEYLESS_ACCESS_ID from Parameter Store (exit $LASTEXITCODE)"
                 }
             }
 
             Write-Output "Authenticating to Akeyless (aws_iam)..."
-            $authOutput = & $AkeylessExe auth --access-id $env:AKEYLESS_ACCESS_ID --access-type aws_iam 2>&1
+            $authOutput = & $AkeylessExe auth --access-id $env:AKEYLESS_ACCESS_ID --access-type aws_iam
             if ($LASTEXITCODE -ne 0) {
                 throw "Akeyless auth failed (exit $LASTEXITCODE)"
             }
@@ -135,7 +135,7 @@ function Initialize-ProgressSigning {
             Write-Output "Fetching EV code signing credentials from Akeyless..."
             $dsJson = & $AkeylessExe dynamic-secret get-value `
                 --name "/DevOps/EvCodeSign/evcodesignservice" `
-                --token $akeylessToken 2>&1
+                --token $akeylessToken
             if ($LASTEXITCODE -ne 0) {
                 throw "Failed to fetch EV code signing dynamic secret (exit $LASTEXITCODE)"
             }
@@ -152,26 +152,8 @@ function Initialize-ProgressSigning {
             }
             Write-Output "[OK] Credentials obtained (expires: $($dsData.endDateTime))"
 
-            # New Azure credentials take 30-60s to propagate across Azure AD; retry with backoff
-            Write-Output "Validating Azure credentials (may take up to 60s for Azure AD propagation)..."
-            for ($attempt = 1; $attempt -le 5; $attempt++) {
-                $ErrorActionPreference = 'Continue'
-                az login --service-principal `
-                    --username $azureClientId `
-                    --password $azureClientSecret `
-                    --tenant $azureTenantId `
-                    --output none 2>&1 | Out-Null
-                $ErrorActionPreference = 'Stop'
-                if ($LASTEXITCODE -eq 0) { break }
-                if ($attempt -lt 5) {
-                    Write-Output "  Azure AD propagation delay - retrying in 15s (attempt $attempt/5)..."
-                    Start-Sleep -Seconds 15
-                }
-            }
-            if ($LASTEXITCODE -ne 0) {
-                throw "az login failed after 5 attempts (Azure AD may not have synchronized dynamic secret yet)"
-            }
-            Write-Output "[OK] Azure login successful"
+            # sign uses DefaultAzureCredential which reads AZURE_* env vars; az login not needed
+            Write-Output "[OK] Azure credentials ready for DefaultAzureCredential"
 
             if (-not (Get-Command sign -ErrorAction SilentlyContinue)) {
                 throw "'sign' tool not found in PATH. Ensure it is pre-installed in the container/agent."
