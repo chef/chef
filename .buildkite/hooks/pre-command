@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -euo pipefail
 
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
@@ -245,10 +245,15 @@ if (-not $DsData.tenantId -or -not $DsData.appId -or -not $DsData.secretText) {
     exit 1
 }
 
-# Output as KEY=VALUE lines for bash eval
-Write-Host "AZURE_TENANT_ID=$($DsData.tenantId)"
-Write-Host "AZURE_CLIENT_ID=$($DsData.appId)"
-Write-Host "AZURE_CLIENT_SECRET=$($DsData.secretText)"
+# Write credentials to a restricted temp file; secrets must not transit stdout
+$credFile = [System.IO.Path]::GetTempFileName()
+icacls "$credFile" /inheritance:r /grant:r "${env:USERNAME}:(R,W)" | Out-Null
+@"
+AZURE_TENANT_ID=$($DsData.tenantId)
+AZURE_CLIENT_ID=$($DsData.appId)
+AZURE_CLIENT_SECRET=$($DsData.secretText)
+"@ | Out-File -FilePath "$credFile" -Encoding ASCII
+Write-Host "CREDS_FILE=$credFile"
 POWERSHELLEOF
 
   # Capture stdout only; stderr goes directly to the build log (never into $CREDS)
@@ -259,10 +264,17 @@ POWERSHELLEOF
   }
   rm -f "$PSCRIPT"
 
+  CRED_FILE=$(echo "$CREDS" | grep '^CREDS_FILE=' | head -1 | cut -d'=' -f2-)
+  if [[ -z "$CRED_FILE" ]]; then
+    echo "ERROR: Credential file path not returned from Akeyless script"
+    exit 1
+  fi
   while IFS='=' read -r key value; do
+    value="${value%$'\r'}"  # strip Windows CRLF
     [[ "$key" =~ ^AZURE_ ]] && export "$key=$value"
-  done <<< "$(echo "$CREDS" | grep '^AZURE_')"
-  unset AKEYLESS_ACCESS_ID
+  done < <(grep '^AZURE_' "$CRED_FILE")
+  rm -f "$CRED_FILE"
+  unset CRED_FILE AKEYLESS_ACCESS_ID
 
   if [[ -z "$AZURE_TENANT_ID" ]] || [[ -z "$AZURE_CLIENT_ID" ]] || [[ -z "$AZURE_CLIENT_SECRET" ]]; then
     echo "ERROR: Failed to extract Azure credentials from Akeyless output"
