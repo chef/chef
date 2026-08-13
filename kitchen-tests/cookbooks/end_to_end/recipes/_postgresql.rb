@@ -12,11 +12,11 @@
 # scoped LD_LIBRARY_PATH hides libpq.so.5 from the dynamic linker.
 if platform_family?("rhel", "debian", "amazon")
   postgresql_install "postgresql" do
-    action %i(install init_server)
+    action %i{install init_server}
   end
 
   postgresql_service "postgresql" do
-    action %i(enable start)
+    action %i{enable start}
   end
 
   postgresql_user "end_to_end_test_user" do
