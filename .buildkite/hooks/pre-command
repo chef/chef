@@ -226,14 +226,14 @@ if (-not $AkeylessExe) {
 }
 
 $AuthOutput = & $AkeylessExe auth --access-id $env:AKEYLESS_ACCESS_ID --access-type aws_iam 2>&1
-if ($LASTEXITCODE -ne 0) { Write-Error "Akeyless auth failed: $AuthOutput"; exit 1 }
+if ($LASTEXITCODE -ne 0) { Write-Error "Akeyless auth failed (exit $LASTEXITCODE)"; exit 1 }
 
 $TokenMatch = $AuthOutput | Select-String 'Token:\s+(\S+)'
-if (-not $TokenMatch) { Write-Error "Could not extract Akeyless token from: $AuthOutput"; exit 1 }
+if (-not $TokenMatch) { Write-Error "Could not extract Akeyless token from auth output"; exit 1 }
 $Token = $TokenMatch.Matches[0].Groups[1].Value
 
 $DsJson = & $AkeylessExe dynamic-secret get-value --name "/DevOps/EvCodeSign/evcodesignservice" --token $Token 2>&1
-if ($LASTEXITCODE -ne 0) { Write-Error "Failed to fetch dynamic secret: $DsJson"; exit 1 }
+if ($LASTEXITCODE -ne 0) { Write-Error "Failed to fetch dynamic secret (exit $LASTEXITCODE)"; exit 1 }
 
 # Dynamic secret response: {"secret":{"tenantId":"...", "appId":"...", "secretText":"..."}}
 # Fallback handles flat JSON in case the response structure differs
@@ -251,9 +251,9 @@ Write-Host "AZURE_CLIENT_ID=$($DsData.appId)"
 Write-Host "AZURE_CLIENT_SECRET=$($DsData.secretText)"
 POWERSHELLEOF
 
-  CREDS=$(powershell -NoProfile -File "$PSCRIPT" 2>&1) || {
-    echo "ERROR: Akeyless credential fetch failed:"
-    echo "$CREDS"
+  # Capture stdout only; stderr goes directly to the build log (never into $CREDS)
+  CREDS=$(powershell -NoProfile -File "$PSCRIPT") || {
+    echo "ERROR: Akeyless credential fetch failed (see stderr above)"
     rm -f "$PSCRIPT"
     exit 1
   }

@@ -124,11 +124,11 @@ function Initialize-ProgressSigning {
             Write-Output "Authenticating to Akeyless (aws_iam)..."
             $authOutput = & $AkeylessExe auth --access-id $env:AKEYLESS_ACCESS_ID --access-type aws_iam 2>&1
             if ($LASTEXITCODE -ne 0) {
-                throw "Akeyless auth failed: $authOutput"
+                throw "Akeyless auth failed (exit $LASTEXITCODE)"
             }
             $tokenMatch = $authOutput | Select-String -Pattern 'Token:\s+(\S+)'
             if (-not $tokenMatch) {
-                throw "Could not extract Akeyless token from auth output: $authOutput"
+                throw "Could not extract Akeyless token from auth output"
             }
             $akeylessToken = $tokenMatch.Matches[0].Groups[1].Value
 
@@ -137,7 +137,7 @@ function Initialize-ProgressSigning {
                 --name "/DevOps/EvCodeSign/evcodesignservice" `
                 --token $akeylessToken 2>&1
             if ($LASTEXITCODE -ne 0) {
-                throw "Failed to fetch EV code signing dynamic secret: $dsJson"
+                throw "Failed to fetch EV code signing dynamic secret (exit $LASTEXITCODE)"
             }
             
             # Handle both nested (.secret) and flat JSON response structures
