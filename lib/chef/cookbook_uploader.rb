@@ -54,7 +54,9 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
+      # rubocop:disable Style/EachWithObject, Style/ReduceToHash
       checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
+      # rubocop:enable Style/EachWithObject, Style/ReduceToHash
       new_sandbox = rest.post("sandboxes", { checksums: checksums })
 
       Chef::Log.info("Uploading files")

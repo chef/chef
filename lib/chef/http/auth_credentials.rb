@@ -56,7 +56,9 @@ class Chef
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
         signed = sign_obj.sign(key, use_ssh_agent: @use_ssh_agent).merge({ host: host })
+        # rubocop:disable Style/EachWithObject, Style/ReduceToHash
         signed.inject({}) { |memo, kv| memo[(kv[0].to_s.upcase).to_s] = kv[1]; memo }
+        # rubocop:enable Style/EachWithObject, Style/ReduceToHash
       end
 
     end
