@@ -114,6 +114,14 @@ function Initialize-ProgressSigning {
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
         $env:OMNIBUS_DS_PATH = "/DevOps/EvCodeSign/evcodesignservice"
     }
+    # Set known akeyless path so windows_base.rb skips discovery
+    if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_EXE_PATH)) {
+        $env:AKEYLESS_EXE_PATH = "$env:USERPROFILE\.akeyless\bin\akeyless.exe"
+    }
+    if (-not (Test-Path $env:AKEYLESS_EXE_PATH)) {
+        throw "Akeyless CLI not found at: $env:AKEYLESS_EXE_PATH — ensure it is pre-installed in the container image"
+    }
+    Write-Output "[OK] Akeyless found at: $env:AKEYLESS_EXE_PATH"
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_KEY_VAULT_URL)) {
         $env:OMNIBUS_AZURE_KEY_VAULT_URL = "https://caps-evcodesign-useast.vault.azure.net"
     }
