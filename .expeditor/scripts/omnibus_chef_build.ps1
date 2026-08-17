@@ -101,9 +101,6 @@ function Initialize-ProgressSigning {
         throw "AKEYLESS_ACCESS_ID not set. Expected it to be injected by .buildkite/hooks/pre-command via BUILDKITE_ENV_FILE."
     }
 
-    if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
-        $env:OMNIBUS_DS_PATH = "/DevOps/EvCodeSign/evcodesignservice"
-    }
     # Set known akeyless path so windows_base.rb skips discovery
     if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_EXE_PATH)) {
         $env:AKEYLESS_EXE_PATH = "$env:USERPROFILE\.akeyless\bin\akeyless.exe"
@@ -112,11 +109,13 @@ function Initialize-ProgressSigning {
         throw "Akeyless CLI not found at: $env:AKEYLESS_EXE_PATH - ensure it is pre-installed in the container image"
     }
     Write-Output "[OK] Akeyless found at: $env:AKEYLESS_EXE_PATH"
-    if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_KEY_VAULT_URL)) {
-        $env:OMNIBUS_AZURE_KEY_VAULT_URL = "https://caps-evcodesign-useast.vault.azure.net"
-    }
-    if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_CERT_NAME)) {
-        $env:OMNIBUS_AZURE_CERT_NAME = "psc-evcodesign"
+    # Signing configuration is resolved from AWS Parameter Store by the pre-command hook and
+    # injected into this container; there is no hardcoded fallback, so a misconfiguration fails
+    # here rather than silently signing against the wrong vault or certificate.
+    foreach ($required in @("OMNIBUS_DS_PATH", "OMNIBUS_AZURE_KEY_VAULT_URL", "OMNIBUS_AZURE_CERT_NAME")) {
+        if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($required))) {
+            throw "$required not set. Expected it from .buildkite/hooks/pre-command (AWS Parameter Store)."
+        }
     }
 
     Write-Output "[OK] Akeyless signing metadata ready; Azure credentials will be fetched by windows_base.rb at signing time"
