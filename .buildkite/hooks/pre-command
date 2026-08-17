@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Only execute in the verify pipeline
-[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc(-canary)?|canary))$ ]] || exit 0
 
 docker ps || true
 
@@ -203,16 +203,11 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_
     exit 1
   }
   [[ -z "$AKEYLESS_ACCESS_ID" ]] && { echo "ERROR: AKEYLESS_ACCESS_ID is empty"; exit 1; }
+  export AKEYLESS_ACCESS_ID
 
-  if [[ -n "${BUILDKITE_ENV_FILE:-}" ]]; then
-    {
-      echo "AKEYLESS_ACCESS_ID=$AKEYLESS_ACCESS_ID"
-      echo "OMNIBUS_DS_PATH=/DevOps/EvCodeSign/evcodesignservice"
-      echo "OMNIBUS_AZURE_KEY_VAULT_URL=https://caps-evcodesign-useast.vault.azure.net"
-      echo "OMNIBUS_AZURE_CERT_NAME=psc-evcodesign"
-    } >> "$BUILDKITE_ENV_FILE"
-  fi
+  export OMNIBUS_DS_PATH="/DevOps/EvCodeSign/evcodesignservice"
+  export OMNIBUS_AZURE_KEY_VAULT_URL="https://caps-evcodesign-useast.vault.azure.net"
+  export OMNIBUS_AZURE_CERT_NAME="psc-evcodesign"
 
-  unset AKEYLESS_ACCESS_ID
   echo "Progress EV signing metadata ready; Azure credentials will be fetched at signing time"
 fi

@@ -3,10 +3,10 @@
   Chef omnibus build, executed inside a Windows Docker container on the Windows agent.
 
   Credential flow:
-    1. pre-command hook (bash on Windows agent): optionally writes AKEYLESS_ACCESS_ID +
-       OMNIBUS_DS_PATH to BUILDKITE_ENV_FILE for injection via the Docker plugin.
-    2. This script (Initialize-ProgressSigning): uses injected values if present; otherwise
-       fetches AKEYLESS_ACCESS_ID from AWS SSM directly (container always has AWS creds).
+    1. pre-command hook (bash on Windows agent): fetches AKEYLESS_ACCESS_ID from AWS SSM and
+       writes it + OMNIBUS_DS_PATH to BUILDKITE_ENV_FILE for injection via the Docker plugin.
+    2. This script (Initialize-ProgressSigning): requires the injected AKEYLESS_ACCESS_ID to
+       already be present in the environment; fails fast if it is missing.
     3. omnibus-private windows_base.rb: fetches Azure SP creds from Akeyless immediately before
        signing, sets AZURE_* env vars, and signs the MSI via Azure Key Vault.
 #>
@@ -94,21 +94,11 @@ function Initialize-ProgressSigning {
 
     Write-Output "--- Initializing Progress EV code signing"
 
-    # Fetch AKEYLESS_ACCESS_ID from SSM if not already injected via BUILDKITE_ENV_FILE.
-    # The container always has AWS credentials (AWS_ACCESS_KEY_ID/SECRET/SESSION_TOKEN).
+    # AKEYLESS_ACCESS_ID must be injected via BUILDKITE_ENV_FILE by the pre-command hook
+    # (runs on the Windows agent, outside this container). This script does not fetch it
+    # itself so there is a single source of truth for Akeyless credential retrieval.
     if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
-        Write-Output "AKEYLESS_ACCESS_ID not in environment; fetching from AWS SSM..."
-        $awsRegion = if ($env:AWS_REGION) { $env:AWS_REGION } else { "us-west-2" }
-        $env:AKEYLESS_ACCESS_ID = (& aws ssm get-parameter `
-            --name "buildkite-akeyless-access-id" `
-            --with-decryption `
-            --region $awsRegion `
-            --query "Parameter.Value" `
-            --output text 2>&1).Trim()
-        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
-            throw "Failed to fetch AKEYLESS_ACCESS_ID from Parameter Store (exit $LASTEXITCODE)"
-        }
-        Write-Output "[OK] AKEYLESS_ACCESS_ID fetched from SSM"
+        throw "AKEYLESS_ACCESS_ID not set. Expected it to be injected by .buildkite/hooks/pre-command via BUILDKITE_ENV_FILE."
     }
 
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
