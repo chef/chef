@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -euo pipefail
 
 # Only execute in the verify pipeline
 [[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary))$ ]] || exit 0
@@ -186,4 +186,78 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG"
     export OMNIBUS_SUBMODULE_CONFIG_PRIVATE="https://${GITHUB_TOKEN}@github.com/chef/omnibus-private.git"
     
     echo "GITHUB_TOKEN set for private repository access"
+fi
+
+# Pass Akeyless signing metadata into the Docker container for chef-18 Windows builds.
+# windows_base.rb fetches Azure credentials from Akeyless at signing time — no creds here.
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" == "chef" ]]; then
+  echo "--- Initializing Progress EV code signing metadata"
+
+  # Akeyless access ID is not an Azure secret. It is used to authenticate
+  # against Akeyless using AWS IAM.
+  AKEYLESS_ACCESS_ID=$(aws ssm get-parameter \
+    --name "buildkite-akeyless-access-id" \
+    --with-decryption \
+    --query "Parameter.Value" \
+    --output text \
+    --region "${AWS_REGION:-us-west-2}") || {
+    echo "ERROR: Failed to fetch Akeyless access ID from Parameter Store"
+    exit 1
+  }
+  [[ -z "$AKEYLESS_ACCESS_ID" ]] && { echo "ERROR: AKEYLESS_ACCESS_ID is empty"; exit 1; }
+
+  # Signing configuration lives in AWS Parameter Store.
+  #
+  # These values are configuration, not Azure credentials:
+  #   OMNIBUS_DS_PATH
+  #   OMNIBUS_AZURE_KEY_VAULT_URL
+  #   OMNIBUS_AZURE_CERT_NAME
+  #
+  # They can be overridden by the environment if required.
+  OMNIBUS_DS_PATH=$(aws ssm get-parameter \
+    --name "omnibus-signing-akeyless-ds-path" \
+    --with-decryption \
+    --query "Parameter.Value" \
+    --output text \
+    --region "${AWS_REGION:-us-west-2}") || {
+    echo "ERROR: Failed to fetch OMNIBUS_DS_PATH from Parameter Store"
+    exit 1
+  }
+  [[ -z "$OMNIBUS_DS_PATH" || "$OMNIBUS_DS_PATH" == "None" ]] && { echo "ERROR: OMNIBUS_DS_PATH is empty"; exit 1; }
+
+  OMNIBUS_AZURE_KEY_VAULT_URL=$(aws ssm get-parameter \
+    --name "omnibus-signing-azure-key-vault-url" \
+    --with-decryption \
+    --query "Parameter.Value" \
+    --output text \
+    --region "${AWS_REGION:-us-west-2}") || {
+    echo "ERROR: Failed to fetch OMNIBUS_AZURE_KEY_VAULT_URL from Parameter Store"
+    exit 1
+  }
+  [[ -z "$OMNIBUS_AZURE_KEY_VAULT_URL" || "$OMNIBUS_AZURE_KEY_VAULT_URL" == "None" ]] && { echo "ERROR: OMNIBUS_AZURE_KEY_VAULT_URL is empty"; exit 1; }
+
+  OMNIBUS_AZURE_CERT_NAME=$(aws ssm get-parameter \
+    --name "omnibus-signing-azure-cert-name" \
+    --with-decryption \
+    --query "Parameter.Value" \
+    --output text \
+    --region "${AWS_REGION:-us-west-2}") || {
+    echo "ERROR: Failed to fetch OMNIBUS_AZURE_CERT_NAME from Parameter Store"
+    exit 1
+  }
+  [[ -z "$OMNIBUS_AZURE_CERT_NAME" || "$OMNIBUS_AZURE_CERT_NAME" == "None" ]] && { echo "ERROR: OMNIBUS_AZURE_CERT_NAME is empty"; exit 1; }
+
+  # Export variables so Docker receives them
+  export AKEYLESS_ACCESS_ID OMNIBUS_DS_PATH OMNIBUS_AZURE_KEY_VAULT_URL OMNIBUS_AZURE_CERT_NAME
+
+  if [[ -n "${BUILDKITE_ENV_FILE:-}" ]]; then
+    {
+      echo "AKEYLESS_ACCESS_ID=$AKEYLESS_ACCESS_ID"
+      echo "OMNIBUS_DS_PATH=$OMNIBUS_DS_PATH"
+      echo "OMNIBUS_AZURE_KEY_VAULT_URL=$OMNIBUS_AZURE_KEY_VAULT_URL"
+      echo "OMNIBUS_AZURE_CERT_NAME=$OMNIBUS_AZURE_CERT_NAME"
+    } >> "$BUILDKITE_ENV_FILE"
+  fi
+
+  echo "Progress EV signing metadata ready; Azure credentials will be fetched at signing time"
 fi
