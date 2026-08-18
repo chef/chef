@@ -112,7 +112,7 @@ function Initialize-ProgressSigning {
     }
 
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_DS_PATH)) {
-        $env:OMNIBUS_DS_PATH = "/DevOps/EvCodeSign/evcodesignservice"
+        throw "OMNIBUS_DS_PATH is not set - ensure the pre-command hook fetched it from Parameter Store"
     }
     # Set known akeyless path so windows_base.rb skips discovery
     if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_EXE_PATH)) {
