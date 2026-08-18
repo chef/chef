@@ -247,6 +247,9 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_
   }
   [[ -z "$OMNIBUS_AZURE_CERT_NAME" || "$OMNIBUS_AZURE_CERT_NAME" == "None" ]] && { echo "ERROR: OMNIBUS_AZURE_CERT_NAME is empty"; exit 1; }
 
+  # Export variables so Docker receives them
+  export AKEYLESS_ACCESS_ID OMNIBUS_DS_PATH OMNIBUS_AZURE_KEY_VAULT_URL OMNIBUS_AZURE_CERT_NAME
+
   if [[ -n "${BUILDKITE_ENV_FILE:-}" ]]; then
     {
       echo "AKEYLESS_ACCESS_ID=$AKEYLESS_ACCESS_ID"
@@ -256,6 +259,5 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_
     } >> "$BUILDKITE_ENV_FILE"
   fi
 
-  unset AKEYLESS_ACCESS_ID OMNIBUS_DS_PATH OMNIBUS_AZURE_KEY_VAULT_URL OMNIBUS_AZURE_CERT_NAME
   echo "Progress EV signing metadata ready; Azure credentials will be fetched at signing time"
 fi
