@@ -3,18 +3,21 @@
   Chef omnibus build, executed inside a Windows Docker container on the Windows agent.
 
   Credential flow:
-    1. pre-command hook (bash on Windows agent): fetches AKEYLESS_ACCESS_ID from AWS SSM and
-       writes it + OMNIBUS_DS_PATH to BUILDKITE_ENV_FILE for injection via the Docker plugin.
-    2. This script (Initialize-ProgressSigning): requires the injected AKEYLESS_ACCESS_ID to
-       already be present in the environment; fails fast if it is missing.
-    3. omnibus-private windows_base.rb: fetches Azure SP creds from Akeyless immediately before
-       signing, sets AZURE_* env vars, and signs the MSI via Azure Key Vault.
+    1. pre-command hook (bash on Windows agent): reads AKEYLESS_ACCESS_ID and the three signing
+       configuration values (OMNIBUS_DS_PATH, OMNIBUS_AZURE_KEY_VAULT_URL,
+       OMNIBUS_AZURE_CERT_NAME) from AWS Parameter Store and exports them. The Docker plugin
+       propagates them into this container.
+    2. This script (Initialize-ProgressSigning): requires all four to be present and fails fast
+       if any is missing, and points AKEYLESS_EXE_PATH at the container's Akeyless CLI.
+    3. omnibus-private windows_base.rb: authenticates to Akeyless (CLI) and reads the Azure
+       service principal from the Akeyless API immediately before signing, sets AZURE_* env
+       vars, and signs the MSI via Azure Key Vault.
 #>
 
 $ErrorActionPreference = "Stop"
 
-# Source build-settings from omnibus-buildkite-plugin if present (Docker plugin populates this
-# from BUILDKITE_ENV_FILE, which includes the Azure credentials written by the pre-command hook)
+# Source build-settings from omnibus-buildkite-plugin if present. chef-18 does not use the
+# plugin, so this is normally absent; it is sourced only when a build runs through the plugin.
 $buildSettingsPath = "./.omnibus-buildkite-plugin/build-settings.ps1"
 if (Test-Path $buildSettingsPath) {
     Write-Output "Sourcing build-settings from omnibus-buildkite-plugin"
@@ -94,11 +97,11 @@ function Initialize-ProgressSigning {
 
     Write-Output "--- Initializing Progress EV code signing"
 
-    # AKEYLESS_ACCESS_ID must be injected via BUILDKITE_ENV_FILE by the pre-command hook
-    # (runs on the Windows agent, outside this container). This script does not fetch it
-    # itself so there is a single source of truth for Akeyless credential retrieval.
+    # AKEYLESS_ACCESS_ID is exported by the pre-command hook (bash, on the Windows agent outside
+    # this container) and propagated in by the Docker plugin. This script does not fetch it, so
+    # there is a single source of truth for Akeyless credential retrieval.
     if ([string]::IsNullOrWhiteSpace($env:AKEYLESS_ACCESS_ID)) {
-        throw "AKEYLESS_ACCESS_ID not set. Expected it to be injected by .buildkite/hooks/pre-command via BUILDKITE_ENV_FILE."
+        throw "AKEYLESS_ACCESS_ID not set. Expected it from .buildkite/hooks/pre-command (AWS Parameter Store)."
     }
 
     # Set known akeyless path so windows_base.rb skips discovery

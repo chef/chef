@@ -204,6 +204,7 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_
   }
   [[ -z "$AKEYLESS_ACCESS_ID" ]] && { echo "ERROR: AKEYLESS_ACCESS_ID is empty"; exit 1; }
   export AKEYLESS_ACCESS_ID
+  echo "DEBUG: AKEYLESS_ACCESS_ID fetched from Parameter Store (length: ${#AKEYLESS_ACCESS_ID})"
 
   # Signing configuration lives in AWS Parameter Store so a change on the Progress side is a
   # parameter edit rather than a code release. Each value may be overridden by presetting it.
@@ -231,8 +232,16 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_
         exit 1
       fi
       export "$var=$value"
+      echo "DEBUG: $var fetched from Parameter Store: $value"
+    else
+      echo "DEBUG: $var already set (skipped Parameter Store fetch)"
     fi
   done
 
   echo "Progress EV signing metadata ready (cert: ${OMNIBUS_AZURE_CERT_NAME}); Azure credentials will be fetched at signing time"
+  echo "DEBUG: Exported values:"
+  echo "  AKEYLESS_ACCESS_ID: [SET]"
+  echo "  OMNIBUS_DS_PATH: ${OMNIBUS_DS_PATH}"
+  echo "  OMNIBUS_AZURE_KEY_VAULT_URL: ${OMNIBUS_AZURE_KEY_VAULT_URL}"
+  echo "  OMNIBUS_AZURE_CERT_NAME: ${OMNIBUS_AZURE_CERT_NAME}"
 fi
