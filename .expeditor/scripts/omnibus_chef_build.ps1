@@ -123,10 +123,10 @@ function Initialize-ProgressSigning {
     }
     Write-Output "[OK] Akeyless found at: $env:AKEYLESS_EXE_PATH"
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_KEY_VAULT_URL)) {
-        $env:OMNIBUS_AZURE_KEY_VAULT_URL = "https://caps-evcodesign-useast.vault.azure.net"
+        throw "OMNIBUS_AZURE_KEY_VAULT_URL is not set - ensure the pre-command hook fetched it from Parameter Store"
     }
     if ([string]::IsNullOrWhiteSpace($env:OMNIBUS_AZURE_CERT_NAME)) {
-        $env:OMNIBUS_AZURE_CERT_NAME = "psc-evcodesign"
+        throw "OMNIBUS_AZURE_CERT_NAME is not set - ensure the pre-command hook fetched it from Parameter Store"
     }
 
     Write-Output "[OK] Akeyless signing metadata ready; Azure credentials will be fetched by windows_base.rb at signing time"
