@@ -8,24 +8,35 @@ set -euo pipefail
 docker ps || true
 
 # Get chef foundation version from the json file
-CHEF_FOUNDATION_VERSION=$(cat .buildkite-platform.json | jq -r '.chef_foundation')
+CHEF_FOUNDATION_VERSION=$(jq -r '.chef_foundation' .buildkite-platform.json)
 export CHEF_FOUNDATION_VERSION
 echo "Chef Foundation Version: $CHEF_FOUNDATION_VERSION"
 
-OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolchain')
+OMNIBUS_TOOLCHAIN_VERSION=$(jq -r '.omnibus_toolchain' .buildkite-platform.json)
 export OMNIBUS_TOOLCHAIN_VERSION
 echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
-  TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-  ROLE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/)
-  RESPONSE=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE)
-  AWS_ACCESS_KEY_ID=$(echo $RESPONSE | jq -r '.AccessKeyId')
+  TOKEN=$(curl -sS -X PUT \
+    "http://169.254.169.254/latest/api/token" \
+    -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+  ROLE=$(curl -sS \
+    -H "X-aws-ec2-metadata-token: $TOKEN" \
+    "http://169.254.169.254/latest/meta-data/iam/security-credentials/")
+
+  RESPONSE=$(curl -sS \
+    -H "X-aws-ec2-metadata-token: $TOKEN" \
+    "http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE")
+
+  AWS_ACCESS_KEY_ID=$(echo "$RESPONSE" | jq -r '.AccessKeyId')
   export AWS_ACCESS_KEY_ID
-  AWS_SECRET_ACCESS_KEY=$(echo $RESPONSE | jq -r '.SecretAccessKey')
+
+  AWS_SECRET_ACCESS_KEY=$(echo "$RESPONSE" | jq -r '.SecretAccessKey')
   export AWS_SECRET_ACCESS_KEY
-  AWS_SESSION_TOKEN=$(echo $RESPONSE | jq -r '.Token')
+
+  AWS_SESSION_TOKEN=$(echo "$RESPONSE" | jq -r '.Token')
   export AWS_SESSION_TOKEN
 fi
 
@@ -43,95 +54,106 @@ git fetch --tags --force
 # Only do this if it's actually a branch (i.e. a PR or a manually created build), not a
 # post-merge CI run of main.
 if [[ "$BUILDKITE_BRANCH" != "main" ]]; then
-  git config user.email "you@example.com" # these are needed for the rebase attempt
+  git config user.email "you@example.com"
   git config user.name "Your Name"
+
   main=$(git show-ref -s --abbrev origin/main)
   pr_head=$(git show-ref -s --abbrev HEAD)
   github="https://github.com/chef/chef/commit/"
+
   if git rebase origin/main >/dev/null; then
-    buildkite-agent annotate --style success --context "rebase-pr-branch-${main}" \
+    buildkite-agent annotate \
+      --style success \
+      --context "rebase-pr-branch-${main}" \
       "Rebased onto main ([${main}](${github}${main}))."
   else
     git rebase --abort
-    buildkite-agent annotate --style warning --context "rebase-pr-branch-${main}" \
+    buildkite-agent annotate \
+      --style warning \
+      --context "rebase-pr-branch-${main}" \
       "Couldn't rebase onto main ([${main}](${github}${main})), building PR HEAD ([${pr_head}](${github}${pr_head}))."
   fi
 fi
 
 # For AIX builds, patch the root Gemfile.lock in-place so that pure-Ruby gem
 # version lines match the AIX-compatible versions from Gemfile-aix.lock.
-#
-# The AIX omnibus toolchain ships Ruby 3.0; some gems in the main lockfile
-# require Ruby >= 3.1.  omnibus/Gemfile.lock is committed with AIX-compatible
-# pure-Ruby versions already patched (Windows platform-variant entries are kept
-# at their original versions), so only the root lockfile needs runtime patching.
-#
-# The surgical sed only touches pure-version spec lines (digits+dots, no
-# platform suffix like -x64-mingw-ucrt) to preserve Windows variants that
-# Bundler's deployment-mode completeness check requires.
 if [[ "${BUILDKITE_LABEL:-}" =~ aix ]]; then
   while IFS= read -r aix_line; do
     gem_name=$(echo "$aix_line" | sed 's/^    \([^ ]*\) .*/\1/')
     aix_ver=$(echo "$aix_line" | sed 's/.*(\([^)]*\))/\1/')
     esc_gem=$(printf '%s' "$gem_name" | sed 's/[].[\+^$()|{}/\\*?]/\\&/g')
-    sed -i "s/^\(    ${esc_gem} \)([0-9][0-9.]*)$/\1(${aix_ver})/" Gemfile.lock
+
+    sed -i \
+      "s/^\(    ${esc_gem} \)([0-9][0-9.]*)$/\1(${aix_ver})/" \
+      Gemfile.lock
   done < <(grep '^    [a-z][a-z0-9_-]* ([0-9][0-9.]*)$' Gemfile-aix.lock)
 fi
 
 # For AIX build and test steps, pre-clean any dirty installp state on the remote
-# AIX machine(s) before the omnibus-buildkite-plugin runs. The plugin uses
-# installp to install chef-foundation (build) and the chef package (test); if a
-# previous build was cancelled mid-installp the fileset is left in a dirty
-# "incomplete operations" state and all subsequent installp invocations fail. We
-# SSH to every AIX machine for the current agent queue (across both
-# omnibus-toolchain and angry-omnibus-toolchain) and run `installp -C` which
-# commits or rolls back any incomplete operations. Safe on clean machines (no-op).
-# Errors here are non-fatal.
+# AIX machine(s) before the omnibus-buildkite-plugin runs.
 if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
    [[ "${BUILDKITE_ORGANIZATION_SLUG:-}" != "chef-oss" ]]; then
+
   echo "--- AIX build: pre-cleaning installp state on remote AIX machine(s)"
+
   (
     set +eu
-    # Plugin JSON is available after plugin post-checkout hook runs (before pre-command)
-    PLATFORMS_JSON="$(ls /var/lib/buildkite-agent/plugins/github-com-chef-omnibus-buildkite-plugin-*/files/esoteric-omnibus-platforms.json 2>/dev/null | head -1)"
+
+    PLATFORMS_JSON="$(ls \
+      /var/lib/buildkite-agent/plugins/github-com-chef-omnibus-buildkite-plugin-*/files/esoteric-omnibus-platforms.json \
+      2>/dev/null | head -1)"
+
     if [[ ! -f "${PLATFORMS_JSON:-}" ]]; then
       echo "AIX pre-cleanup: plugin JSON not found, skipping"
       exit 0
     fi
 
-    # Collect all AIX hostnames for this queue from all toolchain entries
-    AIX_HOSTS="$(jq -r --arg q "${BUILDKITE_AGENT_META_DATA_QUEUE:-}" \
-      '.[] | .[$q] // empty' "$PLATFORMS_JSON" 2>/dev/null)"
+    AIX_HOSTS="$(jq -r \
+      --arg q "${BUILDKITE_AGENT_META_DATA_QUEUE:-}" \
+      '.[] | .[$q] // empty' \
+      "$PLATFORMS_JSON" 2>/dev/null)"
+
     if [[ -z "${AIX_HOSTS:-}" ]]; then
       echo "AIX pre-cleanup: no hosts for queue '${BUILDKITE_AGENT_META_DATA_QUEUE:-}', skipping"
       exit 0
     fi
 
-    # Authenticate to Vault (same method as omnibus-buildkite-plugin)
     VAULT_ADDR="https://vault.ps.chef.co"
+
     VAULT_TOKEN="$(VAULT_ADDR="$VAULT_ADDR" vault login \
-      -method=aws -path=aws/private-cd -token-only \
-      header_value=vault.ps.chef.co role=omnibus-secrets 2>/dev/null)"
+      -method=aws \
+      -path=aws/private-cd \
+      -token-only \
+      header_value=vault.ps.chef.co \
+      role=omnibus-secrets \
+      2>/dev/null)"
+
     if [[ -z "${VAULT_TOKEN:-}" ]]; then
       echo "AIX pre-cleanup: Vault auth failed, skipping"
       exit 0
     fi
 
     SSH_KEY="$(VAULT_ADDR="$VAULT_ADDR" VAULT_TOKEN="$VAULT_TOKEN" \
-      vault read -field=ssh_private_key account/static/esoteric/chef-ci 2>/dev/null)"
+      vault read \
+      -field=ssh_private_key \
+      account/static/esoteric/chef-ci \
+      2>/dev/null)"
+
     if [[ -z "${SSH_KEY:-}" ]]; then
       echo "AIX pre-cleanup: could not retrieve SSH key, skipping"
       exit 0
     fi
 
     AIX_KEY_FILE="$(mktemp /tmp/aix-cleanup-key-XXXXXX)"
+
     echo "$SSH_KEY" > "$AIX_KEY_FILE"
     chmod 600 "$AIX_KEY_FILE"
 
-    # Run installp -C and disk-space check on every AIX machine for this queue in parallel
     while IFS= read -r host; do
       [[ -z "$host" ]] && continue
+
       echo "  Running installp -C + disk check on $host"
+
       ssh -i "$AIX_KEY_FILE" \
         -o StrictHostKeyChecking=no \
         -o ServerAliveInterval=30 \
@@ -139,9 +161,11 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
         "chef-ci@${host}" \
         "sudo /usr/sbin/installp -C 2>&1; true; echo 'Disk:'; df -g / /opt /var 2>/dev/null || df /; sudo chown -R chef-ci: \$HOME 2>/dev/null; true" &
     done <<< "$AIX_HOSTS"
+
     wait
 
     rm -f "$AIX_KEY_FILE"
+
     echo "AIX pre-cleanup: installp -C complete on all hosts"
   ) || echo "AIX pre-cleanup: encountered errors (non-fatal, continuing)"
 fi
@@ -154,60 +178,132 @@ else
   export AWS_REGION="us-west-1"
 fi
 
-if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
+if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && \
+   [[ "$BUILDKITE_ORGANIZATION_SLUG" != "chef-oss" ]]; then
 
-  if [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
-    lita_password=$(aws ssm get-parameter --name "artifactory-lita-password" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
-    export ARTIFACTORY_API_KEY=$(echo -n "lita:${lita_password}" | base64)
+  if [[ ! "$BUILDKITE_LABEL" =~ macOS|mac_os_x ]]; then
+    lita_password=$(aws ssm get-parameter \
+      --name "artifactory-lita-password" \
+      --with-decryption \
+      --query Parameter.Value \
+      --output text \
+      --region "${AWS_REGION}")
+
+    export ARTIFACTORY_API_KEY=$(
+      echo -n "lita:${lita_password}" | base64
+    )
+
+    unset lita_password
   fi
-  export ARTIFACTORY_PASSWORD=$(aws ssm get-parameter --name "buildkite-artifactory-docker-full-access-token" --query Parameter.Value --with-decryption --output text --region ${AWS_REGION})
+
+  export ARTIFACTORY_PASSWORD=$(aws ssm get-parameter \
+    --name "buildkite-artifactory-docker-full-access-token" \
+    --query Parameter.Value \
+    --with-decryption \
+    --output text \
+    --region "${AWS_REGION}")
 
   # Only if on RPM-based Linux distros
   if [[ "$BUILDKITE_LABEL" =~ rhel|rocky|sles|centos|amazon ]]; then
-    export RPM_SIGNING_KEY=$(aws ssm get-parameter --name "packages-at-chef-io-signing-cert" --with-decryption --query Parameter.Value --output text --region ${AWS_REGION})
+    export RPM_SIGNING_KEY=$(aws ssm get-parameter \
+      --name "packages-at-chef-io-signing-cert" \
+      --with-decryption \
+      --query Parameter.Value \
+      --output text \
+      --region "${AWS_REGION}")
   fi
 fi
 
-if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]] && [[ ! $BUILDKITE_LABEL =~ macOS|mac_os_x ]]; then
-    # Set AWS S3 credentials for omnibus cache operations
-    AWS_S3_ACCESS_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
-    export AWS_S3_ACCESS_KEY
-    
-    AWS_S3_SECRET_KEY=$(aws ssm get-parameter --name "omnibus-cache-aws-secret-access-key-id-private" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
-    export AWS_S3_SECRET_KEY
-    
-    echo "AWS S3 credentials set for omnibus cache operations"
-    
-    # Fetch GITHUB_TOKEN for accessing private GitHub dependencies/submodules
-    GITHUB_TOKEN=$(aws ssm get-parameter --name "buildkite-github-clone-only-token" --with-decryption --region "${AWS_REGION}" --query Parameter.Value --output text)
-    export GITHUB_TOKEN
-    
-    # Set OMNIBUS_SUBMODULE_CONFIG_PRIVATE for omnibus private submodule access
-    export OMNIBUS_SUBMODULE_CONFIG_PRIVATE="https://${GITHUB_TOKEN}@github.com/chef/omnibus-private.git"
-    
-    echo "GITHUB_TOKEN set for private repository access"
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-.* ]] && \
+   [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]] && \
+   [[ ! "$BUILDKITE_LABEL" =~ macOS|mac_os_x ]]; then
+
+  # Set AWS S3 credentials for omnibus cache operations
+  AWS_S3_ACCESS_KEY=$(aws ssm get-parameter \
+    --name "omnibus-cache-aws-access-key-id-private" \
+    --with-decryption \
+    --region "${AWS_REGION}" \
+    --query Parameter.Value \
+    --output text)
+
+  export AWS_S3_ACCESS_KEY
+
+  AWS_S3_SECRET_KEY=$(aws ssm get-parameter \
+    --name "omnibus-cache-aws-secret-access-key-id-private" \
+    --with-decryption \
+    --region "${AWS_REGION}" \
+    --query Parameter.Value \
+    --output text)
+
+  export AWS_S3_SECRET_KEY
+
+  echo "AWS S3 credentials set for omnibus cache operations"
+
+  # Fetch GITHUB_TOKEN for accessing private GitHub dependencies/submodules
+  GITHUB_TOKEN=$(aws ssm get-parameter \
+    --name "buildkite-github-clone-only-token" \
+    --with-decryption \
+    --region "${AWS_REGION}" \
+    --query Parameter.Value \
+    --output text)
+
+  export GITHUB_TOKEN
+
+  export OMNIBUS_SUBMODULE_CONFIG_PRIVATE="https://${GITHUB_TOKEN}@github.com/chef/omnibus-private.git"
+
+  echo "GITHUB_TOKEN set for private repository access"
 fi
 
-# Pass Akeyless signing metadata into the Docker container for chef-18 Windows builds.
-# windows_base.rb fetches Azure credentials from Akeyless at signing time — no creds here.
-if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" == "chef" ]]; then
+# ---------------------------------------------------------------------------
+# Chef-18 Windows EV signing configuration
+#
+# Chef-18 is the only project using the hybrid architecture:
+#
+#   Windows 2019 Buildkite host
+#       -> Windows Docker container
+#       -> omnibus build
+#       -> signing inside windows_base.rb
+#
+# The Buildkite host retrieves only the signing metadata here.
+# Azure credentials are NOT retrieved here.
+#
+# Azure credentials are fetched from Akeyless immediately before signing
+# inside omnibus-private/windows_base.rb.
+# ---------------------------------------------------------------------------
+if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && \
+   [[ "$BUILDKITE_ORGANIZATION_SLUG" == "chef" ]]; then
+
   echo "--- Initializing Progress EV code signing metadata"
 
+  # Akeyless access ID is not an Azure secret. It is used to authenticate
+  # against Akeyless using AWS IAM.
   AKEYLESS_ACCESS_ID=$(aws ssm get-parameter \
     --name "buildkite-akeyless-access-id" \
     --with-decryption \
     --query "Parameter.Value" \
     --output text \
     --region "${AWS_REGION:-us-west-2}") || {
-    echo "ERROR: Failed to fetch Akeyless access ID from Parameter Store"
-    exit 1
-  }
-  [[ -z "$AKEYLESS_ACCESS_ID" ]] && { echo "ERROR: AKEYLESS_ACCESS_ID is empty"; exit 1; }
-  export AKEYLESS_ACCESS_ID
-  echo "DEBUG: AKEYLESS_ACCESS_ID fetched from Parameter Store (length: ${#AKEYLESS_ACCESS_ID})"
+      echo "ERROR: Failed to fetch Akeyless access ID from Parameter Store"
+      exit 1
+    }
 
-  # Signing configuration lives in AWS Parameter Store so a change on the Progress side is a
-  # parameter edit rather than a code release. Each value may be overridden by presetting it.
+  if [[ -z "$AKEYLESS_ACCESS_ID" || "$AKEYLESS_ACCESS_ID" == "None" ]]; then
+    echo "ERROR: AKEYLESS_ACCESS_ID is empty"
+    exit 1
+  fi
+
+  export AKEYLESS_ACCESS_ID
+
+  echo "Akeyless access ID loaded successfully"
+
+  # Signing configuration lives in AWS Parameter Store.
+  #
+  # These values are configuration, not Azure credentials:
+  #   OMNIBUS_DS_PATH
+  #   OMNIBUS_AZURE_KEY_VAULT_URL
+  #   OMNIBUS_AZURE_CERT_NAME
+  #
+  # They can be overridden by the environment if required.
   for pair in \
     "OMNIBUS_DS_PATH=omnibus-signing-akeyless-ds-path" \
     "OMNIBUS_AZURE_KEY_VAULT_URL=omnibus-signing-azure-key-vault-url" \
@@ -215,33 +311,28 @@ if [[ "$BUILDKITE_STEP_KEY" =~ ^build-windows ]] && [[ "$BUILDKITE_ORGANIZATION_
   do
     var="${pair%%=*}"
     parameter="${pair#*=}"
+
     if [[ -z "${!var:-}" ]]; then
-      # --with-decryption is required for SecureString and ignored for String, so passing it
-      # unconditionally keeps this working whichever type the parameter was created as.
       value=$(aws ssm get-parameter \
         --name "$parameter" \
         --with-decryption \
         --query "Parameter.Value" \
         --output text \
         --region "${AWS_REGION:-us-west-2}") || {
-        echo "ERROR: Failed to read '$parameter' from Parameter Store"
-        exit 1
-      }
+          echo "ERROR: Failed to read signing parameter '$parameter' from Parameter Store"
+          exit 1
+        }
+
       if [[ -z "$value" || "$value" == "None" ]]; then
-        echo "ERROR: Parameter '$parameter' is empty"
+        echo "ERROR: Signing parameter '$parameter' is empty"
         exit 1
       fi
+
       export "$var=$value"
-      echo "DEBUG: $var fetched from Parameter Store: $value"
-    else
-      echo "DEBUG: $var already set (skipped Parameter Store fetch)"
     fi
   done
 
-  echo "Progress EV signing metadata ready (cert: ${OMNIBUS_AZURE_CERT_NAME}); Azure credentials will be fetched at signing time"
-  echo "DEBUG: Exported values:"
-  echo "  AKEYLESS_ACCESS_ID: [SET]"
-  echo "  OMNIBUS_DS_PATH: ${OMNIBUS_DS_PATH}"
-  echo "  OMNIBUS_AZURE_KEY_VAULT_URL: ${OMNIBUS_AZURE_KEY_VAULT_URL}"
-  echo "  OMNIBUS_AZURE_CERT_NAME: ${OMNIBUS_AZURE_CERT_NAME}"
+  # Do not print the values. Some values are not credentials, but keeping the
+  # signing configuration out of CI logs makes accidental exposure less likely.
+  echo "Progress EV signing metadata ready"
 fi
