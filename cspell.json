@@ -1030,6 +1030,7 @@
     "PHKEY",
     "PIDFILE",
     "pidfiles",
+    "pipefail",
     "pkgconfig",
     "pkgin",
     "pkginfos",
