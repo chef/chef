@@ -500,6 +500,36 @@ describe Chef::Provider::Package::Apt do
       end
     end
 
+    describe "#purging_package?" do
+      context "when the package is currently installed" do
+        it "returns true, matching removing_package?" do
+          allow(@provider).to receive(:removing_package?).and_return(true)
+          expect(@provider.purging_package?).to be true
+        end
+      end
+
+      context "when the package is not currently installed" do
+        before do
+          allow(@provider).to receive(:removing_package?).and_return(false)
+        end
+
+        it "returns false when dpkg has no config-files remaining for it" do
+          allow(@provider).to receive(:shell_out).with("dpkg-query", "--show", "--showformat=${Status}", "irssi", returns: [0, 1])
+            .and_return(instance_double(Mixlib::ShellOut, stdout: "unknown ok not-installed"))
+          expect(@provider.purging_package?).to be false
+        end
+
+        it "returns true when dpkg reports the package as 'rc' (removed, config files remain)" do
+          # regression test: apt-cache policy (which drives removing_package?) reports "(none)"
+          # for both "never installed" and dpkg's "rc" state, so :purge used to silently no-op
+          # on an rc-state package instead of cleaning up its leftover config files.
+          allow(@provider).to receive(:shell_out).with("dpkg-query", "--show", "--showformat=${Status}", "irssi", returns: [0, 1])
+            .and_return(instance_double(Mixlib::ShellOut, stdout: "deinstall ok config-files"))
+          expect(@provider.purging_package?).to be true
+        end
+      end
+    end
+
     describe "when given a response file" do
       it_behaves_like "given a response file" do
         before do
