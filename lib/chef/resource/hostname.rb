@@ -129,6 +129,14 @@ class Chef
           end
           config.to_s
         end
+
+        # macOS's scutil HostName is the system's DNS/FQDN-style name, distinct from
+        # the short LocalHostName/ComputerName set further down. Fall back to the
+        # hostname property when fqdn isn't set, preserving prior behavior.
+        # @return [String]
+        def macos_hostname
+          new_resource.fqdn.to_s.empty? ? new_resource.hostname : new_resource.fqdn
+        end
       end
 
       def is_domain_joined?
@@ -166,8 +174,8 @@ class Chef
           when darwin?
             # darwin
             execute "set HostName via scutil" do
-              command "/usr/sbin/scutil --set HostName #{new_resource.hostname}"
-              not_if { shell_out("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname }
+              command "/usr/sbin/scutil --set HostName #{macos_hostname}"
+              not_if { shell_out("/usr/sbin/scutil --get HostName").stdout.chomp == macos_hostname }
               notifies :reload, "ohai[reload hostname]"
             end
             execute "set ComputerName via scutil" do
