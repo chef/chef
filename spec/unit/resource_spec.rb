@@ -1461,6 +1461,21 @@ describe Chef::Resource do
 
         expect(actual_value).to eq("0123")
       end
+
+      it "changes the umask in the block to the set value when given as an Integer literal" do
+        resource.umask = 0o123
+
+        block_value = nil
+
+        resource.with_umask do
+          block_value = ::File.umask
+        end
+
+        # Format the returned value so a potential error message is easier to understand.
+        actual_value = block_value.to_s(8).rjust(4, "0")
+
+        expect(actual_value).to eq("0123")
+      end
     end
 
     it "resets the umask afterwards" do
