@@ -73,4 +73,15 @@ describe Chef::Resource::Sysctl do
       end
     end
   end
+
+  context "#sysctl_reload_command" do
+    it "uses --system instead of -p, so it works on distros without a default /etc/sysctl.conf (e.g. Debian 13)" do
+      expect(provider.sysctl_reload_command).to eql("sysctl --system")
+    end
+
+    it "adds -e when ignore_error is set" do
+      resource.ignore_error true
+      expect(provider.sysctl_reload_command).to eql("sysctl -e --system")
+    end
+  end
 end
