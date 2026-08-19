@@ -58,7 +58,7 @@ class Chef
           matched_value = match_versions(node)
           if @values.key?(platform) && @values[platform].key?(version)
             @values[platform][version]
-          elsif matched_value
+          elsif !matched_value.nil?
             matched_value
           elsif @values.key?(platform) && @values[platform].key?("default")
             @values[platform]["default"]
