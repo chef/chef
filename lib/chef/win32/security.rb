@@ -621,7 +621,7 @@ class Chef
         result.read_long
       end
 
-      def set_security_descriptor_dacl(security_descriptor, acl, defaulted = false, present = nil)
+      def self.set_security_descriptor_dacl(security_descriptor, acl, defaulted = false, present = nil)
         security_descriptor = security_descriptor.pointer if security_descriptor.respond_to?(:pointer)
         acl = acl.pointer if acl.respond_to?(:pointer)
         present = !security_descriptor.null? if present.nil?
