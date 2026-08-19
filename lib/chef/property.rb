@@ -543,6 +543,14 @@ class Chef
           Chef::Mixin::ParamsValidate.validate({ name => value }, { name => validation_options })
         end
       end
+    rescue Chef::Exceptions::ValidationFailed
+      # validation_options strips :sensitive before it ever reaches the
+      # validators below, so they have no way to redact the value themselves --
+      # do it here instead of leaking it in the exception message.
+      raise unless sensitive?
+
+      raise Chef::Exceptions::ValidationFailed,
+        "Property #{name}'s value does not pass validation. The value has been suppressed because 'sensitive' is set to true on this property."
     end
 
     #
