@@ -1172,6 +1172,18 @@ describe "Chef::Resource.property" do
     end
   end
 
+  with_property ":x, String, sensitive: true, regex: %r{^foobar$}" do
+    it "does not leak the sensitive value in the ValidationFailed message when the regex doesn't match" do
+      expect { resource.x "SuperSecretPassword" }.to raise_error(Chef::Exceptions::ValidationFailed) do |e|
+        expect(e.message).not_to include("SuperSecretPassword")
+      end
+    end
+
+    it "still validates successfully when the value matches" do
+      expect(resource.x "foobar").to eq "foobar"
+    end
+  end
+
   context "redefining Object methods" do
     it "disallows redefining Object methods" do
       expect { resource_class.class_eval { property :hash } }.to raise_error(ArgumentError)
