@@ -541,6 +541,20 @@ describe Chef::Provider::Git do
       end
     end
 
+    describe "when the resource is sensitive" do
+      it "does not leak the remote URL in the converge_by description" do
+        @resource.sensitive true
+        sensitive_url = "https://user:password@git.example.com/repository.git"
+        command_response = double("shell_out", exitstatus: 1)
+        allow(@provider).to receive(:shell_out!).and_return(command_response)
+        @provider.setup_remote_tracking_branches(@resource.remote, sensitive_url)
+
+        descriptions = @provider.send(:converge_actions).actions.map(&:first).join(" ")
+        expect(descriptions).not_to include("password")
+        expect(descriptions).to include("**Suppressed Sensitive URL**")
+      end
+    end
+
     describe "when a remote with a given name has already been configured" do
       it "updates remote url when the url is different" do
         command_response = double("shell_out")
@@ -768,6 +782,19 @@ describe Chef::Provider::Git do
         expect(@provider).to receive(:setup_remote_tracking_branches).with(remote_name, remote_url)
       end
       @provider.add_remotes
+    end
+
+    it "does not leak an additional remote's URL in converge_by/log output when sensitive is true" do
+      @resource.sensitive true
+      @resource.additional_remotes({ opscode: "https://user:password@git.example.com/repo.git" })
+      allow(STDOUT).to receive(:tty?).and_return(false)
+      allow(@provider).to receive(:setup_remote_tracking_branches)
+      allow(@provider.logger).to receive(:info)
+      @provider.add_remotes
+
+      descriptions = @provider.send(:converge_actions).actions.map(&:first).join(" ")
+      expect(descriptions).not_to include("password")
+      expect(descriptions).to include("**Suppressed Sensitive URL**")
     end
   end
 
