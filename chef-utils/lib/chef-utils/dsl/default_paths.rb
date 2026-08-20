@@ -43,7 +43,25 @@ module ChefUtils
       private
 
       def __default_paths
-        ChefUtils.windows? ? %w{} : %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
+        if ChefUtils.windows?
+          # On Windows with Habitat-based packaging (Chef 19+), the Habitat launcher
+          # overwrites the process PATH with only the package's bin dirs, stripping
+          # standard Windows system directories. We restore them here using SystemRoot
+          # (an OS-level env var set by Windows itself, always present and unaffected
+          # by Habitat's PATH overwrite), mirroring what Linux already does for
+          # /usr/bin, /sbin, etc.
+          # Note: we intentionally do NOT add WindowsPowerShell here because Chef 19
+          # (Habitat-based) ships its own bundled PowerShell and adding the system
+          # PowerShell path could cause version conflicts.
+          system_root = ENV.fetch("SystemRoot", 'C:\Windows')
+          [
+            "#{system_root}\\System32",
+            system_root,
+            "#{system_root}\\System32\\Wbem",
+          ]
+        else
+          %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
+        end
       end
 
       def __ruby_bindir

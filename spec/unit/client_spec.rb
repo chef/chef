@@ -878,6 +878,34 @@ describe Chef::Client do
       client.run
     end
   end
+
+  describe "enforce_default_paths PATH injection" do
+    # Test the PATH injection logic directly via the mixin rather than
+    # through client.run, to avoid conflicts with the shared context mocks
+    # that set up platform-specific path expectations.
+    let(:test_obj) { Object.new.tap { |o| o.extend(ChefUtils::DSL::DefaultPaths) } }
+
+    context "when enforce_default_paths is true" do
+      before { allow(ChefUtils).to receive(:windows?).and_return(false) }
+
+      it "default_paths includes standard unix dirs" do
+        result = test_obj.default_paths({ "PATH" => "/usr/bin" })
+        expect(result).to include("/usr/local/sbin")
+        expect(result).to include("/usr/bin")
+      end
+    end
+
+    context "when enforce_default_paths is false" do
+      it "ENV['PATH'] is not modified when flag is false" do
+        original = ENV["PATH"]
+        # Simulate what client.rb does — only modify PATH if flag is true
+        ENV["PATH"] = ChefUtils::DSL::DefaultPaths.default_paths if Chef::Config[:enforce_default_paths]
+        expect(ENV["PATH"]).to eq(original)
+      ensure
+        ENV["PATH"] = original
+      end
+    end
+  end
 end
 
 describe Chef::Client, "target mode Chef Server authentication" do

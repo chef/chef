@@ -353,8 +353,14 @@ module ChefConfig
     # DEPRECATED
     default :enforce_path_sanity, false
 
-    # Enforce default paths by default for all APIs, not just the default internal shell_out
-    default :enforce_default_paths, false
+    # Enforce default paths by default for all APIs, not just the default internal shell_out.
+    # On Windows, defaults to true so that standard system directories (C:\Windows\System32,
+    # C:\Windows, C:\Windows\System32\Wbem) are always present in the subprocess PATH.
+    # This restores Chef 18 (Omnibus) behavior for Chef 19 (Habitat-based) installs where
+    # the Habitat launcher strips those directories from the process PATH. On standard
+    # Windows installs where System32 is already in PATH, the dedup logic in default_paths
+    # prevents any duplicate entries — making this a safe no-op for non-Habitat installs.
+    default(:enforce_default_paths) { ChefUtils.windows? }
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     default :formatter, "null"
