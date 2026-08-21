@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.13 -->
-## [v19.4.13](https://github.com/chef/chef/tree/v19.4.13) (2026-08-12)
+<!-- latest_release 19.4.14 -->
+## [v19.4.14](https://github.com/chef/chef/tree/v19.4.14) (2026-08-21)
 
 #### Merged Pull Requests
-- Parameterize apt_update.ignore_failure in the apt_repository resource [#16262](https://github.com/chef/chef/pull/16262) ([fretb](https://github.com/fretb))
+- CHEF-37586: Restore Windows system PATH entries in Chef 19 Habitat-based packaging [#16310](https://github.com/chef/chef/pull/16310) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-37586: Restore Windows system PATH entries in Chef 19 Habitat-based packaging [#16310](https://github.com/chef/chef/pull/16310) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.14 -->
 - Parameterize apt_update.ignore_failure in the apt_repository resource [#16262](https://github.com/chef/chef/pull/16262) ([fretb](https://github.com/fretb)) <!-- 19.4.13 -->
 - Restore Windows kitchen recipes after upstream libarchive fix [#16250](https://github.com/chef/chef/pull/16250) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.12 -->
 - docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.11 -->
