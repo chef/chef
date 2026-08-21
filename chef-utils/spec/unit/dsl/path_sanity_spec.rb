@@ -59,28 +59,44 @@ RSpec.describe ChefUtils::DSL::DefaultPaths do
   context "on windows" do
     before do
       allow(ChefUtils).to receive(:windows?).and_return(true)
+      # Simulate SystemRoot as set by Windows itself (always present)
+      stub_const("ENV", ENV.to_hash.merge("SystemRoot" => 'C:\Windows'))
     end
 
     let(:test_instance) { DefaultPathsTestClass.new }
 
+    # Chef 19 (Habitat-based) strips Windows system dirs from PATH; they must be restored.
+    let(:win_sys_dirs) { 'C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem' }
+
     it "works with no path" do
       env = {}
-      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};#{win_sys_dirs}")
     end
 
     it "works with nil path" do
       env = { "PATH" => nil }
-      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};#{win_sys_dirs}")
     end
 
     it "works with empty path" do
       env = { "PATH" => "" }
-      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};#{win_sys_dirs}")
     end
 
-    it "prepends to an existing path" do
-      env = { "PATH" => "%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\" }
-      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\")
+    it "prepends gem/ruby bindirs and appends missing system dirs to an existing path" do
+      # Simulate a realistic Habitat-stripped PATH that already has System32
+      env = { "PATH" => 'C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\\' }
+      expect(test_instance.default_paths(env)).to eql(
+        "#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+      )
+    end
+
+    it "does not duplicate system dirs already present in PATH" do
+      env = { "PATH" => "#{Gem.bindir};C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem" }
+      path_entries = test_instance.default_paths(env).split(";")
+      expect(path_entries.count('C:\Windows\System32')).to eq(1)
+      expect(path_entries.count('C:\Windows')).to eq(1)
+      expect(path_entries.count('C:\Windows\System32\Wbem')).to eq(1)
     end
   end
 end

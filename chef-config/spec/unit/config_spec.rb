@@ -615,6 +615,10 @@ RSpec.describe ChefConfig::Config do
           expect(ChefConfig::Config[:stream_execute_output]).to eq(false)
         end
 
+        it "ChefConfig::Config[:enforce_default_paths] defaults to true on Windows, false on non-Windows" do
+          expect(ChefConfig::Config[:enforce_default_paths]).to eq(is_windows)
+        end
+
         it "ChefConfig::Config[:show_download_progress] defaults to false" do
           expect(ChefConfig::Config[:show_download_progress]).to eq(false)
         end

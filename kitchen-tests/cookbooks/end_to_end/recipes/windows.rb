@@ -11,6 +11,8 @@
 
 chef_sleep "2"
 
+include_recipe "::_windows_system_path"
+
 execute "dir"
 
 execute "Print git version" do
