@@ -43,3 +43,4 @@ From there you should see a zoom link that links you to the meeting.
 - [Fauxhai](https://github.com/chef/fauxhai) ![Open PRs](https://img.shields.io/github/issues-pr/chef/fauxhai) [Fauxhai pull requests](https://github.com/chef/fauxhai/pulls)
 - [Chefspec](https://github.com/chef/chefspec) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chefspec) [Chefspec pull requests](https://github.com/chef/chefspec/pulls)
 - [Shared Github Workflows](https://github.com/chef/github-workflows) ![Open PRs](https://img.shields.io/github/issues-pr/chef/github-workflows) [Shared Github Workflows pull requests](https://github.com/chef/github-workflows/pulls)
+- [Azure-Chef-Extension](https://github.com/chef-partners/azure-chef-extension) ![Open PRs](https://img.shields.io/github/issues-pr/chef-partners/azure-chef-extension) [Azure-Chef-Extension pull requests](https://github.com/chef-partners/azure-chef-extension/pulls)
