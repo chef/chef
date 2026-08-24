@@ -107,7 +107,7 @@ class Chef
           # Result should be: chef/chef-infra-client/VERSION/RELEASE
           package_ident = ::File.join(Pathname.new(current_chef_path).each_filename.to_a[2..5])
 
-          ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}")
+          ca_pkg = shell_out("HAB_LICENSE=accept-no-persist #{current_hab_path} pkg dependencies #{package_ident}")
           if ca_pkg.error?
             raise "Failed to determine CA Certs for the #{ChefUtils::Dist::Infra::PRODUCT}'s habitat package"
           end
@@ -118,7 +118,7 @@ class Chef
             raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
           end
 
-          ca_path = shell_out("#{current_hab_path} pkg path #{hab_cacerts_pkg}")
+          ca_path = shell_out("HAB_LICENSE=accept-no-persist #{current_hab_path} pkg path #{hab_cacerts_pkg}")
           if ca_path.error?
             raise "Unable to find path for the 'core/cacerts' habitat package."
           end
