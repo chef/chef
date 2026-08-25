@@ -71,4 +71,5 @@ habitat_service "chef/sensu-agent-win stop" do
   service_name "chef/sensu-agent-win"
   gateway_auth_token "secret"
   action :stop
+  ignore_failure true
 end
