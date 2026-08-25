@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: b7033361b2c67838606de7a0a1772076d79857f9
+  revision: 283191d06280fc2d74f2504ffb4b29867affa94d
   branch: main
   specs:
-    ohai (19.1.40)
+    ohai (19.1.45)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -254,7 +254,7 @@ GEM
       uuidtools (>= 2.1, < 4.0)
       webrick
     coderay (1.1.3)
-    concurrent-ruby (1.3.7)
+    concurrent-ruby (1.3.8)
     connection_pool (3.0.2)
     cookstyle (8.7.6)
       rubocop (= 1.86.1)
@@ -338,7 +338,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.6.2)
-    json (2.21.1)
+    json (2.21.2)
     language_server-protocol (3.17.0.6)
     libyajl2 (2.1.0)
     license-acceptance (2.1.13)
