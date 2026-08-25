@@ -111,6 +111,29 @@ driver/transport (`kitchen.exec.windows.yml`) before attempting remote (Azure) r
   or kitchen config. Blocks any Habitat-based testing on Windows ARM64 until these are
   published, regardless of what else is fixed.
 
+### 6. Policyfile.rb silently overrides any suite's `run_list:` in kitchen.yml
+- **Symptom**: added an `end-to-end-arm` suite to `kitchen.exec.windows.yml` with
+  `run_list: [recipe[end_to_end_arm::default]]`, but the actual converge log showed
+  `Expanded run list: recipe[end_to_end::default]` and failed on the `timezone`
+  resource's `tzutil` bug in `end_to_end::windows` -- i.e. it silently ran the wrong
+  (full, non-ARM) cookbook and hit a bug that `end_to_end_arm` deliberately avoids by
+  not having a `timezone` resource at all.
+- **Root cause**: `Policyfile.rb` at the repo root hardcodes
+  `run_list "end_to_end::default"` and only declares the `end_to_end` cookbook.
+  `kitchen-chef-enterprise`'s `chef_infra` provisioner autodetects and always uses
+  whatever Policyfile it finds to resolve the run_list, which takes priority over
+  and effectively ignores a suite's own `run_list:` entirely. This isn't specific to
+  the new suite -- it means every kitchen run against this repo has been resolving
+  cookbooks via `Policyfile.rb`, regardless of what any given kitchen yml's `suites:`
+  block says.
+- **Fix**: added a dedicated `Policyfile-arm.rb` (own `run_list` and `cookbook`
+  declaration for `end_to_end_arm`) and pointed the `end-to-end-arm` suite at it via
+  the provisioner's `policyfile_path` config option, which is autodetection's
+  documented override.
+- **Status**: RESOLVED and confirmed -- a subsequent `kitchen test end-to-end-arm-*`
+  run correctly resolved and converged `end_to_end_arm` (not `end_to_end`) and mostly
+  passed. A few smaller follow-up tweaks remain (see below).
+
 ## `end_to_end` vs `end_to_end_arm` cookbook comparison
 
 `end_to_end_arm` is a deliberately narrower subset of `end_to_end`, built to sidestep
@@ -149,30 +172,15 @@ pre-staged fixture files). Compared directly:
   `end_to_end`'s `windows.rb`; `end_to_end_arm` avoids all external cookbook
   dependencies by design.
 
-### 6. Policyfile.rb silently overrides any suite's `run_list:` in kitchen.yml
-- **Symptom**: added an `end-to-end-arm` suite to `kitchen.exec.windows.yml` with
-  `run_list: [recipe[end_to_end_arm::default]]`, but the actual converge log showed
-  `Expanded run list: recipe[end_to_end::default]` and failed on the `timezone`
-  resource's `tzutil` bug in `end_to_end::windows` -- i.e. it silently ran the wrong
-  (full, non-ARM) cookbook and hit a bug that `end_to_end_arm` deliberately avoids by
-  not having a `timezone` resource at all.
-- **Root cause**: `Policyfile.rb` at the repo root hardcodes
-  `run_list "end_to_end::default"` and only declares the `end_to_end` cookbook.
-  `kitchen-chef-enterprise`'s `chef_infra` provisioner autodetects and always uses
-  whatever Policyfile it finds to resolve the run_list, which takes priority over
-  and effectively ignores a suite's own `run_list:` entirely. This isn't specific to
-  the new suite -- it means every kitchen run against this repo has been resolving
-  cookbooks via `Policyfile.rb`, regardless of what any given kitchen yml's `suites:`
-  block says.
-- **Fix**: added a dedicated `Policyfile-arm.rb` (own `run_list` and `cookbook`
-  declaration for `end_to_end_arm`) and pointed the `end-to-end-arm` suite at it via
-  the provisioner's `policyfile_path` config option, which is autodetection's
-  documented override.
-
-## Still to validate
+## Still to validate / open follow-ups
+- `kitchen test end-to-end-arm-*` (via `Policyfile-arm.rb`) now converges and mostly
+  passes against chef-19/Habitat locally. A few smaller follow-up tweaks were
+  identified in that run and are being tracked separately (details TBD).
 - Full run of `end_to_end::default` on chef-19/Habitat locally, past the skipped
   `_habitat_win_service` recipe.
 - Whether `_habitat_win_config.rb` and `_habitat_win_sup.rb` (both also touch
   `habitat_sup`) hit the same Windows-Service/PATH issues once exercised fully.
 - Re-running the same suite against the Azure/remote path once local validation is
   clean, to confirm parity.
+- Close the gaps identified in the cookbook comparison above (`additional_config`,
+  shared `powershell_package` coverage gap).
