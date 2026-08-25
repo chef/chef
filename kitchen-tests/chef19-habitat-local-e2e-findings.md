@@ -149,6 +149,26 @@ pre-staged fixture files). Compared directly:
   `end_to_end`'s `windows.rb`; `end_to_end_arm` avoids all external cookbook
   dependencies by design.
 
+### 6. Policyfile.rb silently overrides any suite's `run_list:` in kitchen.yml
+- **Symptom**: added an `end-to-end-arm` suite to `kitchen.exec.windows.yml` with
+  `run_list: [recipe[end_to_end_arm::default]]`, but the actual converge log showed
+  `Expanded run list: recipe[end_to_end::default]` and failed on the `timezone`
+  resource's `tzutil` bug in `end_to_end::windows` -- i.e. it silently ran the wrong
+  (full, non-ARM) cookbook and hit a bug that `end_to_end_arm` deliberately avoids by
+  not having a `timezone` resource at all.
+- **Root cause**: `Policyfile.rb` at the repo root hardcodes
+  `run_list "end_to_end::default"` and only declares the `end_to_end` cookbook.
+  `kitchen-chef-enterprise`'s `chef_infra` provisioner autodetects and always uses
+  whatever Policyfile it finds to resolve the run_list, which takes priority over
+  and effectively ignores a suite's own `run_list:` entirely. This isn't specific to
+  the new suite -- it means every kitchen run against this repo has been resolving
+  cookbooks via `Policyfile.rb`, regardless of what any given kitchen yml's `suites:`
+  block says.
+- **Fix**: added a dedicated `Policyfile-arm.rb` (own `run_list` and `cookbook`
+  declaration for `end_to_end_arm`) and pointed the `end-to-end-arm` suite at it via
+  the provisioner's `policyfile_path` config option, which is autodetection's
+  documented override.
+
 ## Still to validate
 - Full run of `end_to_end::default` on chef-19/Habitat locally, past the skipped
   `_habitat_win_service` recipe.

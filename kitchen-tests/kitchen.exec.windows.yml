@@ -111,6 +111,12 @@ suites:
   - name: end-to-end-arm
     run_list:
       - recipe[end_to_end_arm::default]
+    # Policyfile.rb (autodetected by default) hardcodes
+    # run_list "end_to_end::default" and only declares the end_to_end
+    # cookbook, which silently overrides this suite's run_list above.
+    # Point this suite at its own dedicated Policyfile instead.
+    provisioner:
+      policyfile_path: Policyfile-arm.rb
     verifier:
       inspec_tests:
         - test/integration/end-to-end_arm
