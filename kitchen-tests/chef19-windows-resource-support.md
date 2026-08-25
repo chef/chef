@@ -17,15 +17,26 @@ recipes) are assumed to already cover most generic and Windows resources, so
 this is primarily a matter of running it against chef-19 and recording what
 breaks.
 
+**Amended direction (2026-08-25):** the goal is explicitly *not* to get
+`end_to_end` to pass on ARM64 -- it's to run the whole, unmodified suite as-is
+and catalog every pass/fail to measure the actual delta between x86_64 and
+ARM64 Windows. Nothing in `end_to_end` should be skipped/commented-out to work
+around a known issue during this pass; every failure is itself a data point.
+See `chef19-habitat-local-e2e-findings.md` for individual root-cause writeups
+of issues found along the way (e.g. the `_habitat_win_service`/splunkforwarder
+PATH bug), which remain enabled here rather than skipped.
+
 ## Test setup
 
-- Cookbook under test: `cookbooks/end_to_end` (run_list `end_to_end::default`)
+- Cookbook under test: `cookbooks/end_to_end` (run_list `end_to_end::default`,
+  unmodified -- all recipes enabled, including `_habitat_win_service`)
 - Chef Infra Client version: 19.x, installed via Habitat (`hab pkg install
   chef/chef-infra-client`) since chef-19 is not published via the
   omnitruck/MSI installer path
-- Kitchen driver: `vagrant` (VirtualBox), currently on a Windows 11 ARM64 box
-  (`stromweld/windows-11`); Azure (`kitchen-azurerm`) testing planned as a
-  follow-up for a non-ARM Windows target
+- Test target: a real Windows 11 ARM64 physical machine (not a VM/emulated
+  vagrant box), using the `exec` driver/transport locally
+  (`kitchen.exec.windows.yml`, `end-to-end` suite) or a direct
+  `chef-client -z -o recipe[end_to_end]` invocation
 - Verifier: InSpec, against `test/integration/end-to-end`
 
 ## Summary

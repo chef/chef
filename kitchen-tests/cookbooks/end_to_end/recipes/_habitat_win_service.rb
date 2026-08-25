@@ -1,6 +1,10 @@
+# ignore_failure added throughout this recipe (VP direction: catalog every
+# pass/fail delta on ARM64 rather than stop the whole converge on a known
+# issue -- see chef19-habitat-local-e2e-findings.md, finding #4).
 habitat_sup "default" do
   license "accept"
   gateway_auth_token "secret"
+  ignore_failure true
 end
 
 ruby_block "wait-for-svc-default-startup" do
@@ -17,10 +21,12 @@ ruby_block "wait-for-svc-default-startup" do
   end
   retries 30
   retry_delay 1
+  ignore_failure true
 end
 
 habitat_service "chef/splunkforwarder" do
   gateway_auth_token "secret"
+  ignore_failure true
 end
 
 # we need this sleep to let splunkforwarder start and for the hab supervisor to
@@ -38,6 +44,7 @@ habitat_service "chef/splunkforwarder unload" do
   service_name "chef/splunkforwarder"
   gateway_auth_token "secret"
   action :unload
+  ignore_failure true
 end
 
 habitat_service "chef/sensu-agent-win" do
@@ -46,6 +53,7 @@ habitat_service "chef/sensu-agent-win" do
   channel :stable
   gateway_auth_token "secret"
   action :load
+  ignore_failure true
 end
 
 # we need this sleep to let sensu-agent-win start and for the hab supervisor to

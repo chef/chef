@@ -84,11 +84,19 @@ driver/transport (`kitchen.exec.windows.yml`) before attempting remote (Azure) r
   supervised services), not a local environment gap. Same general class of issue as
   the earlier `net.exe`/`auditpol.exe` PATH gaps found under Habitat-launched
   processes in the ARM cookbook work.
-- **Decision**: rather than patch the vendored package's hook script directly (fragile,
-  wiped out on any reinstall), skip `_habitat_win_service.rb` for this local
-  validation pass (see `cookbooks/end_to_end/recipes/windows.rb`) and continue
-  exercising the rest of the `end_to_end::default` run list. Revisit once this is
-  reported/tracked upstream.
+- **Decision (superseded, see below)**: initial approach was to skip
+  `_habitat_win_service.rb` entirely (comment out its `include_recipe`) to keep
+  the rest of `end_to_end::default` converging. Per VP direction the goal shifted to
+  cataloging every pass/fail delta rather than curating a passing subset, so this
+  recipe was re-enabled; see the `ignore_failure` note below instead.
+- **Revised approach**: rather than skip the recipe (which hides data) or patch the
+  vendored package's hook script directly (fragile, wiped out on any reinstall),
+  added `ignore_failure true` to every resource in `_habitat_win_config.rb`,
+  `_habitat_win_package.rb`, `_habitat_win_service.rb`, `_habitat_win_sup.rb`, and
+  `_habitat_win_user_toml.rb`. This lets Chef record each Habitat-related failure
+  (still visible in the run's output/exit-code-per-resource) without aborting the
+  rest of the `end_to_end::default` run, so every other recipe still gets exercised
+  and cataloged in the same pass.
 
 ### 5. No Habitat packages are published for the `aarch64-windows` target at all
 - **Context**: this is the actual reason `end_to_end_arm` excludes all Habitat
@@ -108,8 +116,15 @@ driver/transport (`kitchen.exec.windows.yml`) before attempting remote (Azure) r
 
 - **Status**: nobody has built/published `aarch64-windows` artifacts for these
   packages yet -- a packaging/publishing gap, not something fixable from our cookbooks
-  or kitchen config. Blocks any Habitat-based testing on Windows ARM64 until these are
-  published, regardless of what else is fixed.
+  or kitchen config.
+- **Possible mitigation, not yet verified**: Windows 11 on ARM64 ships with a built-in
+  x64 emulation layer, so the existing `x86_64-windows` builds of these packages may
+  simply run under emulation without needing genuine `aarch64-windows` artifacts at
+  all. This hasn't been tested yet -- next step is to try installing/running the
+  `x86_64-windows` `core/hab-sup`/`core/windows-service`/`chef/splunkforwarder`
+  packages directly on an ARM64 box and see whether emulation makes them work
+  transparently. If so, this downgrades from a hard blocker to a "works via emulation,
+  ARM64-native builds still don't exist" caveat.
 
 ### 6. Policyfile.rb silently overrides any suite's `run_list:` in kitchen.yml
 - **Symptom**: added an `end-to-end-arm` suite to `kitchen.exec.windows.yml` with
