@@ -118,7 +118,7 @@ class Chef
             raise "Unable to find 'core/cacerts' package in dependencies. Failed to determine CA Certs."
           end
 
-          ca_path = shell_out("HAB_LICENSE=accept-no-persist #{current_hab_path} pkg path #{hab_cacerts_pkg}")
+          ca_pkg = shell_out("#{current_hab_path} pkg path #{hab_cacerts_pkg}", environment: {"HAB_LICENSE" => "accept-no-persist"})
           if ca_path.error?
             raise "Unable to find path for the 'core/cacerts' habitat package."
           end
