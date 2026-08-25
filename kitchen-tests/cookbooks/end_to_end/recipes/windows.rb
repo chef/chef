@@ -261,8 +261,12 @@ windows_update_settings "Disable Windows Update" do
   disable_automatic_updates true
 end
 
+# Get-WindowsFeature (ServerManager module) only exists on Windows Server,
+# not client editions (10/11) -- fails here regardless of architecture, not
+# an ARM64-specific issue. ignore_failure added to keep cataloging past it.
 windows_feature_powershell "RSAT-AD-PowerShell" do
   action :install
+  ignore_failure true
 end
 
 include_recipe "::_chef_gem"
