@@ -12,6 +12,11 @@ provisioner:
   # Use the binlinked chef-client from habitat package installed in workflow
   install_strategy: skip
   chef_binary: C:\\hab\\bin\\chef-client.bat
+  # install_strategy: skip means chef-client is never actually downloaded, so
+  # this URL is never used for real -- its only purpose is that ChefBase's
+  # bypass_chef_licensing? treats any truthy download_url as "you already
+  # have your own chef install/license, skip the license-key HTTP check".
+  download_url: skip
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true

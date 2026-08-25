@@ -246,7 +246,10 @@ end
 
 include_recipe "::_habitat_win_config"
 include_recipe "::_habitat_win_package"
-include_recipe "::_habitat_win_service"
+# Skipped: chef/splunkforwarder's Windows run hook has a PATH-resolution bug
+# under the Habitat Windows Service, causing a permanent crash-restart loop.
+# See chef19-habitat-local-e2e-findings.md, finding #4.
+# include_recipe "::_habitat_win_service"
 include_recipe "::_habitat_win_sup"
 include_recipe "::_habitat_win_user_toml"
 include_recipe "::_windows_printer"

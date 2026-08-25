@@ -1,0 +1,33 @@
+driver:
+  name: azurerm
+  subscription_id: 'f222fd7d-9741-4d5d-bab6-c34ff19b1604'
+  location: 'westus2'
+  machine_size: 'Standard_D8ps_v5'        # ARM64 VM size (Ampere Altra)
+  vm_os_disk_size: 128
+  vm_os_disk_type: Premium_LRS
+  explicit_resource_group_name: 'kitchen-ws2025-arm'
+  destroy_explicit_resource_group: true
+
+transport:
+  name: winrm
+  elevated: true
+  winrm_transport: ssl
+  winrm_port: 5986
+  winrm_timeout: 300
+
+provisioner:
+  name: chef_zero
+  product_name: chef
+  product_version: 19
+  chef_license: accept
+
+platforms:
+  - name: windows2025-arm
+    driver:
+      image_urn: MicrosoftWindowsServer:windowsserver-arm:2025-datacenter-arm64:latest
+
+suites:
+  - name: default
+    run_list:
+      - recipe[end_to_end_arm::default]
+    attributes: {}

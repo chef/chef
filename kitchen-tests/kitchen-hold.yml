@@ -1,0 +1,89 @@
+---
+driver:
+  name: vagrant
+  box_auto_update: true
+  box_auto_prune: true
+
+provisioner:
+  name: chef_infra
+  product_name: chef
+  product_version: latest
+  channel: current
+  retry_on_exit_code:
+    - 35 # 35 is the exit code signaling that the node is rebooting
+  client_rb:
+    diff_disabled: true
+    always_dump_stacktrace: true
+  deprecations_as_errors: true
+  chef_license: accept-no-persist
+  slow_resource_report: true
+
+verifier:
+  name: inspec
+  format: progress
+
+lifecycle:
+  pre_converge:
+    - remote: sudo yum install -y openssl cronie python3-libdnf python3-dnf
+      includes:
+        - fedora-41
+        - fedora-42
+
+platforms:
+  - name: almalinux-8
+  - name: almalinux-9
+  - name: almalinux-10
+  - name: amazonlinux-2
+  - name: amazonlinux-2023
+  - name: debian-11
+  - name: debian-12
+  - name: debian-13
+  - name: fedora-41
+  - name: fedora-42
+  - name: freebsd-13
+  - name: freebsd-14
+  - name: opensuse-leap-15
+  - name: oraclelinux-8
+    driver:
+      box: bento/oraclelinux-8 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
+  - name: oraclelinux-9
+    driver:
+      box: bento/oraclelinux-9 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
+  - name: oraclelinux-10
+    driver:
+      box: bento/oraclelinux-10 # TODO: remove once kitchen-vagrant driver is updated to 2.1.3 in chef-workstation
+  - name: rockylinux-8
+  - name: rockylinux-9
+  - name: rockylinux-10
+  - name: ubuntu-22.04
+  - name: ubuntu-24.04
+  - name: windows-11
+    driver:
+      box: stromweld/windows-11
+      customize:
+        memory: 4096
+  - name: windows-2016
+    driver:
+      box: stromweld/windows-2016
+      customize:
+        memory: 4096
+  - name: windows-2019
+    driver:
+      box: stromweld/windows-2019
+      customize:
+        memory: 4096
+  - name: windows-2022
+    driver:
+      box: stromweld/windows-2022
+      customize:
+        memory: 4096
+  - name: windows-2025
+    driver:
+      box: stromweld/windows-2025
+      customize:
+        memory: 4096
+
+suites:
+  - name: end-to-end
+    run_list:
+      - recipe[end_to_end::default]
