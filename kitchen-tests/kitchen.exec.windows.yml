@@ -108,3 +108,9 @@ suites:
   - name: end-to-end
     run_list:
       - recipe[end_to_end::default]
+  - name: end-to-end-arm
+    run_list:
+      - recipe[end_to_end_arm::default]
+    verifier:
+      inspec_tests:
+        - test/integration/end-to-end_arm
