@@ -60,9 +60,17 @@ end
 # The test can't reliably guess trusted_certs_dir/file_cache_path (they
 # depend on how this node's client.rb was generated), so report the actual
 # resolved values to a known file instead of hardcoding an assumed path.
-::File.open("C:\\chef_arm_test\\chef_client_config_paths.txt", "w") do |f|
-  f.puts "trusted_certs_dir=#{Chef::Config[:trusted_certs_dir]}"
-  f.puts "file_cache_path=#{Chef::Config[:file_cache_path]}"
+# Wrapped in a ruby_block so it runs at converge time -- the directory
+# resource that creates C:\chef_arm_test (in windows.rb) hasn't actually
+# executed yet at this point during compile, since bare Ruby code (like a
+# plain ::File.open) runs immediately while resources only run later.
+ruby_block "write chef client config paths for arm test" do
+  block do
+    ::File.open("C:\\chef_arm_test\\chef_client_config_paths.txt", "w") do |f|
+      f.puts "trusted_certs_dir=#{Chef::Config[:trusted_certs_dir]}"
+      f.puts "file_cache_path=#{Chef::Config[:file_cache_path]}"
+    end
+  end
 end
 
 remote_file ::File.join(Chef::Config[:file_cache_path], "arm_index.html") do
