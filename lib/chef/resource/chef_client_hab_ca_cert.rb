@@ -111,6 +111,7 @@ class Chef
           if pkgs_index.nil?
             raise "Unable to determine habitat package ident from #{ChefUtils::Dist::Infra::CLIENT} path '#{current_chef_path}'."
           end
+
           package_ident = ::File.join(filename_parts[(pkgs_index + 1)..(pkgs_index + 4)])
 
           ca_pkg = shell_out("#{current_hab_path} pkg dependencies #{package_ident}", environment: { "HAB_LICENSE" => "accept-no-persist" })
