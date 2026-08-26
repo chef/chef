@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.15 -->
-## [v19.4.15](https://github.com/chef/chef/tree/v19.4.15) (2026-08-25)
+<!-- latest_release 19.4.16 -->
+## [v19.4.16](https://github.com/chef/chef/tree/v19.4.16) (2026-08-26)
 
 #### Merged Pull Requests
-- Bump webmock from 3.26.2 to 3.26.3 [#16313](https://github.com/chef/chef/pull/16313) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix linux-fips CI: clean up stale Habitat studios before build [#16316](https://github.com/chef/chef/pull/16316) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix linux-fips CI: clean up stale Habitat studios before build [#16316](https://github.com/chef/chef/pull/16316) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.16 -->
 - Bump webmock from 3.26.2 to 3.26.3 [#16313](https://github.com/chef/chef/pull/16313) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.15 -->
 - CHEF-37586: Restore Windows system PATH entries in Chef 19 Habitat-based packaging [#16310](https://github.com/chef/chef/pull/16310) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.14 -->
 - Parameterize apt_update.ignore_failure in the apt_repository resource [#16262](https://github.com/chef/chef/pull/16262) ([fretb](https://github.com/fretb)) <!-- 19.4.13 -->
