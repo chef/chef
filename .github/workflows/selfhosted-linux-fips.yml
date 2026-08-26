@@ -46,6 +46,20 @@ jobs:
           if [ -d "/home/azureuser/actions-runner/_work/chef/chef" ]; then
             sudo rm -r /home/azureuser/actions-runner/_work/chef/chef/*
           fi
+
+          # Clean up any stale Habitat studios from previous failed runs.
+          # If a prior run failed before its cleanup step, the studio's /src
+          # bind-mount can persist. A new `hab pkg build .` may then interact
+          # with that stale studio, causing popd to fail with
+          # "No such file or directory" for /src/habitat/x86_64-linux.
+          for studio_dir in /hab/studios/*/; do
+            if [ -d "$studio_dir" ]; then
+              mount | grep "$studio_dir" | awk '{print $3}' | sort -r | while read -r mnt; do
+                sudo umount -lf "$mnt" 2>/dev/null || true
+              done
+              sudo rm -rf "$studio_dir" || true
+            fi
+          done
           set -e
 
       - name: Checkout trusted code only
