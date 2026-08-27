@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.20 -->
-## [v19.4.20](https://github.com/chef/chef/tree/v19.4.20) (2026-08-27)
+<!-- latest_release 19.4.21 -->
+## [v19.4.21](https://github.com/chef/chef/tree/v19.4.21) (2026-08-27)
 
 #### Merged Pull Requests
-- Fix restore_security_context always passing restorecon -R [#16302](https://github.com/chef/chef/pull/16302) ([tas50](https://github.com/tas50))
+- Fix sysctl resource failing to reload on Debian 13 / trixie [#16304](https://github.com/chef/chef/pull/16304) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix sysctl resource failing to reload on Debian 13 / trixie [#16304](https://github.com/chef/chef/pull/16304) ([tas50](https://github.com/tas50)) <!-- 19.4.21 -->
 - Fix restore_security_context always passing restorecon -R [#16302](https://github.com/chef/chef/pull/16302) ([tas50](https://github.com/tas50)) <!-- 19.4.20 -->
 - Fix Security.set_security_descriptor_dacl missing self. [#16290](https://github.com/chef/chef/pull/16290) ([tas50](https://github.com/tas50)) <!-- 19.4.19 -->
 - Fix NoMethodError in data collector http output locations [#16289](https://github.com/chef/chef/pull/16289) ([tas50](https://github.com/tas50)) <!-- 19.4.18 -->
