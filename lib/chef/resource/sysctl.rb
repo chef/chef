@@ -144,7 +144,7 @@ class Chef
           end
 
           execute "Load sysctl values" do
-            command "sysctl #{"-e " if new_resource.ignore_error}-p"
+            command sysctl_reload_command
             default_env true
             action :run
           end
@@ -161,7 +161,7 @@ class Chef
 
             execute "Load sysctl values" do
               default_env true
-              command "sysctl -p"
+              command sysctl_reload_command
               action :run
             end
           end
@@ -177,6 +177,23 @@ class Chef
         #
         def set_sysctl_param(key, value)
           shell_out!("sysctl #{"-e " if new_resource.ignore_error}-w \"#{key}=#{value}\"")
+        end
+
+        #
+        # The command used to reload sysctl settings from disk.
+        #
+        # `sysctl -p` only reads /etc/sysctl.conf (or an explicit file), which
+        # some distros (e.g. Debian 13 "trixie") no longer ship by default, since
+        # they rely entirely on systemd-sysctl loading /etc/sysctl.d/*.conf.
+        # `sysctl --system` reloads from all of the standard locations --
+        # including the conf_dir this resource writes to -- and simply skips
+        # /etc/sysctl.conf if it doesn't exist, so it works whether or not that
+        # file is present.
+        #
+        # @return [String] The sysctl reload command
+        #
+        def sysctl_reload_command
+          "sysctl #{"-e " if new_resource.ignore_error}--system"
         end
 
         #
