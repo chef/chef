@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/chef/chef-powershell-shim
+  revision: ef9749141eab460da41ce7281c6ef114c585c9b6
+  branch: main
+  specs:
+    chef-powershell (19.1.0)
+      ffi (>= 1.15.5, < 1.18.0)
+      ffi-yajl (>= 2.2, < 4.0, != 3.0.0)
+
+GIT
   remote: https://github.com/chef/ohai.git
   revision: 31b00ef92cad7d3d229ae609a87af41574781076
   branch: 18-stable
@@ -24,6 +33,7 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
+      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -79,7 +89,7 @@ PATH
       aws-sdk-s3 (>= 1.218.0, < 1.219.0)
       aws-sdk-secretsmanager (~> 1.46)
       chef-config (= 18.11.21)
-      chef-powershell (~> 18.6.0)
+      chef-powershell (~> 19.1.0)
       chef-utils (= 18.11.21)
       chef-vault
       chef-zero (~> 15.1.11)
@@ -187,9 +197,6 @@ GEM
     chef-gyoku (1.5.0)
       builder (>= 2.1.2)
       rexml (~> 3.4)
-    chef-powershell (18.6.6)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-telemetry (1.1.1)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -533,6 +540,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-powershell!
   chef-utils!
   chef-vault
   cheffish (>= 17)
@@ -557,4 +565,4 @@ DEPENDENCIES
   zlib (>= 3.2.3)
 
 BUNDLED WITH
-   2.3.27
+   2.3.18
