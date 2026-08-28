@@ -31,8 +31,10 @@ Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
 # making sure we find the dlls from chef powershell
-$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
-$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
+$powershell_gem_path = bundle exec ruby -e 'puts Gem::Specification.find_by_name("chef-powershell").full_gem_path'
+if (-not $?) {
+    throw "Unable to locate the bundled chef-powershell gem"
+}
 $env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
 
 switch ($TestType) {
