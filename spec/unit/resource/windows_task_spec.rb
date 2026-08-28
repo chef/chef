@@ -189,12 +189,12 @@ describe Chef::Resource::WindowsTask, :windows_only do
   context "when execution_time_limit is passed" do
     it "raises error for invalid execution_time_limit" do
       resource.execution_time_limit "abc"
-      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
+      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60), a String with numeric values only (e.g. '60'), or an ISO8601 duration (e.g. 'PT72H').")
     end
 
     it "raises error for invalid execution_time_limit that looks like an Integer" do
       resource.execution_time_limit "5,000"
-      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60').")
+      expect { resource.after_created }.to raise_error(ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60), a String with numeric values only (e.g. '60'), or an ISO8601 duration (e.g. 'PT72H').")
     end
 
     it "converts seconds Integer into integer minute format" do
@@ -209,6 +209,33 @@ describe Chef::Resource::WindowsTask, :windows_only do
       resource.execution_time_limit "60"
       resource.after_created
       expect(resource.execution_time_limit).to eq(1)
+    end
+
+    # The property is documented as accepting "either seconds or an ISO8601
+    # duration value", and its own default is the ISO8601 string PT72H.
+    {
+      "PT72H"    => 4320,
+      "PT30M"    => 30,
+      "PT1H"     => 60,
+      "PT1H30M"  => 90,
+      "P1D"      => 1440,
+      "P1DT12H"  => 2160,
+      "P1W"      => 10080,
+      "PT90S"    => 1,
+    }.each do |duration, minutes|
+      it "converts the ISO8601 duration #{duration} into #{minutes} minutes" do
+        resource.frequency :hourly
+        resource.execution_time_limit duration
+        resource.after_created
+        expect(resource.execution_time_limit).to eq(minutes)
+      end
+    end
+
+    %w{P1Y P3M P PT PT1X 72H}.each do |duration|
+      it "raises for #{duration}, which is not a duration it can convert to seconds" do
+        resource.execution_time_limit duration
+        expect { resource.after_created }.to raise_error(ArgumentError, /Invalid value passed for `execution_time_limit`/)
+      end
     end
   end
 
