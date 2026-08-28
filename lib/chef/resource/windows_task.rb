@@ -314,7 +314,7 @@ class Chef
           (?:(?<minutes>\d+)M)?
           (?:(?<seconds>\d+)S)?
         )?
-      \z/x.freeze
+      \z/x
 
       # The execution_time_limit property is documented as accepting "either
       # seconds or an ISO8601 duration value", and its own default is the
