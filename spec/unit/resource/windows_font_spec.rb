@@ -60,7 +60,10 @@ describe Chef::Resource::WindowsFont do
     end
 
     it "stages the font flat in TEMP rather than under the cookbook subdirectory" do
-      expect(provider.temp_font_path).to eq("C:/tmp/SourceSansPro-Regular.ttf")
+      # PathHelper.join uses the platform separator, so build the expectation
+      # the same way rather than hardcoding one
+      expect(provider.temp_font_path).to eq(Chef::Util::PathHelper.join("C:/tmp", "SourceSansPro-Regular.ttf"))
+      expect(provider.temp_font_path).not_to include("Source_Sans_Pro")
     end
 
     it "keeps the subdirectory when looking the file up in the cookbook" do
@@ -85,7 +88,7 @@ describe Chef::Resource::WindowsFont do
     it "leaves the name alone" do
       expect(provider.font_basename).to eq("Custom.ttf")
       expect(provider.cookbook_source_path).to eq("Custom.ttf")
-      expect(provider.temp_font_path).to eq("C:/tmp/Custom.ttf")
+      expect(provider.temp_font_path).to eq(Chef::Util::PathHelper.join("C:/tmp", "Custom.ttf"))
     end
   end
 end
