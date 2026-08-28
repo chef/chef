@@ -55,27 +55,51 @@ class Chef
       end
 
       action_class do
+        # The font_name may carry a path relative to the cookbook's files
+        # directory, e.g. "fonts\\Source_Sans_Pro\\SourceSansPro-Regular.ttf".
+        # That path is meaningful when looking the file up in the cookbook, but
+        # not when staging it in TEMP or when checking the flat system fonts
+        # directory, so keep the two apart.
+        #
+        # @return [String] the font's file name with any directories stripped
+        def font_basename
+          ::File.basename(new_resource.font_name.tr("\\", "/"))
+        end
+
+        # @return [String] where the font is staged before being installed
+        def temp_font_path
+          Chef::Util::PathHelper.join(ENV["TEMP"], font_basename)
+        end
+
+        # @return [String] the font's path relative to the cookbook files dir
+        def cookbook_source_path
+          new_resource.font_name.tr("\\", "/")
+        end
+
         # if a source is specified fetch using remote_file. If not use cookbook_file
         def retrieve_cookbook_font
-          font_file = new_resource.font_name
           if new_resource.source
-            declare_resource(:remote_file, font_file) do
+            declare_resource(:remote_file, new_resource.font_name) do
               action :nothing
               source source_uri
-              path Chef::Util::PathHelper.join(ENV["TEMP"], font_file)
+              path temp_font_path
             end.run_action(:create)
           else
-            declare_resource(:cookbook_file, font_file) do
+            cookbook_relative_path = cookbook_source_path
+            declare_resource(:cookbook_file, new_resource.font_name) do
               action    :nothing
               cookbook  cookbook_name.to_s unless cookbook_name.nil?
-              path      Chef::Util::PathHelper.join(ENV["TEMP"], font_file)
+              # set explicitly: cookbook_file otherwise infers the source from
+              # the basename of path, which drops any subdirectory
+              source    cookbook_relative_path
+              path      temp_font_path
             end.run_action(:create)
           end
         end
 
         # delete the temp cookbook file
         def del_cookbook_font
-          file Chef::Util::PathHelper.join(ENV["TEMP"], new_resource.font_name) do
+          file temp_font_path do
             action :delete
           end
         end
@@ -85,8 +109,8 @@ class Chef
           require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           fonts_dir = Chef::Util::PathHelper.join(ENV["windir"], "fonts")
           folder = WIN32OLE.new("Shell.Application").Namespace(fonts_dir)
-          converge_by("install font #{new_resource.font_name} to #{fonts_dir}") do
-            folder.CopyHere(Chef::Util::PathHelper.join(ENV["TEMP"], new_resource.font_name))
+          converge_by("install font #{font_basename} to #{fonts_dir}") do
+            folder.CopyHere(temp_font_path)
           end
         end
 
@@ -97,8 +121,8 @@ class Chef
           require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           fonts_dir = WIN32OLE.new("WScript.Shell").SpecialFolders("Fonts")
           fonts_dir_local = Chef::Util::PathHelper.join(ENV["home"], "AppData/Local/Microsoft/Windows/fonts")
-          logger.trace("Seeing if the font at #{Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)} exists")
-          ::File.exist?(Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)) || ::File.exist?(Chef::Util::PathHelper.join(fonts_dir_local, new_resource.font_name))
+          logger.trace("Seeing if the font at #{Chef::Util::PathHelper.join(fonts_dir, font_basename)} exists")
+          ::File.exist?(Chef::Util::PathHelper.join(fonts_dir, font_basename)) || ::File.exist?(Chef::Util::PathHelper.join(fonts_dir_local, font_basename))
         end
 
         # Parse out the schema provided to us to see if it's one we support via remote_file.
