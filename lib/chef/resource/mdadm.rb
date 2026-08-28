@@ -63,13 +63,13 @@ class Chef
 
       **Create and assemble a RAID 5 array**
 
-      The mdadm command can be used to create RAID arrays. For example, a RAID 5 array named /dev/sd0 with 4, and a superblock type of 0.90 would be similar to:
+      The mdadm command can be used to create RAID arrays. For example, a RAID 5 array named /dev/sd0 with 4 devices, and a superblock type of 1.2 would be similar to:
 
       ```ruby
       mdadm '/dev/sd0' do
         devices [ '/dev/s1', '/dev/s2', '/dev/s3', '/dev/s4' ]
         level 5
-        metadata '0.90'
+        metadata '1.2'
         chunk 32
         action :create
       end
@@ -97,7 +97,7 @@ class Chef
         description: "The RAID level."
 
       property :metadata, String,
-        default: "0.90",
+        default: "1.2",
         description: "The superblock type for RAID metadata."
 
       property :bitmap, String,
