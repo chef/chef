@@ -42,4 +42,53 @@ describe Chef::Resource::KernelModule do
     expect { resource.action :unload }.not_to raise_error
     expect { resource.action :delete }.to raise_error(ArgumentError)
   end
+
+  describe "#declare_initramfs_resource" do
+    let(:node) do
+      node = Chef::Node.new
+      node.automatic[:platform_family] = "rhel"
+      node.automatic[:platform] = "redhat"
+      node.automatic[:platform_version] = "9.0"
+      node
+    end
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:provider) do
+      resource.run_context = run_context
+      resource.provider_for_action(:install)
+    end
+
+    it "declares the shared execute resource in the root run context" do
+      initramfs = provider.declare_initramfs_resource
+      expect(initramfs.to_s).to eq("execute[update initramfs]")
+      expect(initramfs.command).to eq("dracut -f")
+      expect(initramfs.action).to eq([:nothing])
+    end
+
+    it "does not set ignore_failure when the kernel_module resource did not" do
+      expect(provider.declare_initramfs_resource.ignore_failure).to be false
+    end
+
+    it "carries ignore_failure over to the initramfs rebuild" do
+      resource.ignore_failure true
+      expect(provider.declare_initramfs_resource.ignore_failure).to be true
+    end
+
+    it "carries :quiet over rather than coercing it to true" do
+      resource.ignore_failure :quiet
+      expect(provider.declare_initramfs_resource.ignore_failure).to eq(:quiet)
+    end
+
+    it "keeps ignore_failure once any kernel_module in the run has asked for it" do
+      resource.ignore_failure true
+      provider.declare_initramfs_resource
+
+      other = Chef::Resource::KernelModule.new("bar")
+      other.run_context = run_context
+      other_provider = other.provider_for_action(:install)
+
+      # the shared resource already exists, so find_resource returns it as-is
+      expect(other_provider.declare_initramfs_resource.ignore_failure).to be true
+    end
+  end
 end
