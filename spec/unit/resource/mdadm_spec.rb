@@ -56,9 +56,13 @@ describe Chef::Resource::Mdadm do
     expect(resource.level).to eql(1)
   end
 
-  it "allows you to set the metadata property" do
-    resource.metadata "1.2"
+  it "defaults the metadata property to mdadm's own default superblock format" do
     expect(resource.metadata).to eql("1.2")
+  end
+
+  it "allows you to set the metadata property" do
+    resource.metadata "0.90"
+    expect(resource.metadata).to eql("0.90")
   end
 
   it "allows you to set the bitmap property" do

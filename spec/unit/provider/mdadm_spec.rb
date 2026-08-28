@@ -60,7 +60,7 @@ describe Chef::Resource::Mdadm do
     describe "when creating the metadevice" do
       it "should create the raid device if it doesnt exist" do
         @current_resource.exists(false)
-        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=1.2 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         expect(@provider).to receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
       end
@@ -68,7 +68,7 @@ describe Chef::Resource::Mdadm do
       it "should specify a bitmap only if set" do
         @current_resource.exists(false)
         @new_resource.bitmap("grow")
-        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --bitmap=grow --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=1.2 --bitmap=grow --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         expect(@provider).to receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
         expect(@new_resource).to be_updated_by_last_action
@@ -77,7 +77,7 @@ describe Chef::Resource::Mdadm do
       it "should specify a layout only if set" do
         @current_resource.exists(false)
         @new_resource.layout("rs")
-        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=0.90 --layout=rs --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        expected_command = "yes | mdadm --create /dev/md1 --level 5 --chunk=16 --metadata=1.2 --layout=rs --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         expect(@provider).to receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
         expect(@new_resource).to be_updated_by_last_action
@@ -86,7 +86,7 @@ describe Chef::Resource::Mdadm do
       it "should not specify a chunksize if raid level 1" do
         @current_resource.exists(false)
         @new_resource.level 1
-        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=0.90 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
+        expected_command = "yes | mdadm --create /dev/md1 --level 1 --metadata=1.2 --raid-devices 3 /dev/sdz1 /dev/sdz2 /dev/sdz3"
         expect(@provider).to receive(:shell_out!).with(expected_command)
         @provider.run_action(:create)
         expect(@new_resource).to be_updated_by_last_action
