@@ -12,10 +12,11 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
-  gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
-  # FIXME: should strip any valid ruby platform off of the gem_name if it matches
+  gemspec_path = Dir["#{gempath}/*.gemspec", "#{gempath}/**/*.gemspec"].first
+  next unless gemspec_path
 
-  next unless gem_name
+  gem_name = File.basename(gemspec_path, ".gemspec")
+  # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   next if %w{chef chef-universal-mingw-ucrt proxifier}.include?(gem_name)
@@ -24,8 +25,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   puts "re-installing #{gem_name}..."
 
-  Dir.chdir(gempath) do
-    system("gem build #{gem_name}.gemspec") or raise "gem build failed"
+  Dir.chdir(File.dirname(gemspec_path)) do
+    system("gem build #{File.basename(gemspec_path)}") or raise "gem build failed"
     # On AIX (Ruby 3.0.3), git-sourced gems often declare required_ruby_version >= 3.1.0.
     # Without --ignore-dependencies, gem install falls back to rubygems.org and installs
     # the wrong gem version with different dependency constraints (e.g. rest-client on
