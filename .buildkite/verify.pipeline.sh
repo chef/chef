@@ -18,9 +18,14 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "steps:"
 echo ""
 
-test_platforms=("centos-7" "centos-8" "rhel-9" "rhel-10" "debian-9" "ubuntu-1604" "sles-15")
+# RHEL-family platforms (RHEL 9, RHEL 10): run Unit, Functional, and Integration in Buildkite (requires subscription).
+# Other Linux platforms: run Integration only here; Unit/Functional run in GitHub Actions (unit-docker, functional-docker).
+# Windows: run Integration only here; Unit/Functional run in GitHub Actions.
 
-for platform in ${test_platforms[@]}; do
+rhel_platforms=("rhel-9" "rhel-10")
+other_platforms=("centos-7" "centos-8" "debian-9" "ubuntu-1604" "sles-15")
+
+for platform in ${rhel_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
   echo "  retry:"
   echo "    automatic:"
@@ -33,7 +38,7 @@ for platform in ${test_platforms[@]}; do
   echo "    - \"Functional\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      image: chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
   echo "      privileged: true"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
@@ -43,18 +48,34 @@ for platform in ${test_platforms[@]}; do
   echo "  timeout_in_minutes: 60"
 done
 
+for platform in ${other_platforms[@]}; do
+  echo "- label: \"Integration $platform :ruby:\""
+  echo "  retry:"
+  echo "    automatic:"
+  echo "      limit: 1"
+  echo "  agents:"
+  echo "    queue: default-privileged"
+  echo "  plugins:"
+  echo "  - docker#v3.5.0:"
+  echo "      image: chefes/omnibus-toolchain-${platform}:$OMNIBUS_TOOLCHAIN_VERSION"
+  echo "      privileged: true"
+  echo "      environment:"
+  echo "        - CHEF_FOUNDATION_VERSION"
+  echo "      propagate-environment: true"
+  echo "  commands:"
+  echo "    - .expeditor/scripts/prep_and_run_tests.sh Integration"
+  echo "  timeout_in_minutes: 60"
+done
+
 win_test_platforms=("windows-2019:windows-2019")
 
 for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"{{matrix}} ${platform#*:} :windows:\""
+  echo "- label: \"Integration ${platform#*:} :windows:\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"
   echo "  agents:"
   echo "    queue: default-${platform%:*}-privileged"
-  echo "  matrix:"
-  echo "    - \"Unit\""
-  echo "    - \"Integration\""
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
   echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
@@ -65,23 +86,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "        - CHEF_FOUNDATION_VERSION"
   echo "      propagate-environment: true"
   echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
-  echo "  timeout_in_minutes: 120"
-
-done
-
-for platform in ${win_test_platforms[@]}; do
-  echo "- label: \"Functional ${platform#*:} :windows:\""
-  echo "  retry:"
-  echo "    automatic:"
-  echo "      limit: 1"
-  echo "  commands:"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Functional"
-  echo "  agents:"
-  echo "    queue: single-use-windows-2019-privileged"
-  echo "  env:"
-  echo "  - CHEF_FOUNDATION_VERSION"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 Integration"
   echo "  timeout_in_minutes: 120"
 done
 
