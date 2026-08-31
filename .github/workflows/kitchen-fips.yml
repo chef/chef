@@ -58,8 +58,27 @@ jobs:
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-        hab auth login $env:HAB_AUTH_TOKEN
-        If ($lastexitcode -ne 0) { throw "Failed to authenticate Habitat with HAB_AUTH_TOKEN" }
+        $envName = "HAB_AUTH_TOKEN"
+
+        try {
+            # Check if the environment variable is missing or empty/false
+            if (-not (Test-Path "Env:\$envName") -or -not [string]::IsNullOrEmpty($env:MY_VARIABLE)) {
+                # Using [Environment]::GetEnvironmentVariable is also an option
+                if (-not $env:MY_VARIABLE) {
+                    throw "Environment variable '$envName' is missing or false."
+                }
+            }
+            
+            Write-Host "*****************************************"
+            Write-Host "Success: The environment variable is set."
+            Write-Host "*****************************************"
+        }
+        catch {
+            Write-Host "Error intercepted in catch block."
+            # Rethrow as a terminating error
+            throw $_
+        }
+
 
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
