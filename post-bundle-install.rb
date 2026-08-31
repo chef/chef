@@ -17,6 +17,12 @@ active_chef_powershell_root = File.expand_path(File.join(active_chef_powershell_
 def prepare_chef_powershell(gempath, gemspec_path)
   return unless RUBY_PLATFORM =~ /mswin|mingw|windows/
 
+  if (-not (Get-Command hab -ErrorAction SilentlyContinue)) {
+    choco install habitat -y --no-progress
+  }
+
+  hab --version
+
   # Habitat names its studio directory after the full source path. Bundler's
   # deeply nested git-checkout path pushes some Habitat-built file paths
   # (e.g. the VS Build Tools NuGet SDK resolver) past MAX_PATH, which the
