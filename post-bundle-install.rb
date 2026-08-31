@@ -36,10 +36,8 @@ def prepare_chef_powershell(gempath, gemspec_path)
   FileUtils.mkdir_p(File.dirname(short_build_root))
   FileUtils.cp_r(gempath, short_build_root)
 
-  system("cmd", "/c", "hab origin key export chef | hab origin key import") or raise "Chef public origin key import failed"
-  system("cmd", "/c", "hab origin key export core | hab origin key import") or raise "Core public origin key import failed"
-  system("cmd", "/c", "hab origin key export --type secret chef | hab origin key import") or raise "Chef secret origin key import failed"
-  system("cmd", "/c", "hab origin key export --type secret core | hab origin key import") or raise "Core secret origin key import failed"
+  system("cmd", "/c", "hab origin key generate chef") or raise "Chef public origin key creation failed"
+  system("cmd", "/c", "hab origin key generate core") or raise "Core public origin key creation failed"
 
   Dir.chdir(short_build_root) do
     system("powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", "$env:HAB_STUDIOS_HOME = 'C:\\hs'; hab pkg build Habitat") or raise "chef-powershell Habitat build failed"
