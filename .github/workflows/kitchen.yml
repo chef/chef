@@ -28,6 +28,10 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_ORIGIN: chef
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_BLDR_REFRESH_CHANNEL: base-2025
     steps:
     - uses: actions/checkout@v7
     - name: Install Chef
