@@ -1486,6 +1486,21 @@ describe Chef::Resource do
 
         expect(::File.umask).to eq(original_umask)
       end
+
+      it "masks off bits above 0777 when the umask is an Integer" do
+        resource.umask = 0o1123
+
+        block_value = nil
+
+        resource.with_umask do
+          block_value = ::File.umask
+        end
+
+        # Format the returned value so a potential error message is easier to understand.
+        actual_value = block_value.to_s(8).rjust(4, "0")
+
+        expect(actual_value).to eq("0123")
+      end
     end
 
     it "does not mask an error raised while setting the umask" do
