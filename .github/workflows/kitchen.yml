@@ -41,6 +41,11 @@ jobs:
       run: |
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+        # The installer only updates the machine PATH registry entry, which later
+        # steps/processes (e.g. Kitchen Test) won't pick up. Prepend it explicitly
+        # via GITHUB_PATH so the upgraded hab wins over the old one already on PATH.
+        $habDir = Split-Path (Get-Command hab).Source -Parent
+        Add-Content -Path $env:GITHUB_PATH -Value $habDir
         hab --version
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
