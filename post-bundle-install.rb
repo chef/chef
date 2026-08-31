@@ -20,7 +20,7 @@ def prepare_chef_powershell(gempath, gemspec_path)
   ENV["HAB_LICENSE"] = "accept-no-persist"
 
   unless system("hab", "--version", out: File::NULL, err: File::NULL)
-    system("choco", "install", "habitat", "-y", "--no-progress") or raise "Habitat installation failed"
+    system("choco", "install", "habitat", "-y", "--no-progress", "--version=1.6.1245") or raise "Habitat installation failed"
   end
 
   system("hab", "--version") or raise "Habitat is unavailable after installation"
