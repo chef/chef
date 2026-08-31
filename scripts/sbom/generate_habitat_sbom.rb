@@ -97,9 +97,9 @@ def fetch_pkg_metadata(origin, name, pinned_version, target)
   key = "#{origin}/#{name}/#{pinned_version}/#{target}"
   return @pkg_cache[key] if @pkg_cache.key?(key)
 
-  base       = "#{BLDR_CHANNELS}/#{origin}/#{HAB_CHANNEL}/pkgs/#{name}"
+  base = "#{BLDR_CHANNELS}/#{origin}/#{HAB_CHANNEL}/pkgs/#{name}"
   ver_segment = pinned_version ? "#{pinned_version}/latest" : "latest"
-  url        = "#{base}/#{ver_segment}?target=#{target}"
+  url = "#{base}/#{ver_segment}?target=#{target}"
 
   uri = URI.parse(url)
   req = Net::HTTP::Get.new(uri)
@@ -192,9 +192,8 @@ PLAN_FILES.each do |platform, path|
   puts "\nParsing #{platform}: #{path}"
   deps = parse_plan(platform, path)
 
-  entries = []
-  deps[:runtime].each { |pkg| entries << pkg.merge(scope: "runtime") }
-  deps[:build].each   { |pkg| entries << pkg.merge(scope: "build") }
+  entries = deps[:runtime].map { |pkg| pkg.merge(scope: "runtime") }
+  deps[:build].each { |pkg| entries << pkg.merge(scope: "build") }
 
   puts "Resolving versions and transitive deps (channel: #{HAB_CHANNEL}, target: #{platform})..."
   components = build_platform_components(entries, platform)
