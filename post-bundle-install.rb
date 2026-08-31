@@ -196,7 +196,7 @@ default_gem_list = {
 # "undefined method 'request' for nil:NilClass" in RubyGems' HTTP client
 # because the newer resolv changes internal APIs that RubyGems 3.0 expects.
 # Skip the default-gem replacement on AIX to keep the default gems intact.
-unless RUBY_PLATFORM.include?("aix")
+if RbConfig.ruby.include?("/opscode/chef/embedded/") && !RUBY_PLATFORM.include?("aix")
   default_gem_list.each do |gem_name, version|
     # Handle resolv gem conflict with default gem
     puts "Checking #{gem_name} gem installation..."
