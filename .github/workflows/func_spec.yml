@@ -32,6 +32,9 @@ jobs:
         }
 
         Write-Output "HAB_AUTH_TOKEN is configured for this workflow step"
+
+        ruby -e "abort 'Ruby cannot see HAB_AUTH_TOKEN' if ENV['HAB_AUTH_TOKEN'].to_s.empty?; puts 'Ruby can see HAB_AUTH_TOKEN'"
+
         ruby post-bundle-install.rb
       shell: pwsh
       env:
