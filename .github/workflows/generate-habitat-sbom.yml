@@ -32,10 +32,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BD_PROJECT_NAME: 'chef'
-      BD_VERSION_NAME: '19.4'
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set BD version from VERSION file
+        run: echo "BD_VERSION_NAME=$(cat VERSION)" >> "$GITHUB_ENV"
 
       - uses: ruby/setup-ruby@v1
         with:
