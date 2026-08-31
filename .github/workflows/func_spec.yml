@@ -33,6 +33,12 @@ jobs:
         # Build the Git-sourced chef-powershell gem to test compatibility before it is released.
         ruby post-bundle-install.rb
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
+      env:
+        HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+        HAB_LICENSE: accept-no-persist
+        HAB_ORIGIN: chef
+        HAB_BLDR_CHANNEL: base-2025
+        HAB_BLDR_REFRESH_CHANNEL: base-2025
   userdefaults:
     strategy:
       fail-fast: false
