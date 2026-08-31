@@ -20,6 +20,7 @@ def prepare_chef_powershell(gempath, gemspec_path)
   unless system("hab", "--version", out: File::NULL, err: File::NULL)
     system("choco", "install", "habitat", "-y", "--no-progress") or raise "Habitat installation failed"
   end
+  
   system("hab", "--version") or raise "Habitat is unavailable after installation"
 
   # Habitat names its studio directory after the full source path. Bundler's
