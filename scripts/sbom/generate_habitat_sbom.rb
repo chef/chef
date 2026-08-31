@@ -8,11 +8,11 @@ require "net/http"
 require "uri"
 require "time"
 
-BLDR_API      = "https://bldr.habitat.sh/v1/depot/pkgs".freeze
+BLDR_CHANNELS = "https://bldr.habitat.sh/v1/depot/channels".freeze
 HAB_CHANNEL   = "base-2025".freeze
 REPO_ROOT     = File.expand_path("../..", __dir__)
 # Packages excluded from the SBOM (e.g. macOS SDK, not a shippable open-source dep)
-OMIT_PACKAGES = %w[xcode].freeze
+OMIT_PACKAGES = %w{xcode}.freeze
 
 PLAN_FILES = {
   "x86_64-linux"   => File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh"),
@@ -90,18 +90,16 @@ end
 
 @pkg_cache = {}
 
-# Returns { version: String, tdeps: [{origin:, name:, version:}] }
-# tdeps is filtered to core-origin only — the only packages with BD KB entries.
+# Returns { version: String, tdeps: [{origin:, name:, version:}] }, or nil on failure.
+# Uses the channel-scoped Builder API path so HAB_CHANNEL is actually respected.
 # target must be passed so the API returns platform-specific dep trees.
 def fetch_pkg_metadata(origin, name, pinned_version, target)
   key = "#{origin}/#{name}/#{pinned_version}/#{target}"
   return @pkg_cache[key] if @pkg_cache.key?(key)
 
-  url = if pinned_version
-    "#{BLDR_API}/#{origin}/#{name}/#{pinned_version}/latest?channel=#{HAB_CHANNEL}&target=#{target}"
-  else
-    "#{BLDR_API}/#{origin}/#{name}/latest?channel=#{HAB_CHANNEL}&target=#{target}"
-  end
+  base       = "#{BLDR_CHANNELS}/#{origin}/#{HAB_CHANNEL}/pkgs/#{name}"
+  ver_segment = pinned_version ? "#{pinned_version}/latest" : "latest"
+  url        = "#{base}/#{ver_segment}?target=#{target}"
 
   uri = URI.parse(url)
   req = Net::HTTP::Get.new(uri)
@@ -109,19 +107,16 @@ def fetch_pkg_metadata(origin, name, pinned_version, target)
 
   resp = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") { |h| h.request(req) }
 
-  result = if resp.is_a?(Net::HTTPSuccess)
-    data    = JSON.parse(resp.body)
-    version = data.dig("ident", "version") || pinned_version || "unknown"
-    tdeps   = (data["tdeps"] || [])
-      .select { |d| d["origin"] == "core" }
-      .map    { |d| { origin: d["origin"], name: d["name"], version: d["version"] } }
-    { version: version, tdeps: tdeps }
-  else
-    warn "  WARNING: #{resp.code} for #{origin}/#{name} — using pinned or 'unknown'"
-    { version: pinned_version || "unknown", tdeps: [] }
+  unless resp.is_a?(Net::HTTPSuccess)
+    warn "  WARNING: #{resp.code} for #{origin}/#{name} — skipping (channel: #{HAB_CHANNEL}, target: #{target})"
+    return @pkg_cache[key] = nil
   end
 
-  @pkg_cache[key] = result
+  data = JSON.parse(resp.body)
+  deps = (data["tdeps"] || [])
+    .select { |d| d["origin"] == "core" }
+    .map    { |d| { origin: d["origin"], name: d["name"], version: d["version"] } }
+  @pkg_cache[key] = { version: data.dig("ident", "version") || pinned_version, tdeps: deps }
 end
 
 # --------------------------------------------------------------------------- #
@@ -156,29 +151,30 @@ def build_platform_components(entries, target)
 
   entries.each do |entry|
     next if OMIT_PACKAGES.include?(entry[:name])
+
     key = "#{entry[:origin]}/#{entry[:name]}"
     next if seen[key] && seen[key][:scope] == "runtime"
+
     seen[key] = entry
   end
 
   seen.each_value do |entry|
-    meta    = fetch_pkg_metadata(entry[:origin], entry[:name], entry[:pinned_version], target)
-    version = meta[:version]
+    meta = fetch_pkg_metadata(entry[:origin], entry[:name], entry[:pinned_version], target)
+    next if meta.nil?
 
-    components << component_json(entry[:origin], entry[:name], version, entry[:scope])
+    components << component_json(entry[:origin], entry[:name], meta[:version], entry[:scope])
 
     meta[:tdeps].each do |tdep|
       tdep_key = "#{tdep[:origin]}/#{tdep[:name]}"
       next if seen.key?(tdep_key) || OMIT_PACKAGES.include?(tdep[:name])
+
       transitive[tdep_key] ||= tdep
     end
   end
 
-  transitive.each_value do |tdep|
-    components << component_json(tdep[:origin], tdep[:name], tdep[:version], "transitive")
-  end
-
-  components
+  components + transitive.each_value.map { |tdep|
+    component_json(tdep[:origin], tdep[:name], tdep[:version], "transitive")
+  }
 end
 
 # --------------------------------------------------------------------------- #
@@ -202,6 +198,7 @@ PLAN_FILES.each do |platform, path|
 
   puts "Resolving versions and transitive deps (channel: #{HAB_CHANNEL}, target: #{platform})..."
   components = build_platform_components(entries, platform)
+  abort "ERROR: No components resolved for #{platform} — check Builder API connectivity." if components.empty?
 
   bom = {
     "bomFormat"   => "CycloneDX",
