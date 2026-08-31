@@ -30,7 +30,7 @@ if(-not ($installed_version -match ('^2'))){
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
-# making sure we find the dlls from chef powershell
+# Locate the locally built chef-powershell DLLs while testing compatibility before its release.
 $powershell_gem_lib = gem which chef-powershell/version | Select-Object -First 1
 if (-not $?) {
     throw "Unable to locate the installed chef-powershell gem"

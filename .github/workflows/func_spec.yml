@@ -30,6 +30,7 @@ jobs:
         gem uninstall date --all --ignore-dependencies || true
         gem install date --version 3.3.3 --platform=ruby
         bundle install
+        # Build the Git-sourced chef-powershell gem to test compatibility before it is released.
         ruby post-bundle-install.rb
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:

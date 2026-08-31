@@ -7,7 +7,8 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "18-stable"
 # Nwed to file a bug with rest-client. In the meantime, we can use this until they accept the update.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
 
-gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim", branch: "main"
+# Temporary pre-release integration: test Chef compatibility before chef-powershell is released as a gem or Habitat package.
+gem "chef-powershell", git: "https://github.com/chef/chef-powershell-shim", branch: "jfm/net10-update-take-2"
 
 gem "ffi", ">= 1.15.5", "<= 1.18.0"
 # CVE-2026-27820 (CVSS 9.8): buffer overflow in Zlib::GzipReader / zstream_buffer_ungets.

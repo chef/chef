@@ -176,6 +176,26 @@ function Invoke-Build {
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
                 }
+                # BEGIN TEMPORARY chef-powershell pre-release testing
+                # Test Chef compatibility before chef-powershell is released as a gem or Habitat package.
+                # Remove this branch when Chef switches back to the released gem path.
+                elseif ($git_gem -match "chef-powershell-shim") {
+                    Push-Location ($git_gem.ToString() + "\chef-powershell")
+                    try {
+                        gem build .\chef-powershell.gemspec
+                        if (-not $?) { throw "chef-powershell gem build failed" }
+
+                        $gem_path = Get-ChildItem .\chef-powershell-*.gem | Select-Object -First 1
+                        if (-not $gem_path) { throw "chef-powershell gem was not created" }
+
+                        # Install the local artifact, not the Git checkout or a remote gem.
+                        gem install $gem_path.FullName --local
+                        if (-not $?) { throw "chef-powershell gem install failed" }
+                    } finally {
+                        Pop-Location
+                    }
+                }
+                # END TEMPORARY chef-powershell pre-release testing
                 else {
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
