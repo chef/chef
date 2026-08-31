@@ -25,9 +25,9 @@ def prepare_chef_powershell(gempath, gemspec_path)
 
   raise "HAB_AUTH_TOKEN is not configured" if ENV["HAB_AUTH_TOKEN"].to_s.empty?
 
-  system("hab", "bldr", "channel", "list", "core", "base-2025",
-        out: File::NULL, err: File::NULL) ||
-    raise("Unable to authenticate to Habitat Builder base-2025 channel")
+  # system("hab", "bldr", "channel", "list", "core", "base-2025",
+  #       out: File::NULL, err: File::NULL) ||
+  #   raise("Unable to authenticate to Habitat Builder base-2025 channel")
 
   # Habitat names its studio directory after the full source path. Bundler's
   # deeply nested git-checkout path pushes some Habitat-built file paths
