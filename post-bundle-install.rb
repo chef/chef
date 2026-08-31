@@ -152,7 +152,7 @@ def patch_openssl(openssl)
   puts "patched #{openssl} to include ssl_env_hack"
 end
 
-if RUBY_PLATFORM =~ /mswin|mingw|windows/
+if RUBY_PLATFORM =~ /mswin|mingw|windows/ && RbConfig.ruby.include?("/opscode/chef/embedded/")
   puts "Patching ssl_env_hack.rb to include SSL_ENV_CACERT_PATCH"
 
   # ssl_env_hack.rb in chef is superseded by foundation copy in omnibus,
