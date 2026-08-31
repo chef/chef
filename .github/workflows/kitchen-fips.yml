@@ -64,6 +64,12 @@ jobs:
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
+      env:
+        HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+        HAB_LICENSE: accept-no-persist
+        HAB_ORIGIN: chef
+        HAB_BLDR_CHANNEL: base-2025
+        HAB_BLDR_REFRESH_CHANNEL: base-2025
     - name: 'Enable FIPS via windows registry' #FIPS needs to be enabled after installation of Chef, otherwise it fails due to Cryptography error
       run: |
         $OldErrorActionPreference = $ErrorActionPreference
