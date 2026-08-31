@@ -17,7 +17,7 @@ active_chef_powershell_root = File.expand_path(File.join(active_chef_powershell_
 def prepare_chef_powershell(gempath, gemspec_path)
   return unless RUBY_PLATFORM =~ /mswin|mingw|windows/
 
-  ENV['HAB_LICENSE'] = "accept-no-persist"
+  ENV["HAB_LICENSE"] = "accept-no-persist"
 
   unless system("hab", "--version", out: File::NULL, err: File::NULL)
     system("choco", "install", "habitat", "-y", "--no-progress") or raise "Habitat installation failed"
