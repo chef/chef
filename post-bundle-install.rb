@@ -17,22 +17,17 @@ active_chef_powershell_root = File.expand_path(File.join(active_chef_powershell_
 def prepare_chef_powershell(gempath, gemspec_path)
   return unless RUBY_PLATFORM =~ /mswin|mingw|windows/
 
-  raise "HAB_AUTH_TOKEN is not configured" if ENV["HAB_AUTH_TOKEN"].to_s.empty?
-
-  system("hab", "bldr", "channel", "list", "core", "base-2025",
-        out: File::NULL, err: File::NULL) ||
-    raise("Unable to authenticate to Habitat Builder base-2025 channel")
-
-  # ENV["HAB_LICENSE"] = "accept-no-persist"
-  # ENV["HAB_ORIGIN"] = "chef"
-  # ENV["HAB_BLDR_CHANNEL"] = "base-2025"
-  # ENV["HAB_BLDR_REFRESH_CHANNEL"] = "base-2025"
-
   unless system("hab", "--version", out: File::NULL, err: File::NULL)
     system("choco", "install", "habitat", "-y", "--no-progress", "--version=1.6.1245") or raise "Habitat installation failed"
   end
 
   system("hab", "--version") or raise "Habitat is unavailable after installation"
+
+  raise "HAB_AUTH_TOKEN is not configured" if ENV["HAB_AUTH_TOKEN"].to_s.empty?
+
+  system("hab", "bldr", "channel", "list", "core", "base-2025",
+        out: File::NULL, err: File::NULL) ||
+    raise("Unable to authenticate to Habitat Builder base-2025 channel")
 
   # Habitat names its studio directory after the full source path. Bundler's
   # deeply nested git-checkout path pushes some Habitat-built file paths
