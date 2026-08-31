@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chef-powershell-shim
-  revision: f49fda30b8b7a670c4065a561f17dc1a043ed9a7
+  revision: 1ce93f1b62859aede3de14233a64358e2edbd1c1
   branch: jfm/net10-update-take-2
   specs:
     chef-powershell (19.1.0)
