@@ -20,6 +20,7 @@ def prepare_chef_powershell(gempath, gemspec_path)
   ENV["HAB_LICENSE"] = "accept-no-persist"
   ENV["HAB_ORIGIN"] = "chef"
   ENV["HAB_BLDR_CHANNEL"] = "base-2025"
+  ENV["HAB_BLDR_REFRESH_CHANNEL"] = "base-2025"
 
   unless system("hab", "--version", out: File::NULL, err: File::NULL)
     system("choco", "install", "habitat", "-y", "--no-progress", "--version=1.6.1245") or raise "Habitat installation failed"
