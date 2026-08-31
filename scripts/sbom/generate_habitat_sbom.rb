@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Parses Habitat plan files and generates a CycloneDX 1.4 SBOM for direct
 # upload to BlackDuck via the /api/scan/data endpoint.
-# Output: habitat-components.cdx.json (repo root by default)
+# Outputs one habitat-components-{platform}.cdx.json per platform.
 
 require "json"
 require "net/http"
@@ -25,63 +25,39 @@ PLAN_FILES = {
 # Parsing                                                                      #
 # --------------------------------------------------------------------------- #
 
-# Returns { runtime: [...], build: [...] } where each entry is
-# { origin:, name:, pinned_version: (or nil) }
+# Returns an array of { origin:, name:, pinned_version: } entries for pkg_deps.
 def parse_bash_plan(path)
   text = File.read(path)
 
-  # Capture shell variable assignments so we can expand references like
-  # $_chef_client_ruby in array bodies.
+  # Capture shell variable assignments to expand references like $_chef_client_ruby.
   vars = {}
   text.scan(/^(\w+)="([^"]*)"/) { vars[$1] = $2 }
 
-  extract = lambda do |array_name|
-    # Match the array body: pkg_deps=( ... )
-    m = text.match(/^#{Regexp.escape(array_name)}\s*=\s*\(\s*(.*?)\s*\)/m)
-    return [] unless m
+  m = text.match(/^pkg_deps\s*=\s*\(\s*(.*?)\s*\)/m)
+  return [] unless m
 
-    body = m[1]
-    # Expand known shell variable references
-    body = body.gsub(/\$\{?(\w+)\}?/) { vars[$1] || "" }
-    # Each token is an unquoted word (comments stripped)
-    body.split(/[\s\n]+/).grep_v(/^#/).reject(&:empty?).map do |token|
-      parts = token.split("/")
-      { origin: parts[0], name: parts[1], pinned_version: parts[2] }
-    end
+  body = m[1].gsub(/\$\{?(\w+)\}?/) { vars[$1] || "" }
+  body.split(/[\s\n]+/).grep_v(/^#/).reject(&:empty?).map do |token|
+    parts = token.split("/")
+    { origin: parts[0], name: parts[1], pinned_version: parts[2] }
   end
-
-  {
-    runtime: extract.call("pkg_deps"),
-    build:   extract.call("pkg_build_deps"),
-  }
 end
 
+# Returns an array of { origin:, name:, pinned_version: } entries for $pkg_deps.
 def parse_ps1_plan(path)
   text = File.read(path)
 
-  extract = lambda do |array_name|
-    # Match: $pkg_deps=@( ... )
-    m = text.match(/^\$#{Regexp.escape(array_name)}\s*=\s*@\(\s*(.*?)\s*\)/m)
-    return [] unless m
+  m = text.match(/^\$pkg_deps\s*=\s*@\(\s*(.*?)\s*\)/m)
+  return [] unless m
 
-    m[1].scan(/"([^"]+)"/).flatten.map do |token|
-      parts = token.split("/")
-      { origin: parts[0], name: parts[1], pinned_version: parts[2] }
-    end
+  m[1].scan(/"([^"]+)"/).flatten.map do |token|
+    parts = token.split("/")
+    { origin: parts[0], name: parts[1], pinned_version: parts[2] }
   end
-
-  {
-    runtime: extract.call("pkg_deps"),
-    build:   extract.call("pkg_build_deps"),
-  }
 end
 
-def parse_plan(platform, path)
-  if path.end_with?(".ps1")
-    parse_ps1_plan(path)
-  else
-    parse_bash_plan(path)
-  end
+def parse_plan(path)
+  path.end_with?(".ps1") ? parse_ps1_plan(path) : parse_bash_plan(path)
 end
 
 # --------------------------------------------------------------------------- #
@@ -143,7 +119,7 @@ def component_json(origin, name, version, scope)
 end
 
 # Builds the component list for a single platform.
-# Deduplicates within the platform; prefers runtime scope over build.
+# Deduplicates direct deps by origin/name; first occurrence wins.
 def build_platform_components(entries, target)
   seen       = {}
   components = []
@@ -153,7 +129,7 @@ def build_platform_components(entries, target)
     next if OMIT_PACKAGES.include?(entry[:name])
 
     key = "#{entry[:origin]}/#{entry[:name]}"
-    next if seen[key] && seen[key][:scope] == "runtime"
+    next if seen.key?(key)
 
     seen[key] = entry
   end
@@ -189,13 +165,11 @@ PLAN_FILES.each do |platform, path|
     next
   end
 
-  puts "\nParsing #{platform}: #{path}"
-  deps = parse_plan(platform, path)
+  warn "\nParsing #{platform}: #{path}"
+  deps    = parse_plan(path)
+  entries = deps.map { |pkg| pkg.merge(scope: "runtime") }
 
-  entries = deps[:runtime].map { |pkg| pkg.merge(scope: "runtime") }
-  deps[:build].each { |pkg| entries << pkg.merge(scope: "build") }
-
-  puts "Resolving versions and transitive deps (channel: #{HAB_CHANNEL}, target: #{platform})..."
+  warn "Resolving versions and transitive deps (channel: #{HAB_CHANNEL}, target: #{platform})..."
   components = build_platform_components(entries, platform)
   abort "ERROR: No components resolved for #{platform} — check Builder API connectivity." if components.empty?
 
@@ -218,5 +192,5 @@ PLAN_FILES.each do |platform, path|
 
   output = File.join(REPO_ROOT, "habitat-components-#{platform}.cdx.json")
   File.write(output, JSON.pretty_generate(bom))
-  puts "Written #{components.size} components to #{File.basename(output)}"
+  warn "Written #{components.size} components to #{File.basename(output)}"
 end
