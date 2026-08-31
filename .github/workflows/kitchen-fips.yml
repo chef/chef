@@ -62,9 +62,9 @@ jobs:
 
         try {
             # Check if the environment variable is missing or empty/false
-            if (-not (Test-Path "Env:\$envName") -or -not [string]::IsNullOrEmpty($env:MY_VARIABLE)) {
+            if (-not (Test-Path "Env:\$envName") -or -not [string]::IsNullOrEmpty($env:HAB_AUTH_TOKEN)) {
                 # Using [Environment]::GetEnvironmentVariable is also an option
-                if (-not $env:MY_VARIABLE) {
+                if (-not $env:HAB_AUTH_TOKEN) {
                     throw "Environment variable '$envName' is missing or false."
                 }
             }
