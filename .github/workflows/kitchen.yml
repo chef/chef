@@ -34,6 +34,14 @@ jobs:
       HAB_BLDR_REFRESH_CHANNEL: base-2025
     steps:
     - uses: actions/checkout@v7
+    - name: Upgrade Habitat CLI
+      # The Chocolatey habitat package / runner image is pinned to an old hab
+      # (1.6.1243) that cannot talk to the base-2025 channel. Install latest.
+      shell: pwsh
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
+        hab --version
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
     - name: Kitchen Test
