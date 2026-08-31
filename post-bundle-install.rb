@@ -18,6 +18,7 @@ def prepare_chef_powershell(gempath, gemspec_path)
   return unless RUBY_PLATFORM =~ /mswin|mingw|windows/
 
   ENV["HAB_LICENSE"] = "accept-no-persist"
+  ENV["HAB_ORIGIN"] = "chef"
 
   unless system("hab", "--version", out: File::NULL, err: File::NULL)
     system("choco", "install", "habitat", "-y", "--no-progress", "--version=1.6.1245") or raise "Habitat installation failed"
