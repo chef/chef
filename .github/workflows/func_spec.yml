@@ -27,6 +27,16 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
     - run: |
+        if ([string]::IsNullOrWhiteSpace($env:HAB_AUTH_TOKEN)) {
+          throw "HAB_AUTH_TOKEN was not supplied to this workflow step"
+        }
+
+        Write-Output "HAB_AUTH_TOKEN is configured for this workflow step"
+        ruby post-bundle-install.rb
+      shell: pwsh
+      env:
+        HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+    - run: |
         gem uninstall date --all --ignore-dependencies || true
         gem install date --version 3.3.3 --platform=ruby
         bundle install
