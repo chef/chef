@@ -111,8 +111,7 @@ shared_context Chef::Resource::WindowsScript do
       include Chef::Mixin::ShellOut
 
       let(:script_provider) { resource.provider_for_action(:run) }
-      let(:script_file) { script_provider.script_file }
-      let(:script_file_path) { script_file.to_path }
+      let(:script_file_path) { @script_file_path }
 
       let(:read_access_denied_command) { "::File.read('#{script_file_path}')" }
       let(:modify_access_denied_command) { "::File.write('#{script_file_path}', 'stuff')" }
@@ -127,14 +126,16 @@ shared_context Chef::Resource::WindowsScript do
       let(:access_command) { command_template }
 
       before do
-        expect(script_provider).to receive(:unlink_script_file)
+        allow(script_provider).to receive(:with_temp_script_file).and_wrap_original do |original, &action|
+          original.call do
+            @script_file_path = script_provider.send(:script_file_path)
+            action.call
+            shell_out!(access_command, user: windows_nonadmin_user, password: windows_nonadmin_user_password, returns: [access_denied_sentinel])
+            @access_check_completed = true
+          end
+        end
         resource.code("echo hi")
         script_provider.action_run
-      end
-
-      after do
-        script_file.close! if script_file
-        ::File.delete(script_file.to_path) if script_file && ::File.exist?(script_file.to_path)
       end
 
       include_context "alternate user identity"
@@ -142,7 +143,7 @@ shared_context Chef::Resource::WindowsScript do
       shared_examples_for "a script whose file system location cannot be accessed by other non-admin users" do
         let(:ruby_access_command) { file_access_command }
         it "generates a script in the local file system that prevents read access to other non-admin users" do
-          shell_out!(access_command, user: windows_nonadmin_user, password: windows_nonadmin_user_password, returns: [access_denied_sentinel])
+          expect(@access_check_completed).to be(true)
         end
       end
 
