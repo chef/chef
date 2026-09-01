@@ -184,6 +184,28 @@ describe Chef::Provider::Group::Dscl do
         @provider.set_gid
       end
     end
+
+    describe "when no gid was requested on the new resource" do
+      before do
+        @new_resource.instance_variable_set(:@gid, nil)
+        allow(@provider).to receive(:gid_used?).and_return(false)
+        allow(@provider).to receive(:safe_dscl).and_return("")
+      end
+
+      it "does not memoize the free gid onto the new resource" do
+        allow(@provider).to receive(:get_free_gid).and_return(501)
+        @provider.set_gid
+        expect(@new_resource.gid).to be_nil
+      end
+
+      it "asks for a free gid on every run so the resource can be reused" do
+        expect(@provider).to receive(:get_free_gid).twice.and_return(501, 502)
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "PrimaryGroupID", 501)
+        expect(@provider).to receive(:safe_dscl).with("create", "/Groups/aj", "PrimaryGroupID", 502)
+        @provider.set_gid
+        @provider.set_gid
+      end
+    end
   end
 
   describe "set_members" do
@@ -332,8 +354,17 @@ describe "Test DSCL loading" do
     allow(File).to receive(:exist?).and_return(true)
     expect(@current_resource.gid).to eq("999")
   end
+  it "should not copy the discovered gid onto the new resource" do
+    allow(File).to receive(:exist?).and_return(true)
+    expect(@new_resource.gid).to be_nil
+  end
   it "should parse members properly" do
     allow(File).to receive(:exist?).and_return(true)
     expect(@current_resource.members).to eq(%w{waka bar})
+  end
+  it "does not report a gid change when the resource did not request a gid" do
+    allow(File).to receive(:exist?).and_return(true)
+    @new_resource.members(%w{waka bar})
+    expect(@provider.compare_group).to be false
   end
 end
