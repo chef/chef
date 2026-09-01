@@ -61,6 +61,11 @@ def prepare_chef_powershell(gempath, gemspec_path)
   FileUtils.cp_r(Dir[File.join(package_path, "bin", "*")], destination)
 
   FileUtils.rm_rf(short_build_root)
+
+  # The gemspec builds its file list from `git ls-files`, so the DLLs copied above
+  # into the (untracked) git checkout won't be packaged into the built gem. Remember
+  # where they came from so we can copy them into the installed gem dir below too.
+  $chef_powershell_hab_package_path = package_path
 end
 # END TEMPORARY chef-powershell pre-release testing
 
@@ -103,6 +108,20 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     install_flags = RUBY_PLATFORM.include?("aix") ? "--ignore-dependencies --no-document" : "--conservative --minimal-deps --no-document"
     system("gem install #{gem_name}*.gem #{install_flags}") or raise "gem install failed"
   end
+
+  # BEGIN TEMPORARY chef-powershell pre-release testing
+  # The built gem's file list comes from `git ls-files`, which excludes the DLLs
+  # prepare_chef_powershell copied into the (untracked) checkout, so copy them into
+  # the installed gem dir directly too, since that's where tests look for them.
+  if gem_name == "chef-powershell" && $chef_powershell_hab_package_path
+    installed_gem_dir = Dir["#{gem_home}/gems/chef-powershell-*"].max_by { |path| File.mtime(path) }
+    raise "Unable to locate the installed chef-powershell gem directory" unless installed_gem_dir
+
+    destination = File.join(installed_gem_dir, "bin", "ruby_bin_folder", "AMD64")
+    FileUtils.mkdir_p(destination)
+    FileUtils.cp_r(Dir[File.join($chef_powershell_hab_package_path, "bin", "*")], destination)
+  end
+  # END TEMPORARY chef-powershell pre-release testing
 end
 
 def patch_ssl_env_hack(ssl_env_hack)
