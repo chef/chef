@@ -46,6 +46,9 @@ pipelines:
       trigger: default
   - habitat/build:
       definition: .expeditor/build.habitat.yml
+  - hab_aarch64_darwin/build:
+      description: Build and upload aarch64-darwin habitat package
+      definition: .expeditor/build.habitat.aarch64-darwin.pipeline.yml
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
   - gem_validate/release:
@@ -121,6 +124,7 @@ subscriptions:
   - workload: buildkite_build_passed:{{agent_id}}:validate/release:*
     actions:
       - trigger_pipeline:habitat/build
+      - trigger_pipeline:hab_aarch64_darwin/build
 
   # Trigger docker build once habitat/build pipeline completes and packages are available in unstable
   - workload: buildkite_build_passed:{{agent_id}}:habitat/build:*
