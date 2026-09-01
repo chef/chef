@@ -61,4 +61,41 @@ describe Chef::Resource::WindowsUpdateSettings do
     expect { resource.custom_detection_frequency 0 }.not_to raise_error
     expect { resource.custom_detection_frequency 23 }.to raise_error(ArgumentError)
   end
+
+  describe "#wsus_registry_values" do
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:provider) do
+      resource.run_context = run_context
+      resource.provider_for_action(:set)
+    end
+
+    it "writes nothing when no WSUS server or target group is configured" do
+      expect(provider.wsus_registry_values).to eq([])
+    end
+
+    it "writes TargetGroup only when a target group name is set" do
+      resource.target_wsus_group_name "servers"
+      expect(provider.wsus_registry_values).to eq(
+        [{ name: "TargetGroup", type: :string, data: "servers" }]
+      )
+    end
+
+    it "writes both WSUS server values when a server url is set" do
+      resource.wsus_server_url "https://wsus.example.com"
+      expect(provider.wsus_registry_values).to eq(
+        [
+          { name: "WUServer", type: :string, data: "https://wsus.example.com" },
+          { name: "WUStatusServer", type: :string, data: "https://wsus.example.com" },
+        ]
+      )
+    end
+
+    it "never emits a value with nil data" do
+      resource.target_wsus_group_name "servers"
+      resource.wsus_server_url "https://wsus.example.com"
+      expect(provider.wsus_registry_values.map { |v| v[:data] }).to all(be_a(String))
+    end
+  end
 end
