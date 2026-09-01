@@ -91,6 +91,12 @@ describe Chef::Resource::ChefClientLaunchd do
       allow(node).to receive(:name).and_return("test_node")
       expect(provider.splay_sleep_time(300)).to satisfy { |v| v.between?(0, 300) }
     end
+
+    it "returns 0 without raising when splay is 0" do
+      node.automatic_attrs[:shard_seed] = "73399073"
+      expect { provider.splay_sleep_time(0) }.not_to raise_error
+      expect(provider.splay_sleep_time(0)).to eq(0)
+    end
   end
 
   describe "#client_command" do
