@@ -52,6 +52,17 @@ class Chef
       new(**options)
     end
 
+    # Raised by the accessors emitted in #emit_dsl when they are passed a block.
+    # This lives here rather than inline in the generated source so that each
+    # property emits a short method body instead of two copies of this message.
+    #
+    # @param name [Symbol] Name of the property that was passed a block
+    # @param resource [Object] The resource the property was called on
+    #
+    def self.block_error!(name, resource)
+      raise "Property `#{name}` of `#{resource}` was incorrectly passed a block. Possible property-resource collision. To call a resource named `#{name}` either rename the property or else use `declare_resource(:#{name}, ...)`"
+    end
+
     # This is to support #deprecated_property_alias, by emitting an alias and a
     # deprecation warning when called.
     #
@@ -591,11 +602,11 @@ class Chef
       # stack trace if you use `define_method`.
       declared_in.class_eval <<-EOM, __FILE__, __LINE__ + 1
         def #{name}(value=NOT_PASSED)
-          raise "Property `#{name}` of `\#{self}` was incorrectly passed a block. Possible property-resource collision. To call a resource named `#{name}` either rename the property or else use `declare_resource(:#{name}, ...)`" if block_given?
+          Chef::Property.block_error!(#{name.inspect}, self) if block_given?
           self.class.properties[#{name.inspect}].call(self, value)
         end
         def #{name}=(value)
-          raise "Property `#{name}` of `\#{self}` was incorrectly passed a block. Possible property-resource collision. To call a resource named `#{name}` either rename the property or else use `declare_resource(:#{name}, ...)`" if block_given?
+          Chef::Property.block_error!(#{name.inspect}, self) if block_given?
           self.class.properties[#{name.inspect}].set(self, value)
         end
       EOM
