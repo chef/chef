@@ -53,6 +53,61 @@ describe Chef::Resource::Sysctl do
     expect(resource.value).to eql("1.1")
   end
 
+  context "#load_current_value!" do
+    let(:conf_file) { "/etc/sysctl.d/99-chef-kernel.msgmnb.conf" }
+
+    before do
+      resource.key("kernel.msgmnb")
+      allow(resource).to receive(:shell_out!)
+        .with("sysctl -n -e kernel.msgmnb")
+        .and_return(double(stdout: "65536\n"))
+      allow(::TargetIO::File).to receive(:exist?).with(conf_file).and_return(true)
+      allow(::TargetIO::File).to receive(:read).with(conf_file).and_return("kernel.msgmnb = 65536\n")
+    end
+
+    it "loads the running value when it agrees with the Chef managed conf file" do
+      resource.load_current_value!
+      expect(resource.value).to eql("65536")
+    end
+
+    it "does not exist when Chef has not written a conf file for the key" do
+      allow(::TargetIO::File).to receive(:exist?).with(conf_file).and_return(false)
+      expect { resource.load_current_value! }.to raise_error(Chef::Exceptions::CurrentValueDoesNotExist)
+    end
+
+    it "does not exist when the running value disagrees with the conf file" do
+      allow(::TargetIO::File).to receive(:read).with(conf_file).and_return("kernel.msgmnb = 16384\n")
+      expect { resource.load_current_value! }.to raise_error(Chef::Exceptions::CurrentValueDoesNotExist)
+    end
+
+    it "does not exist when the conf file does not contain a 'key = value' pair" do
+      allow(::TargetIO::File).to receive(:read).with(conf_file).and_return("# hand edited\n")
+      expect { resource.load_current_value! }.to raise_error(Chef::Exceptions::CurrentValueDoesNotExist)
+    end
+
+    it "does not exist when sysctl exits non-zero" do
+      allow(resource).to receive(:shell_out!)
+        .with("sysctl -n -e kernel.msgmnb")
+        .and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect { resource.load_current_value! }.to raise_error(Chef::Exceptions::CurrentValueDoesNotExist)
+    end
+
+    it "does not exist when the sysctl binary is missing" do
+      allow(resource).to receive(:shell_out!)
+        .with("sysctl -n -e kernel.msgmnb")
+        .and_raise(Errno::ENOENT)
+      expect { resource.load_current_value! }.to raise_error(Chef::Exceptions::CurrentValueDoesNotExist)
+    end
+
+    # An undefined constant in the current value helpers used to be swallowed by a bare
+    # rescue and silently reported as "the current value does not exist", which made every
+    # sysctl resource non-idempotent without any visible error. See https://github.com/chef/chef/issues/15786
+    it "lets unexpected errors surface rather than reporting the value as missing" do
+      allow(::TargetIO::File).to receive(:read).with(conf_file).and_raise(NameError, "uninitialized constant Target_IO")
+      expect { resource.load_current_value! }.to raise_error(NameError)
+    end
+  end
+
   context "#contruct_sysctl_content" do
     before do
       resource.key("foo")
