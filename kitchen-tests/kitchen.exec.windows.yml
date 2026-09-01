@@ -27,13 +27,6 @@ lifecycle:
         $chef_gem = "$embedded_bin\gem.bat"
         $chef_bundle = "$embedded_bin\bundle.bat"
 
-        # The Chef omnibus package bundles its own (older) hab.exe under $chef_root,
-        # which would otherwise shadow the upgraded system-wide hab on PATH below.
-        Get-ChildItem -Path $chef_root -Filter hab.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
-          Write-Host "Removing bundled hab.exe at $($_.FullName) so the upgraded system hab is used instead"
-          Remove-Item -Path $_.FullName -Force
-        }
-
         $env:PATH = "$chef_bin;$embedded_bin;" + $env:PATH
         chef-client -v
         ohai -v

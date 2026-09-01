@@ -30,12 +30,9 @@ if(-not ($installed_version -match ('^2'))){
 Write-Output "--- Running Chef bundle install"
 bundle install --jobs=3 --retry=3
 
-# Locate the locally built chef-powershell DLLs while testing compatibility before its release.
-$powershell_gem_lib = gem which chef-powershell/version | Select-Object -First 1
-if (-not $?) {
-    throw "Unable to locate the installed chef-powershell gem"
-}
-$powershell_gem_path = Split-Path (Split-Path (Split-Path $powershell_gem_lib))
+# making sure we find the dlls from chef powershell
+$powershell_gem_lib = gem which chef-powershell | Select-Object -First 1
+$powershell_gem_path = Split-Path $powershell_gem_lib | Split-Path
 $env:RUBY_DLL_PATH = "$powershell_gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
 
 switch ($TestType) {

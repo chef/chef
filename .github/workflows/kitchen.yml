@@ -28,38 +28,8 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept
-      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-      HAB_ORIGIN: chef
-      HAB_BLDR_CHANNEL: base-2025
-      HAB_BLDR_REFRESH_CHANNEL: base-2025
     steps:
     - uses: actions/checkout@v7
-    - name: Upgrade Habitat CLI
-      # The Chocolatey habitat package / runner image is pinned to an old hab
-      # (1.6.1243) that cannot talk to the base-2025 channel. Install latest.
-      shell: pwsh
-      run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force
-        iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1'))
-        $newHab = (Get-Command hab).Source
-        Write-Host "Installed new hab at $newHab"
-
-        # Prepend for this job's remaining steps.
-        Add-Content -Path $env:GITHUB_PATH -Value (Split-Path $newHab -Parent)
-
-        # Nested processes later in the job (Test Kitchen's exec transport /
-        # appbundle-updater) may not inherit this step's PATH at all, so remove
-        # every stale hab.exe reachable on disk instead of relying on ordering.
-        choco uninstall habitat -y --no-progress 2>$null | Out-Null
-        Get-Command hab -All -ErrorAction SilentlyContinue |
-          Select-Object -ExpandProperty Source |
-          Where-Object { $_ -ne $newHab } |
-          ForEach-Object {
-            Write-Host "Removing stale hab found at $_"
-            Remove-Item -Path $_ -Force -ErrorAction SilentlyContinue
-          }
-
-        hab --version
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
     - name: Kitchen Test

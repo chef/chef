@@ -1,73 +1,8 @@
 #!/usr/bin/env ruby
 
-require "fileutils"
-
 gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"
-
-# Bundler can leave several revisions of a Git gem in GEM_HOME. Use the
-# lockfile-selected checkout for the temporary chef-powershell build below.
-active_chef_powershell_path = `bundle show chef-powershell`.strip
-active_chef_powershell_root = File.expand_path(File.join(active_chef_powershell_path, "..")) unless active_chef_powershell_path.empty?
-
-# BEGIN TEMPORARY chef-powershell pre-release testing
-# Test Chef compatibility before chef-powershell is released as a gem or Habitat package.
-# Remove this method and its call when Chef switches back to a released gem.
-def prepare_chef_powershell(gempath, gemspec_path)
-  return unless RUBY_PLATFORM =~ /mswin|mingw|windows/
-
-  unless system("hab", "--version", out: File::NULL, err: File::NULL)
-    system("choco", "install", "habitat", "-y", "--no-progress") or raise "Habitat installation failed"
-  end
-
-  system("hab", "--version") or raise "Habitat is unavailable after installation"
-
-  raise "HAB_AUTH_TOKEN is not configured" if ENV["HAB_AUTH_TOKEN"].to_s.empty?
-
-  # system("hab", "bldr", "channel", "list", "core", "base-2025",
-  #       out: File::NULL, err: File::NULL) ||
-  #   raise("Unable to authenticate to Habitat Builder base-2025 channel")
-
-  # Habitat names its studio directory after the full source path. Bundler's
-  # deeply nested git-checkout path pushes some Habitat-built file paths
-  # (e.g. the VS Build Tools NuGet SDK resolver) past MAX_PATH, which the
-  # classic .NET Framework assembly binder fails to load. Build from a
-  # short, fixed path instead to avoid this entirely.
-  short_build_root = "C:/hs/ps-build"
-
-  FileUtils.rm_rf(short_build_root)
-  FileUtils.mkdir_p(File.dirname(short_build_root))
-  FileUtils.cp_r(gempath, short_build_root)
-
-  system("cmd", "/c", "hab origin key generate chef") or raise "Chef public origin key creation failed"
-  system("cmd", "/c", "hab origin key generate core") or raise "Core public origin key creation failed"
-
-  Dir.chdir(short_build_root) do
-    system("powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", "$env:HAB_STUDIOS_HOME = 'C:\\hs'; hab pkg build Habitat") or raise "chef-powershell Habitat build failed"
-
-    results_script = Dir["results/last_build.ps1"].first
-    artifact = Dir["results/*.hart"].max_by { |path| File.mtime(path) }
-    raise "chef-powershell Habitat build produced no artifact" unless results_script && artifact
-
-    system("powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ". '#{results_script}'; hab pkg install '#{artifact}'") or raise "chef-powershell Habitat package install failed"
-  end
-
-  package_path = `hab pkg path chef/chef-powershell-shim`.strip
-  raise "Unable to locate the chef-powershell Habitat package" if package_path.empty?
-
-  destination = File.join(File.dirname(gemspec_path), "bin", "ruby_bin_folder", "AMD64")
-  FileUtils.mkdir_p(destination)
-  FileUtils.cp_r(Dir[File.join(package_path, "bin", "*")], destination)
-
-  FileUtils.rm_rf(short_build_root)
-
-  # The gemspec builds its file list from `git ls-files`, so the DLLs copied above
-  # into the (untracked) git checkout won't be packaged into the built gem. Remember
-  # where they came from so we can copy them into the installed gem dir below too.
-  $chef_powershell_hab_package_path = package_path
-end
-# END TEMPORARY chef-powershell pre-release testing
 
 # Install gems from git repos.  This makes the assumption that there is a <gem_name>.gemspec and
 # you can simply gem build + gem install the resulting gem, so nothing fancy.  This does not use
@@ -77,29 +12,20 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
-  gemspec_path = Dir["#{gempath}/*.gemspec", "#{gempath}/**/*.gemspec"].first
-  next unless gemspec_path
-
-  gem_name = File.basename(gemspec_path, ".gemspec")
+  gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
   # FIXME: should strip any valid ruby platform off of the gem_name if it matches
+
+  next unless gem_name
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   next if %w{chef chef-universal-mingw-ucrt proxifier}.include?(gem_name)
-
-  if gem_name == "chef-powershell"
-    next unless active_chef_powershell_root && File.expand_path(gempath) == active_chef_powershell_root
-  end
 
   next if gem_name.match?(/ruby.shadow/) && (RUBY_PLATFORM.include?("aix") || RUBY_PLATFORM =~ /mswin|mingw|windows/)
 
   puts "re-installing #{gem_name}..."
 
-  # BEGIN TEMPORARY chef-powershell pre-release testing
-  prepare_chef_powershell(gempath, gemspec_path) if gem_name == "chef-powershell"
-  # END TEMPORARY chef-powershell pre-release testing
-
-  Dir.chdir(File.dirname(gemspec_path)) do
-    system("gem build #{File.basename(gemspec_path)}") or raise "gem build failed"
+  Dir.chdir(gempath) do
+    system("gem build #{gem_name}.gemspec") or raise "gem build failed"
     # On AIX (Ruby 3.0.3), git-sourced gems often declare required_ruby_version >= 3.1.0.
     # Without --ignore-dependencies, gem install falls back to rubygems.org and installs
     # the wrong gem version with different dependency constraints (e.g. rest-client on
@@ -108,20 +34,6 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
     install_flags = RUBY_PLATFORM.include?("aix") ? "--ignore-dependencies --no-document" : "--conservative --minimal-deps --no-document"
     system("gem install #{gem_name}*.gem #{install_flags}") or raise "gem install failed"
   end
-
-  # BEGIN TEMPORARY chef-powershell pre-release testing
-  # The built gem's file list comes from `git ls-files`, which excludes the DLLs
-  # prepare_chef_powershell copied into the (untracked) checkout, so copy them into
-  # the installed gem dir directly too, since that's where tests look for them.
-  if gem_name == "chef-powershell" && $chef_powershell_hab_package_path
-    installed_gem_dir = Dir["#{gem_home}/gems/chef-powershell-*"].max_by { |path| File.mtime(path) }
-    raise "Unable to locate the installed chef-powershell gem directory" unless installed_gem_dir
-
-    destination = File.join(installed_gem_dir, "bin", "ruby_bin_folder", "AMD64")
-    FileUtils.mkdir_p(destination)
-    FileUtils.cp_r(Dir[File.join($chef_powershell_hab_package_path, "bin", "*")], destination)
-  end
-  # END TEMPORARY chef-powershell pre-release testing
 end
 
 def patch_ssl_env_hack(ssl_env_hack)
@@ -166,7 +78,7 @@ def patch_openssl(openssl)
   puts "patched #{openssl} to include ssl_env_hack"
 end
 
-if RUBY_PLATFORM =~ /mswin|mingw|windows/ && RbConfig.ruby.include?("/opscode/chef/embedded/")
+if RUBY_PLATFORM =~ /mswin|mingw|windows/
   puts "Patching ssl_env_hack.rb to include SSL_ENV_CACERT_PATCH"
 
   # ssl_env_hack.rb in chef is superseded by foundation copy in omnibus,
@@ -210,7 +122,7 @@ default_gem_list = {
 # "undefined method 'request' for nil:NilClass" in RubyGems' HTTP client
 # because the newer resolv changes internal APIs that RubyGems 3.0 expects.
 # Skip the default-gem replacement on AIX to keep the default gems intact.
-if RbConfig.ruby.include?("/opscode/chef/embedded/") && !RUBY_PLATFORM.include?("aix")
+unless RUBY_PLATFORM.include?("aix")
   default_gem_list.each do |gem_name, version|
     # Handle resolv gem conflict with default gem
     puts "Checking #{gem_name} gem installation..."

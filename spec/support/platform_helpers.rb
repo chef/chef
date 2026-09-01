@@ -325,13 +325,7 @@ def powershell_runtime_available?
     require "ruby_installer"
     # Check if we can load the PowerShell DLL which requires vcruntime140.dll
     match_path = "bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll"
-    configured_path = ENV["RUBY_DLL_PATH"]
-    matched_paths = if configured_path
-                      path = File.file?(configured_path) ? configured_path : File.join(configured_path, File.basename(match_path))
-                      File.file?(path) ? [path] : []
-                    else
-                      Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}")
-                    end.map { |f| File.expand_path(f) }.uniq
+    matched_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}").map { |f| File.expand_path(f) }
 
     unless matched_paths.empty?
       dll_path = matched_paths.first

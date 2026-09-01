@@ -57,29 +57,6 @@ jobs:
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-
-        $envName = "HAB_AUTH_TOKEN"
-
-        try {
-            # Check if the environment variable is missing or empty/false
-            if (-not (Test-Path "Env:\$envName") -or -not [string]::IsNullOrEmpty($env:HAB_AUTH_TOKEN)) {
-                # Using [Environment]::GetEnvironmentVariable is also an option
-                if (-not $env:HAB_AUTH_TOKEN) {
-                    throw "Environment variable '$envName' is missing or false."
-                }
-            }
-            
-            Write-Host "*****************************************"
-            Write-Host "Success: The environment variable is set."
-            Write-Host "*****************************************"
-        }
-        catch {
-            Write-Host "Error intercepted in catch block."
-            # Rethrow as a terminating error
-            throw $_
-        }
-
-
         appbundle-updater chef chef $env:GITHUB_SHA --tarball --github $env:GITHUB_REPOSITORY
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         Write-Output "Installed Chef / Ohai release:"
@@ -87,12 +64,6 @@ jobs:
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
         chef-client -v
         If ($lastexitcode -ne 0) { Exit $lastexitcode }
-      env:
-        HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-        HAB_LICENSE: accept-no-persist
-        HAB_ORIGIN: chef
-        HAB_BLDR_CHANNEL: base-2025
-        HAB_BLDR_REFRESH_CHANNEL: base-2025
     - name: 'Enable FIPS via windows registry' #FIPS needs to be enabled after installation of Chef, otherwise it fails due to Cryptography error
       run: |
         $OldErrorActionPreference = $ErrorActionPreference

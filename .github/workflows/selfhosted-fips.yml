@@ -67,12 +67,6 @@ jobs:
           echo "Installed Chef / Ohai release:"
           /opt/chef/bin/chef-client -v
           /opt/chef/bin/ohai -v
-        env:
-          HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
-          HAB_LICENSE: accept-no-persist
-          HAB_ORIGIN: chef
-          HAB_BLDR_CHANNEL: base-2025
-          HAB_BLDR_REFRESH_CHANNEL: base-2025
       - name: 'Verify FIPS is enabled'
         id: run
         run: |
