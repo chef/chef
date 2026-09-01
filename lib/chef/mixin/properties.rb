@@ -100,7 +100,7 @@ class Chef
         def property(name, type = NOT_PASSED, **options)
           name = name.to_sym
 
-          options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
+          options.transform_keys!(&:to_sym)
 
           options[:instance_variable_name] = :"@#{name}" unless options.key?(:instance_variable_name)
           options[:name] = name
