@@ -51,7 +51,7 @@ class Chef
           when EOFError
             describe_eof_error(error_description)
           else
-            "#{exception.class.name}: #{exception.message}"
+            error_description.section("Unexpected Error:", "#{exception.class.name}: #{exception.message}")
           end
         end
 
