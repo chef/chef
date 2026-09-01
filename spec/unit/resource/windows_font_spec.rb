@@ -40,4 +40,55 @@ describe Chef::Resource::WindowsFont do
     resource.source 'C:\foo\bar\fontfile'
     expect(resource.source).to eql("C:/foo/bar/fontfile")
   end
+
+  describe "when the font lives in a cookbook subdirectory" do
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::WindowsFont.new('fonts\Source_Sans_Pro\SourceSansPro-Regular.ttf') }
+    let(:provider) do
+      resource.run_context = run_context
+      resource.provider_for_action(:install)
+    end
+
+    before do
+      stub_const("ENV", ENV.to_hash.merge("TEMP" => "C:/tmp"))
+    end
+
+    it "strips the directories when naming the staged file" do
+      expect(provider.font_basename).to eq("SourceSansPro-Regular.ttf")
+    end
+
+    it "stages the font flat in TEMP rather than under the cookbook subdirectory" do
+      # PathHelper.join uses the platform separator, so build the expectation
+      # the same way rather than hardcoding one
+      expect(provider.temp_font_path).to eq(Chef::Util::PathHelper.join("C:/tmp", "SourceSansPro-Regular.ttf"))
+      expect(provider.temp_font_path).not_to include("Source_Sans_Pro")
+    end
+
+    it "keeps the subdirectory when looking the file up in the cookbook" do
+      expect(provider.cookbook_source_path).to eq("fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf")
+    end
+  end
+
+  describe "when the font name is a bare file name" do
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::WindowsFont.new("Custom.ttf") }
+    let(:provider) do
+      resource.run_context = run_context
+      resource.provider_for_action(:install)
+    end
+
+    before do
+      stub_const("ENV", ENV.to_hash.merge("TEMP" => "C:/tmp"))
+    end
+
+    it "leaves the name alone" do
+      expect(provider.font_basename).to eq("Custom.ttf")
+      expect(provider.cookbook_source_path).to eq("Custom.ttf")
+      expect(provider.temp_font_path).to eq(Chef::Util::PathHelper.join("C:/tmp", "Custom.ttf"))
+    end
+  end
 end
