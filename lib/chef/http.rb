@@ -510,9 +510,9 @@ class Chef
 
     # @api private
     def redirected_to(response)
-      return nil  unless response.is_a?(Net::HTTPRedirection)
+      return nil unless response.is_a?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
-      return nil  if response.is_a?(Net::HTTPNotModified)
+      return nil if response.is_a?(Net::HTTPNotModified)
 
       response["location"]
     end
