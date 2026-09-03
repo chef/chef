@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.23 -->
-## [v19.4.23](https://github.com/chef/chef/tree/v19.4.23) (2026-09-03)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- resolve habitat dependencies and merge into blackduck sbom [#16339](https://github.com/chef/chef/pull/16339) ([rishichawda](https://github.com/rishichawda))
+- only use major.minor for version in blackduck [#16346](https://github.com/chef/chef/pull/16346) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- only use major.minor for version in blackduck [#16346](https://github.com/chef/chef/pull/16346) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.23 -->
 - resolve habitat dependencies and merge into blackduck sbom [#16339](https://github.com/chef/chef/pull/16339) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.23 -->
 - Fix umask property to accept Integer values [#16260](https://github.com/chef/chef/pull/16260) ([vatsalp2008](https://github.com/vatsalp2008)) <!-- 19.4.22 -->
 - Fix sysctl resource failing to reload on Debian 13 / trixie [#16304](https://github.com/chef/chef/pull/16304) ([tas50](https://github.com/tas50)) <!-- 19.4.21 -->
