@@ -34,7 +34,7 @@ jobs:
       BD_PROJECT_NAME: 'chef'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set BD version from VERSION file (major.minor)
         run: echo "BD_VERSION_NAME=$(cut -d. -f1,2 VERSION)" >> "$GITHUB_ENV"
