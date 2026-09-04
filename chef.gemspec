@@ -54,7 +54,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.3.8", "< 3.5.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 19.0"
-  s.add_dependency "inspec-core", "~> 7.1.7"
+  s.add_dependency "inspec-core", "~> 7.2.1"
 
   s.add_dependency "ffi", ">= 1.15.5", "< 1.18.0"
   # ffi-yajl has a stale version in 3.0.0 specifically that is in use. 3.0.1 and higher is ok again
