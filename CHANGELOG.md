@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.4.24 -->
+## [v19.4.24](https://github.com/chef/chef/tree/v19.4.24) (2026-09-04)
 
 #### Merged Pull Requests
+- update json gem to 2.21.2 to fix CVE-2026-71847 [#16349](https://github.com/chef/chef/pull/16349) ([rishichawda](https://github.com/rishichawda))
 - only use major.minor for version in blackduck [#16346](https://github.com/chef/chef/pull/16346) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update json gem to 2.21.2 to fix CVE-2026-71847 [#16349](https://github.com/chef/chef/pull/16349) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.24 -->
 - only use major.minor for version in blackduck [#16346](https://github.com/chef/chef/pull/16346) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.23 -->
 - resolve habitat dependencies and merge into blackduck sbom [#16339](https://github.com/chef/chef/pull/16339) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.23 -->
 - Fix umask property to accept Integer values [#16260](https://github.com/chef/chef/pull/16260) ([vatsalp2008](https://github.com/vatsalp2008)) <!-- 19.4.22 -->
