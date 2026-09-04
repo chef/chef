@@ -60,8 +60,16 @@ class Chef
         private
 
         def sftp
-          host = port ? "#{hostname}:#{port}" : hostname
-          @sftp ||= Net::SFTP.start(host, user, password: pass)
+          @sftp ||= Net::SFTP.start(hostname, user, **connection_options)
+        end
+
+        # Net::SSH (and therefore Net::SFTP) never parses a port out of the
+        # host string -- it is used verbatim as the name to resolve -- so the
+        # port has to be handed over as its own option.
+        def connection_options
+          opts = { password: pass }
+          opts[:port] = port if port
+          opts
         end
 
         def pass
