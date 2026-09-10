@@ -1,2 +1,0 @@
-name "test"
-description "prod"

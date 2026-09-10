@@ -1,2 +1,0 @@
-LibraryLoadOrder.record("dependency2")
-
