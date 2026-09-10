@@ -1,6 +1,8 @@
 $:.unshift(File.dirname(__FILE__) + "/lib")
 vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir__)
 
+# Hello world man ....
+
 if File.exist?(vs_path)
   # this is the moral equivalent of a require_relative since bundler makes require_relative here fail hard
   eval(IO.read(vs_path))

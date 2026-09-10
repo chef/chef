@@ -1,3 +1,0 @@
-#!/usr/bin/env ruby
-#
-puts "As of Chef Infra Client 17 the chef-service-manager is no longer available. Please run Chef Infra Client as a scheduled task instead for more reliable operation with lower memory and CPU overhead."
