@@ -73,8 +73,17 @@ module TargetIO
           path
         end
 
+        # Resolve the temp directory on the *target*, not the local host running
+        # chef-client. Using ::Dir.tmpdir here would return the host's tmp dir
+        # (e.g. macOS's /var/folders/...), which does not exist on the remote
+        # target and causes staging operations (mkdir/cp over the transport) to
+        # silently fail when host and target have different tmp dir conventions.
         def tmpdir
-          ::Dir.tmpdir
+          result = run_command("echo ${TMPDIR:-/tmp}")
+          dir = result.stdout.to_s.strip
+          dir.empty? ? "/tmp" : dir
+        rescue StandardError
+          "/tmp"
         end
 
         def unlink(dir_name)

@@ -84,8 +84,28 @@ RSpec.describe TargetIO::TrainCompat::Dir do
 
   # ─────────────────────────────────────────────────────────────────────────────
   describe ".tmpdir" do
-    it "returns the local temp directory" do
-      expect(described_class.tmpdir).to eq(::Dir.tmpdir)
+    it "resolves the tmp directory on the remote target via TMPDIR/fallback" do
+      allow(transport_connection).to receive(:run_command)
+        .with("echo ${TMPDIR:-/tmp}").and_return(double(stdout: "/tmp\n"))
+      expect(described_class.tmpdir).to eq("/tmp")
+    end
+
+    it "honors a custom remote TMPDIR" do
+      allow(transport_connection).to receive(:run_command)
+        .with("echo ${TMPDIR:-/tmp}").and_return(double(stdout: "/var/tmp\n"))
+      expect(described_class.tmpdir).to eq("/var/tmp")
+    end
+
+    it "falls back to /tmp when the remote command returns blank output" do
+      allow(transport_connection).to receive(:run_command)
+        .with("echo ${TMPDIR:-/tmp}").and_return(double(stdout: ""))
+      expect(described_class.tmpdir).to eq("/tmp")
+    end
+
+    it "falls back to /tmp when the remote command raises" do
+      allow(transport_connection).to receive(:run_command)
+        .with("echo ${TMPDIR:-/tmp}").and_raise(StandardError, "connection lost")
+      expect(described_class.tmpdir).to eq("/tmp")
     end
   end
 
