@@ -4,8 +4,10 @@ name: func_spec
 "on":
   pull_request:
     branches: [main, "chef-*"]
+    paths-ignore: ["**.md"]
   push:
     branches: [main, "chef-*"]
+    paths-ignore: ["**.md"]
 
 permissions:
   contents: read
