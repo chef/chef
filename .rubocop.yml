@@ -1,4 +1,5 @@
 # Yaml testing
+# This is new update commit must change
 AllCops:
 
   TargetRubyVersion: 2.6
