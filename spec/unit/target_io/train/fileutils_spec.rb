@@ -53,6 +53,29 @@ RSpec.describe TargetIO::TrainCompat::FileUtils do
   end
 
   # ─────────────────────────────────────────────────────────────────────────────
+  describe ".chmod_R" do
+    it "runs recursive chmod with octal mode" do
+      expect(transport_connection).to receive(:run_command).with("chmod -R 755 /bin/scripts")
+      described_class.chmod_R(0o755, "/bin/scripts")
+    end
+
+    it "accepts an array of paths" do
+      expect(transport_connection).to receive(:run_command).with("chmod -R 644 /a /b")
+      described_class.chmod_R(0o644, ["/a", "/b"])
+    end
+
+    it "uses -Rf flag when force: true" do
+      expect(transport_connection).to receive(:run_command).with("chmod -Rf 755 /bin/scripts")
+      described_class.chmod_R(0o755, "/bin/scripts", force: true)
+    end
+
+    it NOOP_SKIP_EXAMPLE do
+      expect(transport_connection).not_to receive(:run_command)
+      described_class.chmod_R(0o755, "/bin/scripts", noop: true)
+    end
+  end
+
+  # ─────────────────────────────────────────────────────────────────────────────
   describe ".chown" do
     let(:app_path) { "/etc/app" }
 
