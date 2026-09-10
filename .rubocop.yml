@@ -1,5 +1,14 @@
 # Yaml testing
 # This is new update commit must change
+#  delete mode 100644 spec/unit/version_constraint/platform_spec.rb
+#  delete mode 100644 spec/unit/version_constraint_spec.rb
+#  delete mode 100644 spec/unit/version_string_spec.rb
+#  delete mode 100644 spec/unit/win32/error_spec.rb
+#  delete mode 100644 spec/unit/win32/link_spec.rb
+#  delete mode 100644 spec/unit/win32/registry_spec.rb
+#  delete mode 100644 spec/unit/win32/security_spec.rb
+# ubuntu@WD365082200goldlinuxvpsNAxBU7d4k2:~/chef$ 
+
 AllCops:
 
   TargetRubyVersion: 2.6
