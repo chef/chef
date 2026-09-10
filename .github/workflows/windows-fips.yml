@@ -5,9 +5,11 @@ name: windows-fips
   pull_request_target:
     branches:
       - main
+    paths-ignore: ["**.md"]
   push:
     branches:
       - main
+    paths-ignore: ["**.md"]
   # Allows manual workflow testing without having to merge code to main where pull_request_target is used
   workflow_dispatch:
 
