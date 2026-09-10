@@ -124,10 +124,21 @@ class Chef
         end
       end
 
+      # Raised by the current value helpers below when the current value of a key cannot
+      # be determined -- either because Chef has not written a conf file for it yet, or
+      # because the running value no longer agrees with the one Chef wrote. Raising it
+      # signals that the resource needs converging.
+      class CurrentValueUnknown < StandardError; end
+
+      # Only conditions that genuinely mean "the current value cannot be determined" are
+      # rescued here: the two signalled by CurrentValueUnknown, plus a failure to run
+      # sysctl at all. Programming errors such as an undefined constant or a missing
+      # method are deliberately left to surface rather than being reported as a missing
+      # current value, which would silently make the resource non-idempotent.
       load_current_value do
 
         value get_sysctl_value(key)
-      rescue
+      rescue CurrentValueUnknown, Mixlib::ShellOut::ShellCommandFailed, SystemCallError
         current_value_does_not_exist!
 
       end
@@ -225,7 +236,7 @@ class Chef
       #
       def get_sysctl_value(key)
         val = shell_out!("sysctl -n -e #{key}").stdout.tr("\t", " ").strip
-        raise unless val == get_sysctld_value(key)
+        raise CurrentValueUnknown, "The running value of #{key} does not match the value Chef configured" unless val == get_sysctld_value(key)
 
         val
       end
@@ -234,11 +245,15 @@ class Chef
       # return the value. Raise in case this conf file needs to be created
       # or updated
       def get_sysctld_value(key)
-        raise unless ::TargetIO::File.exist?("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf")
+        path = "/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf"
+        raise CurrentValueUnknown, "#{path} does not exist" unless ::TargetIO::File.exist?(path)
 
-        k, v = ::TargetIO::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
-        raise "Unknown sysctl key!" if k.nil?
-        raise "Unknown sysctl value!" if v.nil?
+        matches = ::TargetIO::File.read(path).match(/(.*) = (.*)/)
+        raise CurrentValueUnknown, "#{path} does not contain a 'key = value' pair" if matches.nil?
+
+        k, v = matches.captures
+        raise CurrentValueUnknown, "Unknown sysctl key in #{path}" if k.nil?
+        raise CurrentValueUnknown, "Unknown sysctl value in #{path}" if v.nil?
 
         v
       end
