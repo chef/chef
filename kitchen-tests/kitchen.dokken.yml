@@ -103,6 +103,11 @@ platforms:
       image: dokken/debian-11
       pid_one_command: /bin/systemd
       intermediate_instructions:
+        # bullseye is now frozen as "oldoldstable-security" and deb.debian.org
+        # no longer reliably serves its InRelease/pool files (expired Release
+        # + 404s on package downloads). Pin to an immutable snapshot.debian.org
+        # mirror instead of the rolling mirror.
+        - RUN printf 'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye main\ndeb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main\ndeb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main\n' > /etc/apt/sources.list
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
