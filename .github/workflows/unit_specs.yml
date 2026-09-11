@@ -125,7 +125,7 @@ jobs:
       - name: Install native deps (apt)
         if: matrix.pkg_mgr == 'apt'
         run: |
-          apt-get update
+          apt-get -o Acquire::Check-Valid-Until=false update
           apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev curl
       - name: Install Ruby via rbenv
         run: |
