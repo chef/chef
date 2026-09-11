@@ -131,6 +131,16 @@ jobs:
       - name: Install native deps (apt)
         if: matrix.pkg_mgr == 'apt'
         run: |
+          # Debian 11 (bullseye) has moved past LTS into the frozen
+          # "oldoldstable-security" suite, so deb.debian.org no longer
+          # reliably serves its InRelease/pool files (expired Release
+          # + 404s on package downloads). Pin to an immutable
+          # snapshot.debian.org mirror instead of the rolling mirror.
+          cat <<'EOF' > /etc/apt/sources.list
+          deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye main
+          deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main
+          deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main
+          EOF
           apt-get update
           apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev curl
       - name: Install Ruby via rbenv

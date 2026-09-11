@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.26 -->
-## [v19.4.26](https://github.com/chef/chef/tree/v19.4.26) (2026-09-10)
+<!-- latest_release 19.4.27 -->
+## [v19.4.27](https://github.com/chef/chef/tree/v19.4.27) (2026-09-11)
 
 #### Merged Pull Requests
-- Stop windows_update_settings writing unset WSUS values [#16331](https://github.com/chef/chef/pull/16331) ([tas50](https://github.com/tas50))
+- Fix expired bullseye-security Release causing apt-get update failure in CI [#16359](https://github.com/chef/chef/pull/16359) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix expired bullseye-security Release causing apt-get update failure in CI [#16359](https://github.com/chef/chef/pull/16359) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.27 -->
 - Stop windows_update_settings writing unset WSUS values [#16331](https://github.com/chef/chef/pull/16331) ([tas50](https://github.com/tas50)) <!-- 19.4.26 -->
 - Updating Inspec and inspec-core and inspec-core-bin to 7.2.1 [#16345](https://github.com/chef/chef/pull/16345) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.25 -->
 - update json gem to 2.21.2 to fix CVE-2026-71847 [#16349](https://github.com/chef/chef/pull/16349) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.24 -->
