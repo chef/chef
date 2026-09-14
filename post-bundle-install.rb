@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require "fileutils"
+
 gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"
@@ -26,6 +28,18 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   puts "re-installing #{gem_name}..."
 
   Dir.chdir(File.dirname(gemspec)) do
+    if gem_name == "chef-powershell" && ENV["CHEF_POWERSHELL_BIN"]
+      architecture = ENV.fetch("PROCESSOR_ARCHITECTURE", "AMD64")
+      dll_source = ENV["CHEF_POWERSHELL_BIN"]
+      dll_destination = File.join("bin", "ruby_bin_folder", architecture)
+      dlls = Dir[File.join(dll_source, "*")]
+      raise "No chef-powershell DLLs found in #{dll_source}" if dlls.empty?
+
+      FileUtils.rm_rf(dll_destination)
+      FileUtils.mkdir_p(dll_destination)
+      FileUtils.cp_r(dlls, dll_destination)
+    end
+
     system("gem build #{File.basename(gemspec)}") or raise "gem build failed"
     # On AIX (Ruby 3.0.3), git-sourced gems often declare required_ruby_version >= 3.1.0.
     # Without --ignore-dependencies, gem install falls back to rubygems.org and installs

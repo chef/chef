@@ -30,6 +30,9 @@ jobs:
         ohai -v
         rake --version
         bundle -v
+    - name: 'Build chef-powershell test artifact'
+      run: |
+        . .\scripts\prepare-chef-powershell.ps1 -ChefRepoRoot $PWD
     - name: 'Upgrade Chef/Ohai via Appbundler'
       id: upgrade
       run: |
