@@ -37,6 +37,7 @@ for platform in ${test_platforms[@]}; do
   echo "      privileged: true"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
+  echo "        - HAB_AUTH_TOKEN"
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
@@ -63,6 +64,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "      - \"-Command\""
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
+  echo "        - HAB_AUTH_TOKEN"
   echo "      propagate-environment: true"
   echo "  commands:"
   echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
@@ -80,8 +82,7 @@ for platform in ${win_test_platforms[@]}; do
   echo "  agents:"
   echo "    queue: single-use-windows-2019-privileged"
   echo "  env:"
-  echo "  - CHEF_FOUNDATION_VERSION"
-  echo "    - .\.expeditor\scripts\prep_and_run_tests.ps1 {{matrix}}"
+  echo "    CHEF_FOUNDATION_VERSION:"
   echo "  timeout_in_minutes: 120"
 done
 

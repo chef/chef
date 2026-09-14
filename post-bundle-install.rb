@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require "fileutils"
+
 gem_home = Gem.paths.home
 
 puts "fixing bundle installed gems in #{gem_home}"
@@ -12,10 +14,11 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   matches = File.basename(gempath).match(/.*-[A-Fa-f0-9]{12}/)
   next unless matches
 
-  gem_name = File.basename(Dir["#{gempath}/*.gemspec"].first, ".gemspec")
-  # FIXME: should strip any valid ruby platform off of the gem_name if it matches
+  gemspec = Dir["#{gempath}/*.gemspec", "#{gempath}/*/*.gemspec"].first
+  next unless gemspec
 
-  next unless gem_name
+  gem_name = File.basename(gemspec, ".gemspec")
+  # FIXME: should strip any valid ruby platform off of the gem_name if it matches
 
   # FIXME: should omit the gem which is in the current directory and not hard code chef
   next if %w{chef chef-universal-mingw-ucrt proxifier}.include?(gem_name)
@@ -24,8 +27,20 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   puts "re-installing #{gem_name}..."
 
-  Dir.chdir(gempath) do
-    system("gem build #{gem_name}.gemspec") or raise "gem build failed"
+  Dir.chdir(File.dirname(gemspec)) do
+    if gem_name == "chef-powershell" && ENV["CHEF_POWERSHELL_BIN"]
+      architecture = ENV.fetch("PROCESSOR_ARCHITECTURE", "AMD64")
+      dll_source = ENV["CHEF_POWERSHELL_BIN"]
+      dll_destination = File.join("bin", "ruby_bin_folder", architecture)
+      dlls = Dir.children(dll_source).map { |entry| File.join(dll_source, entry) }
+      raise "No chef-powershell DLLs found in #{dll_source}" if dlls.empty?
+
+      FileUtils.rm_rf(dll_destination)
+      FileUtils.mkdir_p(dll_destination)
+      FileUtils.cp_r(dlls, dll_destination)
+    end
+
+    system("gem build #{File.basename(gemspec)}") or raise "gem build failed"
     # On AIX (Ruby 3.0.3), git-sourced gems often declare required_ruby_version >= 3.1.0.
     # Without --ignore-dependencies, gem install falls back to rubygems.org and installs
     # the wrong gem version with different dependency constraints (e.g. rest-client on

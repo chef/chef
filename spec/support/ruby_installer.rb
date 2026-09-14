@@ -37,7 +37,9 @@ end
 
 def load_dlls(match_path, is_powershell_dll = false)
   require "ruby_installer"
-  matched_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}").map { |f| File.expand_path(f) }
+  explicit_path = File.join(ENV["CHEF_POWERSHELL_BIN"], File.basename(match_path)) if is_powershell_dll && ENV["CHEF_POWERSHELL_BIN"]
+  matched_paths = [explicit_path].compact.select { |path| File.file?(path) }
+  matched_paths = Dir.glob("{#{Gem.dir},C:/hab}/**/#{match_path}").map { |f| File.expand_path(f) } if matched_paths.empty?
   if matched_paths.empty?
     error_msg = <<~EOL
       !!!!
