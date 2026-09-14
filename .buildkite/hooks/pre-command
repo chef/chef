@@ -146,12 +146,25 @@ if [[ "${BUILDKITE_LABEL:-}" =~ aix ]] && \
   ) || echo "AIX pre-cleanup: encountered errors (non-fatal, continuing)"
 fi
 
-# Only if on chef-canary or chef org
 # force regions on omnibus queues
-[[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]] && if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef" ]]; then
-  export AWS_REGION="us-west-2"
-else
+if [[ $BUILDKITE_ORGANIZATION_SLUG = "chef-canary" ]]; then
   export AWS_REGION="us-west-1"
+elif [[ $BUILDKITE_ORGANIZATION_SLUG =~ ^chef(-oss)?$ ]]; then
+  export AWS_REGION="us-west-2"
+fi
+
+if [[ "$BUILDKITE_LABEL" =~ [Ww]indows ]]; then
+  HAB_AUTH_TOKEN=$(aws ssm get-parameter \
+    --name "habitat-prod-auth-token" \
+    --with-decryption \
+    --query "Parameter.Value" \
+    --output text \
+    --region "$AWS_REGION")
+  if [[ -z "$HAB_AUTH_TOKEN" || "$HAB_AUTH_TOKEN" == "None" ]]; then
+    echo "ERROR: Unable to load HAB_AUTH_TOKEN from AWS Parameter Store" >&2
+    exit 1
+  fi
+  export HAB_AUTH_TOKEN
 fi
 
 if [[ ! "$BUILDKITE_STEP_KEY" =~ ^test.* ]] && [[ $BUILDKITE_ORGANIZATION_SLUG != "chef-oss" ]]; then
