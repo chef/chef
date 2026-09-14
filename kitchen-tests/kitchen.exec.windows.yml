@@ -41,6 +41,8 @@ lifecycle:
         # libyajl2 build if already present. gem install seems to build anyway.
         & $chef_gem uninstall -I libyajl2
         If ($lastexitcode -ne 0) { throw "Failed to uninstall libyajl2 (exit code $lastexitcode)" }
+        & $chef_gem install libyajl2 -v 2.1.0 --no-doc
+        If ($lastexitcode -ne 0) { throw "Failed to reinstall libyajl2 (exit code $lastexitcode)" }
 
         & $chef_gem install appbundler --no-doc
         If ($lastexitcode -ne 0) { throw "Failed to install appbundler (exit code $lastexitcode)" }

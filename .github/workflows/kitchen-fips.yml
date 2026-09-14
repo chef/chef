@@ -59,6 +59,8 @@ jobs:
         # so that libyajldll.a is present in the intermediate build step. bundler seems to skip
         # libyajl2 build if already present. gem install seems to build anyway.
         gem uninstall -I libyajl2
+        gem install libyajl2 -v 2.1.0 --no-doc
+        If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
         gem install appbundler appbundle-updater --no-doc
         If ($lastexitcode -ne 0) { Exit $lastexitcode }

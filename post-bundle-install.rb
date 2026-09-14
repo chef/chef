@@ -32,7 +32,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
       architecture = ENV.fetch("PROCESSOR_ARCHITECTURE", "AMD64")
       dll_source = ENV["CHEF_POWERSHELL_BIN"]
       dll_destination = File.join("bin", "ruby_bin_folder", architecture)
-      dlls = Dir[File.join(dll_source, "*")]
+      dlls = Dir.children(dll_source).map { |entry| File.join(dll_source, entry) }
       raise "No chef-powershell DLLs found in #{dll_source}" if dlls.empty?
 
       FileUtils.rm_rf(dll_destination)
