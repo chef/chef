@@ -41,4 +41,39 @@ describe Chef::Resource::HomebrewTap do
   it "fails if tap_name isn't in the USER/TAP format" do
     expect { resource.tap_name "mytap" }.to raise_error(ArgumentError)
   end
+
+  describe "action :tap" do
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::HomebrewTap.new("user/mytap", run_context) }
+    let(:commands_run) { [] }
+    let(:execute_resources) { [] }
+
+    before do
+      allow(resource).to receive(:tapped?).and_return(false)
+      shellout = double("Mixlib::ShellOut").as_null_object
+      allow(Mixlib::ShellOut).to receive(:new) do |command, *_args|
+        commands_run << command
+        shellout
+      end
+      allow(Chef::Resource::Execute).to receive(:new).and_wrap_original do |method, *args, &block|
+        execute_resources << (r = method.call(*args, &block))
+        r
+      end
+    end
+
+    it "trusts the tap before tapping it, ignoring trust failures" do
+      resource.run_action(:tap)
+
+      expect(commands_run.first).to include("brew trust user/mytap")
+      expect(commands_run.last).to include("brew tap user/mytap")
+
+      trust_step = execute_resources.find { |r| r.name == "trust user/mytap" }
+      expect(trust_step.ignore_failure).to be true
+
+      tap_step = execute_resources.find { |r| r.name == "tap user/mytap" }
+      expect(tap_step.ignore_failure).to be_falsey
+    end
+  end
 end
