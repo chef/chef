@@ -24,6 +24,22 @@ EOF
   sudo cat /etc/apt/sources.list
 fi
 
+# Debian 11 (bullseye) has moved past LTS into the frozen
+# "oldoldstable-security" suite, so deb.debian.org no longer reliably
+# serves its InRelease/pool files (expired Release + intermittent 404s
+# on package downloads, e.g. libarchive-dev/libarchive13). Pin to an
+# immutable snapshot.debian.org mirror instead of the rolling mirror,
+# matching the fix already applied to func_spec.yml/unit_specs.yml and
+# kitchen.dokken.yml.
+if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "11" ]; then
+  echo "pinning debian 11 sources.list to snapshot.debian.org:"
+  sudo tee /etc/apt/sources.list <<EOF
+deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye main
+deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main
+deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main
+EOF
+fi
+
 echo "updating git on debian 9"
 sudo apt-get update -y
 sudo apt-get install -y -t stretch-backports git
