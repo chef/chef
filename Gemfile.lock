@@ -264,7 +264,7 @@ GEM
     crack (1.0.1)
       bigdecimal
       rexml
-    csv (3.3.5)
+    csv (3.3.6)
     date (3.5.1)
     debug_inspector (1.2.0)
     diff-lcs (1.6.2)
