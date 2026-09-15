@@ -266,7 +266,7 @@ class Chef
         str << " --foreground" if new_resource.time_out["foreground"].to_s.casecmp("true") == 0
         str << " --kill-after #{new_resource.time_out["kill-after"]}" if new_resource.time_out["kill-after"]
         str << " --signal #{new_resource.time_out["signal"]}" if new_resource.time_out["signal"]
-        str << " #{new_resource.time_out["duration"]};"
+        str << " #{new_resource.time_out["duration"]}" if new_resource.time_out["duration"]
         str
       end
 
