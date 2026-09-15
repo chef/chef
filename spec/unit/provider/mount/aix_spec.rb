@@ -57,9 +57,9 @@ describe Chef::Provider::Mount::Aix do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Mount.new("/tmp/foo")
-    @new_resource.device      "/dev/sdz1"
+    @new_resource.device "/dev/sdz1"
     @new_resource.device_type :device
-    @new_resource.fstype      "jfs2"
+    @new_resource.fstype "jfs2"
 
     @new_resource.supports remount: false
 

@@ -66,12 +66,12 @@ describe Shell do
       conf.main.instance_eval(&object_test_harness)
       Shell.irb_conf[:IRB_RC].call(conf)
       if RUBY_VERSION >= "3.3.0"
-        expect(conf.prompt_c).to      eq("chef > ")
-        expect(conf.prompt_s).to      eq("chef%l> ")
+        expect(conf.prompt_c).to eq("chef > ")
+        expect(conf.prompt_s).to eq("chef%l> ")
       else
-        expect(conf.prompt_c).to      eq("chef (#{Chef::VERSION})> ")
-        expect(conf.prompt_n).to      eq("chef(#{Chef::VERSION})?> ")
-        expect(conf.prompt_s).to      eq("chef(#{Chef::VERSION})%l> ")
+        expect(conf.prompt_c).to eq("chef (#{Chef::VERSION})> ")
+        expect(conf.prompt_n).to eq("chef(#{Chef::VERSION})?> ")
+        expect(conf.prompt_s).to eq("chef(#{Chef::VERSION})%l> ")
       end
       expect(conf.return_format).to eq(" => %s \n")
       expect(conf.prompt_i).to      eq("chef (#{Chef::VERSION})> ")

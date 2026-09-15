@@ -55,8 +55,8 @@ describe Chef::Provider::User::Windows do
     before do
       @new_resource.full_name "Adam Jacob"
       @new_resource.comment   "Some comments"
-      @new_resource.uid       1000
-      @new_resource.gid       1000
+      @new_resource.uid 1000
+      @new_resource.gid 1000
       @new_resource.home      "/home/adam"
       @new_resource.shell     "/usr/bin/zsh"
       @new_resource.password  "abracadabra"
@@ -99,8 +99,8 @@ describe Chef::Provider::User::Windows do
         @current_resource = Chef::Resource::User::WindowsUser.new("adam")
         @current_resource.full_name "Adam Jacob-foo"
         @current_resource.comment   "some comments"
-        @current_resource.uid       1111
-        @current_resource.gid       1111
+        @current_resource.uid 1111
+        @current_resource.gid 1111
         @current_resource.home      "/home/adam-foo"
         @current_resource.shell     "/usr/bin/tcsh"
         @current_resource.password  "foobarbaz"

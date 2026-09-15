@@ -61,6 +61,9 @@ group(:development, :test) do
   gem "webmock"
   gem "crack", "~> 1.0.1"
   gem "fauxhai-ng" # for chef-utils gem
+  # Pinned explicitly rather than floating in via inspec-core, since this is
+  # what the lint workflow runs and it also pins our RuboCop version.
+  gem "cookstyle", ">= 9.0"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
