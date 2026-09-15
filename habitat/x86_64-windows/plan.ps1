@@ -235,6 +235,28 @@ function Invoke-Build {
                     $gem_path = $git_gem.ToString() + "\rest-client*.gem"
                     gem install $gem_path
                 }
+                elseif ($git_gem -match "chef-powershell-shim") {
+                    # chef-powershell ships native DLLs that are cross-compiled via a
+                    # separate Habitat build (see scripts/prepare-chef-powershell.ps1).
+                    # 'rake install'/'gem build' alone can't produce those binaries, so
+                    # swap in the pre-built DLLs before packaging the gem here.
+                    if (-not $env:CHEF_POWERSHELL_BIN) { throw "CHEF_POWERSHELL_BIN is required to package chef-powershell" }
+
+                    $gem_dir = Join-Path $git_gem "chef-powershell"
+                    $architecture = if ($env:PROCESSOR_ARCHITECTURE) { $env:PROCESSOR_ARCHITECTURE } else { "AMD64" }
+                    $dll_destination = Join-Path $gem_dir "bin\ruby_bin_folder\$architecture"
+                    New-Item -Path $dll_destination -ItemType Directory -Force | Out-Null
+                    Copy-Item "$env:CHEF_POWERSHELL_BIN\*" -Destination $dll_destination -Recurse -Force
+
+                    Push-Location $gem_dir
+                    try {
+                        gem build chef-powershell.gemspec
+                        if (-not $?) { throw "unable to build chef-powershell gem" }
+                        gem install chef-powershell-*.gem
+                    } finally {
+                        Pop-Location
+                    }
+                }
                 else {
                     rake install $git_gem --trace=stdout # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 }
