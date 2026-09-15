@@ -101,6 +101,16 @@ describe Chef::Provider do
     expect(@provider.current_resource).to eql(nil)
   end
 
+  it "delegates property_is_set?, reset_property, and property_description to the resource (e.g. from within an action_class/action block)" do
+    @resource.retries(5)
+    expect(@provider.property_is_set?(:retries)).to be true
+
+    expect { @provider.reset_property(:retries) }.not_to raise_error
+    expect(@provider.property_is_set?(:retries)).to be false
+
+    expect(@provider.property_description(:retries)).to eq(@resource.class.properties[:retries].description)
+  end
+
   it "should support whyrun by default" do
     expect(@provider.send(:whyrun_supported?)).to eql(true)
   end
