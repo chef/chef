@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.31 -->
-## [v19.4.31](https://github.com/chef/chef/tree/v19.4.31) (2026-09-15)
+<!-- latest_release 19.4.32 -->
+## [v19.4.32](https://github.com/chef/chef/tree/v19.4.32) (2026-09-15)
 
 #### Merged Pull Requests
-- Respect the timeout property in homebrew_package [#16328](https://github.com/chef/chef/pull/16328) ([tas50](https://github.com/tas50))
+- Stop the dscl group provider mutating new_resource.gid [#16326](https://github.com/chef/chef/pull/16326) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop the dscl group provider mutating new_resource.gid [#16326](https://github.com/chef/chef/pull/16326) ([tas50](https://github.com/tas50)) <!-- 19.4.32 -->
 - Respect the timeout property in homebrew_package [#16328](https://github.com/chef/chef/pull/16328) ([tas50](https://github.com/tas50)) <!-- 19.4.31 -->
 - Update to Cookstyle 9.0 and fix the new offenses [#16329](https://github.com/chef/chef/pull/16329) ([tas50](https://github.com/tas50)) <!-- 19.4.30 -->
 - Fix undefined method mode_to_s in TargetIO::TrainCompat::FileUtils.chmod_R [#16355](https://github.com/chef/chef/pull/16355) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.29 -->
