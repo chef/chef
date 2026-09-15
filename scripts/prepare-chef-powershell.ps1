@@ -70,6 +70,33 @@ try {
   }
 
   Write-Host "Using chef-powershell DLLs from $env:CHEF_POWERSHELL_BIN"
+
+  # spec/support/ruby_installer.rb locates Chef.PowerShell.dll by globbing
+  # Gem.dir (and C:/hab) for bin/ruby_bin_folder/<arch>/Chef.PowerShell.dll -
+  # it has no knowledge of CHEF_POWERSHELL_BIN. When chef-powershell is
+  # sourced from git (see Gemfile), the checked-out gem has no prebuilt DLLs,
+  # so drop the ones we just built into the installed git gem's directory
+  # too. This only applies when chef-powershell has already been bundle
+  # installed from a Gemfile.lock on this host (e.g. the unit/func spec
+  # workflows); the Habitat plan build packages its own copy independently
+  # (see habitat/x86_64-windows/plan.ps1), so skip this quietly otherwise.
+  Push-Location $ChefRepoRoot
+  try {
+    $gem_path = (bundle info chef-powershell --path 2>$null | Select-Object -Last 1)
+    if ($LASTEXITCODE -eq 0 -and $gem_path -and (Test-Path $gem_path)) {
+      $architecture = if ($env:PROCESSOR_ARCHITECTURE) { $env:PROCESSOR_ARCHITECTURE } else { "AMD64" }
+      $dll_destination = Join-Path $gem_path "bin\ruby_bin_folder\$architecture"
+      New-Item -Path $dll_destination -ItemType Directory -Force | Out-Null
+      Copy-Item "$env:CHEF_POWERSHELL_BIN\*" -Destination $dll_destination -Recurse -Force
+      Write-Host "Copied chef-powershell DLLs into $dll_destination"
+    }
+    else {
+      Write-Host "chef-powershell gem not found via 'bundle info' - skipping DLL copy into the installed gem"
+    }
+  }
+  finally {
+    Pop-Location
+  }
 }
 finally {
   Pop-Location
