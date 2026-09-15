@@ -16,7 +16,7 @@ module TargetIO
         end
 
         def chmod_R(mode, list, noop: nil, verbose: nil, force: nil)
-          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ""), mode_to_s(mode), Array(list).join(" "))
+          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ""), __mode_to_s(mode), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
