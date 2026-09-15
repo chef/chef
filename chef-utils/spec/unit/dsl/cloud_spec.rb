@@ -93,4 +93,14 @@ RSpec.describe ChefUtils::DSL::Cloud do
       expect(described_class.cloud?({ "virtualbox" => {}, "cloud" => nil })).to be false
     end
   end
+
+  context "when node[\"cloud\"] is stale/missing but a specific provider key is present" do
+    it "cloud? still reports true, consistent with the specific provider helper" do
+      # regression test: a node moved between clouds (or with a cloud plugin that
+      # hasn't populated node["cloud"] yet) previously made cloud? disagree with
+      # e.g. azure?/ec2?, which only check for the provider key's presence.
+      expect(described_class.azure?({ "azure" => { "metadata" => nil } })).to be true
+      expect(described_class.cloud?({ "azure" => { "metadata" => nil } })).to be true
+    end
+  end
 end
