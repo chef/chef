@@ -127,6 +127,11 @@ class Chef
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
 
+      # #name is read constantly (roughly 14k times while loading the resource
+      # DSL), and options[:name] is never written after construction, so hold it
+      # in an ivar instead of hashing into options on every call.
+      @name = options[:name]
+
       # Replace name_attribute with name_property
       if options.key?(:name_attribute)
         # If we have both name_attribute and name_property and they differ, raise an error
@@ -182,7 +187,7 @@ class Chef
     # @return [String]
     #
     def name
-      options[:name]
+      @name
     end
 
     #
