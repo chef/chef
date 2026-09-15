@@ -79,7 +79,7 @@ module TargetIO
         # target and causes staging operations (mkdir/cp over the transport) to
         # silently fail when host and target have different tmp dir conventions.
         def tmpdir
-          result = run_command("echo ${TMPDIR:-/tmp}")
+          result = run_command(%q{printf '%s' "${TMPDIR:-${TMP:-${TEMP:-/tmp}}}"})
           dir = result.stdout.to_s.strip
           dir.empty? ? "/tmp" : dir
         rescue StandardError
