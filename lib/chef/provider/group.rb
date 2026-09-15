@@ -111,6 +111,11 @@ class Chef
       end
 
       def group_gid_match?
+        # No gid requested means no desired gid, so whatever the group already
+        # has is a match. Providers must not backfill new_resource.gid from the
+        # current state to make this comparison work.
+        return true if new_resource.gid.nil?
+
         new_resource.gid.to_s == current_resource.gid.to_s
       end
 
