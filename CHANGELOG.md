@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.29 -->
-## [v19.4.29](https://github.com/chef/chef/tree/v19.4.29) (2026-09-15)
+<!-- latest_release 19.4.30 -->
+## [v19.4.30](https://github.com/chef/chef/tree/v19.4.30) (2026-09-15)
 
 #### Merged Pull Requests
-- Fix undefined method mode_to_s in TargetIO::TrainCompat::FileUtils.chmod_R [#16355](https://github.com/chef/chef/pull/16355) ([neha-p6](https://github.com/neha-p6))
+- Update to Cookstyle 9.0 and fix the new offenses [#16329](https://github.com/chef/chef/pull/16329) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update to Cookstyle 9.0 and fix the new offenses [#16329](https://github.com/chef/chef/pull/16329) ([tas50](https://github.com/tas50)) <!-- 19.4.30 -->
 - Fix undefined method mode_to_s in TargetIO::TrainCompat::FileUtils.chmod_R [#16355](https://github.com/chef/chef/pull/16355) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.29 -->
 - Fix debian-11 kitchen (dokken) apt-get update failure from expired bullseye-security [#16360](https://github.com/chef/chef/pull/16360) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.28 -->
 - Fix expired bullseye-security Release causing apt-get update failure in CI [#16359](https://github.com/chef/chef/pull/16359) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.27 -->
