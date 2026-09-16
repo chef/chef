@@ -55,7 +55,17 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: false
-      - run: bundle install
+      - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
+          bundle install
       - name: Configure WinRM for functional tests (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -153,7 +163,17 @@ jobs:
           gem install bundler
           echo "$HOME/.rbenv/bin" >> $GITHUB_PATH
           echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
-      - run: bundle install
+      - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
+          bundle install
       - run: bundle exec rake spec:functional
 
   choco:
@@ -173,6 +193,15 @@ jobs:
     - run: |
         gem uninstall date --all --ignore-dependencies || true
         gem install date --version 3.3.3 --platform=ruby
+        # Disable Git's background auto-maintenance/GC/commit-graph writers so
+        # they can't mutate Bundler's shared git cache repo (for our git-sourced
+        # Gemfile deps: ohai, cheffish, rest-client) while another process is
+        # concurrently cloning/hardlinking from it -- avoids intermittent
+        # "fatal: hardlink different from source" bundle install failures.
+        # See https://github.com/dependabot/dependabot-core/issues/15827.
+        git config --global maintenance.auto false
+        git config --global gc.auto 0
+        git config --global fetch.writeCommitGraph false
         bundle install
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
@@ -189,5 +218,15 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
-    - run: bundle install
+    - run: |
+        # Disable Git's background auto-maintenance/GC/commit-graph writers so
+        # they can't mutate Bundler's shared git cache repo (for our git-sourced
+        # Gemfile deps: ohai, cheffish, rest-client) while another process is
+        # concurrently cloning/hardlinking from it -- avoids intermittent
+        # "fatal: hardlink different from source" bundle install failures.
+        # See https://github.com/dependabot/dependabot-core/issues/15827.
+        git config --global maintenance.auto false
+        git config --global gc.auto 0
+        git config --global fetch.writeCommitGraph false
+        bundle install
     - run: sudo bundle exec rspec spec/functional/resource/macos_userdefaults_spec.rb
