@@ -80,14 +80,37 @@ jobs:
           git config --global fetch.writeCommitGraph false
           bundle install
         shell: bash
-      - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
+      - name: Install core/libarchive via Habitat (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          # archive_file's specs need a real libarchive DLL to load
+          # (Archive::Reader), and since chef is Habitat-packaged, that
+          # dependency must come from the same Habitat package
+          # (core/libarchive) declared in habitat/x86_64-windows/plan.ps1,
+          # not a Chocolatey/vcpkg substitute.
+          & "${{ github.workspace }}\.expeditor\scripts\ensure-minimum-viable-hab.ps1"
+          $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
+          echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          hab license accept
+          hab pkg install core/libarchive --channel base-2025 --binlink --force
+          $libarchive_dir = (hab pkg path core/libarchive).Trim()
+          echo "LIBARCHIVE_DLL_DIR=$libarchive_dir/bin" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Set RUBY_DLL_PATH for chef-powershell and libarchive (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $dll_paths = @()
           $gem_lib = gem which chef-powershell 2>$null | Select-Object -First 1
           if ($gem_lib) {
             $gem_path = Split-Path $gem_lib | Split-Path
-            echo "RUBY_DLL_PATH=$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE" >> $env:GITHUB_ENV
+            $dll_paths += "$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
+          }
+          if ($env:LIBARCHIVE_DLL_DIR) {
+            $dll_paths += $env:LIBARCHIVE_DLL_DIR
+          }
+          if ($dll_paths.Count -gt 0) {
+            echo "RUBY_DLL_PATH=$($dll_paths -join ';')" >> $env:GITHUB_ENV
           }
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs
