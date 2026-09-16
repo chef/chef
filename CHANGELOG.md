@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.33 -->
-## [v19.4.33](https://github.com/chef/chef/tree/v19.4.33) (2026-09-16)
+<!-- latest_release 19.4.34 -->
+## [v19.4.34](https://github.com/chef/chef/tree/v19.4.34) (2026-09-16)
 
 #### Merged Pull Requests
-- Trust Homebrew tap before tapping so homebrew_tap survives Homebrew&#39;s Tap Trust enforcement [#16367](https://github.com/chef/chef/pull/16367) ([neha-p6](https://github.com/neha-p6))
+- Stabilize intermittent Bundler git-clone hardlink race in GitHub Actions [#16372](https://github.com/chef/chef/pull/16372) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stabilize intermittent Bundler git-clone hardlink race in GitHub Actions [#16372](https://github.com/chef/chef/pull/16372) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.34 -->
 - Trust Homebrew tap before tapping so homebrew_tap survives Homebrew&#39;s Tap Trust enforcement [#16367](https://github.com/chef/chef/pull/16367) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.33 -->
 - Stop the dscl group provider mutating new_resource.gid [#16326](https://github.com/chef/chef/pull/16326) ([tas50](https://github.com/tas50)) <!-- 19.4.32 -->
 - Respect the timeout property in homebrew_package [#16328](https://github.com/chef/chef/pull/16328) ([tas50](https://github.com/tas50)) <!-- 19.4.31 -->
