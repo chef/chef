@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.21 -->
-## [v18.11.21](https://github.com/chef/chef/tree/v18.11.21) (2026-08-18)
+<!-- latest_release 18.11.22 -->
+## [v18.11.22](https://github.com/chef/chef/tree/v18.11.22) (2026-09-16)
 
 #### Merged Pull Requests
-- Removing the Docker downgrade [#16285](https://github.com/chef/chef/pull/16285) ([johnmccrae](https://github.com/johnmccrae))
+- Trust Homebrew tap before tapping (backport of #16367 to chef-18) [#16373](https://github.com/chef/chef/pull/16373) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.11.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Trust Homebrew tap before tapping (backport of #16367 to chef-18) [#16373](https://github.com/chef/chef/pull/16373) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.22 -->
 - Removing the Docker downgrade [#16285](https://github.com/chef/chef/pull/16285) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.21 -->
 - Updating FFI [#16284](https://github.com/chef/chef/pull/16284) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.20 -->
 - Update digi cert token test muthuja [#16229](https://github.com/chef/chef/pull/16229) ([muthuja](https://github.com/muthuja)) <!-- 18.11.19 -->
