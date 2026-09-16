@@ -6,6 +6,7 @@ name: unit_specs
     branches: [main, "chef-*"]
   push:
     branches: [main, "chef-*"]
+  workflow_dispatch: {}
 
 permissions: {}
 

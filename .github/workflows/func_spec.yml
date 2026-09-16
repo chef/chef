@@ -6,6 +6,7 @@ name: func_spec
     branches: [main, "chef-*"]
   push:
     branches: [main, "chef-*"]
+  workflow_dispatch: {}
 
 permissions: {}
 
