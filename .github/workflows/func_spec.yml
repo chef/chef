@@ -2,13 +2,12 @@
 name: func_spec
 
 "on":
-  pull_request:
+  pull_request_target:
     branches: [main, "chef-*"]
   push:
     branches: [main, "chef-*"]
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: func-spec-${{ github.event.pull_request.number || github.run_id }}
@@ -19,7 +18,15 @@ env:
   FORCE_FFI_YAJL: ext
 
 jobs:
+  workflow_guard:
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
   config:
+    needs: workflow_guard
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     outputs:
       x86_tag: ${{ steps.tags.outputs.x86_tag }}
@@ -31,6 +38,11 @@ jobs:
           echo "arm_tag=aarch64" >> $GITHUB_OUTPUT
 
   functional:
+    needs: workflow_guard
+    permissions:
+      contents: read
+    env:
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
@@ -46,6 +58,11 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install native deps (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         run: |
@@ -121,7 +138,9 @@ jobs:
       - run: bundle exec rake spec:functional
 
   functional-docker:
-    needs: config
+    needs: [config, workflow_guard]
+    permissions:
+      contents: read
     name: ${{ matrix.label }}
     strategy:
       fail-fast: false
@@ -158,6 +177,11 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install native deps (dnf)
         if: matrix.pkg_mgr == 'dnf'
         run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
@@ -200,6 +224,9 @@ jobs:
       - run: bundle exec rake spec:functional
 
   choco:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -209,6 +236,11 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v7
+      with:
+        allow-unsafe-pr-checkout: true
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+        persist-credentials: false
+        clean: true
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -228,6 +260,9 @@ jobs:
         bundle install
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -237,6 +272,11 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v7
+      with:
+        allow-unsafe-pr-checkout: true
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+        persist-credentials: false
+        clean: true
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
