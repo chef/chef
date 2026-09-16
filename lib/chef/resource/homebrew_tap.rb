@@ -51,6 +51,24 @@ class Chef
       action :tap, description: "Add a Homebrew tap." do
         unless tapped?(new_resource.tap_name)
           converge_by("tap #{new_resource.tap_name}") do
+            # Homebrew 6.0+ requires non-official taps to be explicitly trusted
+            # before their formulae/casks/commands can be loaded (see
+            # https://docs.brew.sh/Tap-Trust). Without this, `brew tap` on a
+            # third-party tap fails with "Refusing to load cask ... from
+            # untrusted tap"/"invalid syntax in tap!". Trust the tap before
+            # tapping it. `ignore_failure` covers Homebrew releases that
+            # predate the `trust` command (or any future release that removes
+            # it) -- on those, this step simply no-ops and `brew tap` behaves
+            # exactly as it did before this change.
+            execute "trust #{new_resource.tap_name}" do
+              command "#{homebrew_bin_path(new_resource.homebrew_path)} trust #{new_resource.tap_name}"
+              user new_resource.owner
+              default_env true
+              cwd ::Dir.home(new_resource.owner)
+              login true
+              ignore_failure true
+            end
+
             execute "tap #{new_resource.tap_name}" do
               command "#{homebrew_bin_path(new_resource.homebrew_path)} tap #{new_resource.tap_name} #{new_resource.url || ""}"
               user new_resource.owner
