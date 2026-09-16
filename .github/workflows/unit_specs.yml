@@ -66,7 +66,18 @@ jobs:
         shell: bash
       - name: Bundle install
         run: |
-          git config --global core.hardlinks false
+          # `core.hardlinks false` (previously here) is not a real Git config
+          # option and has no effect (Git always hardlinks .git/objects on a
+          # same-filesystem local clone regardless of it). The actual fix for
+          # intermittent "hardlink different from source" clone failures is
+          # to stop Git's background auto-maintenance/GC/commit-graph writers
+          # from mutating Bundler's shared git cache repo while another
+          # process is concurrently cloning/hardlinking from it. See
+          # https://github.com/dependabot/dependabot-core/issues/15827 for a
+          # detailed writeup of the same failure signature.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
           bundle install
         shell: bash
       - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
@@ -151,7 +162,18 @@ jobs:
         run: mkdir -p spec/data/nodes && touch spec/data/nodes/test.rb spec/data/nodes/default.rb spec/data/nodes/test.example.com.rb
       - name: Bundle install
         run: |
-          git config --global core.hardlinks false
+          # `core.hardlinks false` (previously here) is not a real Git config
+          # option and has no effect (Git always hardlinks .git/objects on a
+          # same-filesystem local clone regardless of it). The actual fix for
+          # intermittent "hardlink different from source" clone failures is
+          # to stop Git's background auto-maintenance/GC/commit-graph writers
+          # from mutating Bundler's shared git cache repo while another
+          # process is concurrently cloning/hardlinking from it. See
+          # https://github.com/dependabot/dependabot-core/issues/15827 for a
+          # detailed writeup of the same failure signature.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
           bundle install
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs

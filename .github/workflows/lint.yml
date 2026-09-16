@@ -24,6 +24,15 @@ jobs:
           bundler-cache: false
       - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
       - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
           bundle install
           bundle exec cookstyle --chefstyle -c .rubocop.yml
 
