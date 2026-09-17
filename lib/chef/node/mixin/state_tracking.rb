@@ -19,6 +19,11 @@ class Chef
   class Node
     module Mixin
       module StateTracking
+        # __path__ is only ever read, reassigned, or used to build a new array
+        # (`[ __path__, key ].flatten`), never mutated in place, so every
+        # instance can share a single frozen empty array as its starting value.
+        EMPTY_PATH = [].freeze
+
         attr_reader :__path__
         attr_reader :__root__
         attr_reader :__node__
@@ -28,7 +33,7 @@ class Chef
           # __path__ and __root__ must be nil when we call super so it knows
           # to avoid resetting the cache on construction
           data.nil? ? super() : super(data)
-          @__path__ = []
+          @__path__ = EMPTY_PATH
           @__root__ = root
           @__node__ = node
           @__precedence__ = precedence
