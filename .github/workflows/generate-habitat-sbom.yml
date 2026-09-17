@@ -6,6 +6,12 @@ on:
   push:
     branches: [ chef-18, release/** ]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag or ref to generate SBOM for (e.g. v18.11.11, v18.6.2; leave empty for branch HEAD)'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -35,6 +41,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout tag or ref if specified
+        if: ${{ inputs.tag != '' }}
+        run: |
+          echo "Target tag/ref requested: ${{ inputs.tag }}"
+          cp -r scripts/sbom /tmp/sbom_scripts_backup
+          git checkout "${{ inputs.tag }}"
+          mkdir -p scripts/sbom
+          cp -r /tmp/sbom_scripts_backup/* scripts/sbom/
 
       - name: Set BD version from VERSION file
         run: echo "BD_VERSION_NAME=$(cat VERSION | tr -d '[:space:]')" >> "$GITHUB_ENV"
