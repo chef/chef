@@ -44,8 +44,10 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_ORIGIN: gha
-      HAB_BLDR_CHANNEL: base-2025
+      HAB_BLDR_CHANNEL: 202609-CVE-fixes
       HAB_REFRESH_CHANNEL: base-2025
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: 202609-CVE-fixes
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
@@ -224,8 +226,10 @@ jobs:
       CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
       HAB_ORIGIN: gha
-      HAB_BLDR_CHANNEL: base-2025
+      HAB_BLDR_CHANNEL: 202609-CVE-fixes
       HAB_REFRESH_CHANNEL: base-2025
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: 202609-CVE-fixes
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
@@ -305,8 +309,10 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_BLDR_CHANNEL: 202609-CVE-fixes  # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: 202609-CVE-fixes
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
@@ -384,8 +390,10 @@ jobs:
       CHEF_LICENSE: accept-no-persist
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
       HAB_ORIGIN: gha
-      HAB_BLDR_CHANNEL: base-2025
+      HAB_BLDR_CHANNEL: 202609-CVE-fixes
       HAB_REFRESH_CHANNEL: base-2025
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: 202609-CVE-fixes
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
