@@ -234,7 +234,7 @@ GEM
     connection_pool (2.5.5)
     cookstyle (8.6.10)
       rubocop (= 1.84.2)
-    corefoundation (0.3.13)
+    corefoundation (0.3.19)
       ffi (>= 1.15.0)
     crack (1.0.1)
       bigdecimal
