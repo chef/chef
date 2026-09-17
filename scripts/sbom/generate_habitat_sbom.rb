@@ -15,15 +15,18 @@ REPO_ROOT     = File.expand_path("../..", __dir__)
 OMIT_PACKAGES = %w{xcode}.freeze
 
 PLAN_FILES = {
-  "x86_64-linux"         => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh")) ?
-                              File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh") :
-                              File.join(REPO_ROOT, "habitat/plan.sh"),
-  "x86_64-linux-kernel2" => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-linux-kernel2/plan.sh")) ?
-                              File.join(REPO_ROOT, "habitat/x86_64-linux-kernel2/plan.sh") :
-                              File.join(REPO_ROOT, "habitat/plan.sh"),
-  "x86_64-windows"       => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-windows/plan.ps1")) ?
-                              File.join(REPO_ROOT, "habitat/x86_64-windows/plan.ps1") :
-                              File.join(REPO_ROOT, "habitat/plan.ps1"),
+  "x86_64-linux" => [
+    File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh"),
+    File.join(REPO_ROOT, "habitat/plan.sh"),
+  ].find { |f| File.exist?(f) },
+  "x86_64-linux-kernel2" => [
+    File.join(REPO_ROOT, "habitat/x86_64-linux-kernel2/plan.sh"),
+    File.join(REPO_ROOT, "habitat/plan.sh"),
+  ].find { |f| File.exist?(f) },
+  "x86_64-windows" => [
+    File.join(REPO_ROOT, "habitat/x86_64-windows/plan.ps1"),
+    File.join(REPO_ROOT, "habitat/plan.ps1"),
+  ].find { |f| File.exist?(f) },
 }.freeze
 
 # --------------------------------------------------------------------------- #
@@ -110,15 +113,15 @@ end
 
 def component_json(origin, name, version, scope)
   {
-    "type"    => "library",
-    "group"   => origin,
-    "name"    => "Habitat core_#{name}",
+    "type" => "library",
+    "group" => origin,
+    "name" => "Habitat core_#{name}",
     "version" => version,
-    "purl"    => purl(name, version),
+    "purl" => purl(name, version),
     "properties" => [
-      { "name" => "habitat:origin",  "value" => origin },
+      { "name" => "habitat:origin", "value" => origin },
       { "name" => "habitat:channel", "value" => HAB_CHANNEL },
-      { "name" => "habitat:scope",   "value" => scope },
+      { "name" => "habitat:scope", "value" => scope },
     ],
   }
 end
@@ -179,16 +182,16 @@ PLAN_FILES.each do |platform, path|
   abort "ERROR: No components resolved for #{platform} — check Builder API connectivity." if components.empty?
 
   bom = {
-    "bomFormat"   => "CycloneDX",
+    "bomFormat" => "CycloneDX",
     "specVersion" => "1.4",
-    "version"     => 1,
-    "metadata"    => {
+    "version" => 1,
+    "metadata" => {
       "timestamp" => Time.now.utc.iso8601,
-      "tools"     => [{ "name" => "scripts/sbom/generate_habitat_sbom.rb", "version" => "1.0" }],
+      "tools" => [{ "name" => "scripts/sbom/generate_habitat_sbom.rb", "version" => "1.0" }],
       "component" => {
-        "type"       => "application",
-        "name"       => "chef-infra-client",
-        "version"    => app_version,
+        "type" => "application",
+        "name" => "chef-infra-client",
+        "version" => app_version,
         "properties" => [{ "name" => "habitat:platform", "value" => platform }],
       },
     },
