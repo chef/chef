@@ -31,8 +31,23 @@ module ChefUtils
       # @return [Boolean]
       #
       def cloud?(node = __getnode)
-        # cloud is always present, but nil if not on a cloud
-        !node["cloud"].nil?
+        # Prefer the individual provider checks (also used directly by cookbooks) over
+        # node["cloud"] alone, which is populated by a separate Ohai plugin/attribute
+        # and can drift out of sync with them -- e.g. after a node moves between clouds
+        # and picks up a stale/partial provider key, node["cloud"] could say "no cloud"
+        # while a specific provider helper like azure? or ec2? says otherwise. Deriving
+        # cloud? from the same checks the specific helpers use keeps the two consistent.
+        alibaba?(node) ||
+          ec2?(node) ||
+          gce?(node) ||
+          rackspace?(node) ||
+          eucalyptus?(node) ||
+          linode?(node) ||
+          openstack?(node) ||
+          azure?(node) ||
+          digital_ocean?(node) ||
+          softlayer?(node) ||
+          oci?(node)
       end
 
       # Determine if the current node is running in Alibaba Cloud
