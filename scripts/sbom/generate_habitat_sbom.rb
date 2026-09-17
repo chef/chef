@@ -15,12 +15,15 @@ REPO_ROOT     = File.expand_path("../..", __dir__)
 OMIT_PACKAGES = %w{xcode}.freeze
 
 PLAN_FILES = {
-  "x86_64-linux"   => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh")) ?
-                        File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh") :
-                        File.join(REPO_ROOT, "habitat/plan.sh"),
-  "aarch64-linux"  => File.join(REPO_ROOT, "habitat/aarch64-linux/plan.sh"),
-  "aarch64-darwin" => File.join(REPO_ROOT, "habitat/aarch64-darwin/plan.sh"),
-  "x86_64-windows" => File.join(REPO_ROOT, "habitat/x86_64-windows/plan.ps1"),
+  "x86_64-linux"         => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh")) ?
+                              File.join(REPO_ROOT, "habitat/x86_64-linux/plan.sh") :
+                              File.join(REPO_ROOT, "habitat/plan.sh"),
+  "x86_64-linux-kernel2" => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-linux-kernel2/plan.sh")) ?
+                              File.join(REPO_ROOT, "habitat/x86_64-linux-kernel2/plan.sh") :
+                              File.join(REPO_ROOT, "habitat/plan.sh"),
+  "x86_64-windows"       => File.exist?(File.join(REPO_ROOT, "habitat/x86_64-windows/plan.ps1")) ?
+                              File.join(REPO_ROOT, "habitat/x86_64-windows/plan.ps1") :
+                              File.join(REPO_ROOT, "habitat/plan.ps1"),
 }.freeze
 
 # --------------------------------------------------------------------------- #
