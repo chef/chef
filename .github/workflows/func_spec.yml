@@ -2,13 +2,13 @@
 name: func_spec
 
 "on":
-  pull_request:
+  pull_request_target:
     branches: [main, "chef-*"]
   push:
     branches: [main, "chef-*"]
+  workflow_dispatch: {}
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: func-spec-${{ github.event.pull_request.number || github.run_id }}
@@ -19,7 +19,15 @@ env:
   FORCE_FFI_YAJL: ext
 
 jobs:
+  workflow_guard:
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
   config:
+    needs: workflow_guard
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     outputs:
       x86_tag: ${{ steps.tags.outputs.x86_tag }}
@@ -31,6 +39,11 @@ jobs:
           echo "arm_tag=aarch64" >> $GITHUB_OUTPUT
 
   functional:
+    needs: workflow_guard
+    permissions:
+      contents: read
+    env:
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
@@ -46,6 +59,11 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install native deps (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         run: |
@@ -70,6 +88,32 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: winrm quickconfig -q
+      - name: Install core/libarchive via Habitat (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # archive_file's specs need a real libarchive DLL to load
+          # (Archive::Reader), and since chef is Habitat-packaged, that
+          # dependency must come from the same Habitat package
+          # (core/libarchive) declared in habitat/x86_64-windows/plan.ps1,
+          # not a Chocolatey/vcpkg substitute.
+          #
+          # The DLL directory is added directly to PATH (not just
+          # registered via RubyInstaller::Runtime.add_dll_directory /
+          # RUBY_DLL_PATH's AddDllDirectory-based mechanism) because the
+          # ffi gem's ffi_lib -- used by ffi-libarchive to load archive.dll
+          # -- calls the plain Win32 LoadLibraryW with no search-scope
+          # flags. That classic call honors PATH but ignores directories
+          # registered via AddDllDirectory, which only take effect for
+          # LoadLibraryEx calls made with the LOAD_LIBRARY_SEARCH_* flags
+          # that ffi_lib does not use.
+          & "${{ github.workspace }}\.expeditor\scripts\ensure-minimum-viable-hab.ps1"
+          $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
+          echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          hab license accept
+          hab pkg install core/libarchive --channel base-2025 --binlink --force
+          $libarchive_dir = (hab pkg path core/libarchive).Trim() + "/bin"
+          Add-Content -Path $env:GITHUB_PATH -Value $libarchive_dir
       - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -98,7 +142,9 @@ jobs:
       - run: bundle exec rake spec:functional
 
   functional-docker:
-    needs: config
+    needs: [config, workflow_guard]
+    permissions:
+      contents: read
     name: ${{ matrix.label }}
     strategy:
       fail-fast: false
@@ -135,6 +181,11 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install native deps (dnf)
         if: matrix.pkg_mgr == 'dnf'
         run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
@@ -177,6 +228,9 @@ jobs:
       - run: bundle exec rake spec:functional
 
   choco:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -186,6 +240,11 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v7
+      with:
+        allow-unsafe-pr-checkout: true
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+        persist-credentials: false
+        clean: true
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -205,6 +264,9 @@ jobs:
         bundle install
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -214,6 +276,11 @@ jobs:
     timeout-minutes: 60
     steps:
     - uses: actions/checkout@v7
+      with:
+        allow-unsafe-pr-checkout: true
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+        persist-credentials: false
+        clean: true
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
