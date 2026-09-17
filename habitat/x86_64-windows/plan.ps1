@@ -1,4 +1,4 @@
-$env:HAB_BLDR_CHANNEL = "base-2025"
+$env:HAB_BLDR_CHANNEL = "202609-CVE-fixes"
 $SRC_PATH = (Get-Item "$PLAN_CONTEXT\..\..\").FullName
 $pkg_name="chef-infra-client"
 $pkg_origin="chef"

@@ -85,8 +85,10 @@ jobs:
     timeout-minutes: 120
     env:
       HAB_ORIGIN: gha
-      HAB_BLDR_CHANNEL: base-2025
+      HAB_BLDR_CHANNEL: 202609-CVE-fixes
       HAB_REFRESH_CHANNEL: base-2025
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: 202609-CVE-fixes
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
       HAB_NONINTERACTIVE: "true"
