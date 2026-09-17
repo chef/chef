@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.23 -->
-## [v18.11.23](https://github.com/chef/chef/tree/v18.11.23) (2026-09-16)
+<!-- latest_release 18.11.24 -->
+## [v18.11.24](https://github.com/chef/chef/tree/v18.11.24) (2026-09-17)
 
 #### Merged Pull Requests
-- Fix debian-11 kitchen (dokken) apt-get update failure from expired bullseye-security (backport of #16360 to chef-18) [#16374](https://github.com/chef/chef/pull/16374) ([neha-p6](https://github.com/neha-p6))
+- [chef-18] update sbom generation pipeline [#16378](https://github.com/chef/chef/pull/16378) ([rishichawda](https://github.com/rishichawda))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.11.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-18] update sbom generation pipeline [#16378](https://github.com/chef/chef/pull/16378) ([rishichawda](https://github.com/rishichawda)) <!-- 18.11.24 -->
 - Fix debian-11 kitchen (dokken) apt-get update failure from expired bullseye-security (backport of #16360 to chef-18) [#16374](https://github.com/chef/chef/pull/16374) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.23 -->
 - Trust Homebrew tap before tapping (backport of #16367 to chef-18) [#16373](https://github.com/chef/chef/pull/16373) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.22 -->
 - Removing the Docker downgrade [#16285](https://github.com/chef/chef/pull/16285) ([johnmccrae](https://github.com/johnmccrae)) <!-- 18.11.21 -->
