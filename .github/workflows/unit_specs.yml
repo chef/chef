@@ -121,7 +121,16 @@ jobs:
           hab license accept
           hab pkg install core/libarchive --channel base-2025 --binlink --force
           $libarchive_dir = (hab pkg path core/libarchive).Trim() + "/bin"
+          Write-Host "libarchive_dir=[$libarchive_dir]"
+          Write-Host "GITHUB_PATH=[$env:GITHUB_PATH]"
           Add-Content -Path $env:GITHUB_PATH -Value $libarchive_dir
+          Write-Host "GITHUB_PATH contents after Add-Content:"
+          Get-Content $env:GITHUB_PATH | Write-Host
+      - name: Debug PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Host "PATH=$env:PATH"
       - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
