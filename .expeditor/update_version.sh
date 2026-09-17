@@ -21,6 +21,9 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" knife/lib/chef/
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"${VERSION}\")/" lib/chef/version.rb
 asdf global ruby "3.1.0"
 
+# Update BlackDuck SCA scan version in CI PR stub workflow
+sed -i -r "s/^(\s*version:\s*)['\"][^'\"]*['\"]/\1'${VERSION}'/" .github/workflows/ci-main-pull-request-stub.yml
+
 # Update the version inside Gemfile.lock
 sed -i -r "s/(^\s+chef\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
 sed -i -r "s/(^\s+chef-bin\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
