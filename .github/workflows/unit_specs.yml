@@ -105,28 +105,31 @@ jobs:
           # dependency must come from the same Habitat package
           # (core/libarchive) declared in habitat/x86_64-windows/plan.ps1,
           # not a Chocolatey/vcpkg substitute.
+          #
+          # The DLL directory is added directly to PATH (not just
+          # registered via RubyInstaller::Runtime.add_dll_directory /
+          # RUBY_DLL_PATH's AddDllDirectory-based mechanism) because the
+          # ffi gem's ffi_lib -- used by ffi-libarchive to load archive.dll
+          # -- calls the plain Win32 LoadLibraryW with no search-scope
+          # flags. That classic call honors PATH but ignores directories
+          # registered via AddDllDirectory, which only take effect for
+          # LoadLibraryEx calls made with the LOAD_LIBRARY_SEARCH_* flags
+          # that ffi_lib does not use.
           & "${{ github.workspace }}\.expeditor\scripts\ensure-minimum-viable-hab.ps1"
           $env:PATH = "C:\Program Files\Habitat;" + $env:PATH
           echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           hab license accept
           hab pkg install core/libarchive --channel base-2025 --binlink --force
-          $libarchive_dir = (hab pkg path core/libarchive).Trim()
-          echo "LIBARCHIVE_DLL_DIR=$libarchive_dir/bin" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-      - name: Set RUBY_DLL_PATH for chef-powershell and libarchive (Windows)
+          $libarchive_dir = (hab pkg path core/libarchive).Trim() + "/bin"
+          Add-Content -Path $env:GITHUB_PATH -Value $libarchive_dir
+      - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $dll_paths = @()
           $gem_lib = gem which chef-powershell 2>$null | Select-Object -First 1
           if ($gem_lib) {
             $gem_path = Split-Path $gem_lib | Split-Path
-            $dll_paths += "$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE"
-          }
-          if ($env:LIBARCHIVE_DLL_DIR) {
-            $dll_paths += $env:LIBARCHIVE_DLL_DIR
-          }
-          if ($dll_paths.Count -gt 0) {
-            echo "RUBY_DLL_PATH=$($dll_paths -join ';')" >> $env:GITHUB_ENV
+            echo "RUBY_DLL_PATH=$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE" >> $env:GITHUB_ENV
           }
       - run: bundle exec rake spec:unit
       - run: bundle exec rake component_specs
