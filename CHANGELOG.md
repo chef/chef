@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.35 -->
-## [v19.4.35](https://github.com/chef/chef/tree/v19.4.35) (2026-09-16)
+<!-- latest_release 19.4.36 -->
+## [v19.4.36](https://github.com/chef/chef/tree/v19.4.36) (2026-09-17)
 
 #### Merged Pull Requests
-- Fix Target Mode: Dir.tmpdir resolves local host tmp dir instead of remote target&#39;s [#16354](https://github.com/chef/chef/pull/16354) ([neha-p6](https://github.com/neha-p6))
+- Fix sensitive properties leaking values on validation failure [#16300](https://github.com/chef/chef/pull/16300) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix sensitive properties leaking values on validation failure [#16300](https://github.com/chef/chef/pull/16300) ([tas50](https://github.com/tas50)) <!-- 19.4.36 -->
 - Fix Target Mode: Dir.tmpdir resolves local host tmp dir instead of remote target&#39;s [#16354](https://github.com/chef/chef/pull/16354) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.35 -->
 - Stabilize intermittent Bundler git-clone hardlink race in GitHub Actions [#16372](https://github.com/chef/chef/pull/16372) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.34 -->
 - Trust Homebrew tap before tapping so homebrew_tap survives Homebrew&#39;s Tap Trust enforcement [#16367](https://github.com/chef/chef/pull/16367) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.33 -->
