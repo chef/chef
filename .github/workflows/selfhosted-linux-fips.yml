@@ -33,8 +33,10 @@ jobs:
     runs-on: [self-hosted, x64, Linux, azure]
     env:
       HAB_ORIGIN: gha # Set the dummy origin for this Github actions CI flow
-      HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
+      HAB_BLDR_CHANNEL: 202609-CVE-fixes  # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
+      HAB_STUDIO_SECRET_HAB_REFRESH_CHANNEL: 202609-CVE-fixes
+      HAB_STUDIO_SECRET_HAB_FALLBACK_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
       CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
