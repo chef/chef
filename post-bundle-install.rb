@@ -29,7 +29,7 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
 
   # Starting in ffi 1.17, FFI ships native extensions. However, we don't
   # want that as we need them to be compiled in our omnibus environment so
-  # they will hae the correct run path in the environment so they can find
+  # they will have the correct run path in the environment so they can find
   # their libraries.
   #
   # We've updated the gemspec file to force compilation (`force_ruby_platform`),
