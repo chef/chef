@@ -35,8 +35,8 @@ describe Chef::Resource::ChefClientSystemdTimer do
     expect(resource.action).to eql([:add])
   end
 
-  it "user defaults to root" do
-    expect(resource.user).to eql("root")
+  it "user has no default so that no User= directive is written to the unit" do
+    expect(resource.user).to be_nil
   end
 
   it "validates the cpu_quota property input" do
@@ -85,6 +85,15 @@ describe Chef::Resource::ChefClientSystemdTimer do
   end
 
   describe "#service_content" do
+    it "does not set User if user property is not set" do
+      expect(provider.service_content["Service"]).not_to have_key("User")
+    end
+
+    it "sets User if user property is set" do
+      resource.user "custom-chef-user"
+      expect(provider.service_content["Service"]["User"]).to eq("custom-chef-user")
+    end
+
     it "does not set ConditionACPower if run_on_battery property is set to true (the default)" do
       expect(provider.service_content["Service"]).not_to have_key("ConditionACPower")
     end
