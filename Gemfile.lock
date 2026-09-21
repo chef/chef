@@ -20,7 +20,7 @@ GIT
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
       ffi (>= 1.15.5)
-      ffi-yajl (>= 2.2, < 3.0)
+      ffi-yajl (>= 2.2, < 4.0)
       ipaddress
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
