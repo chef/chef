@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.37 -->
-## [v19.4.37](https://github.com/chef/chef/tree/v19.4.37) (2026-09-21)
+<!-- latest_release 19.4.38 -->
+## [v19.4.38](https://github.com/chef/chef/tree/v19.4.38) (2026-09-21)
 
 #### Merged Pull Requests
-- update version resolution for sboms [#16379](https://github.com/chef/chef/pull/16379) ([rishichawda](https://github.com/rishichawda))
+- CHEF-38211: Update mixlib-archive to 1.3.6 [#16381](https://github.com/chef/chef/pull/16381) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-38211: Update mixlib-archive to 1.3.6 [#16381](https://github.com/chef/chef/pull/16381) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.38 -->
 - update version resolution for sboms [#16379](https://github.com/chef/chef/pull/16379) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.37 -->
 - Fix sensitive properties leaking values on validation failure [#16300](https://github.com/chef/chef/pull/16300) ([tas50](https://github.com/tas50)) <!-- 19.4.36 -->
 - Fix Target Mode: Dir.tmpdir resolves local host tmp dir instead of remote target&#39;s [#16354](https://github.com/chef/chef/pull/16354) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.35 -->
