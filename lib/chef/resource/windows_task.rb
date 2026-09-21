@@ -523,7 +523,6 @@ class Chef
             6 => ::Win32::TaskScheduler::TASK_SIXTH,
             7 => ::Win32::TaskScheduler::TASK_SEVENTH,
             8 => ::Win32::TaskScheduler::TASK_EIGHTH,
-            # cspell:disable-next-line
             9 => ::Win32::TaskScheduler::TASK_NINETH,
             10 => ::Win32::TaskScheduler::TASK_TENTH,
             11 => ::Win32::TaskScheduler::TASK_ELEVENTH,
@@ -545,7 +544,6 @@ class Chef
             27 => ::Win32::TaskScheduler::TASK_TWENTY_SEVENTH,
             28 => ::Win32::TaskScheduler::TASK_TWENTY_EIGHTH,
             29 => ::Win32::TaskScheduler::TASK_TWENTY_NINTH,
-            # cspell:disable-next-line
             30 => ::Win32::TaskScheduler::TASK_THIRTYETH,
             31 => ::Win32::TaskScheduler::TASK_THIRTY_FIRST,
           }.freeze

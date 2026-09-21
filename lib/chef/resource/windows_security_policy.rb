@@ -137,7 +137,6 @@ class Chef
       def load_security_options
         powershell_code = <<-CODE
           C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
-          # cspell:disable-next-line
           $security_options_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
           Remove-Item $env:TEMP\\secopts_export.inf -force
           $security_options_hash = ($security_options_data -Replace '"'| ConvertFrom-StringData)
