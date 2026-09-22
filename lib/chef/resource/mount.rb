@@ -26,7 +26,7 @@ class Chef
 
       provides :mount, target_mode: true
       target_mode support: :full,
-        platforms: %i{aix bsd linux}
+        platforms: %i{aix bsd linux solaris}
 
       default_action :mount
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable

@@ -25,6 +25,28 @@ require "ostruct"
 describe Chef::Provider::Mount::Solaris, :unix_only do
   let(:node) { Chef::Node.new }
 
+  # Regression test for CHEF-33962: previously `provides :mount, platform_family:
+  # "solaris_based"` did not declare `target_mode: true`, so Target Mode runs
+  # against a Solaris node raised Chef::Exceptions::ProviderNotFound for the
+  # mount resource even though this provider existed.
+  describe ".provides" do
+    let(:solaris_node) do
+      node = Chef::Node.new
+      node.automatic[:platform_family] = "solaris_based"
+      node
+    end
+
+    it "is resolved for solaris_based nodes in normal (non-target-mode) runs" do
+      allow(Chef::Config).to receive(:target_mode?).and_return(false)
+      expect(Chef.provider_handler_map.get(solaris_node, :mount)).to eq(described_class)
+    end
+
+    it "is resolved for solaris_based nodes in Target Mode runs" do
+      allow(Chef::Config).to receive(:target_mode?).and_return(true)
+      expect(Chef.provider_handler_map.get(solaris_node, :mount)).to eq(described_class)
+    end
+  end
+
   let(:events) { Chef::EventDispatch::Dispatcher.new }
 
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
