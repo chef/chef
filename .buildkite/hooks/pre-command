@@ -4,7 +4,7 @@ set -eu
 
 # Only execute in the few pipelines that need it
 # if this needs to be extended to other pipelines/steps, let the build team know to take their input on it
-[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary)|docker-build)$ ]] || exit 0
+[[ "$BUILDKITE_PIPELINE_NAME" =~ (verify|validate/(release|adhoc|canary)|docker-build|hab_aarch64_darwin/build|hab-aarch64-darwin)$ ]] || [[ "$BUILDKITE_LABEL" =~ [Mm]ac[Oo][Ss]|mac_os_x|darwin ]] || exit 0
 
 docker ps || true
 
