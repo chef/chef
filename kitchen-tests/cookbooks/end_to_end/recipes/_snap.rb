@@ -6,12 +6,30 @@ service "snapd" do
   action :start
 end
 
+# On fresh systems snapd seeds core snaps in the background at boot, and can
+# also auto-refresh snaps on its own schedule. Either can race with our own
+# snap_package installs (of "core", "hello", etc. below) and fail with
+# "snap-change-conflict". "snap wait system seed.loaded" is a no-op (returns
+# immediately) once seeding is already done, so it only blocks when truly
+# necessary. Holding refreshes afterwards prevents anything else from
+# racing with the snap_package resources that follow, without adding any
+# extra wait of its own.
+execute "wait_for_snapd_seed" do
+  command "snap wait system seed.loaded"
+  timeout 300
+end
+
+execute "hold_snap_auto_refresh" do
+  # holds refreshes for all snaps indefinitely; returns 0 even if already held
+  command "snap refresh --hold"
+end
+
 snap_package "core" do
   # this is an attempt to keep Ubuntu 18.04 from failing
   action :install
   channel "stable"
-  retries 2
-  retry_delay 15
+  retries 3
+  retry_delay 20
   notifies :run, "execute[wait_for_snapd]", :immediately
 end
 
