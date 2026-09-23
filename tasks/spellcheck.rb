@@ -17,36 +17,31 @@
 
 namespace :spellcheck do
   task run: :prereqs do
-    sh 'cspell lint --no-progress "**/*"'
+    sh "typos"
   end
 
-  task prereqs: %i{cspell_check config_check}
+  task prereqs: %i{typos_check config_check}
 
   task :config_check do
-    require "json"
-
-    config_file = "cspell.json"
+    config_file = "_typos.toml"
 
     unless File.readable?(config_file)
       abort "Spellcheck config file '#{config_file}' not found, skipping spellcheck"
     end
-
-    unless (JSON.parse(File.read(config_file)) rescue false)
-      abort "Failed to parse config file '#{config_file}', skipping spellcheck"
-    end
   end
 
-  task :cspell_check do
-    cspell_version = begin
-                       `cspell --version`
-                     rescue
-                       nil
-                     end
+  task :typos_check do
+    typos_version = begin
+                      `typos --version`
+                    rescue
+                      nil
+                    end
 
-    cspell_version.is_a?(String) || abort(<<~INSTALL_CSPELL)
-          cspell is needed to run the spellcheck tasks. Run `npm install -g cspell` to install.
-          For more information: https://www.npmjs.com/package/cspell
-    INSTALL_CSPELL
+    typos_version.is_a?(String) || abort(<<~INSTALL_TYPOS)
+          typos is needed to run the spellcheck tasks. Run `brew install typos-cli`
+          or `cargo install typos-cli` to install.
+          For more information: https://github.com/crate-ci/typos
+    INSTALL_TYPOS
   end
 end
 

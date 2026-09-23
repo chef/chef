@@ -140,7 +140,7 @@ class Chef
           directory new_resource.conf_dir
 
           file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
-            content contruct_sysctl_content
+            content construct_sysctl_content
           end
 
           execute "Load sysctl values" do
@@ -201,7 +201,7 @@ class Chef
         #
         # @return [String] The text file content
         #
-        def contruct_sysctl_content
+        def construct_sysctl_content
           sysctl_lines = Array(new_resource.comment).map { |c| "# #{c.strip}" }
 
           sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
