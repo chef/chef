@@ -7,7 +7,7 @@ describe "openssl checks" do
     else
       # this will break whenever your upstream openssl version changes, but this is meant to make
       # sure we're actually using the version we expect to be using, and not some system version that might be present on the build machine
-      "3.5.6"
+      "3.5.8"
     end
   end
 
