@@ -1202,6 +1202,89 @@ describe Chef::Provider::Package::Rubygems, "clear_sources?" do
   end
 end
 
+describe Chef::Provider::Package::Rubygems, "license_id auth on gem_sources" do
+  let(:new_resource) do
+    Chef::Resource::GemPackage.new("foo")
+  end
+
+  let(:provider) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    Chef::Provider::Package::Rubygems.new(new_resource, run_context)
+  end
+
+  # the memo is process-scoped (class-level) so reset it around every spec
+  before { described_class.instance_variable_set(:@failed_license_sources, nil) }
+  after { described_class.instance_variable_set(:@failed_license_sources, nil) }
+
+  context "when license_id is set and source is an http(s) URL" do
+    before do
+      new_resource.source("https://gems.chef.io/private")
+      new_resource.license_id("my-license-id")
+    end
+
+    it "embeds the license id as HTTP Basic Auth userinfo" do
+      expect(provider.gem_sources).to include("https://my-license-id@gems.chef.io/private")
+    end
+
+    it "does not embed the license id in the default rubygems.org source" do
+      expect(provider.gem_sources).to include("https://rubygems.org")
+    end
+
+    it "does not clobber a source that already carries credentials" do
+      new_resource.source("https://user:pass@gems.chef.io/private")
+      expect(provider.gem_sources).to include("https://user:pass@gems.chef.io/private")
+    end
+
+    it "leaves a local gem file path untouched" do
+      new_resource.source("/tmp/foo.gem")
+      expect(provider.gem_sources).to include("/tmp/foo.gem")
+    end
+  end
+
+  context "when license_id is not set" do
+    before { new_resource.source("https://gems.chef.io/private") }
+
+    it "leaves the source untouched" do
+      expect(provider.gem_sources).to include("https://gems.chef.io/private")
+    end
+  end
+
+  context "when a licensed source previously failed to fetch/authenticate" do
+    before do
+      new_resource.source("https://gems.chef.io/private")
+      new_resource.license_id("my-license-id")
+    end
+
+    it "falls back to the remaining sources and remembers the failure for the rest of this run" do
+      attempts = 0
+      result = provider.with_license_fallback do
+        attempts += 1
+        raise Gem::RemoteFetcher::FetchError.new("401 Unauthorized", "https://my-license-id@gems.chef.io/private") if attempts == 1
+
+        provider.gem_sources
+      end
+
+      expect(attempts).to eq(2)
+      expect(result).to eq(["https://rubygems.org"])
+
+      # a later resource in the same process run skips the known-bad source immediately
+      later_attempts = 0
+      later_result = provider.with_license_fallback do
+        later_attempts += 1
+        provider.gem_sources
+      end
+      expect(later_attempts).to eq(1)
+      expect(later_result).to eq(["https://rubygems.org"])
+    end
+
+    it "re-raises when the fetch error is unrelated to a licensed source" do
+      expect do
+        provider.with_license_fallback { raise Gem::RemoteFetcher::FetchError.new("boom", "https://rubygems.org") }
+      end.to raise_error(Gem::RemoteFetcher::FetchError)
+    end
+  end
+end
+
 describe Chef::Provider::Package::Rubygems, "include_default_source?" do
   let(:new_resource) do
     Chef::Resource::GemPackage.new("foo")
