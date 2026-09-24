@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/chef/chef-powershell-shim
+  revision: 221f139a47a6c5774845ac41ea406a1b24d3e7a2
+  branch: 18-Stable
+  specs:
+    chef-powershell (18.6.6)
+      ffi (~> 1.15)
+      ffi-yajl (~> 2.4)
+
+GIT
   remote: https://github.com/chef/cheffish.git
   revision: 5095f5699a3a88c611caca393c4d1710a5625b4f
   branch: main
@@ -215,9 +224,6 @@ GEM
       pstore (~> 0.1.1)
       tty-prompt (~> 0.23)
       tty-spinner (~> 0.9.3)
-    chef-powershell (18.6.6)
-      ffi (~> 1.15)
-      ffi-yajl (~> 2.4)
     chef-ruby-shadow (3.0.0)
     chef-telemetry (1.1.1)
       chef-config
@@ -578,6 +584,7 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-powershell!
   chef-ruby-shadow (~> 3.0.0)
   chef-utils!
   chef-vault
