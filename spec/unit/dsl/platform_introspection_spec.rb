@@ -82,6 +82,15 @@ describe Chef::DSL::PlatformIntrospection::PlatformDependentValue do
     expect { Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(bad_hash) }.to raise_error(ArgumentError)
   end
 
+  it "returns false (not nil) when a value matched via a version constraint is explicitly false" do
+    platform_hash = {
+      ubuntu: { "~> 20.04" => false, default: "using init more" },
+    }
+    platform_specific_value = Chef::DSL::PlatformIntrospection::PlatformDependentValue.new(platform_hash)
+    node = { platform: "ubuntu", platform_version: "20.04.1" }
+    expect(platform_specific_value.value_for_node(node)).to eq(false)
+  end
+
 end
 describe Chef::DSL::PlatformIntrospection::PlatformFamilyDependentValue do
   before do
