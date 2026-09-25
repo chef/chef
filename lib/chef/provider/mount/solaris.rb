@@ -26,7 +26,7 @@ class Chef
     class Mount
       # Mount Solaris File systems
       class Solaris < Chef::Provider::Mount
-        provides :mount, platform_family: "solaris_based"
+        provides :mount, platform_family: "solaris_based", target_mode: true
 
         extend Forwardable
 
@@ -52,21 +52,21 @@ class Chef
 
         def define_resource_requirements
           requirements.assert(:mount, :remount) do |a|
-            a.assertion { !device_should_exist? || ::File.exist?(device) }
+            a.assertion { !device_should_exist? || ::TargetIO::File.exist?(device) }
             a.failure_message(Chef::Exceptions::Mount, "Device #{device} does not exist")
             a.whyrun("Assuming device #{device} would have been created")
           end
 
           unless fsck_device == "-"
             requirements.assert(:mount, :remount) do |a|
-              a.assertion { ::File.exist?(fsck_device) }
+              a.assertion { ::TargetIO::File.exist?(fsck_device) }
               a.failure_message(Chef::Exceptions::Mount, "Device #{fsck_device} does not exist")
               a.whyrun("Assuming device #{fsck_device} would have been created")
             end
           end
 
           requirements.assert(:mount, :remount) do |a|
-            a.assertion { ::File.exist?(mount_point) }
+            a.assertion { ::TargetIO::File.exist?(mount_point) }
             a.failure_message(Chef::Exceptions::Mount, "Mount point #{mount_point} does not exist")
             a.whyrun("Assuming mount point #{mount_point} would have been created")
           end
@@ -116,10 +116,6 @@ class Chef
             # the filesystem we want to disable is enabled.
             logger.warn("#{new_resource} did not find the mountpoint to disable in the vfstab")
           end
-        end
-
-        def etc_tempfile
-          yield Tempfile.open("vfstab", "/etc")
         end
 
         def mount_options_unchanged?
@@ -172,7 +168,7 @@ class Chef
           enabled = false
           pass = false
           fstype = options = nil
-          ::File.foreach(VFSTAB) do |line|
+          ::TargetIO::File.foreach(VFSTAB) do |line|
             case line
             when /^[#\s]/
               next
@@ -213,12 +209,8 @@ class Chef
         end
 
         def vfstab_write(contents)
-          etc_tempfile do |f|
+          ::TargetIO::File.open(VFSTAB, "w") do |f|
             f.write(contents.join(""))
-            f.close
-            # move, preserving modes of destination file
-            mover = Chef::FileContentManagement::Deploy.strategy(true)
-            mover.deploy(f.path, VFSTAB)
           end
         end
 
@@ -233,7 +225,7 @@ class Chef
         def delete_vfstab_entry
           contents = []
           found = false
-          ::File.readlines(VFSTAB).reverse_each do |line|
+          ::TargetIO::File.readlines(VFSTAB).reverse_each do |line|
             if !found && line =~ /^#{device_regex}\s+\S+\s+#{Regexp.escape(mount_point)}/
               found = true
               logger.trace("#{new_resource} is removed from vfstab")
@@ -245,7 +237,7 @@ class Chef
         end
 
         def merge_vfstab_entry
-          contents = ::File.readlines(VFSTAB)
+          contents = ::TargetIO::File.readlines(VFSTAB)
           contents[-1].chomp!
           contents << vfstab_entry
         end
@@ -262,8 +254,8 @@ class Chef
         end
 
         def device_regex
-          if ::File.symlink?(device)
-            "(?:#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::File.readlink(device), ::File.dirname(device)))})"
+          if ::TargetIO::File.symlink?(device)
+            "(?:#{Regexp.escape(device)}|#{Regexp.escape(::File.expand_path(::TargetIO::File.readlink(device), ::File.dirname(device)))})"
           else
             Regexp.escape(device)
           end
