@@ -227,7 +227,7 @@ class Chef
       if current_record.new_resource.sensitive
         klass = current_record.new_resource.class
         resource_name = current_record.new_resource.name
-        current_record.new_resource = klass.new(resource_name)
+        current_record.new_resource = klass.new(resource_name, run_context)
       end
 
       action_records << pending_updates.pop
