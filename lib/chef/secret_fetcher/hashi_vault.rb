@@ -56,7 +56,7 @@ class Chef
     #
     # @example
     #
-    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :token, token: "s.1234abcdef", vault_addr: https://localhost:8200}, approle: 'approle_name', run_context )
+     # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :token, token: "<vault-token>", vault_addr: https://localhost:8200}, approle: 'approle_name', run_context )
     # fetcher.fetch("secretkey1")
     #
     # @example
@@ -66,7 +66,7 @@ class Chef
     #
     # @example
     #
-    # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :approle, approle_name: "testing-role", token: "s.1234abcdef", vault_addr: https://localhost:8200}, run_context )
+     # fetcher = SecretFetcher.for_service(:hashi_vault, { auth_method: :approle, approle_name: "testing-role", token: "<vault-token>", vault_addr: https://localhost:8200}, run_context )
     # fetcher.fetch("secretkey1")
     #
     SUPPORTED_AUTH_TYPES = %i{approle iam_role token}.freeze
@@ -131,4 +131,3 @@ class Chef
     end
   end
 end
-
