@@ -37,6 +37,6 @@ use_member_id_as_uuid = false
 
 [data_collector]
 url="http://localhost/data-collector/v0/"
-token="93a49a4f2482c64126f7b6015e6b0f30284287ee4054ff8807fb63d9cbd1c506"
+token=""
 raise_on_failure=false
 mode="both"
