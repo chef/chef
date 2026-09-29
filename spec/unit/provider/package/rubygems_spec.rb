@@ -159,17 +159,45 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   context "old rubygems caching behavior" do
+    # RubyGems fetches remote indexes through its own vendored Gem::Net::HTTP,
+    # which WebMock does not intercept, so stub_request cannot be used here.
+    # Instead, serve the fixture files from a stubbed Gem::RemoteFetcher and
+    # keep RubyGems' on-disk spec cache in a throwaway directory.
+    let(:spec_cache_dir) { Dir.mktmpdir("chef-rubygems-spec-cache") }
+    let(:remote_fetcher) { Gem::RemoteFetcher.new }
+    let(:served_files) do
+      fixtures = File.join(CHEF_SPEC_DATA, "rubygems.org")
+      latest_specs = Gem::Util.gunzip(File.binread(File.join(fixtures, "latest_specs.4.8.gz")))
+      sexp_processor_spec = File.binread(File.join(fixtures, "sexp_processor-4.15.1.gemspec.rz"))
+
+      {
+        "https://rubygems.org/latest_specs.4.8.gz" => latest_specs,
+        "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz" => sexp_processor_spec,
+        "http://rubygems2.org/latest_specs.4.8.gz" => latest_specs,
+        "http://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz" => sexp_processor_spec,
+      }
+    end
+
     before do
       Chef::Config[:rubygems_cache_enabled] = true
 
-      stub_request(:get, "https://rubygems.org/latest_specs.4.8.gz")
-        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "latest_specs.4.8.gz")))
+      # The spec fetcher memoizes each source's spec list, which would otherwise
+      # carry over from whichever example happened to run first.
+      Gem::SpecFetcher.fetcher = nil
+
+      allow(Gem).to receive(:spec_cache_dir).and_return(spec_cache_dir)
+      allow(Gem::RemoteFetcher).to receive(:fetcher).and_return(remote_fetcher)
+      allow(remote_fetcher).to receive(:fetch_path) do |uri, _mtime = nil, _head = false|
+        served_files.fetch(uri.to_s) { raise Gem::RemoteFetcher::FetchError.new("bad response Not Found 404", uri.to_s) }
+      end
+    end
+
+    after do
+      Gem::SpecFetcher.fetcher = nil
+      FileUtils.remove_entry(spec_cache_dir)
     end
 
     it "finds a matching gem candidate version on rubygems 2.0.0+", skip_hab_test: true do
-      stub_request(:get, "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
-        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
-
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
       expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
     end
@@ -180,11 +208,10 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     end
 
     it "finds a matching gem from a specific gemserver when explicit sources are given" do
-      stub_request(:get, "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
-        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
-
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
       expect(@gem_env.candidate_version_from_remote(dep, "http://rubygems2.org")).to be_kind_of(Gem::Version)
+      expect(remote_fetcher).to have_received(:fetch_path).with(satisfy { |uri| uri.to_s.start_with?("http://rubygems2.org/") }, any_args).at_least(:once)
+      expect(remote_fetcher).not_to have_received(:fetch_path).with(satisfy { |uri| uri.to_s.start_with?("https://rubygems.org/") }, any_args)
     end
   end
 
