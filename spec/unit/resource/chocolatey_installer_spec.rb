@@ -183,6 +183,42 @@ describe Chef::Resource::ChocolateyInstaller do
         expect { resource.action :uninstall }.not_to raise_error
       end
     end
+
+    context "when running the uninstall action" do
+      let(:resource) { Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_uninstall", run_context) }
+      let(:uninstall_provider) { resource.provider_for_action(:uninstall) }
+      let(:choco_bin) { "c:\\programdata\\chocolatey\\bin" }
+      let(:commands) { [] }
+
+      before do
+        allow(resource).to receive(:provider_for_action).with(:uninstall).and_return(uninstall_provider)
+        allow(uninstall_provider).to receive(:powershell_exec) do |command|
+          commands << command
+          instance_double("Mixlib::ShellOut", error!: nil)
+        end
+        allow(Chef::Log).to receive(:warn)
+      end
+
+      it "removes chocolatey when it is installed" do
+        allow(::File).to receive(:exist?).and_call_original
+        allow(::File).to receive(:exist?).with(choco_bin).and_return(true)
+
+        resource.run_action(:uninstall)
+
+        expect(resource).to be_updated_by_last_action
+        expect(commands.first).to include("Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force")
+      end
+
+      it "does nothing when chocolatey is not installed" do
+        allow(::File).to receive(:exist?).and_call_original
+        allow(::File).to receive(:exist?).with(choco_bin).and_return(false)
+
+        resource.run_action(:uninstall)
+
+        expect(resource).not_to be_updated_by_last_action
+        expect(commands).to be_empty
+      end
+    end
   end
 
   def install_choco
