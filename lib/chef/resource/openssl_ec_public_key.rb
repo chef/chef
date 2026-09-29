@@ -43,7 +43,7 @@ class Chef
 
         ```ruby
         openssl_ec_public_key '/etc/ssl_files/eckey_prime256v1_des3_2.pub' do
-          private_key_content "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEII2VAU9re44mAUzYPWCg+qqwdmP8CplsEg0b/DYPXLg2oAoGCCqGSM49\nAwEHoUQDQgAEKkpMCbIQ2C6Qlp/B+Odp1a9Y06Sm8yqPvCVIkWYP7M8PX5+RmoIv\njGBVf/+mVBx77ji3NpTilMUt2KPZ87lZ3w==\n-----END EC PRIVATE KEY-----\n"
+          private_key_content ENV['EC_PRIVATE_KEY']
           action :create
         end
         ```
