@@ -39,7 +39,7 @@ describe "knife data bag show", :workstation do
       data_bag "x", {}
       data_bag "canteloupe", {}
       data_bag "rocket", { "falcon9" => { heavy: "true" }, "atlas" => {}, "ariane" => {} }
-      data_bag "encrypt", { "box" => { id: "box", foo: { "encrypted_data": "J8N0pJ+LFDQF3XvhzWgkSBOuZZn8Og==\n", "iv": "4S1sb4zLnMt71SXV\n", "auth_tag": "4ChINhxz4WmqOizvZNoPPg==\n", "version": 3, "cipher": "aes-256-gcm" } } }
+      data_bag "encrypt", { "box" => { id: "box", foo: { "encrypted_data": "REDACTED\n", "iv": "REDACTED\n", "auth_tag": "REDACTED\n", "version": 3, "cipher": "aes-256-gcm" } } }
     end
 
     context "with encrypted data" do
