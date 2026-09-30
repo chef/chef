@@ -50,11 +50,11 @@ module ChefConfig
     # Regexes used by dirname and join, built once rather than on every call.
     WINDOWS_SEPARATOR_REGEX = /[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(BACKSLASH)}]/
     TRAILING_SLASHES_REGEX = {
-      true => /[#{Regexp.escape("#{File::SEPARATOR}#{BACKSLASH}")}]+$/,
+      true => /[#{Regexp.escape("#{File::SEPARATOR}#{BACKSLASH}")}]+$/, # windows
       false => /[#{Regexp.escape(File::SEPARATOR)}]+$/,
     }.freeze
     LEADING_SLASHES_REGEX = {
-      true => /^[#{Regexp.escape("#{File::SEPARATOR}#{BACKSLASH}")}]+/,
+      true => /^[#{Regexp.escape("#{File::SEPARATOR}#{BACKSLASH}")}]+/, # windows
       false => /^[#{Regexp.escape(File::SEPARATOR)}]+/,
     }.freeze
 
