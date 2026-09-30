@@ -330,7 +330,7 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2026.0203)
-    mixlib-archive (1.3.3)
+    mixlib-archive (1.3.6)
       mixlib-log
     mixlib-authentication (3.0.10)
     mixlib-cli (2.1.8)
