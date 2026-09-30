@@ -236,7 +236,7 @@ Components:
 |                                        |   urce                                |                                          |
 | mime-types-data 3.2026.0701            | https://github.com/mime-types/mime-ty | MIT License                              |
 |                                        |   pes-data                            |                                          |
-| mixlib-archive 1.3.3                   | https://chef.io                       | Apache License 2.0                       |
+| mixlib-archive 1.3.6                  | https://chef.io                       | Apache License 2.0                       |
 | mixlib-authentication 3.0.10           | http://github.com/opscode/mixlib-auth | Apache License 2.0                       |
 |                                        |   entication                          |                                          |
 | mixlib-cli v2.1.8                      | https://www.chef.io/                  | Apache License 2.0                       |
