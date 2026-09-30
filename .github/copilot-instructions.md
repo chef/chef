@@ -83,6 +83,17 @@ chef/
 - Buildkite (build verification, platform testing)
 - Expeditor (release automation, version bumping, changelog generation)
 
+**Coding style and expectations**
+
+- Always prioritize **correctness and completeness** over brevity.
+- When I ask for a fix, **first perform a step-by-step analysis** of the current code and identify root causes, edge cases, and potential regressions. Only then propose changes.
+- Prefer **minimal, targeted changes**. Do not refactor unrelated code unless I explicitly ask.
+- When modifying code, **show a unified diff** or clearly separated “before/after” sections.
+- Assume I will run tests: **suggest or update unit tests** that validate the change, including happy path, edge cases, and error handling.
+- Treat files and modules **holistically**: when I share a snippet, consider how it interacts with surrounding code and call sites. Call out any assumptions you’re making.
+- If information is missing (e.g., expected types, invariants, or error handling strategy), **ask me for clarification** instead of guessing.
+- When you’re unsure, **state your uncertainty and the specific parts that need human verification** (e.g., performance characteristics, concurrency, external API contracts).
+
 ### 3. Implementation Phase
 
 - Follow Ruby best practices and Chef coding conventions
