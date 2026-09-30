@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.25 -->
-## [v18.11.25](https://github.com/chef/chef/tree/v18.11.25) (2026-09-30)
+<!-- latest_release 18.11.26 -->
+## [v18.11.26](https://github.com/chef/chef/tree/v18.11.26) (2026-09-30)
 
 #### Merged Pull Requests
-- Fix macOS CI: remove login true from homebrew_cask to avoid Homebrew setgid SecurityError (chef-18 backport) [#16393](https://github.com/chef/chef/pull/16393) ([neha-p6](https://github.com/neha-p6))
+- CHEF-38501: Fix ArgumentError when dsc_resource sets sensitive true (chef-18 backport) [#16391](https://github.com/chef/chef/pull/16391) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.11.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-38501: Fix ArgumentError when dsc_resource sets sensitive true (chef-18 backport) [#16391](https://github.com/chef/chef/pull/16391) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.26 -->
 - Fix macOS CI: remove login true from homebrew_cask to avoid Homebrew setgid SecurityError (chef-18 backport) [#16393](https://github.com/chef/chef/pull/16393) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.25 -->
 - [chef-18] update sbom generation pipeline [#16378](https://github.com/chef/chef/pull/16378) ([rishichawda](https://github.com/rishichawda)) <!-- 18.11.24 -->
 - Fix debian-11 kitchen (dokken) apt-get update failure from expired bullseye-security (backport of #16360 to chef-18) [#16374](https://github.com/chef/chef/pull/16374) ([neha-p6](https://github.com/neha-p6)) <!-- 18.11.23 -->
