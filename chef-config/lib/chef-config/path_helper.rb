@@ -31,7 +31,7 @@ module ChefConfig
         # Find the first slash, not counting trailing slashes
         end_slash = path.size
         loop do
-          slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator(windows: windows))}]/, end_slash - 1)
+          slash = path.rindex(WINDOWS_SEPARATOR_REGEX, end_slash - 1)
           if !slash
             return end_slash == path.size ? "." : path_separator(windows: windows)
           elsif slash == end_slash - 1
@@ -47,6 +47,17 @@ module ChefConfig
 
     BACKSLASH = "\\".freeze
 
+    # Regexes used by dirname and join, built once rather than on every call.
+    WINDOWS_SEPARATOR_REGEX = /[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(BACKSLASH)}]/
+    TRAILING_SLASHES_REGEX = {
+      true => /[#{Regexp.escape("#{File::SEPARATOR}#{BACKSLASH}")}]+$/, # windows
+      false => /[#{Regexp.escape(File::SEPARATOR)}]+$/,
+    }.freeze
+    LEADING_SLASHES_REGEX = {
+      true => /^[#{Regexp.escape("#{File::SEPARATOR}#{BACKSLASH}")}]+/, # windows
+      false => /^[#{Regexp.escape(File::SEPARATOR)}]+/,
+    }.freeze
+
     def self.path_separator(windows: ChefUtils.windows?)
       if windows
         BACKSLASH
@@ -56,9 +67,8 @@ module ChefConfig
     end
 
     def self.join(*args, windows: ChefUtils.windows?)
-      path_separator_regex = Regexp.escape(windows ? "#{File::SEPARATOR}#{BACKSLASH}" : File::SEPARATOR)
-      trailing_slashes_regex = /[#{path_separator_regex}]+$/
-      leading_slashes_regex = /^[#{path_separator_regex}]+/
+      trailing_slashes_regex = TRAILING_SLASHES_REGEX[!!windows]
+      leading_slashes_regex = LEADING_SLASHES_REGEX[!!windows]
       separator = path_separator(windows: windows)
 
       args.flatten!
