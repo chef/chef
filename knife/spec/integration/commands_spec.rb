@@ -38,7 +38,7 @@ context "Command Sanity Check: executing ", :workstation do
                                             env_part = $2.nil? ? "" : "env_"
                                             ["#{$1} #{$2}run_list#{$3}", /^USAGE: knife #{$1} #{env_part}run_list#{$3}.*/]
                                           else
-                                            [ command_name, /^USAGE: knife #{command_name}.*/]
+                                            [ command_name, /^USAGE: knife #{Regexp.escape(command_name)}.*/]
                                           end
 
       # By using bundle exec knife instead of directly loading the command class or using the knife() helper,
@@ -47,7 +47,7 @@ context "Command Sanity Check: executing ", :workstation do
       # its own options.
       full_command = "#{modified_command} --invalid-option outputs usage for '#{modified_command}' to stdout"
       it full_command do
-        result = `bundle exec knife #{full_command}`
+        result = IO.popen(["bundle", "exec", "knife", *full_command.split(" ")], &:read)
         expect(result).to match(expected_result)
       end
     end
