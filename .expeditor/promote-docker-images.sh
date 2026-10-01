@@ -28,7 +28,7 @@ function create_and_push_manifest() {
 
 # split the version components into integer variables
 declare -i major_version minor_version _patch_version
-IFS="."; read -r major_version minor_version _patch_version <<< "$version"
+IFS="." read -r major_version minor_version _patch_version <<< "$version"
 
 # mixlib-install uses package router's API which makes requests directly to Artifactory thereby providing up-to-date results
 if mixlib-install download chef --url --channel stable --version "$major_version" &> /dev/null; then
