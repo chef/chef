@@ -37,6 +37,6 @@ use_member_id_as_uuid = false
 
 [data_collector]
 url="http://localhost/data-collector/v0/"
-token="CHANGEME"
+token="${HAB_AUTH_TOKEN}"
 raise_on_failure=false
 mode="both"
