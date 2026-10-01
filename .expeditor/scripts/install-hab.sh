@@ -20,5 +20,9 @@ error () {
 
 echo "--- :habicat: Installing latest version of Habitat"
 rm -rf /hab
-curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | bash -s -- -t "$hab_target"
+tmp_install_script="$(mktemp)"
+trap 'rm -f "$tmp_install_script"' EXIT
+curl -fsSL -o "$tmp_install_script" https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh
+chmod +x "$tmp_install_script"
+bash "$tmp_install_script" -t "$hab_target"
 hab license accept
