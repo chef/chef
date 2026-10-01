@@ -57,6 +57,7 @@ class Chef
       # We need a custom HTTP client class here because we don't want to even
       # try to decode the body, in case we get back corrupted JSON or whatnot.
       class RawInputServerAPI < Chef::HTTP
+        attr_accessible :client_name, :raw_key, :signing_key_filename, :ssh_agent_signing if respond_to?(:attr_accessible)
         def initialize(options = {})
           # If making a change here, also update Chef::ServerAPI.
           options[:client_name] ||= Chef::Config[:node_name]
