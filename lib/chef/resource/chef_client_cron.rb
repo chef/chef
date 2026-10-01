@@ -17,7 +17,7 @@
 require_relative "../resource"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "helpers/cron_validations"
-require "digest/md5" unless defined?(Digest::MD5)
+require "digest/sha2" unless defined?(Digest::SHA256)
 
 class Chef
   class Resource
@@ -182,7 +182,7 @@ class Chef
         # @return [Integer]
         #
         def splay_sleep_time(splay)
-          seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
+          seed = node["shard_seed"] || Digest::SHA256.hexdigest(node.name).to_i(16)
           random = Random.new(seed.to_i)
           random.rand(splay)
         end
