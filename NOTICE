@@ -236,7 +236,7 @@ Components:
 |                                        |   urce                                |                                          |
 | mime-types-data 3.2026.0701            | https://github.com/mime-types/mime-ty | MIT License                              |
 |                                        |   pes-data                            |                                          |
-| mixlib-archive 1.3.3                   | https://chef.io                       | Apache License 2.0                       |
+| mixlib-archive 1.3.6                   | https://chef.io                       | Apache License 2.0                       |
 | mixlib-authentication 3.0.10           | http://github.com/opscode/mixlib-auth | Apache License 2.0                       |
 |                                        |   entication                          |                                          |
 | mixlib-cli v2.1.8                      | https://www.chef.io/                  | Apache License 2.0                       |
@@ -383,7 +383,7 @@ License Data and Text:
 -------------------------------------------------------------------------------------------------------------------------
 
 Apache License 2.0
-(Addressable URI parser 2.9.0, appbundler 0.13.4, AWS SDK for Ruby 1.12.1, AWS SDK for Ruby 1.1268.0, AWS SDK for Ruby 1.227.0, AWS SDK for Ruby 1.4.0, aws-sdk-core-ruby 3.254.0, Chef 18.6.6, Chef 19.3.15, chef-licensing 1.4.1, chef-telemetry 1.1.1, chef-vault 4.2.12, chef-winrm 2.5.0, chef-winrm-elevated 1.2.5, chef-winrm-fs 1.4.2, faraday-http-cache 2.7.0, ffi-libarchive 1.1.14, ffi-win32-extensions ffi-win32-extensions-1.0.4, Habitat core_openssl 3.5.7, jmespath rubygems 1.6.2, libyajl2 2.1.0, license-acceptance 2.1.13, mixlib-archive 1.3.3, mixlib-authentication 3.0.10, mixlib-cli v2.1.8, mixlib-config 3.0.27, mixlib-log 3.2.3, mixlib-shellout 3.4.10, opscode-ohai 19.1.40, semverse 3.0.2, sporkmonger's uuidtools 3.0.0, train-core 3.16.5, train-rest 0.5.0, train-winrm 0.4.3, win32-certstore 0.6.16, win32-ipc 0.7.0, wmi-lite 1.0.7)
+(Addressable URI parser 2.9.0, appbundler 0.13.4, AWS SDK for Ruby 1.12.1, AWS SDK for Ruby 1.1268.0, AWS SDK for Ruby 1.227.0, AWS SDK for Ruby 1.4.0, aws-sdk-core-ruby 3.254.0, Chef 18.6.6, Chef 19.3.15, chef-licensing 1.4.1, chef-telemetry 1.1.1, chef-vault 4.2.12, chef-winrm 2.5.0, chef-winrm-elevated 1.2.5, chef-winrm-fs 1.4.2, faraday-http-cache 2.7.0, ffi-libarchive 1.1.14, ffi-win32-extensions ffi-win32-extensions-1.0.4, Habitat core_openssl 3.5.7, jmespath rubygems 1.6.2, libyajl2 2.1.0, license-acceptance 2.1.13, mixlib-archive 1.3.6, mixlib-authentication 3.0.10, mixlib-cli v2.1.8, mixlib-config 3.0.27, mixlib-log 3.2.3, mixlib-shellout 3.4.10, opscode-ohai 19.1.40, semverse 3.0.2, sporkmonger's uuidtools 3.0.0, train-core 3.16.5, train-rest 0.5.0, train-winrm 0.4.3, win32-certstore 0.6.16, win32-ipc 0.7.0, wmi-lite 1.0.7)
 
 Apache License
 Version 2.0, January 2004
