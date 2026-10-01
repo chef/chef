@@ -164,7 +164,7 @@ class Chef::Application::Apply < Chef::Application
       unless File.exist?(recipe_path)
         Chef::Application.fatal!("No file exists at #{recipe_path}", Chef::Exceptions::RecipeNotFound.new)
       end
-      recipe_fh = open(recipe_path)
+      recipe_fh = File.open(recipe_path, "r")
       recipe_text = recipe_fh.read
       [recipe_text, recipe_fh]
     end
