@@ -43,7 +43,7 @@ class Chef
 
         ```ruby
         openssl_ec_public_key '/etc/ssl_files/eckey_prime256v1_des3_2.pub' do
-          private_key_content ENV.fetch('EC_PRIVATE_KEY')
+          private_key_content ENV.fetch('EC_PRIVATE_KEY_PEM')
           action :create
         end
         ```
