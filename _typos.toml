@@ -1,0 +1,68 @@
+# Configuration for typos (https://github.com/crate-ci/typos)
+#
+# typos only reports strings that are known misspellings of another word, so
+# unlike the dictionary-based cspell setup this replaces there is no allowlist
+# of valid Chef terminology to maintain. Only add entries below when a
+# legitimate identifier collides with a known correction.
+
+[files]
+extend-exclude = [
+  # Generated or archival files that are not hand-edited
+  "CHANGELOG.md",
+  "CHEF_MVPS.md",
+  "CLA_ARCHIVE.md",
+  "NOTICE",
+  "Gemfile.lock",
+  # Vendored third-party source
+  "lib/chef/provider/package/yum/simplejson/**",
+  # Test fixtures deliberately contain malformed data and nonsense strings
+  "**/spec/**",
+]
+
+[default]
+extend-ignore-re = [
+  # PEM blocks (certificates, keys) are base64, not prose
+  "(?s)-----BEGIN [A-Z0-9 ]+-----.*?-----END [A-Z0-9 ]+-----",
+  # Long unbroken base64 runs: GPG keys, plist payloads, fixture blobs
+  "[A-Za-z0-9+/]{32,}={0,2}",
+]
+
+[default.extend-words]
+# HashiCorp Vault secret fetcher (hashi_vault, HashiVault)
+hashi = "hashi"
+# Win32 NetAPI32 struct fields, e.g. USER_INFO_3.usri3_parms, PARM_ERROR
+parm = "parm"
+parms = "parms"
+# Win32 constants that Microsoft itself truncated or spells this way, e.g.
+# ERROR_REQ_NOT_ACCEP, ERROR_FILENAME_EXCED_RANGE, RPC_S_CALL_FAILED_DNE,
+# FILE_DEVICE_INPORT_PORT
+accep = "accep"
+exced = "exced"
+dne = "dne"
+inport = "inport"
+# win32-taskscheduler's TASK_NINETH constant
+nineth = "nineth"
+# Open3.popen3's wait_thr
+thr = "thr"
+# /^[PN]/ against `passwd -S` output, and Pathname locals named relative_pn
+pn = "pn"
+# Disable-NetAdapterLso: LSO is Large Send Offload
+lso = "lso"
+# GPG --with-colons output fields: fingerprint and trust records
+fpr = "fpr"
+tru = "tru"
+# DES-EDE3-CBC cipher name
+ede = "ede"
+# The repl_type_completor gem used by chef-shell
+completor = "completor"
+# "Chef::VERSIONs" splits into VERSIO + Ns
+versio = "versio"
+# Test Kitchen Engine
+tke = "tke"
+# Real words that typos wants to singularize, and internal parameter names
+configurables = "configurables"
+datas = "datas"
+arry = "arry"
+# Deliberate: `alias :halp :help` in chef-shell, and a colloquial "deletin'"
+halp = "halp"
+deletin = "deletin"
