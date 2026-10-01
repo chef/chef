@@ -33,9 +33,21 @@ describe Chef::Knife::UI do
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
   end
 
-  class TestObject < OpenStruct
+  class TestObject
+    attr_reader :table
+
+    def initialize(attributes = {})
+      @table = attributes.each_with_object({}) do |(key, value), result|
+        result[key] = value
+      end
+    end
+
     def self.from_hash(hsh)
       new(hsh)
+    end
+
+    def ==(other)
+      other.is_a?(self.class) && table == other.table
     end
   end
 
