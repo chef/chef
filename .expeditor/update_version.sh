@@ -19,7 +19,7 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-bin/lib/ch
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-utils/lib/chef-utils/version.rb
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"${VERSION}\")/" lib/chef/version.rb
 sed -i -r "s/^(\s*version:\s*)['\"][^'\"]*['\"]/\1'${VERSION}'/" .github/workflows/ci-main-pull-request-stub.yml
-asdf global ruby "3.1.0"
+asdf set -u ruby "3.1.0"
 
 # Update the version inside Gemfile.lock
 sed -i -r "s/(^\s+chef\s+.+)${ORIGINAL_VERSION}(.+)/\1${VERSION}\2/" Gemfile.lock
