@@ -231,7 +231,7 @@ class Chef
         if config[:verbose_commands] || Chef::Config[:verbosity] && Chef::Config[:verbosity] >= 1
           output sub_filenames(command, tempfiles)
         end
-        command_output = `#{command}`
+        command_output, = Open3.capture2(command)
         command_output = sub_filenames(command_output, tempfiles)
         stdout.write command_output
 
@@ -257,7 +257,7 @@ class Chef
               old_file.write(file[:value])
               old_file.close
 
-              diff = `diff -u #{old_file.path} #{tempfile.path}`
+              diff, = Open3.capture2("diff", "-u", old_file.path.to_s, tempfile.path.to_s)
               diff.gsub!(old_file.path, "#{format_path(file[:file])} (old)")
               diff.gsub!(tempfile.path, "#{format_path(file[:file])} (new)")
               stdout.write diff
