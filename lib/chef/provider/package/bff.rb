@@ -19,11 +19,13 @@
 require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
+require_relative "../../mixin/target_mode_premium_gate"
 
 class Chef
   class Provider
     class Package
       class Bff < Chef::Provider::Package
+        include Chef::Mixin::TargetModePremiumGate
 
         provides :package, os: "aix", target_mode: true
         provides :bff_package, target_mode: true
@@ -49,6 +51,7 @@ class Chef
         end
 
         def load_current_resource
+          assert_premium_target_mode!(:aix)
           @current_resource = Chef::Resource::Package.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 

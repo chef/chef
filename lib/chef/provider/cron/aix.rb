@@ -17,13 +17,20 @@
 #
 
 require_relative "unix"
+require_relative "../../mixin/target_mode_premium_gate"
 
 class Chef
   class Provider
     class Cron
       class Aix < Chef::Provider::Cron::Unix
+        include Chef::Mixin::TargetModePremiumGate
 
-        provides :cron, os: "aix"
+        provides :cron, os: "aix", target_mode: true
+
+        def load_current_resource
+          assert_premium_target_mode!(:aix)
+          super
+        end
 
         private
 

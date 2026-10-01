@@ -101,7 +101,18 @@ module TargetIO
           cmd = "realpath #{file_name}" # coreutils, not MacOSX
           Chef::Log.debug cmd
 
-          run_command(cmd).stdout.chop
+          result = run_command(cmd)
+          return result.stdout.chop if result.exit_status == 0 && !result.stdout.strip.empty?
+
+          # ponytail: AIX (and other non-GNU-coreutils Unixes) ship neither
+          # `realpath` nor `readlink -f`. They do ship perl, so fall back to
+          # Cwd::realpath -- otherwise this silently returns an empty
+          # string and callers (e.g. Chef::Provider::File#update_file_contents)
+          # end up scp-ing content to an empty remote path.
+          fallback_cmd = "perl -MCwd -e 'print Cwd::realpath(shift)' #{file_name}"
+          Chef::Log.debug fallback_cmd
+
+          run_command(fallback_cmd).stdout.chop
         end
 
         def readlink(file_name)

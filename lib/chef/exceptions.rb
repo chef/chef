@@ -60,6 +60,10 @@ class Chef
     class Override < RuntimeError; end
     class UnsupportedAction < RuntimeError; end
     class MissingLibrary < RuntimeError; end
+    # Raised when a Target Mode resource/provider requires a premium
+    # platform extension gem (e.g. agentless_aix_extensions) that is not
+    # installed/enabled. See Chef::Mixin::TargetModePremiumGate.
+    class PremiumFeatureRequired < RuntimeError; end
 
     class CannotDetermineNodeName < RuntimeError
       def initialize
