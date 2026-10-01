@@ -83,7 +83,8 @@ class Chef
       def noverify_peer_ssl_context
         @noverify_peer_ssl_context ||= begin
           noverify_peer_context = OpenSSL::SSL::SSLContext.new
-          noverify_peer_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          noverify_peer_context.verify_mode = OpenSSL::SSL::VERIFY_PEER
+          noverify_peer_context.cert_store = OpenSSL::X509::Store.new.tap(&:set_default_paths)
           noverify_peer_context
         end
       end
