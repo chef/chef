@@ -22,6 +22,7 @@ require "chef/config"
 require "tempfile"
 
 class ExampleDataBagCommand < Chef::Knife
+  attr_accessible
   include Chef::Knife::DataBagSecretOptions
 end
 
