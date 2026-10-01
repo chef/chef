@@ -18,6 +18,7 @@
 require "knife_spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
+require "openssl"
 
 describe "Knife cookbook API integration with IPv6", :workstation, :not_supported_on_gce do
   include IntegrationSupport
@@ -26,11 +27,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
   when_the_chef_server "is bound to IPv6" do
     let(:chef_zero_opts) { { host: "::1" } }
 
-    let(:client_key) do
-      <<~END_VALIDATION_PEM
-        <redacted>
-      END_VALIDATION_PEM
-    end
+    let(:client_key) { OpenSSL::PKey::RSA.new(2048).to_pem }
 
     let(:cache_path) do
       Dir.mktmpdir
