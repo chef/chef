@@ -42,7 +42,8 @@ class Chef
       # the built packages and copy the binaries to distro/ruby_bin_folder. Bundle install
       # ensures that the correct architecture binaries are installed into the path.
       @dll ||= "Chef.PowerShell.Wrapper.dll"
-      exec(script, timeout: timeout)
+      raise ArgumentError, "script must be a String" unless script.is_a?(String)
+      exec(script.dup.freeze, timeout: timeout)
     end
 
     #
