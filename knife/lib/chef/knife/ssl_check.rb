@@ -105,7 +105,7 @@ class Chef
         @noverify_peer_ssl_context ||= begin
           noverify_peer_context = OpenSSL::SSL::SSLContext.new
           @ssl_policy.apply_to(noverify_peer_context)
-          noverify_peer_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          noverify_peer_context.verify_mode = OpenSSL::SSL::VERIFY_PEER
           noverify_peer_context
         end
       end
