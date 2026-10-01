@@ -14,7 +14,7 @@
 # in this file and also tag that image as "latest" on Docker Hub. Additionally major and minor tags will be
 # applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
 
-FROM busybox
+FROM busybox:1.36.1
 LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 
 ARG CHANNEL=stable
@@ -27,3 +27,5 @@ RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/${PKG_VERS
     rm -rf /tmp/chef-client.rpm
 
 VOLUME [ "/opt/chef" ]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 CMD ["/bin/sh", "-c", "test -d /opt/chef"]
+USER 65534:65534
