@@ -15,7 +15,7 @@ jobs:
         os: [windows-2022, windows-2019]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
@@ -81,7 +81,7 @@ jobs:
         os: [macos-10.15] # macos-11.0 is not public for now
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
       run: |
@@ -135,9 +135,9 @@ jobs:
       CHEF_LICENSE: accept-no-persist
     steps:
       - name: Check out code
-        uses: actions/checkout@main
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@6bd9b8e72a4cc3f2c9a08b19a385e3bd87f1c5ff
         with:
           ruby-version: "3.0"
           bundler-cache: true
