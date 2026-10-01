@@ -27,7 +27,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
   when_the_chef_server "is bound to IPv6" do
     let(:chef_zero_opts) { { host: "::1" } }
 
-    let(:client_key) { OpenSSL::PKey::RSA.new(2048).to_pem }
+    let(:client_key) { OpenSSL::PKey::RSA.new(2048) }
 
     let(:cache_path) do
       Dir.mktmpdir
@@ -57,7 +57,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
 
         before do
           file "config/knife.rb", knife_rb_content
-          file "config/knifeuser.pem", client_key
+          file "config/knifeuser.pem", client_key.to_pem
         end
 
         it "successfully uploads a cookbook" do
