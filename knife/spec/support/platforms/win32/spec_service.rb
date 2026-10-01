@@ -20,6 +20,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   require "win32/daemon"
 
   class SpecService < ::Win32::Daemon
+    attr_accessible
     def service_init
       @test_service_file = "#{ENV["TMP"]}/spec_service_file"
     end
