@@ -35,7 +35,13 @@ class Chef
 
         def read_crontab
           crontab = shell_out(%w{/usr/bin/crontab -l}, user: @new_resource.user)
-          status = crontab.status.exitstatus
+          # ponytail: Mixlib::ShellOut::Helper::FakeShellOut (returned here
+          # instead of a real Mixlib::ShellOut when running over Target
+          # Mode) only defines `exitstatus` on itself, not on its `.status`
+          # OpenStruct -- `.status.exitstatus` silently resolves to nil
+          # there, so use `.exitstatus` directly; real Mixlib::ShellOut
+          # exposes the identical accessor, so this is safe for both paths.
+          status = crontab.exitstatus
 
           logger.trace crontab.format_for_exception if status > 0
 
@@ -63,7 +69,9 @@ class Chef
           begin
             crontab_write = shell_out("/usr/bin/crontab", tempcron_path, user: @new_resource.user)
             stderr = crontab_write.stderr
-            exit_status = crontab_write.status.exitstatus
+            # ponytail: see read_crontab's comment above -- same
+            # FakeShellOut `.status.exitstatus` vs `.exitstatus` gap.
+            exit_status = crontab_write.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
             if stderr && stderr.include?("errors detected in input, no crontab file generated")
               error_message = stderr

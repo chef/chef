@@ -17,11 +17,14 @@
 #
 
 require_relative "../service"
+require_relative "../../mixin/target_mode_premium_gate"
 
 class Chef
   class Provider
     class Service
       class Aix < Chef::Provider::Service
+        include Chef::Mixin::TargetModePremiumGate
+
         attr_reader :status_load_success
 
         provides :service, os: "aix", target_mode: true
@@ -31,6 +34,8 @@ class Chef
         end
 
         def load_current_resource
+          assert_premium_target_mode!(:aix)
+
           @current_resource = Chef::Resource::Service.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
 
