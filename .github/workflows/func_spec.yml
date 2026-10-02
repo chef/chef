@@ -70,15 +70,14 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: winrm quickconfig -q
-      - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
+      - name: Build chef-powershell test artifact (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
+        env:
+          HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
         run: |
-          $gem_lib = gem which chef-powershell 2>$null | Select-Object -First 1
-          if ($gem_lib) {
-            $gem_path = Split-Path $gem_lib | Split-Path
-            echo "RUBY_DLL_PATH=$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE" >> $env:GITHUB_ENV
-          }
+          . .\scripts\prepare-chef-powershell.ps1 -ChefRepoRoot $PWD
+          echo "RUBY_DLL_PATH=$env:CHEF_POWERSHELL_BIN" >> $env:GITHUB_ENV
       - name: Fix Windows PowerShell module paths for subprocesses (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
