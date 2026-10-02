@@ -83,6 +83,21 @@ rescue LoadError
 end
 
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-  load_dlls("libarchive.dll", false)
+  # This spec-only helper registers extra Windows DLL search directories for
+  # RSpec runs; it isn't used by the archive_file resource itself (or any
+  # other production code).
+  #
+  # habitat/plan.sh and habitat/x86_64-windows/plan.ps1 both declare
+  # core/libarchive as a runtime dependency of the chef-infra-client
+  # Habitat package, and lib/chef/resource/archive_file.rb explicitly loads
+  # that package's DLL by its real filename: "archive.dll" (no "lib"
+  # prefix -- unlike the MSYS2-style "libarchive-13.dll" naming used
+  # elsewhere). We were globbing for "libarchive.dll", which never exists
+  # under this naming convention, so this always failed to find the DLL
+  # and printed a misleading warning -- including in CI jobs (e.g. the
+  # Windows Habitat plan verify job) that build and install the real
+  # package with core/libarchive already present under C:/hab. Glob for
+  # the correct "archive.dll" name so we actually find it there.
+  load_dlls("archive.dll", false)
   load_dlls("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll", true)
 end
