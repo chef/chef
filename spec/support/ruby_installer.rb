@@ -83,6 +83,12 @@ rescue LoadError
 end
 
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-  load_dlls("libarchive.dll", false)
+  # The Habitat core/libarchive package (declared as a runtime dependency in
+  # habitat/x86_64-windows/plan.ps1, and loaded explicitly by
+  # lib/chef/resource/archive_file.rb) ships its DLL as "archive.dll" -- no
+  # "lib" prefix, unlike the MSYS2-style "libarchive-13.dll" naming used
+  # elsewhere in the ffi-libarchive ecosystem. Glob for the correct name so
+  # this helper actually finds it.
+  load_dlls("archive.dll", false)
   load_dlls("bin/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}/Chef.PowerShell.dll", true)
 end
