@@ -43,15 +43,30 @@ class Chef
         raise Chef::Exceptions::PremiumFeatureRequired,
           "#{self.class} requires the '#{gem_name}' premium Target Mode plugin to manage " \
           "#{platform} resources remotely over Target Mode. Install the gem, set " \
-          "CHEF_PREMIUM_EXTENSIONS_ENABLED=true and CHEF_TARGET_MODE_PLATFORM=#{platform}, " \
-          "and ensure it is licensed. See chef_premium_extensions for details."
+          "CHEF_PREMIUM_EXTENSIONS_ENABLED=true, and ensure the target node exposes " \
+          "matching platform attributes and the extension is licensed. See " \
+          "chef_premium_extensions for details."
       end
 
       # @return [Boolean] true if the premium plugin gem for +platform+ has
       #   been required and defines its top-level marker module.
       def premium_target_mode_loaded?(platform)
         const_name = "Agentless#{platform.to_s.capitalize}Extensions"
-        Object.const_defined?(const_name)
+        return false unless Object.const_defined?(const_name)
+
+        target = premium_target_mode_node
+        return true unless target
+        return true unless defined?(ChefPremiumExtensions::PlatformSelector)
+
+        ChefPremiumExtensions::PlatformSelector.matches?(platform, target)
+      end
+
+      private
+
+      def premium_target_mode_node
+        resource = new_resource if respond_to?(:new_resource)
+        run_context = resource.run_context if resource&.respond_to?(:run_context)
+        run_context&.node
       end
     end
   end
