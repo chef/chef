@@ -1281,7 +1281,10 @@ module ChefConfig
       "en_US.UTF-8"
     end
 
-    default :internal_locale, guess_internal_locale
+    # Guessing the locale shells out to `locale -a`, so defer it until something
+    # actually reads the value. Block defaults are re-evaluated on every read and
+    # mixlib-shellout reads this on every shell_out, so memoize the result.
+    default(:internal_locale) { @guessed_internal_locale ||= guess_internal_locale }
 
     # Force UTF-8 Encoding, for when we fire up in the 'C' locale or other strange locales (e.g.
     # japanese windows encodings).  If we do not do this, then knife upload will fail when a cookbook's
