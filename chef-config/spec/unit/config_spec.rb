@@ -29,6 +29,7 @@ RSpec.describe ChefConfig::Config do
     ChefConfig::Config.instance_variable_set(:@var_chef_dir, nil)
     ChefConfig::Config.instance_variable_set(:@etc_chef_dir, nil)
     ChefConfig::Config.instance_variable_set(:@var_root_dir, nil)
+    ChefConfig::Config.instance_variable_set(:@system_fips, nil)
 
     # By default, treat deprecation warnings as errors in tests.
     ChefConfig::Config.treat_deprecation_warnings_as_errors(true)
@@ -473,6 +474,17 @@ RSpec.describe ChefConfig::Config do
             it "returns true" do
               expect(ChefConfig::Config[:fips]).to eq(true)
             end
+          end
+
+          it "only checks the system once across reads" do
+            expect(ChefConfig).to receive(:fips?).once.and_return(false)
+            3.times { expect(ChefConfig::Config[:fips]).to eq(false) }
+          end
+
+          it "still honors ENV['CHEF_FIPS'] after the system has been checked" do
+            expect(ChefConfig::Config[:fips]).to eq(false)
+            ENV["CHEF_FIPS"] = "1"
+            expect(ChefConfig::Config[:fips]).to eq(true)
           end
         end
 
