@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.41 -->
-## [v19.4.41](https://github.com/chef/chef/tree/v19.4.41) (2026-10-01)
+<!-- latest_release 19.4.42 -->
+## [v19.4.42](https://github.com/chef/chef/tree/v19.4.42) (2026-10-05)
 
 #### Merged Pull Requests
-- update command to work with ubuntu24.04 image [#16400](https://github.com/chef/chef/pull/16400) ([muthuja](https://github.com/muthuja))
+- Updating Rubyzip and chef-winrm-fs [#16402](https://github.com/chef/chef/pull/16402) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating Rubyzip and chef-winrm-fs [#16402](https://github.com/chef/chef/pull/16402) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.42 -->
 - update command to work with ubuntu24.04 image [#16400](https://github.com/chef/chef/pull/16400) ([muthuja](https://github.com/muthuja)) <!-- 19.4.41 -->
 - Updating the notice file [#16386](https://github.com/chef/chef/pull/16386) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.40 -->
 - Fix flaky Kitchen Test snap-change-conflict in end_to_end _snap recipe [#16384](https://github.com/chef/chef/pull/16384) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.39 -->
