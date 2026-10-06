@@ -126,7 +126,7 @@ class Chef
             resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
             dnf(options, "-y", "install", resolved_names)
           end
-          flushcache
+          flushcache if new_resource.flush_cache[:after]
         end
 
         # dnf upgrade does not work on uninstalled packaged, while install will upgrade
@@ -135,7 +135,7 @@ class Chef
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| magical_version(i).to_s unless name.nil? }
           dnf(options, "-y", "remove", resolved_names)
-          flushcache
+          flushcache if new_resource.flush_cache[:after]
         end
 
         alias purge_package remove_package
