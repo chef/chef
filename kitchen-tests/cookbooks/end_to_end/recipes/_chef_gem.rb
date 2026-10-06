@@ -46,3 +46,31 @@ if platform_family?("rhel", "fedora", "debian", "amazon", "suse")
     compile_time false
   end
 end
+
+# Native gem runtime-linking test — validates that a chef_gem's compiled
+# extension can dlopen its shared library dependency at runtime under
+# Habitat's scoped LD_LIBRARY_PATH / -z nodefaultlib linking.
+# See https://github.com/sous-chefs/postgresql/issues/833: pg_ext.so links
+# against libpq.so.5, and unlike a build-time link failure (mysql2 above),
+# this only surfaces when `require "pg"` actually runs inside chef-client.
+if platform_family?("rhel", "fedora", "debian", "amazon", "suse")
+  libpq_dev_pkg = value_for_platform_family(
+    "debian" => "libpq-dev",
+    "rhel" => "libpq-devel",
+    "fedora" => "libpq-devel",
+    "suse" => "postgresql-devel",
+    "amazon" => "libpq-devel"
+  )
+
+  package libpq_dev_pkg
+
+  chef_gem "pg" do
+    compile_time false
+  end
+
+  # Forces pg_ext.so to load in this chef-client process, reproducing the
+  # LD_LIBRARY_PATH isolation failure from #833 if it regresses.
+  ruby_block "require pg gem" do
+    block { require "pg" }
+  end
+end

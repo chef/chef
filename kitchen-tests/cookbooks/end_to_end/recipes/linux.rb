@@ -63,6 +63,8 @@ end
 
 include_recipe "::_chef_gem"
 
+include_recipe "::_postgresql"
+
 build_essential do
   raise_if_unsupported true
 end
