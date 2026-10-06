@@ -39,3 +39,31 @@ describe Chef::Resource::Timezone, :windows_only do
     end
   end
 end
+
+describe Chef::Resource::Timezone, :solaris_only do
+  def timezone_resource(tz)
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+
+    Chef::Resource::Timezone.new(tz, run_context)
+  end
+
+  describe "when a timezone is provided on Solaris" do
+    after do
+      # restore the timezone that was in effect before this test ran
+      timezone_resource(@original_tz).run_action(:set) if @original_tz
+    end
+
+    it "sets the timezone via the timezone:default SMF service and is idempotent" do
+      @original_tz = timezone_resource("UTC").current_solaris_tz
+
+      resource = timezone_resource("UTC")
+      resource.run_action(:set)
+      expect(resource.current_solaris_tz).to eql("UTC")
+
+      # running again with the same value should be a no-op
+      resource2 = timezone_resource("UTC")
+      resource2.run_action(:set)
+      expect(resource2).not_to be_updated_by_last_action
+    end
+  end
+end
