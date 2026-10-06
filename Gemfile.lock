@@ -589,7 +589,7 @@ DEPENDENCIES
   ffi (>= 1.15.5)
   inspec-core-bin (= 7.2.1)
   ohai!
-  openssl (= 3.3.3)
+  openssl
   pry (~> 0.16.0)
   pry-byebug
   pry-stack_explorer
