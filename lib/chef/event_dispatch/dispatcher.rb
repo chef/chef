@@ -24,6 +24,16 @@ class Chef
         Thread.current[:chef_client_event_list] ||= []
       end
 
+      # @api private
+      def in_call
+        Thread.current[:chef_client_in_call]
+      end
+
+      # @api private
+      def in_call=(value)
+        Thread.current[:chef_client_in_call] = value
+      end
+
       # Add a new subscriber to the list of registered subscribers
       def register(subscriber)
         subscribers << subscriber
@@ -35,7 +45,7 @@ class Chef
 
       def enqueue(method_name, *args)
         event_list << [ method_name, *args ]
-        process_events_until_done unless @in_call
+        process_events_until_done unless in_call
       end
 
       (Base.instance_methods - Object.instance_methods).each do |method_name|
@@ -64,7 +74,7 @@ class Chef
 
       # @api private
       def call_subscribers(method_name, *args)
-        @in_call = true
+        self.in_call = true
         subscribers.each do |s|
           # Skip new/unsupported event names
           next unless s.respond_to?(method_name)
@@ -79,7 +89,7 @@ class Chef
           end
         end
       ensure
-        @in_call = false
+        self.in_call = false
       end
 
       private
