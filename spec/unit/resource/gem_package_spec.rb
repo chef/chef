@@ -65,3 +65,23 @@ describe Chef::Resource::GemPackage, "clear_sources" do
     expect(resource.clear_sources).to be true
   end
 end
+
+describe Chef::Resource::GemPackage, "license_id" do
+  let(:resource) { Chef::Resource::GemPackage.new("foo") }
+
+  it "defaults to the node's already-persisted Chef license, if any" do
+    allow(Chef::Licensing).to receive(:license_keys).and_return(%w{persisted-license-id})
+    expect(resource.license_id).to eq("persisted-license-id")
+  end
+
+  it "defaults to nil when no license is persisted" do
+    allow(Chef::Licensing).to receive(:license_keys).and_return([])
+    expect(resource.license_id).to be_nil
+  end
+
+  it "can be set explicitly, overriding the persisted license" do
+    allow(Chef::Licensing).to receive(:license_keys).and_return(%w{persisted-license-id})
+    resource.license_id("explicit-license-id")
+    expect(resource.license_id).to eq("explicit-license-id")
+  end
+end
