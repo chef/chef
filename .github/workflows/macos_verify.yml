@@ -43,6 +43,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
+      # ponytail: audit-only for now; flip to egress-policy: block once
+      # StepSecurity Insights confirms this job's host list is complete.
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v7
         with:
           allow-unsafe-pr-checkout: true
@@ -91,6 +97,10 @@ jobs:
       HAB_LICENSE: accept-no-persist
       HAB_NONINTERACTIVE: "true"
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v7
         with:
           allow-unsafe-pr-checkout: true
