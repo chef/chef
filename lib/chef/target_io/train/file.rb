@@ -102,7 +102,9 @@ module TargetIO
           Chef::Log.debug cmd
 
           result = run_command(cmd)
-          return result.stdout.chop if result.exit_status == 0 && !result.stdout.strip.empty?
+          if !result.respond_to?(:exit_status) || (result.exit_status == 0 && !result.stdout.strip.empty?)
+            return result.stdout.chop
+          end
 
           # ponytail: AIX (and other non-GNU-coreutils Unixes) ship neither
           # `realpath` nor `readlink -f`. They do ship perl, so fall back to
