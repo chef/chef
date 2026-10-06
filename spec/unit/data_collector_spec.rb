@@ -961,6 +961,20 @@ describe Chef::DataCollector do
       end
     end
 
+    context "when the client raises an exception with a nil HTTP response" do
+      let(:err) { Net::HTTPFatalError.new("fatal error", nil) }
+
+      before do
+        stub_http_client(err)
+        Chef::Config[:data_collector][:raise_on_failure] = false
+      end
+
+      it "falls back to 'No HTTP Code' in the logged message instead of an empty string" do
+        expect(Chef::Log).to receive(:warn).with(/Exception: No HTTP Code --/)
+        data_collector.send(:send_to_data_collector, message)
+      end
+    end
+
     context "when the client raises a 404 exception" do
       let(:err) do
         response = double("Net::HTTP response", code: "404")
