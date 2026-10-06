@@ -40,9 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: |
-          curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
-      - uses: streetsidesoftware/cspell-action@v8.4.0
+      - uses: crate-ci/typos@v1.50.2
 
   linelint:
     runs-on: ubuntu-latest
