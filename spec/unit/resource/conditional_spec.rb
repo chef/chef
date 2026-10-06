@@ -31,6 +31,15 @@ describe Chef::Resource::Conditional do
     expect { Chef::Resource::Conditional.send(:new, :always, @parent_resource, nil, {}) }.to raise_error(ArgumentError, /requires either a command or a block/)
   end
 
+  it "does not treat an explicitly-passed falsy command the same as no command given" do
+    # regression test: only_if/not_if used to silently no-op on a falsy
+    # (but non-nil) command like `false` instead of raising -- it should be
+    # treated as an (invalid) command and raise once configured, same as any
+    # other non-String/Array/nil command.
+    conditional = Chef::Resource::Conditional.send(:new, :always, @parent_resource, false, {})
+    expect { conditional.configure }.to raise_error(ArgumentError, /Invalid only_if\/not_if command/)
+  end
+
   it "does not evaluate a guard interpreter on initialization of the conditional" do
     expect_any_instance_of(Chef::Resource::Conditional).not_to receive(:configure)
     expect(Chef::GuardInterpreter::DefaultGuardInterpreter).not_to receive(:new)

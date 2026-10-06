@@ -50,7 +50,10 @@ class Chef
         @block_given = block_given?
         @parent_resource = parent_resource
 
-        raise ArgumentError, "only_if/not_if requires either a command or a block" unless command || block_given?
+        # command.nil? (not just falsy) so an explicitly-passed falsy command (e.g. `only_if false`)
+        # is treated as a (invalid) command rather than silently treated as "no command given";
+        # #configure below will raise a more specific error once it sees the bad command type.
+        raise ArgumentError, "only_if/not_if requires either a command or a block" unless !command.nil? || block_given?
       end
 
       def configure
