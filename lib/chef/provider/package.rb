@@ -203,7 +203,7 @@ class Chef
       end
 
       action :purge, description: "Purge a package. This action typically removes the configuration files as well as the package." do
-        if removing_package?
+        if purging_package?
           description = new_resource.version ? "version #{new_resource.version} of" : ""
           converge_by("purge #{description} package #{current_resource.package_name}") do
             multipackage_api_adapter(current_resource.package_name, new_resource.version) do |name, version|
@@ -212,6 +212,18 @@ class Chef
             logger.info("#{new_resource} purged")
           end
         end
+      end
+
+      # Whether the :purge action has anything to do. Defaults to the same
+      # check as :remove (removing_package?), since for most package managers
+      # "not currently installed" means there's nothing left to clean up.
+      # Some package managers (e.g. dpkg) can have residual state (like
+      # leftover config files) for a package that reports no installed
+      # version, and override this to purge that state too.
+      #
+      # @return [Boolean]
+      def purging_package?
+        removing_package?
       end
 
       action :lock do
