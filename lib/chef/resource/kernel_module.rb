@@ -102,12 +102,7 @@ class Chef
         default: "/etc/modprobe.d"
 
       action :install, description: "Load kernel module, and ensure it loads on reboot." do
-        with_run_context :root do
-          find_resource(:execute, "update initramfs") do
-            command initramfs_command
-            action :nothing
-          end
-        end
+        declare_initramfs_resource
 
         # Remove the "disable file" before trying to install
         action_enable
@@ -133,12 +128,7 @@ class Chef
       end
 
       action :uninstall, description: "Unload a kernel module and remove module config, so it doesn't load on reboot." do
-        with_run_context :root do
-          find_resource(:execute, "update initramfs") do
-            command initramfs_command
-            action :nothing
-          end
-        end
+        declare_initramfs_resource
 
         file "#{new_resource.load_dir}/#{new_resource.modname}.conf" do
           action :delete
@@ -158,12 +148,7 @@ class Chef
       end
 
       action :blacklist, description: "Blacklist a kernel module." do
-        with_run_context :root do
-          find_resource(:execute, "update initramfs") do
-            command initramfs_command
-            action :nothing
-          end
-        end
+        declare_initramfs_resource
 
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           content "blacklist #{new_resource.modname}"
@@ -174,12 +159,7 @@ class Chef
       end
 
       action :disable, description: "Disable a kernel module. **New in Chef Infra Client 15.2.**" do
-        with_run_context :root do
-          find_resource(:execute, "update initramfs") do
-            command initramfs_command
-            action :nothing
-          end
-        end
+        declare_initramfs_resource
 
         file "#{new_resource.unload_dir}/disable_#{new_resource.modname}.conf" do
           content "install #{new_resource.modname} /bin/false"
@@ -190,12 +170,7 @@ class Chef
       end
 
       action :enable, description: "Enable a kernel module.  Reverse :disable actions" do
-        with_run_context :root do
-          find_resource(:execute, "update initramfs") do
-            command initramfs_command
-            action :nothing
-          end
-        end
+        declare_initramfs_resource
 
         file "#{new_resource.unload_dir}/disable_#{new_resource.modname}.conf" do
           action :delete
@@ -220,6 +195,28 @@ class Chef
       end
 
       action_class do
+        # Declare the shared, root-run-context execute resource that rebuilds
+        # the initramfs.
+        #
+        # The rebuild is triggered by a delayed notification, so it runs at the
+        # end of the run rather than inside this resource's action. That puts it
+        # outside the reach of this resource's own ignore_failure, which is why
+        # the flag has to be carried over explicitly. The resource is shared by
+        # every kernel_module in the run, so once anything asks for a failure
+        # here to be tolerated, it is tolerated.
+        #
+        # @return [Chef::Resource::Execute]
+        def declare_initramfs_resource
+          with_run_context :root do
+            initramfs = find_resource(:execute, "update initramfs") do
+              command initramfs_command
+              action :nothing
+            end
+            initramfs.ignore_failure(new_resource.ignore_failure) if new_resource.ignore_failure
+            initramfs
+          end
+        end
+
         # determine the correct command to regen the initramfs based on platform
         # @return [String]
         def initramfs_command
