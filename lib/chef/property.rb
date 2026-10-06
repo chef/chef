@@ -122,7 +122,9 @@ class Chef
     #     will create a deprecation warning.
     #
     def initialize(**options)
-      options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
+      # `**options` is already a fresh hash owned by this method, so normalize the
+      # keys in place rather than building a second hash to hold the same data.
+      options.transform_keys!(&:to_sym)
       @options = options
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
