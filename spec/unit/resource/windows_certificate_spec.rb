@@ -98,4 +98,13 @@ describe Chef::Resource::WindowsCertificate do
       expect(Chef::Resource::WindowsCertificate.properties[:pfx_password].sensitive?).to be true
     end
   end
+
+  describe "#cert_script" do
+    it "does not raise ArgumentError from an over-argumented PathHelper.cleanpath call" do
+      resource.source "C:\\certs\\test-cert.pfx"
+      provider = resource.provider_for_action(:acl_add)
+      expect { provider.send(:cert_script, false) }.not_to raise_error
+      expect(provider.send(:cert_script, false)).to include("C:/certs/test-cert.pfx")
+    end
+  end
 end
