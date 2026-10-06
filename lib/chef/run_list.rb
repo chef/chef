@@ -132,11 +132,29 @@ class Chef
       self
     end
 
+    # Removes every matching item from the run list and returns the run list
+    # itself so that calls can be chained.
     def remove(item)
       @run_list_items.delete_if { |i| i == item }
       self
     end
-    alias :delete :remove
+
+    # Removes every matching item from the run list, following the semantics of
+    # Array#delete: the deleted item is returned, or nil when nothing matched.
+    # If a block is given it is called and its value returned when nothing
+    # matched. Use #remove instead when you want a chainable call.
+    def delete(item)
+      deleted = nil
+      @run_list_items.delete_if do |i|
+        next false unless i == item
+
+        deleted = i
+        true
+      end
+      return deleted unless deleted.nil?
+
+      block_given? ? yield : nil
+    end
 
     # Expands this run_list: recursively expand roles into their included
     # recipes.
