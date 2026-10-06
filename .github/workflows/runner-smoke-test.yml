@@ -1,0 +1,27 @@
+name: runner-smoke-test
+
+# Throwaway workflow: proves whether the Azure self-hosted Linux runners pick up
+# jobs using the same labels as selfhosted-linux-fips.yml.
+# workflow_dispatch only runs from a workflow file on the default branch, OR you
+# can trigger it on a branch with: gh workflow run runner-smoke-test.yml --ref <branch>
+# (the file must exist on that branch, and GitHub must have indexed it).
+on:
+  workflow_dispatch:
+  push:
+    branches: [scratch/runner-smoke-test]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-linux:
+    # Exact labels from selfhosted-linux-fips.yml
+    runs-on: [self-hosted, x64, Linux, azure]
+    timeout-minutes: 5
+    steps:
+      - name: Who am I
+        run: |
+          echo "Runner: $RUNNER_NAME  OS: $RUNNER_OS  Arch: $RUNNER_ARCH"
+          hostname
+          uname -a
+          id
