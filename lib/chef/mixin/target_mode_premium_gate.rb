@@ -65,7 +65,7 @@ class Chef
 
       def premium_target_mode_node
         resource = new_resource if respond_to?(:new_resource)
-        run_context = resource.run_context if resource&.respond_to?(:run_context)
+        run_context = resource.run_context if resource && resource.respond_to?(:run_context)
         run_context&.node
       end
     end
