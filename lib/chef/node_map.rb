@@ -20,8 +20,7 @@
 # example of a NodeMap entry for the user resource (as typed on the DSL):
 #
 #  :user=>
-#  [{:klass=>Chef::Resource::User::AixUser, :os=>"aix"},
-#   {:klass=>Chef::Resource::User::DsclUser, :os=>"darwin"},
+#  [{:klass=>Chef::Resource::User::DsclUser, :os=>"darwin"},
 #   {:klass=>Chef::Resource::User::PwUser, :os=>"freebsd"},
 #   {:klass=>Chef::Resource::User::LinuxUser, :os=>"linux"},
 #   {:klass=>Chef::Resource::User::SolarisUser,
