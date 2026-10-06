@@ -5,9 +5,11 @@ name: kitchen
   pull_request_target:
     branches:
       - main
+    paths-ignore: ["**.md"]
   push:
     branches:
       - main
+    paths-ignore: ["**.md"]
 
   # allow manual runs
   workflow_dispatch:
