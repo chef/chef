@@ -118,7 +118,7 @@ class Chef
 
     # delegate to the resource
     #
-    def_delegators :@new_resource, :property_is_set?
+    def_delegators :@new_resource, :property_is_set?, :reset_property, :property_description
 
     # @todo this should be a reader, and the action should be passed in the
     # constructor; however, many/most subclasses override the constructor so
