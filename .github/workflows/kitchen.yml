@@ -49,6 +49,10 @@ jobs:
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Checkout PR code
         uses: actions/checkout@v7
         with:
@@ -229,6 +233,10 @@ jobs:
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Checkout PR code
         uses: actions/checkout@v7
         with:
@@ -310,6 +318,10 @@ jobs:
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Checkout PR code
         uses: actions/checkout@v7
         with:
@@ -389,6 +401,10 @@ jobs:
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
       HAB_LICENSE: accept-no-persist
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Checkout PR code
         uses: actions/checkout@v7
         with:

@@ -31,9 +31,13 @@ jobs:
 
         # NOTE!!
         #   Do NOT add other paths here. This is not a general "security"
-        #   check, this is a check to make sure new secrets are not added
-        #   to pull_request_target PRs. That is the ONLY purpose.
-      - name: Detect workflow file changes
+        #   check, this is a check to make sure no new secret-accessing code
+        #   is added/changed on pull_request_target PRs before a human looks
+        #   at it. .expeditor/ is included because its scripts run (with
+        #   secrets such as HAB_AUTH_TOKEN) from several pull_request_target
+        #   workflows (kitchen.yml, selfhosted-linux-fips.yml), so a PR could
+        #   otherwise edit those scripts to exfiltrate secrets on first run.
+      - name: Detect workflow/expeditor file changes
         id: diff
         run: |
           set -euo pipefail
@@ -41,15 +45,15 @@ jobs:
           CHANGED=$(git diff --name-only \
             ${{ github.event.pull_request.base.sha }} \
             ${{ github.event.pull_request.head.sha }} \
-            | grep '^.github/workflows/' || true)
+            | grep -E '^(\.github/workflows/|\.expeditor/)' || true)
 
           if [ -n "$CHANGED" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Workflow files changed:"
+            echo "Workflow/expeditor files changed:"
             echo "$CHANGED"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No workflow changes detected."
+            echo "No workflow/expeditor changes detected."
           fi
 
   approve:
