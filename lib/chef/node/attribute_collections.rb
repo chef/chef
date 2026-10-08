@@ -156,10 +156,6 @@ class Chef
 
       alias :attribute? :has_key?
 
-      def convert_key(key)
-        super
-      end
-
       # Mash uses #convert_value to mashify values on input.
       # We override it here to convert hash or array values to VividMash or
       # AttrArray for consistency and to ensure that the added parts of the
