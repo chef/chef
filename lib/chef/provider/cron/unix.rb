@@ -32,7 +32,7 @@ class Chef
 
         def read_crontab
           crontab = shell_out(%w{/usr/bin/crontab -l}, user: @new_resource.user)
-          status = crontab.status.exitstatus
+          status = command_exitstatus(crontab)
 
           logger.trace crontab.format_for_exception if status > 0
 
@@ -49,12 +49,27 @@ class Chef
           tempcron << crontab
           tempcron.flush
           tempcron.chmod(0644)
+          # ponytail: in Target Mode, `shell_out` runs the given command
+          # *remotely* over Train, but Tempfile.new always writes to the
+          # *local* controller filesystem -- so `crontab <local tempfile
+          # path>` fails remotely with "no such file" (surfaced as a
+          # generic, message-less exit 1). Upload the tempfile content to a
+          # throwaway remote path first and point crontab at that instead;
+          # local (non-Target-Mode) runs are unaffected since crontab_path
+          # just equals tempcron.path there.
+          crontab_path = tempcron.path
+          remote_tempdir = nil
+          if Chef::Config.target_mode?
+            remote_tempdir = ::TargetIO::Dir.mktmpdir("chef-cron")
+            crontab_path = ::File.join(remote_tempdir, "crontab")
+            ::TargetIO::File.upload(tempcron.path, crontab_path)
+          end
           exit_status = 0
           error_message = ""
           begin
-            crontab_write = shell_out("/usr/bin/crontab", tempcron.path, user: @new_resource.user)
+            crontab_write = shell_out("/usr/bin/crontab", crontab_path, user: @new_resource.user)
             stderr = crontab_write.stderr
-            exit_status = crontab_write.status.exitstatus
+            exit_status = command_exitstatus(crontab_write)
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
             if stderr && stderr.include?("errors detected in input, no crontab file generated")
               error_message = stderr
@@ -71,9 +86,16 @@ class Chef
             error_message = e.message
           end
           tempcron.close!
+          ::TargetIO::FileUtils.rm_rf(remote_tempdir) if remote_tempdir
           if exit_status > 0
             raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"
           end
+        end
+
+        def command_exitstatus(command)
+          return command.exitstatus if command.respond_to?(:exitstatus)
+
+          command.status.exitstatus
         end
 
       end

@@ -217,7 +217,16 @@ class Chef
         target = "#{new_resource.config_prefix}/sudoers.d/"
         directory(target)
 
-        Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::TargetIO::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
+        sudoers_path = "#{new_resource.config_prefix}/sudoers"
+        # ponytail: on a real (non-docker) target where the `sudo` package
+        # was never installed, /etc/sudoers doesn't exist yet -- readlines
+        # would raise Errno::ENOENT and crash the whole run. Treat "no
+        # sudoers file at all" the same as "missing the includedir
+        # directive": warn, don't fail, since the sudoers.d file we render
+        # here is still valid once sudo is installed.
+        if !::TargetIO::File.exist?(sudoers_path) || ::TargetIO::File.readlines(sudoers_path).grep(/includedir/).empty?
+          Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because #{sudoers_path} does not exist or lacks the includedir directive that loads configs from #{target}!")
+        end
         file_path = "#{target}#{new_resource.filename}"
 
         if new_resource.template

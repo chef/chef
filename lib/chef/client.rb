@@ -597,6 +597,7 @@ class Chef
     #
     def setup_targetmode
       TargetIO::FileUtils.mkdir_p(Chef::Config[:file_cache_path])
+      load_premium_extensions(node, ohai)
     end
 
     #
@@ -612,8 +613,24 @@ class Chef
     def run_ohai
       filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version init_package} : nil
       ohai.transport_connection = transport_connection if Chef::Config.target_mode?
+      load_premium_extensions(ohai.target_platform_attributes, ohai) if Chef::Config.target_mode?
       ohai.all_plugins(filter)
+      load_premium_extensions(ohai.data, ohai) if Chef::Config.target_mode?
       events.ohai_completed(node)
+    end
+
+    # Premium extensions are optional. Only the optional loader require is
+    # rescued here; failures while loading a matching extension must remain
+    # visible instead of being converted into a false OSS success.
+    def load_premium_extensions(target, ohai)
+      begin
+        require "chef_premium_extensions/loader"
+      rescue LoadError => e
+        logger.debug("Premium Target Mode loader unavailable: #{e.message}; continuing without extensions")
+        return []
+      end
+
+      ChefPremiumExtensions::Loader.load_for(target, ohai: ohai)
     end
 
     #
