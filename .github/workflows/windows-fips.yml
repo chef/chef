@@ -41,10 +41,6 @@ jobs:
       HAB_LICENSE: accept-no-persist
       CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
     steps:
-      - uses: step-security/harden-runner@v2
-        with:
-          egress-policy: audit
-
       - name: Checkout PR code
         uses: actions/checkout@v7
         with:
