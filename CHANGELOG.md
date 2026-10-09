@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.45 -->
-## [v19.4.45](https://github.com/chef/chef/tree/v19.4.45) (2026-10-09)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Remove step-security/harden-runner added in #16406 [#16410](https://github.com/chef/chef/pull/16410) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
 - Remove step-security/harden-runner added in #16406 [#16410](https://github.com/chef/chef/pull/16410) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.45 -->
 - Harden pull_request_target workflows against secret exfiltration [#16406](https://github.com/chef/chef/pull/16406) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.44 -->
 - Symbolize property options once instead of twice [#16274](https://github.com/chef/chef/pull/16274) ([tas50](https://github.com/tas50)) <!-- 19.4.43 -->
