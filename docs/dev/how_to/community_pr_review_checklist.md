@@ -40,6 +40,8 @@ From there you should see a zoom link that links you to the meeting.
 ## Peripheral projects
 - [Chef Zero](https://github.com/chef/chef-zero) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef-zero) [Chef Zero pull requests](https://github.com/chef/chef-zero/pulls)
 - [ffi-yajl](https://github.com/chef/ffi-yajl) ![Open PRs](https://img.shields.io/github/issues-pr/chef/ffi-yajl) [ffi-yajl pull requests](https://github.com/chef/ffi-yajl/pulls)
+- [Chef-Gyoku](https://github.com/chef/chef-gyoku) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chef-gyoku) [Chef-Gyoku pull requests](https://github.com/chef/chef-gyoku/pulls)
+- [License-Acceptance](https://github.com/chef/license-acceptance) ![Open PRs](https://img.shields.io/github/issues-pr/chef/license-acceptance) [License-Acceptance pull requests](https://github.com/chef/license-acceptance/pulls)
 - [Fauxhai](https://github.com/chef/fauxhai) ![Open PRs](https://img.shields.io/github/issues-pr/chef/fauxhai) [Fauxhai pull requests](https://github.com/chef/fauxhai/pulls)
 - [Chefspec](https://github.com/chef/chefspec) ![Open PRs](https://img.shields.io/github/issues-pr/chef/chefspec) [Chefspec pull requests](https://github.com/chef/chefspec/pulls)
 - [Shared Github Workflows](https://github.com/chef/github-workflows) ![Open PRs](https://img.shields.io/github/issues-pr/chef/github-workflows) [Shared Github Workflows pull requests](https://github.com/chef/github-workflows/pulls)
