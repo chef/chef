@@ -115,8 +115,8 @@ When prompted to create a PR:
 When bumping a gem version (e.g. from a mixlib-install update, CVE fix, or routine bump):
 
 - Update the version/constraint in the relevant `.gemspec` (or `Gemfile`) only if the existing constraint doesn't already allow the new version.
-- Run `bundle update --conservative <gem-name>` to update `Gemfile.lock` — this updates only the named gem (and dependencies strictly required by it) without bumping unrelated gems.
-- Include both the exact command run and its full output in the PR description (in a fenced code block), so reviewers can see what changed.
+- Always use `bundle update --conservative <gem-name>` (or `bundle lock --update <gem-name> --conservative` when a plain update bumps unrelated gems) to update `Gemfile.lock`. This updates only the named gem (and dependencies strictly required by it), making the smallest possible change. Never run a bare `bundle update`.
+- Capture the exact command and its full output, plus the resulting `Gemfile.lock` diff, in the PR description (in fenced code blocks). Danger fails the PR if the description has no `--conservative` command output; add `#gemlock_major_upgrade` only for intentional major updates.
 - If the update pulls in a security fix from an upstream PR/issue, summarize the relevant changes (what was fixed, files touched) in the PR description with a link to the upstream PR/issue.
 
 ## MCP Server Integration
