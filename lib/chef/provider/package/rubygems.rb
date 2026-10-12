@@ -387,7 +387,10 @@ class Chef
           end
 
           def candidate_version_from_remote(gem_dependency, *sources)
-            source_args = sources.compact.map { |s| "--source=#{s}" }.join(" ")
+            src = []
+            src << "--clear-sources" if clear_sources?
+            src += sources.compact.map { |s| "--source=#{s}" }
+            source_args = src.join(" ")
             cmd = "#{@gem_binary_location} list #{gem_dependency.name} --remote --all #{source_args}"
             result = shell_out!(cmd)
 
