@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae))
 - Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
 - Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
 - Remove step-security/harden-runner added in #16406 [#16410](https://github.com/chef/chef/pull/16410) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.45 -->
 - Harden pull_request_target workflows against secret exfiltration [#16406](https://github.com/chef/chef/pull/16406) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.44 -->
