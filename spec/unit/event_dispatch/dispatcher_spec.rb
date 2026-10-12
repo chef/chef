@@ -19,6 +19,7 @@
 
 require "spec_helper"
 require "chef/event_dispatch/dispatcher"
+require "timeout"
 
 describe Chef::EventDispatch::Dispatcher do
 
@@ -167,6 +168,47 @@ describe Chef::EventDispatch::Dispatcher do
         [:sink_1_event_2, "two"],
         [:sink_2_event_2, "two"], # then event 2 runs and finishes
       ])
+    end
+  end
+
+  context "when multiple threads dispatch events concurrently" do
+    # the cookbook synchronizer dispatches events from worker threads, so
+    # "in_call" state used to gate re-entrant processing must not leak
+    # between threads the way the thread-local event_list already doesn't.
+    let(:event_sink) do
+      Class.new(Chef::EventDispatch::Base) do
+        def initialize(gate, processed)
+          @gate = gate
+          @processed = processed
+        end
+
+        # blocks the calling thread inside call_subscribers until released,
+        # simulating a slow subscriber
+        def run_start(*)
+          @gate.pop
+        end
+
+        def synchronized_cookbook(*)
+          @processed << :from_other_thread
+        end
+      end
+    end
+
+    it "still processes a second thread's enqueued event instead of stranding it" do
+      gate = Queue.new
+      processed = Queue.new
+      dispatcher.register(event_sink.new(gate, processed))
+
+      thread_a = Thread.new { dispatcher.run_start("1.0.0", nil) }
+      Timeout.timeout(2) { sleep 0.01 until thread_a.status == "sleep" }
+
+      thread_b = Thread.new { dispatcher.synchronized_cookbook("apache2", nil) }
+      thread_b.join(2)
+
+      gate << :release
+      thread_a.join(2)
+
+      expect(processed.pop(true)).to eq(:from_other_thread)
     end
   end
 end
