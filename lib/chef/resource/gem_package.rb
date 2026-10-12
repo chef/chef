@@ -17,6 +17,7 @@
 #
 
 require_relative "package"
+require_relative "../licensing"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
@@ -96,6 +97,12 @@ class Chef
 
       property :options, [ String, Hash, Array, nil ],
         description: "Options for the gem install, either a Hash or a String. When a hash is given, the options are passed to `Gem::DependencyInstaller.new`, and the gem will be installed via the gems API. When a String is given, the gem will be installed by shelling out to the gem command. Using a Hash of options with an explicit gem_binary will result in undefined behavior.",
+        desired_state: false
+
+      property :license_id, String,
+        description: "The Chef license id used to authenticate against a proprietary #{ChefUtils::Dist::Infra::PRODUCT} gem server. Embedded as HTTP Basic Auth credentials on any `http`/`https` URLs in `source`.",
+        default: lazy { Chef::Licensing.license_keys.first },
+        default_description: "The current node's already-persisted Chef license, if any.",
         desired_state: false
     end
   end

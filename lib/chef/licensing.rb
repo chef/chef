@@ -102,6 +102,15 @@ class Chef
         Chef::Application.exit! "Usage error", 1 # Generic failure
       end
 
+      # Currently persisted license keys, if any. Used as the default
+      # license id for authenticating to a proprietary gem server. Never
+      # raises: no license set/available just means no default.
+      def license_keys
+        ChefLicensing.license_keys
+      rescue ChefLicensing::Error, StandardError
+        []
+      end
+
       private
 
       # Returns true when license validation should be skipped.
