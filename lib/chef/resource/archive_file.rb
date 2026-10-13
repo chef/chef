@@ -50,27 +50,37 @@ begin
   if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
     require "open3" unless defined?(Open3)
-    # Dynamically determine the path to the core/libarchive package
-    stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
-    unless status.success?
-      Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
-      return
-    end
+    begin
+      # Dynamically determine the path to the core/libarchive package
+      stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
+      unless status.success?
+        Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
+        return
+      end
 
-    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
-    unless Dir.exist?(habitat_libarchive_path)
-      Chef::Log.debug("Habitat libarchive path not found: #{habitat_libarchive_path}")
-      return
-    end
+      habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
+      unless Dir.exist?(habitat_libarchive_path)
+        Chef::Log.debug("Habitat libarchive path not found: #{habitat_libarchive_path}")
+        return
+      end
 
-    archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
-    unless File.exist?(archive_dll_path)
-      Chef::Log.debug("archive.dll not found in Habitat path: #{habitat_libarchive_path}")
-      return
-    end
+      archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
+      unless File.exist?(archive_dll_path)
+        Chef::Log.debug("archive.dll not found in Habitat path: #{habitat_libarchive_path}")
+        return
+      end
 
-    FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
-    Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+      FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
+      Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+    rescue SystemCallError, IOError => e
+      # `hab` may not be resolvable on PATH in some Habitat packaging configurations
+      # (e.g. when only C:\hab\bin is added to PATH but the hab.exe binary itself was
+      # never placed there). Spawning a missing/unreachable executable can raise
+      # Errno::ENOENT or, on Windows, Errno::EACCES, which previously aborted this
+      # entire require and broke chef-client startup. Degrade gracefully instead and
+      # fall back to the default FFI library search behavior.
+      Chef::Log.debug("Unable to resolve Habitat libarchive path via `hab`: #{e.message}")
+    end
   end
 
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
