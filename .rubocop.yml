@@ -4,7 +4,8 @@
 #  delete mode 100644 spec/unit/version_constraint_spec.rb
 #  delete mode 100644 spec/unit/version_string_spec.rb
 #  sample pull req sync.
-
+# sample check bro
+#
 AllCops:
 
   TargetRubyVersion: 2.6
