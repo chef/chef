@@ -20,6 +20,7 @@
 
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
+
 begin
   # The explicit call to FFI::DynamicLibrary.open was added to address an issue specific to the Habitat packaging of Chef Infra Client on windows.
   # In the Habitat environment, the libarchive library (archive.dll) is installed in a non-standard location that is not included
@@ -50,27 +51,44 @@ begin
   if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
     require "open3" unless defined?(Open3)
-    # Dynamically determine the path to the core/libarchive package
-    stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
-    unless status.success?
-      Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
-      return
+
+    archive_dll_path = nil
+
+    # 1. Directories the Habitat plan already put on RUBY_DLL_PATH (no hab CLI needed)
+    ENV["RUBY_DLL_PATH"].to_s.split(File::PATH_SEPARATOR).each do |dir|
+      candidate = File.join(dir.tr("\\", "/"), "archive.dll")
+      if File.exist?(candidate)
+        archive_dll_path = candidate
+        break
+      end
     end
 
-    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
-    unless Dir.exist?(habitat_libarchive_path)
-      Chef::Log.debug("Habitat libarchive path not found: #{habitat_libarchive_path}")
-      return
+    # 2. Derive the hab root from this file's location, e.g. C:/hab/pkgs/chef/...
+    if archive_dll_path.nil? && (hab_root = __FILE__.tr("\\", "/")[%r{\A(.*?/hab)/pkgs/}, 1])
+      archive_dll_path = Dir.glob("#{hab_root}/pkgs/core/libarchive/*/*/bin/archive.dll").max
     end
 
-    archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
-    unless File.exist?(archive_dll_path)
-      Chef::Log.debug("archive.dll not found in Habitat path: #{habitat_libarchive_path}")
-      return
+    # 3. Last resort: ask the hab CLI, which may not be on PATH (e.g. SYSTEM / MSI sessions)
+    if archive_dll_path.nil?
+      begin
+        stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
+        if status.success?
+          candidate = File.join(stdout.strip.tr("\\", "/"), "bin", "archive.dll")
+          archive_dll_path = candidate if File.exist?(candidate)
+        else
+          Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
+        end
+      rescue SystemCallError => e
+        Chef::Log.debug("hab CLI not available to locate libarchive: #{e.message}")
+      end
     end
 
-    FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
-    Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+    if archive_dll_path
+      FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY)
+      Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+    else
+      Chef::Log.debug("archive.dll not located via Habitat; relying on default library search paths")
+    end
   end
 
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
