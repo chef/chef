@@ -195,7 +195,7 @@ RSpec.describe ChefConfig::Config do
     # if TTY and not(force-logger)
     #   formatter = configured formatter or default formatter
     #   formatter goes to STDOUT/ERR
-    #   if log file is writeable
+    #   if log file is writable
     #     log level is configured level or info
     #     log location is file
     #   else

@@ -394,7 +394,7 @@ module ChefConfig
       end
     end
 
-    # Returns true only if the path exists and is readable and writeable for the user.
+    # Returns true only if the path exists and is readable and writable for the user.
     #
     # @param path [String]
     def self.path_accessible?(path)
