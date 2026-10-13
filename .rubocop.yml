@@ -3,7 +3,7 @@
 #  delete mode 100644 spec/unit/version_constraint/platform_spec.rb
 #  delete mode 100644 spec/unit/version_constraint_spec.rb
 #  delete mode 100644 spec/unit/version_string_spec.rb
-# 
+#  sample pull req sync.
 
 AllCops:
 
