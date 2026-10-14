@@ -50,38 +50,10 @@ begin
   # "hab/pkgs".
   if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
-    require "open3" unless defined?(Open3)
+    require_relative "archive_dll_locator"
 
-    archive_dll_path = nil
-
-    # 1. Directories the Habitat plan already put on RUBY_DLL_PATH (no hab CLI needed)
-    ENV["RUBY_DLL_PATH"].to_s.split(File::PATH_SEPARATOR).each do |dir|
-      candidate = File.join(dir.tr("\\", "/"), "archive.dll")
-      if File.exist?(candidate)
-        archive_dll_path = candidate
-        break
-      end
-    end
-
-    # 2. Derive the hab root from this file's location, e.g. C:/hab/pkgs/chef/...
-    if archive_dll_path.nil? && (hab_root = __FILE__.tr("\\", "/")[%r{\A(.*?/hab)/pkgs/}, 1])
-      archive_dll_path = Dir.glob("#{hab_root}/pkgs/core/libarchive/*/*/bin/archive.dll").max
-    end
-
-    # 3. Last resort: ask the hab CLI, which may not be on PATH (e.g. SYSTEM / MSI sessions)
-    if archive_dll_path.nil?
-      begin
-        stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
-        if status.success?
-          candidate = File.join(stdout.strip.tr("\\", "/"), "bin", "archive.dll")
-          archive_dll_path = candidate if File.exist?(candidate)
-        else
-          Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
-        end
-      rescue SystemCallError => e
-        Chef::Log.debug("hab CLI not available to locate libarchive: #{e.message}")
-      end
-    end
+    # Search order: RUBY_DLL_PATH, then the hab CLI, then a search of the hab root.
+    archive_dll_path = Chef::Resource::ArchiveDllLocator.find(source_file: __FILE__)
 
     if archive_dll_path
       FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY)
