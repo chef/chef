@@ -20,6 +20,7 @@
 
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
+
 begin
   # The explicit call to FFI::DynamicLibrary.open was added to address an issue specific to the Habitat packaging of Chef Infra Client on windows.
   # In the Habitat environment, the libarchive library (archive.dll) is installed in a non-standard location that is not included
@@ -49,28 +50,17 @@ begin
   # "hab/pkgs".
   if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
-    require "open3" unless defined?(Open3)
-    # Dynamically determine the path to the core/libarchive package
-    stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
-    unless status.success?
-      Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
-      return
-    end
+    require_relative "archive_dll_locator"
 
-    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
-    unless Dir.exist?(habitat_libarchive_path)
-      Chef::Log.debug("Habitat libarchive path not found: #{habitat_libarchive_path}")
-      return
-    end
+    # Search order: RUBY_DLL_PATH, then the hab CLI, then a search of the hab root.
+    archive_dll_path = Chef::Resource::ArchiveDllLocator.find(source_file: __FILE__)
 
-    archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
-    unless File.exist?(archive_dll_path)
-      Chef::Log.debug("archive.dll not found in Habitat path: #{habitat_libarchive_path}")
-      return
+    if archive_dll_path
+      FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY)
+      Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+    else
+      Chef::Log.debug("archive.dll not located via Habitat; relying on default library search paths")
     end
-
-    FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
-    Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
   end
 
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
