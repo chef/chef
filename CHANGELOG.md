@@ -1,19 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.46 -->
-## [v19.4.46](https://github.com/chef/chef/tree/v19.4.46) (2026-10-14)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Updating the archive dll loader, it was failing when installed via migration tool + msi. [#16417](https://github.com/chef/chef/pull/16417) ([johnmccrae](https://github.com/johnmccrae))
-- Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae))
-- Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae))
+- Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.3.15 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.46 -->
 - Updating the archive dll loader, it was failing when installed via migration tool + msi. [#16417](https://github.com/chef/chef/pull/16417) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.46 -->
 - Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
 - Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
