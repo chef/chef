@@ -65,6 +65,11 @@ jobs:
           # Generate the origin key for signing packages
           hab origin key generate "$env:HAB_ORIGIN"
 
+      - name: 'Build chef-powershell test artifact'
+        run: |
+          . .\scripts\prepare-chef-powershell.ps1 -ChefRepoRoot $PWD
+          echo "CHEF_POWERSHELL_BIN=$env:CHEF_POWERSHELL_BIN" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       - name: 'Build Habitat Package of Chef Infra Client'
         run: |
           # Build the package for current checkout

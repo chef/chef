@@ -34,6 +34,9 @@ hab origin key generate $env:HAB_ORIGIN
 $project_root = "$(git rev-parse --show-toplevel)"
 Set-Location $project_root
 
+Write-Host "--- :construction: Building chef-powershell test artifact"
+. .\scripts\prepare-chef-powershell.ps1 -ChefRepoRoot $project_root
+
 Write-Host "--- :construction: Building $Plan"
 $env:DO_CHECK=$true; $env:HAB_REFRESH_CHANNEL="base-2025"; hab pkg build .
 if (-not $?) { throw "unable to build"}
