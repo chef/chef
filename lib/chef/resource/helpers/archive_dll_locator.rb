@@ -18,7 +18,7 @@
 require "open3" unless defined?(Open3)
 
 class Chef
-  class Resource
+  module ResourceHelpers
     # Locates archive.dll for a Habitat-packaged Chef on Windows. Sources are
     # tried from most to least authoritative so that a stray or older libarchive
     # package on the machine is only used when nothing more specific exists:

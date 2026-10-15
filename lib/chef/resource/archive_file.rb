@@ -50,10 +50,10 @@ begin
   # "hab/pkgs".
   if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
-    require_relative "archive_dll_locator"
+    require_relative "helpers/archive_dll_locator"
 
     # Search order: RUBY_DLL_PATH, then the hab CLI, then a search of the hab root.
-    archive_dll_path = Chef::Resource::ArchiveDllLocator.find(source_file: __FILE__)
+    archive_dll_path = Chef::ResourceHelpers::ArchiveDllLocator.find(source_file: __FILE__)
 
     if archive_dll_path
       FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY)
