@@ -58,13 +58,41 @@ class Chef
         @diff.join("\\n")
       end
 
-      def use_tempfile_if_missing(file)
+      # @param file [String] path to check/stage for diffing
+      # @param local [Boolean] whether `file` is always a path on the chef-client
+      #   host itself (e.g. an already-rendered content tempfile), as opposed to a
+      #   path on the Target Mode target node. Local paths must never be checked
+      #   for existence or downloaded via the target transport connection -- under
+      #   Target Mode there is no remote equivalent of that path to look up, and
+      #   doing so would incorrectly report the file as missing (or, for
+      #   coincidentally-colliding path names, attempt to download the wrong file).
+      def use_tempfile_if_missing(file, local: false)
         tempfile = nil
-        unless TargetIO::File.exist?(file)
+
+        if local
+          unless ::File.exist?(file)
+            Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
+            tempfile = Tempfile.new("chef-diff")
+            file = tempfile.path
+          end
+        elsif ChefConfig::Config.target_mode? && TargetIO::File.exist?(file)
+          # The remote (target node) file exists -- stage a local copy of its
+          # content so the rest of the diffing logic can work purely with local
+          # paths. TargetIO::File.read already handles the sudo-aware staging
+          # dance (see TargetIO::Support#read_file), so this works even when the
+          # remote file is only readable by root over a `sudo`-enabled Target
+          # Mode connection, unlike a raw/unprivileged transport_connection.download.
+          tempfile = Tempfile.new("chef-diff")
+          tempfile.binmode
+          tempfile.write(TargetIO::File.read(file))
+          tempfile.close
+          file = tempfile.path
+        elsif !TargetIO::File.exist?(file)
           Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
         end
+
         yield file
         unless tempfile.nil?
           tempfile.close
@@ -74,7 +102,10 @@ class Chef
 
       def diff(old_file, new_file)
         use_tempfile_if_missing(old_file) do |old_file|
-          use_tempfile_if_missing(new_file) do |new_file|
+          # new_file is always a local tempfile with already-rendered content
+          # (see Chef::Provider::File#do_contents_changes), never a path that
+          # exists on the Target Mode target node -- it must be treated as local.
+          use_tempfile_if_missing(new_file, local: true) do |new_file|
             @error = do_diff(old_file, new_file)
           end
         end
@@ -131,19 +162,10 @@ class Chef
         diff_filesize_threshold = Chef::Config[:diff_filesize_threshold]
         diff_output_threshold = Chef::Config[:diff_output_threshold]
 
-        # Download files for diffs in Target Mode, then work locally
-        if ChefConfig::Config.target_mode?
-          connection = Chef.run_context&.transport_connection
-
-          old_copy = Tempfile.new(old_file)
-          connection.download(old_file, old_copy.path) if connection.file(old_file).exist?
-          old_file = old_copy.path
-
-          new_copy = Tempfile.new(new_file)
-          connection.download(new_file, new_copy.path) if connection.file(new_file).exist?
-          new_file = new_copy.path
-        end
-
+        # By the time do_diff is called, both old_file and new_file have
+        # already been staged to local paths with local content by
+        # use_tempfile_if_missing (which also handles the Target Mode case of
+        # downloading remote content via the sudo-aware TargetIO::File.read).
         if ::File.size(old_file) > diff_filesize_threshold || ::File.size(new_file) > diff_filesize_threshold
           return "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)"
         end
