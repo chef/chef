@@ -1,0 +1,37 @@
+name: runner-smoke-test
+
+# Throwaway workflow: isolates why self-hosted jobs stay queued.
+# Each job uses a different label set; see which ones get picked up.
+on:
+  workflow_dispatch:
+  push:
+    branches: [scratch/runner-smoke-test]
+
+permissions:
+  contents: read
+
+jobs:
+  a-azure-only:
+    runs-on: [self-hosted, azure]
+    timeout-minutes: 5
+    steps:
+      - run: echo "A ok on $RUNNER_NAME ($RUNNER_OS)"
+
+  b-linux-exact-case:
+    runs-on: [self-hosted, Linux, X64, azure]
+    timeout-minutes: 5
+    steps:
+      - run: echo "B ok on $RUNNER_NAME ($RUNNER_OS)"
+
+  c-windows:
+    runs-on: [self-hosted, Windows, X64, azure]
+    timeout-minutes: 5
+    steps:
+      - run: echo "C ok on $env:RUNNER_NAME ($env:RUNNER_OS)"
+        shell: pwsh
+
+  d-linux-lowercase:
+    runs-on: [self-hosted, x64, linux, azure]
+    timeout-minutes: 5
+    steps:
+      - run: echo "D ok on $RUNNER_NAME ($RUNNER_OS)"
