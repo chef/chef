@@ -1,7 +1,7 @@
 require "spec_helper"
-require "chef/resource/archive_dll_locator"
+require "chef/resource/helpers/archive_dll_locator"
 
-describe Chef::Resource::ArchiveDllLocator do
+describe Chef::ResourceHelpers::ArchiveDllLocator do
   let(:locator) { described_class }
   let(:ok_status) { instance_double(Process::Status, success?: true) }
   let(:fail_status) { instance_double(Process::Status, success?: false) }
