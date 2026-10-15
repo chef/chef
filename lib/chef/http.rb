@@ -337,7 +337,7 @@ class Chef
 
     # Matches any character that is not valid, unescaped, in a URI (per RFC 3986
     # unreserved + reserved + '%' so that existing percent-escapes are preserved).
-    UNSAFE_URI_CHARS = /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,\[\]%]/.freeze
+    UNSAFE_URI_CHARS = %r{[^\-_.!~*'()a-zA-Z\d;/?:@&=+$,\[\]%]}
     private_constant :UNSAFE_URI_CHARS
 
     # @api private
