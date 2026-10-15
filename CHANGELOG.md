@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Adjusting the version in Notice.txt [#16427](https://github.com/chef/chef/pull/16427) ([johnmccrae](https://github.com/johnmccrae))
 - Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adjusting the version in Notice.txt [#16427](https://github.com/chef/chef/pull/16427) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.46 -->
 - Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.46 -->
 - Updating the archive dll loader, it was failing when installed via migration tool + msi. [#16417](https://github.com/chef/chef/pull/16417) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.46 -->
 - Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
