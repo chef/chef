@@ -213,7 +213,7 @@ class Chef
 
       action :uninstall, description: "Uninstall Chocolatey package manager" do
         path = "c:\\programdata\\chocolatey\\bin"
-        if File.exists?(path)
+        if ::File.exist?(path)
           converge_by("Uninstall Choco") do
             powershell_code = <<~CODE
               Remove-Item $env:ALLUSERSPROFILE\\chocolatey -Recurse -Force
