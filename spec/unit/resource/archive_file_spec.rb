@@ -41,7 +41,7 @@ ARCHIVE_EXTRACT_EXPECTED_FLAGS = Archive::EXTRACT_TIME |
   Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
   Archive::EXTRACT_SECURE_SYMLINKS
 
-describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_windows do
+describe Chef::Resource::ArchiveFile, :not_supported_on_aix do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }

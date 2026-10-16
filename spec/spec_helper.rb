@@ -37,6 +37,15 @@ require "rspec/mocks"
 require "rexml/document"
 require "webmock/rspec"
 
+# Must run before `require "chef"`: chef eagerly loads
+# lib/chef/resource/archive_file.rb, which requires "ffi-libarchive" at
+# load time. On Windows, ffi-libarchive can only find its native DLL
+# (archive.dll) if this helper has already registered the Habitat
+# core/libarchive bin directory as a DLL search path -- doing this any
+# later means the require already failed and Archive::Reader was never
+# defined.
+require "spec/support/ruby_installer"
+
 require "chef"
 
 require "chef/resource_resolver"
@@ -68,7 +77,6 @@ end
 require "spec/support/local_gems" if File.exist?(File.join(File.dirname(__FILE__), "support", "local_gems.rb"))
 
 # Explicitly require spec helpers that need to load first
-require "spec/support/ruby_installer"
 require "spec/support/platform_helpers"
 require "spec/support/shared/unit/mock_shellout"
 
