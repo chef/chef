@@ -61,8 +61,7 @@ class Chef
         default: "#{ChefUtils::Dist::Infra::PRODUCT} periodic execution"
 
       property :user, String,
-        description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
-        default: "root"
+        description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as. The default is to write no `User=` directive at all, which systemd treats as `root`."
 
       property :delay_after_boot, String,
         description: "The time to wait after booting before the interval starts. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
@@ -182,6 +181,7 @@ class Chef
             "Install" => { "WantedBy" => "multi-user.target" },
           }
 
+          unit["Service"]["User"] = new_resource.user if new_resource.user
           unit["Service"]["UMask"] = new_resource.service_umask if new_resource.service_umask
           unit["Service"]["ConditionACPower"] = "true" unless new_resource.run_on_battery
           unit["Service"]["CPUQuota"] = "#{new_resource.cpu_quota}%" if new_resource.cpu_quota
