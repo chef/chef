@@ -10,124 +10,126 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress))
 <!-- latest_release -->
 
-<!-- release_rollup since=19.3.15 -->
+<!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update NOTICE for 19.4.46 [#16431](https://github.com/chef/chef/pull/16431) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.46 -->
-- Adjusting the version in Notice.txt [#16427](https://github.com/chef/chef/pull/16427) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.46 -->
-- Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.46 -->
-- Updating the archive dll loader, it was failing when installed via migration tool + msi. [#16417](https://github.com/chef/chef/pull/16417) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.46 -->
-- Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
-- Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.45 -->
-- Remove step-security/harden-runner added in #16406 [#16410](https://github.com/chef/chef/pull/16410) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.45 -->
-- Harden pull_request_target workflows against secret exfiltration [#16406](https://github.com/chef/chef/pull/16406) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.44 -->
-- Symbolize property options once instead of twice [#16274](https://github.com/chef/chef/pull/16274) ([tas50](https://github.com/tas50)) <!-- 19.4.43 -->
-- Updating Rubyzip and chef-winrm-fs [#16402](https://github.com/chef/chef/pull/16402) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.42 -->
-- update command to work with ubuntu24.04 image [#16400](https://github.com/chef/chef/pull/16400) ([muthuja](https://github.com/muthuja)) <!-- 19.4.41 -->
-- Updating the notice file [#16386](https://github.com/chef/chef/pull/16386) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.40 -->
-- Fix flaky Kitchen Test snap-change-conflict in end_to_end _snap recipe [#16384](https://github.com/chef/chef/pull/16384) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.39 -->
-- CHEF-38211: Update mixlib-archive to 1.3.6 [#16381](https://github.com/chef/chef/pull/16381) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.38 -->
-- update version resolution for sboms [#16379](https://github.com/chef/chef/pull/16379) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.37 -->
-- Fix sensitive properties leaking values on validation failure [#16300](https://github.com/chef/chef/pull/16300) ([tas50](https://github.com/tas50)) <!-- 19.4.36 -->
-- Fix Target Mode: Dir.tmpdir resolves local host tmp dir instead of remote target&#39;s [#16354](https://github.com/chef/chef/pull/16354) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.35 -->
-- Stabilize intermittent Bundler git-clone hardlink race in GitHub Actions [#16372](https://github.com/chef/chef/pull/16372) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.34 -->
-- Trust Homebrew tap before tapping so homebrew_tap survives Homebrew&#39;s Tap Trust enforcement [#16367](https://github.com/chef/chef/pull/16367) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.33 -->
-- Stop the dscl group provider mutating new_resource.gid [#16326](https://github.com/chef/chef/pull/16326) ([tas50](https://github.com/tas50)) <!-- 19.4.32 -->
-- Respect the timeout property in homebrew_package [#16328](https://github.com/chef/chef/pull/16328) ([tas50](https://github.com/tas50)) <!-- 19.4.31 -->
-- Update to Cookstyle 9.0 and fix the new offenses [#16329](https://github.com/chef/chef/pull/16329) ([tas50](https://github.com/tas50)) <!-- 19.4.30 -->
-- Fix undefined method mode_to_s in TargetIO::TrainCompat::FileUtils.chmod_R [#16355](https://github.com/chef/chef/pull/16355) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.29 -->
-- Fix debian-11 kitchen (dokken) apt-get update failure from expired bullseye-security [#16360](https://github.com/chef/chef/pull/16360) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.28 -->
-- Fix expired bullseye-security Release causing apt-get update failure in CI [#16359](https://github.com/chef/chef/pull/16359) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.27 -->
-- Stop windows_update_settings writing unset WSUS values [#16331](https://github.com/chef/chef/pull/16331) ([tas50](https://github.com/tas50)) <!-- 19.4.26 -->
-- Updating Inspec and inspec-core and inspec-core-bin to 7.2.1 [#16345](https://github.com/chef/chef/pull/16345) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.25 -->
-- update json gem to 2.21.2 to fix CVE-2026-71847 [#16349](https://github.com/chef/chef/pull/16349) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.24 -->
-- only use major.minor for version in blackduck [#16346](https://github.com/chef/chef/pull/16346) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.23 -->
-- resolve habitat dependencies and merge into blackduck sbom [#16339](https://github.com/chef/chef/pull/16339) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.23 -->
-- Fix umask property to accept Integer values [#16260](https://github.com/chef/chef/pull/16260) ([vatsalp2008](https://github.com/vatsalp2008)) <!-- 19.4.22 -->
-- Fix sysctl resource failing to reload on Debian 13 / trixie [#16304](https://github.com/chef/chef/pull/16304) ([tas50](https://github.com/tas50)) <!-- 19.4.21 -->
-- Fix restore_security_context always passing restorecon -R [#16302](https://github.com/chef/chef/pull/16302) ([tas50](https://github.com/tas50)) <!-- 19.4.20 -->
-- Fix Security.set_security_descriptor_dacl missing self. [#16290](https://github.com/chef/chef/pull/16290) ([tas50](https://github.com/tas50)) <!-- 19.4.19 -->
-- Fix NoMethodError in data collector http output locations [#16289](https://github.com/chef/chef/pull/16289) ([tas50](https://github.com/tas50)) <!-- 19.4.18 -->
-- add hab license acceptance to hab command [#16312](https://github.com/chef/chef/pull/16312) ([Stromweld](https://github.com/Stromweld)) <!-- 19.4.17 -->
-- Fix linux-fips CI: clean up stale Habitat studios before build [#16316](https://github.com/chef/chef/pull/16316) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.16 -->
-- Bump webmock from 3.26.2 to 3.26.3 [#16313](https://github.com/chef/chef/pull/16313) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.15 -->
-- CHEF-37586: Restore Windows system PATH entries in Chef 19 Habitat-based packaging [#16310](https://github.com/chef/chef/pull/16310) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.14 -->
-- Parameterize apt_update.ignore_failure in the apt_repository resource [#16262](https://github.com/chef/chef/pull/16262) ([fretb](https://github.com/fretb)) <!-- 19.4.13 -->
-- Restore Windows kitchen recipes after upstream libarchive fix [#16250](https://github.com/chef/chef/pull/16250) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.12 -->
-- docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.11 -->
-- use rmdir instead of remove-item for windows plans [#16238](https://github.com/chef/chef/pull/16238) ([rishichawda](https://github.com/rishichawda)) <!-- 19.4.10 -->
-- Temporarily skip habitat_install archive_file in Windows kitchen [#16249](https://github.com/chef/chef/pull/16249) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.9 -->
-- Widen ffi-yajl version constraint [#16240](https://github.com/chef/chef/pull/16240) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.8 -->
-- Temporarily skip archive_file test in Windows kitchen [#16247](https://github.com/chef/chef/pull/16247) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.7 -->
-- Update Ruby to 3.4.10 in all Habitat plans [#16242](https://github.com/chef/chef/pull/16242) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.6 -->
-- Fix selfhosted-linux-fips to checkout PR head instead of base [#16246](https://github.com/chef/chef/pull/16246) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.5 -->
-- Remove experimental tag warning from target mode [#16088](https://github.com/chef/chef/pull/16088) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.4 -->
-- [CookbookManifest] Add relative directory cache [#16207](https://github.com/chef/chef/pull/16207) ([dafyddcrosby](https://github.com/dafyddcrosby)) <!-- 19.4.3 -->
-- Fix intermittent git hardlink error during bundle install in gem_tests [#16227](https://github.com/chef/chef/pull/16227) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.2 -->
-- Add allow-unsafe-pr-checkout to macOS kitchen job [#16225](https://github.com/chef/chef/pull/16225) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.1 -->
-- Bump actions/checkout from 6 to 7 [#16218](https://github.com/chef/chef/pull/16218) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.0 -->
-- Lower &#39;No key detected&#39; log level from puts to Chef::Log.debug [#16222](https://github.com/chef/chef/pull/16222) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.65 -->
-- Fix FIPS mode on Linux: set OPENSSL_CONF to hab openssl package config [#16221](https://github.com/chef/chef/pull/16221) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.64 -->
-- Ensuring we don&#39;t load a CVE version of concurrent-ruby [#16216](https://github.com/chef/chef/pull/16216) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.63 -->
-- Fix chef_client_* resource in non-hab builds [#16089](https://github.com/chef/chef/pull/16089) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.3.62 -->
-- fix: Constrain ffi-yajl to &lt; 3.0 for Ruby 3.2+ compatibility [#16152](https://github.com/chef/chef/pull/16152) ([nikhil2611](https://github.com/nikhil2611)) <!-- 19.3.61 -->
-- CHEF-34369: Add macOS ARM64 kitchen test pipeline using Habitat and chef-test-kitchen-enterprise [#16174](https://github.com/chef/chef/pull/16174) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.60 -->
-- Update files after a Grype report suggests issues [#16205](https://github.com/chef/chef/pull/16205) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.59 -->
-- Updated files for cookstyle [#16201](https://github.com/chef/chef/pull/16201) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.58 -->
-- Dependabot: add groups [#16193](https://github.com/chef/chef/pull/16193) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.57 -->
-- Fix fork workflows [#16194](https://github.com/chef/chef/pull/16194) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.56 -->
-- Bump aws-sdk-s3 from 1.226.0 to 1.227.0 [#16189](https://github.com/chef/chef/pull/16189) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.55 -->
-- Bump actions/labeler from 6.1.0 to 6.2.0 [#16187](https://github.com/chef/chef/pull/16187) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.54 -->
-- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16145](https://github.com/chef/chef/pull/16145) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.53 -->
-- Bump ohai from `f96614f` to `b703336` [#16140](https://github.com/chef/chef/pull/16140) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.52 -->
-- Bump actions/checkout from 6 to 7 [#16126](https://github.com/chef/chef/pull/16126) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.51 -->
-- Update linux-fips name [#16185](https://github.com/chef/chef/pull/16185) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.50 -->
-- Add workflow_dispatch to windows-fips and linux-fips workflows [#16184](https://github.com/chef/chef/pull/16184) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.49 -->
-- Fix SHA exit consistency in selfhosted FIPS Linux workflow; skip in allchecks until 2026-07-22 [#16183](https://github.com/chef/chef/pull/16183) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.48 -->
-- FIPS validation: Test invalid, boundary SHA256, and clearly valid SHA512 [#16179](https://github.com/chef/chef/pull/16179) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.47 -->
-- Add a DangerJS check to prevent tests that depend on secrets [#16172](https://github.com/chef/chef/pull/16172) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.46 -->
-- Fix chronoguard: bump timeout a month [#16171](https://github.com/chef/chef/pull/16171) ([jaymzh](https://github.com/jaymzh)) <!-- 19.3.45 -->
-- update macos workflow with pull request target [#16173](https://github.com/chef/chef/pull/16173) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.44 -->
-- promote to base alongside base-2025 [#15998](https://github.com/chef/chef/pull/15998) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.43 -->
-- adhoc pipeline build for mac arm [#16130](https://github.com/chef/chef/pull/16130) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.43 -->
-- build aarch64-darwin plan and set up github workflows [#16115](https://github.com/chef/chef/pull/16115) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.42 -->
-- fix notice file path and error instead of silent warning [#16153](https://github.com/chef/chef/pull/16153) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.41 -->
-- Bump chef-vault from 4.2.9 to 4.2.12 [#16127](https://github.com/chef/chef/pull/16127) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.40 -->
-- update habitat arm package build and promotion step [#15986](https://github.com/chef/chef/pull/15986) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.39 -->
-- Update Inspec to 7.1.7 [#16135](https://github.com/chef/chef/pull/16135) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.39 -->
-- bump required hab in ci to 2.1.23 [#16133](https://github.com/chef/chef/pull/16133) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.38 -->
-- Bump ohai from `b3a3ae3` to `f96614f` [#16128](https://github.com/chef/chef/pull/16128) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.38 -->
-- Bump danger/danger-js from 13.0.5 to 13.0.8 [#16123](https://github.com/chef/chef/pull/16123) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.37 -->
-- Bump faraday from 2.14.1 to 2.14.3 [#16132](https://github.com/chef/chef/pull/16132) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.36 -->
-- set missing sensitive flag for chef resources  [#16107](https://github.com/chef/chef/pull/16107) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.35 -->
-- Bump aws-sdk-secretsmanager from 1.132.0 to 1.133.0 [#16079](https://github.com/chef/chef/pull/16079) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.34 -->
-- modify habitat version updates [#15995](https://github.com/chef/chef/pull/15995) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.33 -->
-- Bump aws-sdk-s3 from 1.224.0 to 1.226.0 [#16113](https://github.com/chef/chef/pull/16113) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.32 -->
-- Bump ohai from `966bc8b` to `b3a3ae3` [#16117](https://github.com/chef/chef/pull/16117) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.31 -->
-- Bump macOS kitchen.yml fail-after to 2026-07-01 [#16111](https://github.com/chef/chef/pull/16111) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.30 -->
-- fix archive_file path traversal [#16095](https://github.com/chef/chef/pull/16095) ([rishichawda](https://github.com/rishichawda)) <!-- 19.3.29 -->
-- CHEF-32929: Fix intermittent NoMethodError race condition in authenticator on Windows (Chef 19) [#16091](https://github.com/chef/chef/pull/16091) ([neha-p6](https://github.com/neha-p6)) <!-- 19.3.28 -->
-- CHEF-14144: Limit excessive output from template errors [#16073](https://github.com/chef/chef/pull/16073) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.27 -->
-- tweaking the mcp settings for both cli and vscode [#16083](https://github.com/chef/chef/pull/16083) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.26 -->
-- Disable chrony kitchen test for Rocky Linux 10 [#16082](https://github.com/chef/chef/pull/16082) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.25 -->
-- Fixing chocolatey download bug (cherry-pick from chef-18 PR #15925) [#16036](https://github.com/chef/chef/pull/16036) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.3.24 -->
-- Automatically skip version bumps if CI files [#15687](https://github.com/chef/chef/pull/15687) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.23 -->
-- Obvious fix: Fix sysctl resource idempotency [#16035](https://github.com/chef/chef/pull/16035) ([williamtheaker](https://github.com/williamtheaker)) <!-- 19.3.22 -->
-- Document CVE PR label requirements [#16033](https://github.com/chef/chef/pull/16033) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.21 -->
-- Disable chrony kitchen-tests on AlmaLinux 10 and document branching conventions [#16031](https://github.com/chef/chef/pull/16031) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.3.20 -->
-- Bump ohai from `5b34b04` to `966bc8b` [#16023](https://github.com/chef/chef/pull/16023) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.19 -->
-- Bump aws-sdk-secretsmanager from 1.130.0 to 1.132.0 [#16026](https://github.com/chef/chef/pull/16026) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.18 -->
-- Bump aws-sdk-s3 from 1.222.0 to 1.224.0 [#16028](https://github.com/chef/chef/pull/16028) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.3.17 -->
-- chef_client_config - Added permission overrides for Chef-managed directories [#16019](https://github.com/chef/chef/pull/16019) ([LoboDorado](https://github.com/LoboDorado)) <!-- 19.3.16 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v19.4.46](https://github.com/chef/chef/tree/v19.4.46) (2026-10-19)
+
+#### Merged Pull Requests
+- chef_client_config - Added permission overrides for Chef-managed directories [#16019](https://github.com/chef/chef/pull/16019) ([LoboDorado](https://github.com/LoboDorado))
+- Bump aws-sdk-s3 from 1.222.0 to 1.224.0 [#16028](https://github.com/chef/chef/pull/16028) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump aws-sdk-secretsmanager from 1.130.0 to 1.132.0 [#16026](https://github.com/chef/chef/pull/16026) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ohai from `5b34b04` to `966bc8b` [#16023](https://github.com/chef/chef/pull/16023) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Disable chrony kitchen-tests on AlmaLinux 10 and document branching conventions [#16031](https://github.com/chef/chef/pull/16031) ([tpowell-progress](https://github.com/tpowell-progress))
+- Document CVE PR label requirements [#16033](https://github.com/chef/chef/pull/16033) ([tpowell-progress](https://github.com/tpowell-progress))
+- Obvious fix: Fix sysctl resource idempotency [#16035](https://github.com/chef/chef/pull/16035) ([williamtheaker](https://github.com/williamtheaker))
+- Automatically skip version bumps if CI files [#15687](https://github.com/chef/chef/pull/15687) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fixing chocolatey download bug (cherry-pick from chef-18 PR #15925) [#16036](https://github.com/chef/chef/pull/16036) ([johnmccrae](https://github.com/johnmccrae))
+- Disable chrony kitchen test for Rocky Linux 10 [#16082](https://github.com/chef/chef/pull/16082) ([tpowell-progress](https://github.com/tpowell-progress))
+- tweaking the mcp settings for both cli and vscode [#16083](https://github.com/chef/chef/pull/16083) ([johnmccrae](https://github.com/johnmccrae))
+- CHEF-14144: Limit excessive output from template errors [#16073](https://github.com/chef/chef/pull/16073) ([tpowell-progress](https://github.com/tpowell-progress))
+- CHEF-32929: Fix intermittent NoMethodError race condition in authenticator on Windows (Chef 19) [#16091](https://github.com/chef/chef/pull/16091) ([neha-p6](https://github.com/neha-p6))
+- fix archive_file path traversal [#16095](https://github.com/chef/chef/pull/16095) ([rishichawda](https://github.com/rishichawda))
+- Bump macOS kitchen.yml fail-after to 2026-07-01 [#16111](https://github.com/chef/chef/pull/16111) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump ohai from `966bc8b` to `b3a3ae3` [#16117](https://github.com/chef/chef/pull/16117) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump aws-sdk-s3 from 1.224.0 to 1.226.0 [#16113](https://github.com/chef/chef/pull/16113) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- modify habitat version updates [#15995](https://github.com/chef/chef/pull/15995) ([rishichawda](https://github.com/rishichawda))
+- Bump aws-sdk-secretsmanager from 1.132.0 to 1.133.0 [#16079](https://github.com/chef/chef/pull/16079) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- set missing sensitive flag for chef resources  [#16107](https://github.com/chef/chef/pull/16107) ([rishichawda](https://github.com/rishichawda))
+- Bump faraday from 2.14.1 to 2.14.3 [#16132](https://github.com/chef/chef/pull/16132) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump danger/danger-js from 13.0.5 to 13.0.8 [#16123](https://github.com/chef/chef/pull/16123) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ohai from `b3a3ae3` to `f96614f` [#16128](https://github.com/chef/chef/pull/16128) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- bump required hab in ci to 2.1.23 [#16133](https://github.com/chef/chef/pull/16133) ([rishichawda](https://github.com/rishichawda))
+- Update Inspec to 7.1.7 [#16135](https://github.com/chef/chef/pull/16135) ([johnmccrae](https://github.com/johnmccrae))
+- update habitat arm package build and promotion step [#15986](https://github.com/chef/chef/pull/15986) ([rishichawda](https://github.com/rishichawda))
+- Bump chef-vault from 4.2.9 to 4.2.12 [#16127](https://github.com/chef/chef/pull/16127) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- fix notice file path and error instead of silent warning [#16153](https://github.com/chef/chef/pull/16153) ([rishichawda](https://github.com/rishichawda))
+- build aarch64-darwin plan and set up github workflows [#16115](https://github.com/chef/chef/pull/16115) ([rishichawda](https://github.com/rishichawda))
+- adhoc pipeline build for mac arm [#16130](https://github.com/chef/chef/pull/16130) ([rishichawda](https://github.com/rishichawda))
+- promote to base alongside base-2025 [#15998](https://github.com/chef/chef/pull/15998) ([rishichawda](https://github.com/rishichawda))
+- update macos workflow with pull request target [#16173](https://github.com/chef/chef/pull/16173) ([rishichawda](https://github.com/rishichawda))
+- Fix chronoguard: bump timeout a month [#16171](https://github.com/chef/chef/pull/16171) ([jaymzh](https://github.com/jaymzh))
+- Add a DangerJS check to prevent tests that depend on secrets [#16172](https://github.com/chef/chef/pull/16172) ([jaymzh](https://github.com/jaymzh))
+- FIPS validation: Test invalid, boundary SHA256, and clearly valid SHA512 [#16179](https://github.com/chef/chef/pull/16179) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix SHA exit consistency in selfhosted FIPS Linux workflow; skip in allchecks until 2026-07-22 [#16183](https://github.com/chef/chef/pull/16183) ([tpowell-progress](https://github.com/tpowell-progress))
+- Add workflow_dispatch to windows-fips and linux-fips workflows [#16184](https://github.com/chef/chef/pull/16184) ([neha-p6](https://github.com/neha-p6))
+- Update linux-fips name [#16185](https://github.com/chef/chef/pull/16185) ([jaymzh](https://github.com/jaymzh))
+- Bump actions/checkout from 6 to 7 [#16126](https://github.com/chef/chef/pull/16126) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ohai from `f96614f` to `b703336` [#16140](https://github.com/chef/chef/pull/16140) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump danger/danger-js from 13.0.8 to 13.0.10 [#16145](https://github.com/chef/chef/pull/16145) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump actions/labeler from 6.1.0 to 6.2.0 [#16187](https://github.com/chef/chef/pull/16187) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump aws-sdk-s3 from 1.226.0 to 1.227.0 [#16189](https://github.com/chef/chef/pull/16189) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix fork workflows [#16194](https://github.com/chef/chef/pull/16194) ([jaymzh](https://github.com/jaymzh))
+- Dependabot: add groups [#16193](https://github.com/chef/chef/pull/16193) ([jaymzh](https://github.com/jaymzh))
+- Updated files for cookstyle [#16201](https://github.com/chef/chef/pull/16201) ([johnmccrae](https://github.com/johnmccrae))
+- Update files after a Grype report suggests issues [#16205](https://github.com/chef/chef/pull/16205) ([johnmccrae](https://github.com/johnmccrae))
+- CHEF-34369: Add macOS ARM64 kitchen test pipeline using Habitat and chef-test-kitchen-enterprise [#16174](https://github.com/chef/chef/pull/16174) ([neha-p6](https://github.com/neha-p6))
+- fix: Constrain ffi-yajl to &lt; 3.0 for Ruby 3.2+ compatibility [#16152](https://github.com/chef/chef/pull/16152) ([nikhil2611](https://github.com/nikhil2611))
+- Fix chef_client_* resource in non-hab builds [#16089](https://github.com/chef/chef/pull/16089) ([williamtheaker](https://github.com/williamtheaker))
+- Ensuring we don&#39;t load a CVE version of concurrent-ruby [#16216](https://github.com/chef/chef/pull/16216) ([johnmccrae](https://github.com/johnmccrae))
+- Fix FIPS mode on Linux: set OPENSSL_CONF to hab openssl package config [#16221](https://github.com/chef/chef/pull/16221) ([neha-p6](https://github.com/neha-p6))
+- Lower &#39;No key detected&#39; log level from puts to Chef::Log.debug [#16222](https://github.com/chef/chef/pull/16222) ([neha-p6](https://github.com/neha-p6))
+- Bump actions/checkout from 6 to 7 [#16218](https://github.com/chef/chef/pull/16218) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Add allow-unsafe-pr-checkout to macOS kitchen job [#16225](https://github.com/chef/chef/pull/16225) ([neha-p6](https://github.com/neha-p6))
+- Fix intermittent git hardlink error during bundle install in gem_tests [#16227](https://github.com/chef/chef/pull/16227) ([neha-p6](https://github.com/neha-p6))
+- [CookbookManifest] Add relative directory cache [#16207](https://github.com/chef/chef/pull/16207) ([dafyddcrosby](https://github.com/dafyddcrosby))
+- Remove experimental tag warning from target mode [#16088](https://github.com/chef/chef/pull/16088) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix selfhosted-linux-fips to checkout PR head instead of base [#16246](https://github.com/chef/chef/pull/16246) ([neha-p6](https://github.com/neha-p6))
+- Update Ruby to 3.4.10 in all Habitat plans [#16242](https://github.com/chef/chef/pull/16242) ([neha-p6](https://github.com/neha-p6))
+- Temporarily skip archive_file test in Windows kitchen [#16247](https://github.com/chef/chef/pull/16247) ([neha-p6](https://github.com/neha-p6))
+- Widen ffi-yajl version constraint [#16240](https://github.com/chef/chef/pull/16240) ([tpowell-progress](https://github.com/tpowell-progress))
+- Temporarily skip habitat_install archive_file in Windows kitchen [#16249](https://github.com/chef/chef/pull/16249) ([tpowell-progress](https://github.com/tpowell-progress))
+- use rmdir instead of remove-item for windows plans [#16238](https://github.com/chef/chef/pull/16238) ([rishichawda](https://github.com/rishichawda))
+- docs: update win32-api repo link to chef-win32-api [#16255](https://github.com/chef/chef/pull/16255) ([tpowell-progress](https://github.com/tpowell-progress))
+- Restore Windows kitchen recipes after upstream libarchive fix [#16250](https://github.com/chef/chef/pull/16250) ([neha-p6](https://github.com/neha-p6))
+- Parameterize apt_update.ignore_failure in the apt_repository resource [#16262](https://github.com/chef/chef/pull/16262) ([fretb](https://github.com/fretb))
+- CHEF-37586: Restore Windows system PATH entries in Chef 19 Habitat-based packaging [#16310](https://github.com/chef/chef/pull/16310) ([neha-p6](https://github.com/neha-p6))
+- Bump webmock from 3.26.2 to 3.26.3 [#16313](https://github.com/chef/chef/pull/16313) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Fix linux-fips CI: clean up stale Habitat studios before build [#16316](https://github.com/chef/chef/pull/16316) ([neha-p6](https://github.com/neha-p6))
+- add hab license acceptance to hab command [#16312](https://github.com/chef/chef/pull/16312) ([Stromweld](https://github.com/Stromweld))
+- Fix NoMethodError in data collector http output locations [#16289](https://github.com/chef/chef/pull/16289) ([tas50](https://github.com/tas50))
+- Fix Security.set_security_descriptor_dacl missing self. [#16290](https://github.com/chef/chef/pull/16290) ([tas50](https://github.com/tas50))
+- Fix restore_security_context always passing restorecon -R [#16302](https://github.com/chef/chef/pull/16302) ([tas50](https://github.com/tas50))
+- Fix sysctl resource failing to reload on Debian 13 / trixie [#16304](https://github.com/chef/chef/pull/16304) ([tas50](https://github.com/tas50))
+- Fix umask property to accept Integer values [#16260](https://github.com/chef/chef/pull/16260) ([vatsalp2008](https://github.com/vatsalp2008))
+- resolve habitat dependencies and merge into blackduck sbom [#16339](https://github.com/chef/chef/pull/16339) ([rishichawda](https://github.com/rishichawda))
+- only use major.minor for version in blackduck [#16346](https://github.com/chef/chef/pull/16346) ([rishichawda](https://github.com/rishichawda))
+- update json gem to 2.21.2 to fix CVE-2026-71847 [#16349](https://github.com/chef/chef/pull/16349) ([rishichawda](https://github.com/rishichawda))
+- Updating Inspec and inspec-core and inspec-core-bin to 7.2.1 [#16345](https://github.com/chef/chef/pull/16345) ([johnmccrae](https://github.com/johnmccrae))
+- Stop windows_update_settings writing unset WSUS values [#16331](https://github.com/chef/chef/pull/16331) ([tas50](https://github.com/tas50))
+- Fix expired bullseye-security Release causing apt-get update failure in CI [#16359](https://github.com/chef/chef/pull/16359) ([neha-p6](https://github.com/neha-p6))
+- Fix debian-11 kitchen (dokken) apt-get update failure from expired bullseye-security [#16360](https://github.com/chef/chef/pull/16360) ([neha-p6](https://github.com/neha-p6))
+- Fix undefined method mode_to_s in TargetIO::TrainCompat::FileUtils.chmod_R [#16355](https://github.com/chef/chef/pull/16355) ([neha-p6](https://github.com/neha-p6))
+- Update to Cookstyle 9.0 and fix the new offenses [#16329](https://github.com/chef/chef/pull/16329) ([tas50](https://github.com/tas50))
+- Respect the timeout property in homebrew_package [#16328](https://github.com/chef/chef/pull/16328) ([tas50](https://github.com/tas50))
+- Stop the dscl group provider mutating new_resource.gid [#16326](https://github.com/chef/chef/pull/16326) ([tas50](https://github.com/tas50))
+- Trust Homebrew tap before tapping so homebrew_tap survives Homebrew&#39;s Tap Trust enforcement [#16367](https://github.com/chef/chef/pull/16367) ([neha-p6](https://github.com/neha-p6))
+- Stabilize intermittent Bundler git-clone hardlink race in GitHub Actions [#16372](https://github.com/chef/chef/pull/16372) ([neha-p6](https://github.com/neha-p6))
+- Fix Target Mode: Dir.tmpdir resolves local host tmp dir instead of remote target&#39;s [#16354](https://github.com/chef/chef/pull/16354) ([neha-p6](https://github.com/neha-p6))
+- Fix sensitive properties leaking values on validation failure [#16300](https://github.com/chef/chef/pull/16300) ([tas50](https://github.com/tas50))
+- update version resolution for sboms [#16379](https://github.com/chef/chef/pull/16379) ([rishichawda](https://github.com/rishichawda))
+- CHEF-38211: Update mixlib-archive to 1.3.6 [#16381](https://github.com/chef/chef/pull/16381) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix flaky Kitchen Test snap-change-conflict in end_to_end _snap recipe [#16384](https://github.com/chef/chef/pull/16384) ([neha-p6](https://github.com/neha-p6))
+- Updating the notice file [#16386](https://github.com/chef/chef/pull/16386) ([johnmccrae](https://github.com/johnmccrae))
+- update command to work with ubuntu24.04 image [#16400](https://github.com/chef/chef/pull/16400) ([muthuja](https://github.com/muthuja))
+- Updating Rubyzip and chef-winrm-fs [#16402](https://github.com/chef/chef/pull/16402) ([johnmccrae](https://github.com/johnmccrae))
+- Symbolize property options once instead of twice [#16274](https://github.com/chef/chef/pull/16274) ([tas50](https://github.com/tas50))
+- Harden pull_request_target workflows against secret exfiltration [#16406](https://github.com/chef/chef/pull/16406) ([tpowell-progress](https://github.com/tpowell-progress))
+- Remove step-security/harden-runner added in #16406 [#16410](https://github.com/chef/chef/pull/16410) ([tpowell-progress](https://github.com/tpowell-progress))
+- Updating the Notice file [#16411](https://github.com/chef/chef/pull/16411) ([johnmccrae](https://github.com/johnmccrae))
+- Updating Notice file verison to match the chef version to 19.4.45 for a release [#16412](https://github.com/chef/chef/pull/16412) ([johnmccrae](https://github.com/johnmccrae))
+- Updating the archive dll loader, it was failing when installed via migration tool + msi. [#16417](https://github.com/chef/chef/pull/16417) ([johnmccrae](https://github.com/johnmccrae))
+- Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress))
+- Adjusting the version in Notice.txt [#16427](https://github.com/chef/chef/pull/16427) ([johnmccrae](https://github.com/johnmccrae))
+- Update NOTICE for 19.4.46 [#16431](https://github.com/chef/chef/pull/16431) ([tpowell-progress](https://github.com/tpowell-progress))
+<!-- latest_stable_release -->
+
 ## [v19.3.15](https://github.com/chef/chef/tree/v19.3.15) (2026-05-22)
 
 #### Merged Pull Requests
 - Bump macos chronoguard out one month [#16020](https://github.com/chef/chef/pull/16020) ([tpowell-progress](https://github.com/tpowell-progress))
-<!-- latest_stable_release -->
 
 ## [v19.3.14](https://github.com/chef/chef/tree/v19.3.14) (2026-05-20)
 
