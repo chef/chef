@@ -152,7 +152,7 @@ PATH
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       racc
-      tomlrb (>= 1.2, < 3.0)
+      tomlrb (>= 1.2, < 4.0)
 
 PATH
   remote: chef-utils
@@ -487,7 +487,8 @@ GEM
     time (0.4.2)
       date
     timeout (0.6.1)
-    tomlrb (2.0.4)
+    tomlrb (2.0.5)
+      racc (~> 1.4)
     train-core (3.16.5)
       addressable (~> 2.5)
       ffi (>= 1.16.0, < 1.18)
