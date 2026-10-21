@@ -203,8 +203,8 @@ class Chef
                     EOH
                     powershell_exec(ps_download).error!
                   else
-                    proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy                    ) ? " -Proxy #{ps_quote(new_resource.proxy_url)}" : ""
-                                        powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest #{ps_quote(new_resource.download_url)} -UseBasicParsing#{proxy_param} -OutFile #{ps_quote(nupkg_path)}").error!
+                    proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy ) ? " -Proxy #{ps_quote(new_resource.proxy_url)}" : ""
+                    powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest #{ps_quote(new_resource.download_url)} -UseBasicParsing#{proxy_param} -OutFile #{ps_quote(nupkg_path)}").error!
                   end
                   Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
                 end
