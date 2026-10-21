@@ -363,6 +363,152 @@ describe Chef::Resource::ChocolateyInstaller do
     end
   end
 
+  describe "nupkg download proxy handling" do
+    def download_command(resource)
+      provider = resource.provider_for_action(:install)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(:install).and_return(provider)
+      allow(resource).to receive(:is_choco_installed?).and_return(false)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      allow(Chef::Log).to receive(:info)
+      resource.run_action(:install)
+      commands.find { |c| c.include?("Invoke-WebRequest") }
+    end
+
+    let(:r) do
+      Chef::Resource::ChocolateyInstaller.new("proxy_download", run_context).tap do |res|
+        res.download_url = "https://some.server/chocolatey.nupkg"
+      end
+    end
+
+    it "enables TLS 1.2 and uses basic parsing without a proxy" do
+      download = download_command(r)
+
+      expect(download).to include("-bor 3072")
+      expect(download).to include("-UseBasicParsing")
+      expect(download).not_to include("-Proxy")
+    end
+
+    it "passes -Proxy without credentials when only proxy_url is set" do
+      r.proxy_url = "http://proxy:3128"
+      download = download_command(r)
+
+      expect(download).to include("-Proxy 'http://proxy:3128'")
+      expect(download).not_to include("-ProxyCredential")
+    end
+
+    it "passes -Proxy and -ProxyCredential when proxy_url, proxy_user and proxy_password are set" do
+      r.proxy_url = "http://proxy:3128"
+      r.proxy_user = "someone"
+      r.proxy_password = "secret"
+      download = download_command(r)
+
+      expect(download).to include("-Proxy 'http://proxy:3128'")
+      expect(download).to include("-ProxyCredential $proxyCredential")
+    end
+
+    it "omits the proxy from the download when ignore_proxy is set" do
+      r.proxy_url = "http://proxy:3128"
+      r.ignore_proxy = true
+      download = download_command(r)
+
+      expect(download).not_to include("-Proxy")
+    end
+
+    it "omits the proxy and credentials from the download when ignore_proxy is set with credentials" do
+      r.proxy_url = "http://proxy:3128"
+      r.proxy_user = "someone"
+      r.proxy_password = "secret"
+      r.ignore_proxy = true
+      download = download_command(r)
+
+      expect(download).not_to include("-Proxy")
+      expect(download).not_to include("-ProxyCredential")
+    end
+
+    it "does not download a local drive path or UNC path" do
+      ["C:\\packages\\chocolatey.nupkg", "\\\\server\\share\\chocolatey.nupkg"].each do |path|
+        res = Chef::Resource::ChocolateyInstaller.new("local_#{path.hash}", run_context)
+        res.download_url = path
+
+        expect(download_command(res)).to be_nil
+      end
+    end
+  end
+
+  describe "upgrade command construction" do
+    def upgrade_commands(resource, installed_version: "1.0.0")
+      provider = resource.provider_for_action(:upgrade)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(:upgrade).and_return(provider)
+      allow(resource).to receive(:get_choco_version).and_return(installed_version)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      resource.run_action(:upgrade)
+      commands
+    end
+
+    it "quotes the values it sets" do
+      r = Chef::Resource::ChocolateyInstaller.new("upgrade_quote", run_context)
+      r.download_url = "https://some.server/it's.nupkg"
+      r.chocolatey_version = "2.0.0"
+      r.proxy_url = "http://proxy:3128/'x"
+      commands = upgrade_commands(r)
+
+      expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.server/it''s.nupkg'")
+      expect(commands).to include("Set-Item -path env:ChocolateyVersion -Value '2.0.0'")
+      expect(commands).to include("Set-Item -path env:ChocolateyProxyLocation -Value 'http://proxy:3128/''x'")
+    end
+
+    it "removes ChocolateyVersion without erroring when no newer version is proposed" do
+      r = Chef::Resource::ChocolateyInstaller.new("upgrade_no_version", run_context)
+      commands = upgrade_commands(r)
+
+      expect(commands).to include("Remove-Item -path env:ChocolateyVersion -ErrorAction SilentlyContinue")
+    end
+  end
+
+  describe "uninstall command construction" do
+    let(:choco_bin_path) { "C:\\ProgramData\\chocolatey\\bin" }
+
+    def uninstall_commands(resource)
+      provider = resource.provider_for_action(:uninstall)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(:uninstall).and_return(provider)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      resource.run_action(:uninstall)
+      commands
+    end
+
+    it "removes the bin path from PATH case-insensitively and does not warn after a real uninstall" do
+      allow(::File).to receive(:exist?).and_call_original
+      allow(::File).to receive(:exist?).with(choco_bin_path).and_return(true)
+      expect(Chef::Log).not_to receive(:warn)
+      r = Chef::Resource::ChocolateyInstaller.new("uninstall_present", run_context)
+      script = uninstall_commands(r).first
+
+      expect(script).to include("$_ -ine \"#{choco_bin_path}\"")
+      expect(script).not_to match(/\$_ -ne/)
+    end
+
+    it "warns and runs nothing when Chocolatey is already uninstalled" do
+      allow(::File).to receive(:exist?).and_call_original
+      allow(::File).to receive(:exist?).with(choco_bin_path).and_return(false)
+      expect(Chef::Log).to receive(:warn).with("Chocolatey is already uninstalled.")
+      r = Chef::Resource::ChocolateyInstaller.new("uninstall_absent", run_context)
+
+      expect(uninstall_commands(r)).to be_empty
+    end
+  end
+
   describe "sensitive property masking" do
     it "marks proxy_password as sensitive" do
       expect(Chef::Resource::ChocolateyInstaller.properties[:proxy_password].sensitive?).to be true
