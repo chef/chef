@@ -63,6 +63,8 @@ tke = "tke"
 configurables = "configurables"
 datas = "datas"
 arry = "arry"
+# PowerShell's explicitly case-insensitive "not equal" operator, -ine
+ine = "ine"
 # Deliberate: `alias :halp :help` in chef-shell, and a colloquial "deletin'"
 halp = "halp"
 deletin = "deletin"
