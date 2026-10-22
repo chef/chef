@@ -103,6 +103,21 @@ class Chef
         /ZONE="(.*)"/.match(::TargetIO::File.read("/etc/sysconfig/clock"))[1]
       end
 
+      # detect the current timezone on Solaris hosts via the "timezone:default"
+      # SMF service. Solaris does not use systemd, and /etc/default/init's TZ
+      # value is left as "localtime" for backwards compatibility once SMF
+      # manages the timezone, so it cannot be used to detect the live value.
+      #
+      # @since 19.4.42
+      # @return [String] tz database value
+      def current_solaris_tz
+        tz_shellout = shell_out(["svccfg", "-s", "timezone:default", "listprop", "timezone/localtime"])
+        raise "There was an error running the svccfg command" if tz_shellout.error?
+
+        # e.g. "timezone/localtime  astring     US/Eastern"
+        %r{timezone/localtime\s+astring\s+(\S+)}.match(tz_shellout.stdout)[1]
+      end
+
       load_current_value do
         if systemd?
           timezone current_systemd_tz
@@ -115,6 +130,8 @@ class Chef
             timezone current_macos_tz
           when "windows"
             timezone current_windows_tz
+          when "solaris2"
+            timezone current_solaris_tz
           end
         end
       end
@@ -127,7 +144,7 @@ class Chef
               shell_out!(["tzutil", "/s", new_resource.timezone])
             end
           end
-        else # linux / macos
+        else # linux / macos / solaris
           converge_if_changed(:timezone) do
             # Modern SUSE, Amazon, Fedora, RHEL, Ubuntu & Debian
             if systemd?
@@ -166,6 +183,9 @@ class Chef
                 end
               when "mac_os_x"
                 shell_out!(["sudo", "systemsetup", "-settimezone", new_resource.timezone])
+              when "solaris2"
+                shell_out!(["svccfg", "-s", "timezone:default", "setprop", "timezone/localtime", "=", "astring:", new_resource.timezone])
+                shell_out!(["svcadm", "refresh", "timezone:default"])
               end
             end
           end
