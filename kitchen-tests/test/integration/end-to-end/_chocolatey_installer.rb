@@ -38,4 +38,13 @@ if os.windows?
     its("exit_status") { should eq 0 }
   end
 
+  # The chocolatey_source resource ran in the same Chef run as the nupkg URL
+  # install (the customer's failing sequence). The source must exist and, after
+  # the add/disable/enable cycle, be enabled. Limit-output columns are:
+  # name|source|disabled|user|cert|priority|...
+  describe command("choco source list --limit-output") do
+    its("exit_status") { should eq 0 }
+    its("stdout") { should match(%r{^chef-kitchen-test-source\|https://community\.chocolatey\.org/api/v2/\|False\|[^|]*\|[^|]*\|10\|}) }
+  end
+
 end

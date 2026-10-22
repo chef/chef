@@ -117,3 +117,42 @@ ruby_block "Assert nupkg URL install is idempotent" do
     end
   end
 end
+
+# 7. The customer's failing sequence: after installing from a custom .nupkg URL,
+#    add and enable a source with chocolatey_source in the same Chef run.
+#
+#    WHY THE :disable ACTION IS HERE (TEST-ONLY; do not remove it as "redundant"):
+#    This is purely a testing device.  Real-world recipes never need to disable
+#    a source before enabling it; adding a source already leaves it enabled.
+#    A newly added Chocolatey source is already enabled, and the :enable action
+#    only converges when the source is currently disabled (it is a no-op
+#    otherwise).  Running :add then :enable would therefore never execute the
+#    `choco source enable` code path, so the enable half of the customer's
+#    sequence would pass without being tested.  The :disable step puts the
+#    source in the disabled state so that :enable has real work to do.  It is
+#    test-only device, not part of the customer's scenario.  The final state
+#    (present and enabled) is asserted in:
+#      kitchen-tests/test/integration/end-to-end/_chocolatey_installer.rb
+#    If :disable is removed, that control still passes but :enable is no longer
+#    exercised.
+chocolatey_source "chef-kitchen-test-source" do
+  source "https://community.chocolatey.org/api/v2/"
+  priority 10
+  action %i{add disable enable}
+end
+
+# Idempotency: re-adding the same source must not converge again.
+chocolatey_source "chef-kitchen-test-source (idempotent)" do
+  source_name "chef-kitchen-test-source"
+  source "https://community.chocolatey.org/api/v2/"
+  priority 10
+  action :add
+end
+
+ruby_block "Assert chocolatey_source add is idempotent" do
+  block do
+    if resources("chocolatey_source[chef-kitchen-test-source (idempotent)]").updated_by_last_action?
+      raise "chocolatey_source converged again after being added"
+    end
+  end
+end
