@@ -1,20 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.47 -->
-## [v19.4.47](https://github.com/chef/chef/tree/v19.4.47) (2026-10-22)
+<!-- latest_release 19.4.48 -->
+## [v19.4.48](https://github.com/chef/chef/tree/v19.4.48) (2026-10-23)
 
 #### Merged Pull Requests
-- CHEF-37858: Fix Target Mode diff downloading local tempfile over unprivileged SCP [#16401](https://github.com/chef/chef/pull/16401) ([neha-p6](https://github.com/neha-p6))
-- Update NOTICE for 19.4.46 [#16431](https://github.com/chef/chef/pull/16431) ([tpowell-progress](https://github.com/tpowell-progress))
-- Adjusting the version in Notice.txt [#16427](https://github.com/chef/chef/pull/16427) ([johnmccrae](https://github.com/johnmccrae))
-- Move ArchiveDllLocator to resource helpers [#16426](https://github.com/chef/chef/pull/16426) ([tpowell-progress](https://github.com/tpowell-progress))
+- CHEF-37827: Fix chocolatey_installer nupkg install from custom download_url [#16439](https://github.com/chef/chef/pull/16439) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-37827: Fix chocolatey_installer nupkg install from custom download_url [#16439](https://github.com/chef/chef/pull/16439) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.48 -->
 - CHEF-37858: Fix Target Mode diff downloading local tempfile over unprivileged SCP [#16401](https://github.com/chef/chef/pull/16401) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.47 -->
 <!-- release_rollup -->
 
