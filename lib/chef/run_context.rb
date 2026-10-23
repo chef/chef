@@ -671,7 +671,22 @@ class Chef
     # @return [Train::Plugins::Transport::BaseConnection]
     #
     def transport_connection
-      @transport_connection ||= transport&.connection
+      @transport_connection ||= transport&.connection&.tap do |conn|
+        # ponytail: Train caches File objects per-path (and each cached
+        # File's stat/exist?/type is itself permanently memoized), so any
+        # stat-triggering check made against a path before Chef creates it
+        # (e.g. load_current_resource's existence/symlink probes) leaves a
+        # stale "doesn't exist" result cached for the rest of this run --
+        # even after the file is subsequently created. That stale stat
+        # resolves to a nil mode, which crashes file-permission handling
+        # downstream (`nil & 07777` => false => `false.to_s(8)` raises
+        # ArgumentError). Chef's Target Mode file layer has no hook to
+        # invalidate individual cache entries, so disable the cache
+        # outright: Target Mode remote state is explicitly designed to be
+        # mutated mid-run, so a fresh stat per call is the only correct
+        # behavior here.
+        conn.disable_cache(:file) if conn.respond_to?(:disable_cache)
+      end
     end
 
     #
