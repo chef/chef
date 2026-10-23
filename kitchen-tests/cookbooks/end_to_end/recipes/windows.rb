@@ -272,3 +272,4 @@ if ::File.exist?("C:/ProgramData/Habitat/hab.exe")
 end
 
 include_recipe "git"
+include_recipe "::_chocolatey_installer"

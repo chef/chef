@@ -101,10 +101,9 @@ describe Chef::Resource::ChocolateyInstaller do
         expect { resource.action :install }.not_to raise_error
       end
 
-      it "downloads non-script URLs to a full path in the chef directory" do
-        resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom_download", run_context)
-        resource.download_url = "https://some.custom.url/packages/chocolatey.2.0.0.nupkg"
-        expected_destination = Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), "chocolatey.2.0.0.nupkg")
+      def run_install_capturing_commands(name, url)
+        resource = Chef::Resource::ChocolateyInstaller.new(name, run_context)
+        resource.download_url = url
         install_provider = resource.provider_for_action(:install)
 
         commands = []
@@ -119,10 +118,81 @@ describe Chef::Resource::ChocolateyInstaller do
         allow(Chef::Log).to receive(:info)
 
         resource.run_action(:install)
-
-        expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value https://some.custom.url/packages/chocolatey.2.0.0.nupkg")
-        expect(commands).to include("Invoke-WebRequest 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg' -OutFile '#{expected_destination}'")
+        commands
       end
+
+      it "sets ChocolateyDownloadUrl and executes a custom .ps1 URL directly" do
+        commands = run_install_capturing_commands("fakey_fakerton_custom_ps1", "https://some.custom.url/install.ps1")
+
+        expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.custom.url/install.ps1'")
+        expect(commands.any? { |c| c.include?("Invoke-Expression") && c.include?("install.ps1") }).to be true
+      end
+
+      it "uses a local drive path directly without downloading, then extracts and installs" do
+        commands = run_install_capturing_commands("fakey_fakerton_local_path", 'C:\packages\chocolatey.2.0.0.nupkg')
+
+        expect(commands.none? { |c| c.include?("Invoke-WebRequest") }).to be true
+        expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") && c.include?('C:\packages\chocolatey.2.0.0.nupkg') }).to be true
+      end
+
+      it "uses a UNC path directly without downloading, then extracts and installs" do
+        commands = run_install_capturing_commands("fakey_fakerton_unc_path", '\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg')
+
+        expect(commands.none? { |c| c.include?("Invoke-WebRequest") }).to be true
+        expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") && c.include?('\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg') }).to be true
+      end
+
+      it "downloads, extracts, and installs from a nupkg URL for air-gapped environments" do
+        url = "https://some.custom.url/packages/chocolatey.2.0.0.nupkg"
+        expected_destination = Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), "chocolatey.2.0.0.nupkg")
+        commands = run_install_capturing_commands("fakey_fakerton_custom_download", url)
+
+        expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value '#{url}'")
+        expect(commands.any? { |c| c.include?("Invoke-WebRequest") && c.include?(url) && c.include?("-UseBasicParsing") && c.include?(expected_destination) }).to be true
+        expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
+      end
+    end
+  end
+
+  describe "download_url extension validation" do
+    def build_resource_with_url(url, ctx)
+      r = Chef::Resource::ChocolateyInstaller.new("test_url_validation_#{url.to_s.hash.abs}", ctx)
+      r.download_url = url if url
+      p = r.provider_for_action(:install)
+      allow(r).to receive(:provider_for_action).with(:install).and_return(p)
+      allow(r).to receive(:is_choco_installed?).and_return(false)
+      allow(p).to receive(:powershell_exec).and_return(double("shell_out", error!: nil, result: nil))
+      r
+    end
+
+    it "raises ValidationFailed for a URL with a clearly wrong file extension" do
+      r = build_resource_with_url("https://some.server/packages/chocolatey.html", run_context)
+      expect { r.run_action(:install) }.to raise_error(Chef::Exceptions::ValidationFailed, /\.ps1.*\.nupkg/)
+    end
+
+    it "does not raise ValidationFailed for an OData-style URL with no file extension" do
+      r = build_resource_with_url("https://some.server/api/v2/package/chocolatey/2.7.3", run_context)
+      expect { r.run_action(:install) }.not_to raise_error
+    end
+
+    it "does not raise ValidationFailed for a bare domain URL with no extension" do
+      r = build_resource_with_url("https://some.server/", run_context)
+      expect { r.run_action(:install) }.not_to raise_error
+    end
+
+    it "does not raise ValidationFailed for a valid .nupkg URL" do
+      r = build_resource_with_url("https://some.server/chocolatey.2.7.3.nupkg", run_context)
+      expect { r.run_action(:install) }.not_to raise_error
+    end
+
+    it "does not raise ValidationFailed for a valid .ps1 URL" do
+      r = build_resource_with_url("https://some.server/install.ps1", run_context)
+      expect { r.run_action(:install) }.not_to raise_error
+    end
+
+    it "does not raise ValidationFailed when no download_url is set" do
+      r = build_resource_with_url(nil, run_context)
+      expect { r.run_action(:install) }.not_to raise_error
     end
   end
 
@@ -194,6 +264,249 @@ describe Chef::Resource::ChocolateyInstaller do
       iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     CODE
     powershell_exec(powershell_code)
+  end
+
+  describe "PowerShell quoting of user-supplied values" do
+    def capture_commands(resource, action)
+      provider = resource.provider_for_action(action)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(action).and_return(provider)
+      allow(resource).to receive(:is_choco_installed?).and_return(false)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      allow(Chef::Log).to receive(:info)
+      resource.run_action(action)
+      commands
+    end
+
+    it "doubles embedded single quotes so values cannot break out of the literal" do
+      r = Chef::Resource::ChocolateyInstaller.new("quote_test", run_context)
+      r.proxy_url = "http://proxy:3128/'; calc.exe; '"
+      r.proxy_user = "us'er"
+      r.proxy_password = "pa'ss; Remove-Item C:\\ -Recurse #"
+      r.chocolatey_version = "2.0.0'; calc; '"
+      commands = capture_commands(r, :install)
+
+      expect(commands).to include("Set-Item -path env:ChocolateyProxyLocation -Value 'http://proxy:3128/''; calc.exe; '''")
+      expect(commands).to include("Set-Item -path env:ChocolateyProxyUser -Value 'us''er'; Set-Item -path env:ChocolateyProxyPassword -Value 'pa''ss; Remove-Item C:\\ -Recurse #'")
+      expect(commands).to include("Set-Item -path env:ChocolateyVersion -Value '2.0.0''; calc; '''")
+    end
+
+    it "also doubles typographic single quotes, which PowerShell treats as quotes" do
+      r = Chef::Resource::ChocolateyInstaller.new("quote_test_unicode", run_context)
+      r.proxy_url = "http://proxy/\u2019; calc; \u2018"
+      commands = capture_commands(r, :install)
+
+      expect(commands).to include("Set-Item -path env:ChocolateyProxyLocation -Value 'http://proxy/\u2019\u2019; calc; \u2018\u2018'")
+    end
+
+    it "quotes the download url, destination and proxy settings in the nupkg download" do
+      r = Chef::Resource::ChocolateyInstaller.new("quote_test_download", run_context)
+      r.download_url = "https://some.server/choco'.nupkg"
+      r.proxy_url = "http://proxy:3128"
+      r.proxy_user = "u'ser"
+      r.proxy_password = "p'w"
+      commands = capture_commands(r, :install)
+
+      download = commands.find { |c| c.include?("Invoke-WebRequest") }
+      expect(download).to include("Invoke-WebRequest 'https://some.server/choco''.nupkg'")
+      expect(download).to include("PSCredential('u''ser', (ConvertTo-SecureString 'p''w' -AsPlainText -Force))")
+    end
+
+    it "quotes a local nupkg path in the extraction script" do
+      r = Chef::Resource::ChocolateyInstaller.new("quote_test_local", run_context)
+      r.download_url = "C:\\pack'ages\\chocolatey.nupkg"
+      commands = capture_commands(r, :install)
+
+      expect(commands.any? { |c| c.include?("$nupkgPath = 'C:\\pack''ages\\chocolatey.nupkg'") }).to be true
+    end
+
+    it "extracts into a unique per-run directory rather than a fixed TEMP path" do
+      r = Chef::Resource::ChocolateyInstaller.new("extract_dir_test", run_context)
+      r.download_url = "C:\\packages\\chocolatey.nupkg"
+      script = capture_commands(r, :install).find { |c| c.include?("Expand-Archive") }
+
+      expect(script).to include("[guid]::NewGuid()")
+      expect(script).not_to include("chocolatey_nupkg_extract")
+    end
+  end
+
+  describe "proxy credential requirements" do
+    it "raises when only proxy_user is set" do
+      r = Chef::Resource::ChocolateyInstaller.new("proxy_half_user", run_context)
+      r.proxy_user = "someone"
+      allow(r).to receive(:is_choco_installed?).and_return(true)
+      expect { r.run_action(:install) }.to raise_error(Chef::Exceptions::ValidationFailed, /proxy_user and a proxy_password/)
+    end
+
+    it "raises when only proxy_password is set" do
+      r = Chef::Resource::ChocolateyInstaller.new("proxy_half_pw", run_context)
+      r.proxy_password = "secret"
+      allow(r).to receive(:is_choco_installed?).and_return(true)
+      expect { r.run_action(:install) }.to raise_error(Chef::Exceptions::ValidationFailed, /proxy_user and a proxy_password/)
+    end
+
+    it "does not raise when neither or both are set" do
+      both = Chef::Resource::ChocolateyInstaller.new("proxy_both", run_context)
+      both.proxy_user = "someone"
+      both.proxy_password = "secret"
+      neither = Chef::Resource::ChocolateyInstaller.new("proxy_neither", run_context)
+      [both, neither].each do |r|
+        provider = r.provider_for_action(:install)
+        allow(r).to receive(:provider_for_action).with(:install).and_return(provider)
+        allow(r).to receive(:is_choco_installed?).and_return(true)
+        allow(provider).to receive(:powershell_exec).and_return(double("shell_out", error!: nil))
+        expect { r.run_action(:install) }.not_to raise_error
+      end
+    end
+  end
+
+  describe "nupkg download proxy handling" do
+    def download_command(resource)
+      provider = resource.provider_for_action(:install)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(:install).and_return(provider)
+      allow(resource).to receive(:is_choco_installed?).and_return(false)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      allow(Chef::Log).to receive(:info)
+      resource.run_action(:install)
+      commands.find { |c| c.include?("Invoke-WebRequest") }
+    end
+
+    let(:r) do
+      Chef::Resource::ChocolateyInstaller.new("proxy_download", run_context).tap do |res|
+        res.download_url = "https://some.server/chocolatey.nupkg"
+      end
+    end
+
+    it "enables TLS 1.2 and uses basic parsing without a proxy" do
+      download = download_command(r)
+
+      expect(download).to include("-bor 3072")
+      expect(download).to include("-UseBasicParsing")
+      expect(download).not_to include("-Proxy")
+    end
+
+    it "passes -Proxy without credentials when only proxy_url is set" do
+      r.proxy_url = "http://proxy:3128"
+      download = download_command(r)
+
+      expect(download).to include("-Proxy 'http://proxy:3128'")
+      expect(download).not_to include("-ProxyCredential")
+    end
+
+    it "passes -Proxy and -ProxyCredential when proxy_url, proxy_user and proxy_password are set" do
+      r.proxy_url = "http://proxy:3128"
+      r.proxy_user = "someone"
+      r.proxy_password = "secret"
+      download = download_command(r)
+
+      expect(download).to include("-Proxy 'http://proxy:3128'")
+      expect(download).to include("-ProxyCredential $proxyCredential")
+    end
+
+    it "omits the proxy from the download when ignore_proxy is set" do
+      r.proxy_url = "http://proxy:3128"
+      r.ignore_proxy = true
+      download = download_command(r)
+
+      expect(download).not_to include("-Proxy")
+    end
+
+    it "omits the proxy and credentials from the download when ignore_proxy is set with credentials" do
+      r.proxy_url = "http://proxy:3128"
+      r.proxy_user = "someone"
+      r.proxy_password = "secret"
+      r.ignore_proxy = true
+      download = download_command(r)
+
+      expect(download).not_to include("-Proxy")
+      expect(download).not_to include("-ProxyCredential")
+    end
+
+    it "does not download a local drive path or UNC path" do
+      ["C:\\packages\\chocolatey.nupkg", "\\\\server\\share\\chocolatey.nupkg"].each do |path|
+        res = Chef::Resource::ChocolateyInstaller.new("local_#{path.hash}", run_context)
+        res.download_url = path
+
+        expect(download_command(res)).to be_nil
+      end
+    end
+  end
+
+  describe "upgrade command construction" do
+    def upgrade_commands(resource, installed_version: "1.0.0")
+      provider = resource.provider_for_action(:upgrade)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(:upgrade).and_return(provider)
+      allow(resource).to receive(:get_choco_version).and_return(installed_version)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      resource.run_action(:upgrade)
+      commands
+    end
+
+    it "quotes the values it sets" do
+      r = Chef::Resource::ChocolateyInstaller.new("upgrade_quote", run_context)
+      r.download_url = "https://some.server/it's.nupkg"
+      r.chocolatey_version = "2.0.0"
+      r.proxy_url = "http://proxy:3128/'x"
+      commands = upgrade_commands(r)
+
+      expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.server/it''s.nupkg'")
+      expect(commands).to include("Set-Item -path env:ChocolateyVersion -Value '2.0.0'")
+      expect(commands).to include("Set-Item -path env:ChocolateyProxyLocation -Value 'http://proxy:3128/''x'")
+    end
+
+    it "removes ChocolateyVersion without erroring when no newer version is proposed" do
+      r = Chef::Resource::ChocolateyInstaller.new("upgrade_no_version", run_context)
+      commands = upgrade_commands(r)
+
+      expect(commands).to include("Remove-Item -path env:ChocolateyVersion -ErrorAction SilentlyContinue")
+    end
+  end
+
+  describe "uninstall command construction" do
+    let(:choco_bin_path) { "C:\\ProgramData\\chocolatey\\bin" }
+
+    def uninstall_commands(resource)
+      provider = resource.provider_for_action(:uninstall)
+      commands = []
+      allow(resource).to receive(:provider_for_action).with(:uninstall).and_return(provider)
+      allow(provider).to receive(:powershell_exec) do |command|
+        commands << command
+        double("shell_out", error!: nil, result: nil)
+      end
+      resource.run_action(:uninstall)
+      commands
+    end
+
+    it "removes the bin path from PATH case-insensitively and does not warn after a real uninstall" do
+      allow(::File).to receive(:exist?).and_call_original
+      allow(::File).to receive(:exist?).with(choco_bin_path).and_return(true)
+      expect(Chef::Log).not_to receive(:warn)
+      r = Chef::Resource::ChocolateyInstaller.new("uninstall_present", run_context)
+      script = uninstall_commands(r).first
+
+      expect(script).to include("$_ -ine \"#{choco_bin_path}\"")
+      expect(script).not_to match(/\$_ -ne/)
+    end
+
+    it "warns and runs nothing when Chocolatey is already uninstalled" do
+      allow(::File).to receive(:exist?).and_call_original
+      allow(::File).to receive(:exist?).with(choco_bin_path).and_return(false)
+      expect(Chef::Log).to receive(:warn).with("Chocolatey is already uninstalled.")
+      r = Chef::Resource::ChocolateyInstaller.new("uninstall_absent", run_context)
+
+      expect(uninstall_commands(r)).to be_empty
+    end
   end
 
   describe "sensitive property masking" do
