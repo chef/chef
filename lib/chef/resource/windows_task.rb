@@ -269,10 +269,7 @@ class Chef
         end
 
         if execution_time_limit
-          execution_time_limit(259200) if execution_time_limit == "PT72H"
-          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(execution_time_limit)
-
-          execution_time_limit(sec_to_min(execution_time_limit))
+          execution_time_limit(sec_to_min(execution_time_limit_to_secs(execution_time_limit)))
         end
 
         validate_frequency(frequency) if action.include?(:create) || action.include?(:change)
@@ -303,6 +300,41 @@ class Chef
         true if Integer(val)
       rescue ArgumentError
         false
+      end
+
+      # An ISO8601 duration, restricted to the components that convert to a
+      # fixed number of seconds. Years and months are deliberately absent:
+      # their length depends on the calendar date the task happens to run on,
+      # so there is no correct number of seconds to turn them into.
+      ISO8601_DURATION = /\AP(?!\z)
+        (?:(?<weeks>\d+)W)?
+        (?:(?<days>\d+)D)?
+        (?:T(?!\z)
+          (?:(?<hours>\d+)H)?
+          (?:(?<minutes>\d+)M)?
+          (?:(?<seconds>\d+)S)?
+        )?
+      \z/x
+
+      # The execution_time_limit property is documented as accepting "either
+      # seconds or an ISO8601 duration value", and its own default is the
+      # ISO8601 string PT72H, so both forms have to be understood here.
+      #
+      # @param value [String, Integer]
+      # @return [Integer] the limit in seconds
+      def execution_time_limit_to_secs(value)
+        return value.to_i if numeric_value_in_string?(value)
+
+        match = ISO8601_DURATION.match(value.to_s)
+        unless match
+          raise ArgumentError, "Invalid value passed for `execution_time_limit`. Please pass seconds as an Integer (e.g. 60), a String with numeric values only (e.g. '60'), or an ISO8601 duration (e.g. 'PT72H')."
+        end
+
+        match[:weeks].to_i * 604800 +
+          match[:days].to_i * 86400 +
+          match[:hours].to_i * 3600 +
+          match[:minutes].to_i * 60 +
+          match[:seconds].to_i
       end
 
       def validate_frequency(frequency)
