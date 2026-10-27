@@ -23,8 +23,10 @@ jobs:
     - uses: actions/checkout@v7
     - name: 'Install Chef/Ohai from Omnitruck'
       id: install_chef
+      env:
+        CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
+        . { Invoke-WebRequest -useb "https://chefdownload-commercial.chef.io/install.ps1?license_id=$env:CHEF_LICENSE_KEY" } | Invoke-Expression; Install-Project -project chef -channel current
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         chef-client -v
         ohai -v
