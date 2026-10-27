@@ -5,6 +5,8 @@ set -euo pipefail
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export CHEF_LICENSE_SERVER=$(cat "$SCRIPT_DIR/chef_license_server_url.txt")
 export HAB_LICENSE="accept-no-persist"
 export HAB_NONINTERACTIVE="true"
 

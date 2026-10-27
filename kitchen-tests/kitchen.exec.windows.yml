@@ -13,7 +13,7 @@ lifecycle:
     - remote: |
         $ErrorActionPreference = "Stop"
 
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression
+        . { Invoke-WebRequest -useb "https://chefdownload-commercial.chef.io/install.ps1?license_id=$env:CHEF_LICENSE_KEY" } | Invoke-Expression
         Install-Project -project chef -channel current
 
         # What we're doing here is deriving the top-level Chef parent directory to the chef-client executable. We'll prepend it below.

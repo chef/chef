@@ -9,6 +9,8 @@ param(
 
 $env:HAB_ORIGIN = 'chef'
 $Plan = 'chef-infra-client'
+$env:CHEF_LICENSE='accept-no-persist'
+$env:CHEF_LICENSE_SERVER = (Get-Content -Path (Join-Path $PSScriptRoot 'chef_license_server_url.txt') -TotalCount 1).Trim()
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 

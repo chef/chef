@@ -224,4 +224,5 @@ include_recipe "::_ifconfig"
 #   end
 # end
 
-include_recipe "::_snap" if platform?("ubuntu")
+# snap is disabled for an EOL OS (ubuntu 20.04): snapd can't start in the dokken container
+include_recipe "::_snap" if platform?("ubuntu") && node["platform_version"].to_f > 20.04

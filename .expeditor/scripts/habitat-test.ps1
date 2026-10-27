@@ -1,6 +1,8 @@
 param ($WindowsArtifact = $(throw "WindowsArtifact parameter is required."))
 $ErrorActionPreference = 'Stop'
 
+$env:CHEF_LICENSE_SERVER = (Get-Content -Path (Join-Path $PSScriptRoot 'chef_license_server_url.txt') -TotalCount 1).Trim()
+
 $ScriptRoute = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "ensure-minimum-viable-hab.ps1"))
 & "$ScriptRoute"
 # . ./scripts/ensure-minimum-viable-hab.ps1
