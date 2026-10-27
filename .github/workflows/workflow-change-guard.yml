@@ -1,0 +1,70 @@
+name: workflow-change-guard
+
+on:
+  workflow_call:
+    outputs:
+      workflow_changed:
+        description: "Whether workflow files were modified"
+        value: ${{ jobs.detect.outputs.workflow_changed }}
+
+permissions: {}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      workflow_changed: ${{ steps.diff.outputs.changed }}
+
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+          clean: true
+
+      - name: Fetch PR head
+        run: git fetch origin ${{ github.event.pull_request.head.sha }}
+
+        # NOTE!!
+        #   Do NOT add other paths here. This is not a general "security"
+        #   check, this is a check to make sure no new secret-accessing code
+        #   is added/changed on pull_request_target PRs before a human looks
+        #   at it. .expeditor/ is included because its scripts run (with
+        #   secrets such as HAB_AUTH_TOKEN) from several pull_request_target
+        #   workflows (kitchen.yml, selfhosted-linux-fips.yml), so a PR could
+        #   otherwise edit those scripts to exfiltrate secrets on first run.
+      - name: Detect workflow/expeditor file changes
+        id: diff
+        run: |
+          set -euo pipefail
+
+          CHANGED=$(git diff --name-only \
+            ${{ github.event.pull_request.base.sha }} \
+            ${{ github.event.pull_request.head.sha }} \
+            | grep -E '^(\.github/workflows/|\.expeditor/)' || true)
+
+          if [ -n "$CHANGED" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Workflow/expeditor files changed:"
+            echo "$CHANGED"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No workflow/expeditor changes detected."
+          fi
+
+  approve:
+    needs: detect
+    if: (github.event_name == 'pull_request_target' && needs.detect.outputs.workflow_changed == 'true')
+    runs-on: ubuntu-latest
+
+    # Approval happens ONLY here
+    environment: workflow_guard
+
+    permissions: {}
+
+    steps:
+      - run: echo "Workflow changes approved"

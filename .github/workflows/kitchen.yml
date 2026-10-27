@@ -2,21 +2,33 @@
 name: kitchen
 
 "on":
-  pull_request:
+  pull_request_target:
+    branches:
+      - chef-18
   push:
     branches:
       - chef-18
 
 concurrency:
-  group: kitchen-${{ github.ref }}
+  group: kitchen-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
+
+permissions: {}
 
 defaults:
   run:
     working-directory: kitchen-tests
 
 jobs:
+  workflow_guard:
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@chef-18
+    permissions:
+      contents: read
+
   win_x86_64:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -26,16 +38,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       KITCHEN_LOCAL_YAML: kitchen.exec.windows.yml
       HAB_LICENSE: accept
     steps:
+    - uses: step-security/harden-runner@v2
+      with:
+        egress-policy: audit
     - uses: actions/checkout@v7
+      with:
+        allow-unsafe-pr-checkout: true
+        ref: ${{ github.event.pull_request.head.sha }}
+        persist-credentials: false
+        clean: true
     - name: Install Chef
       uses: actionshub/chef-install@5.0.2
     - name: Kitchen Test
       run: kitchen test end-to-end-${{ matrix.os }}
 
   mac_arm64:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -46,11 +70,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
       - name: Check out code
         uses: actions/checkout@v7
         with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
           clean: true
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
@@ -58,6 +89,9 @@ jobs:
         run: kitchen test end-to-end-${{ matrix.os }}
 
   docr_lnx_x86_64:
+    needs: workflow_guard
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -86,10 +120,19 @@ jobs:
     env:
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       KITCHEN_LOCAL_YAML: kitchen.dokken.yml
     steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
       - name: Check out code
         uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          clean: true
       - name: Install Chef
         uses: actionshub/chef-install@5.0.2
       - name: Kitchen Test
