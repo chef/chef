@@ -13,7 +13,8 @@ concurrency:
 
 jobs:
   cookstyle:
-    runs-on: ubuntu-latest
+    # ubuntu-latest is 26.04, which has no prebuilt Ruby 3.1
+    runs-on: ubuntu-24.04
     env:
       BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
