@@ -11,7 +11,7 @@ transport:
 lifecycle:
   pre_converge:
     - remote: brew install coreutils
-    - remote: curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chef -c current
+    - remote: curl "https://chefdownload-commercial.chef.io/install.sh?license_id=$CHEF_LICENSE_KEY" | sudo bash -s -- -P chef -c current
     - remote: export PATH="/opt/chef/bin:/opt/chef/embedded/bin:$PATH"
     - remote: echo "Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
