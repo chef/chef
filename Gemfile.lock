@@ -1,4 +1,12 @@
 GIT
+  remote: https://github.com/chef/chef-aix-resources.git
+  revision: a80b03d833a739e77ae0bd7b445f93d13bfa0f44
+  branch: main
+  specs:
+    chef-aix-resources (0.1.0)
+      chef (>= 19.0, < 20.0)
+
+GIT
   remote: https://github.com/chef/cheffish.git
   revision: 5095f5699a3a88c611caca393c4d1710a5625b4f
   branch: main
@@ -37,7 +45,6 @@ GIT
   specs:
     rest-client (2.1.0)
       base64
-      ffi (>= 1.15.5, < 1.18.0)
       http-accept (~> 2.1.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
@@ -566,6 +573,7 @@ GEM
     wmi-lite (1.0.7)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-23
   arm64-darwin-24
   arm64-darwin-25
@@ -573,10 +581,12 @@ PLATFORMS
   ruby
   x64-mingw-ucrt
   x86_64-darwin-23
+  x86_64-linux
 
 DEPENDENCIES
   appbundler
   chef!
+  chef-aix-resources!
   chef-bin!
   chef-config!
   chef-ruby-shadow (~> 3.0.0)
