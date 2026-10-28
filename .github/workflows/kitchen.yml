@@ -337,6 +337,9 @@ jobs:
         run: |
           # Move out of default kitchen-tests dir to the repo root
           cd ..
+          # hab as root reads keys from /hab/cache/keys; the key was generated as the runner user in ~/.hab/cache/keys
+          sudo mkdir -p /hab/cache/keys
+          sudo cp "$HOME"/.hab/cache/keys/* /hab/cache/keys/
           # hab re-runs itself with 'sudo -E' when not root, which sudo-rs ignores; run as root with an explicit env list instead
           sudo --preserve-env=HOME,HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg build .
           source ./results/last_build.env
