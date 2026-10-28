@@ -337,7 +337,8 @@ jobs:
         run: |
           # Move out of default kitchen-tests dir to the repo root
           cd ..
-          hab pkg build .
+          # hab re-runs itself with 'sudo -E' when not root, which sudo-rs ignores; run as root with an explicit env list instead
+          sudo --preserve-env=HOME,HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg build .
           source ./results/last_build.env
           cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
       - name: Set up HAB token file # Set up a token file to be mounted inside the dokken container
