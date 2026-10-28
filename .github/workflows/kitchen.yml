@@ -319,14 +319,15 @@ jobs:
           clean: true
       - name: Install Habitat CLI
         run: |
-          sudo -E ../.expeditor/scripts/install-hab.sh x86_64-linux
-          sudo -E hab --version
+          # ubuntu-latest (26.04) uses sudo-rs, which ignores -E; preserve the Hab vars explicitly
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL ../.expeditor/scripts/install-hab.sh x86_64-linux
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
           kitchen --version
           # chef-cli is needed for some kitchen operations
-          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg install --binlink --force chef/chef-cli --channel unstable
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
