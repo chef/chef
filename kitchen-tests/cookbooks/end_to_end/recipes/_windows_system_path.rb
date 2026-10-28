@@ -42,6 +42,20 @@ powershell_script "invoke cmd by relative name" do
   live_stream true
 end
 
+# An unqualified `cmd` (no extension) must resolve to System32\cmd.exe, not the
+# extensionless MSYS `cmd` script from the bundled devkit (CHEF-43661).
+powershell_script "invoke cmd without extension" do
+  code <<~EOH
+    $resolved = (Get-Command cmd).Source
+    if ($resolved -notmatch '\\\\System32\\\\cmd\\.exe$') {
+      throw "cmd resolved to $resolved instead of System32\\cmd.exe"
+    }
+    cmd /c "echo PATH check passed"
+    if ($LASTEXITCODE -ne 0) { throw "cmd failed with exit code $LASTEXITCODE" }
+  EOH
+  live_stream true
+end
+
 # Also verify via execute resource — confirms PATH is correct for all
 # shell_out callers, not just powershell_script.
 execute "invoke ipconfig via execute resource" do
