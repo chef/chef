@@ -166,6 +166,16 @@ RSpec.describe TargetIO::TrainCompat::File do
         .with("realpath /var/log").and_return(double(stdout: "/private/var/log\n"))
       expect(described_class.realpath("/var/log")).to eq("/private/var/log")
     end
+
+    it "falls back to Perl when the realpath command fails" do
+      allow(transport_connection).to receive(:run_command)
+        .with("realpath /var/log").and_return(double(exit_status: 1, stdout: ""))
+      allow(transport_connection).to receive(:run_command)
+        .with("perl -MCwd -e 'print Cwd::realpath(shift)' /var/log")
+        .and_return(double(stdout: "/var/log\n"))
+
+      expect(described_class.realpath("/var/log")).to eq("/var/log")
+    end
   end
 
   # ─────────────────────────────────────────────────────────────────────────────
