@@ -6,6 +6,16 @@ gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main"
 
 gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 
+# Premium Target Mode extensions when CHEF_PREMIUM_EXTENSIONS_ENABLED=true,
+# otherwise the community AIX resource snapshot. (install_if is not used: bundler
+# still requires every git source to be checked out.)
+if ENV["CHEF_PREMIUM_EXTENSIONS_ENABLED"]&.downcase == "true"
+  gem "chef_premium_extensions", git: "https://github.com/chef/chef-premium-extensions.git", branch: "agentless-platform-selector"
+  gem "agentless_aix_extensions", git: "https://github.com/chef/agentless-aix-extensions.git", branch: "agentless-platform-selector"
+else
+  gem "chef-aix-resources", git: "https://github.com/chef/chef-aix-resources.git", branch: "main"
+end
+
 # Upstream PR for 3.1 updates: https://github.com/rest-client/rest-client/pull/781
 # Using our fork until they accept it.
 gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt_update1"
