@@ -38,13 +38,14 @@ module ChefUtils
           # comes before System32, so move the system dirs to the front (deduplicated).
           system_keys = __default_paths.map { |path| __windows_path_key(path) }
           new_paths = __default_paths + new_paths.reject { |path| system_keys.include?(__windows_path_key(path)) }
-        else
-          __default_paths.each do |path|
-            new_paths << path unless new_paths.include?(path)
-          end
         end
         [ __ruby_bindir, __gem_bindir ].compact.each do |path|
           new_paths = [ path ] + new_paths unless new_paths.include?(path)
+        end
+        unless ChefUtils.windows?
+          __default_paths.each do |path|
+            new_paths << path unless new_paths.include?(path)
+          end
         end
         new_paths.join(path_separator).encode("utf-8", invalid: :replace, undef: :replace)
       end
