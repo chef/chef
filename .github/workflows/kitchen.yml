@@ -319,14 +319,15 @@ jobs:
           clean: true
       - name: Install Habitat CLI
         run: |
-          sudo -E ../.expeditor/scripts/install-hab.sh x86_64-linux
-          sudo -E hab --version
+          # ubuntu-latest (26.04) uses sudo-rs, which ignores -E; preserve the Hab vars explicitly
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL ../.expeditor/scripts/install-hab.sh x86_64-linux
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
           kitchen --version
           # chef-cli is needed for some kitchen operations
-          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg install --binlink --force chef/chef-cli --channel unstable
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
@@ -336,7 +337,11 @@ jobs:
         run: |
           # Move out of default kitchen-tests dir to the repo root
           cd ..
-          hab pkg build .
+          # hab as root reads keys from /hab/cache/keys; the key was generated as the runner user in ~/.hab/cache/keys
+          sudo mkdir -p /hab/cache/keys
+          sudo cp "$HOME"/.hab/cache/keys/* /hab/cache/keys/
+          # hab re-runs itself with 'sudo -E' when not root, which sudo-rs ignores; run as root with an explicit env list instead
+          sudo --preserve-env=HOME,HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg build .
           source ./results/last_build.env
           cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
       - name: Set up HAB token file # Set up a token file to be mounted inside the dokken container
