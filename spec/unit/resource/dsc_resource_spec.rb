@@ -40,6 +40,17 @@ describe Chef::Resource::DscResource do
       expect(dsc_test_resource.action).to eq([:run])
     end
 
+    it "can be instantiated without a run_context (as done when redacting sensitive resources)" do
+      expect { Chef::Resource::DscResource.new(dsc_test_resource_name) }.not_to raise_error
+    end
+
+    it "does not raise an ArgumentError when the action_collection redacts a sensitive resource" do
+      dsc_test_resource.sensitive(true)
+      action_collection = Chef::ActionCollection.new(dsc_test_run_context)
+      allow(action_collection).to receive(:pending_updates).and_return([Chef::ActionCollection::ActionRecord.new(dsc_test_resource, :run, 0)])
+      expect { action_collection.resource_completed(dsc_test_resource) }.not_to raise_error
+    end
+
     it "has an ed_actions property with only the `:run` and `:nothing` properties" do
       expect(dsc_test_resource.allowed_actions.to_set).to eq(%i{run nothing}.to_set)
     end
