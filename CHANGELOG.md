@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.51 -->
-## [v19.4.51](https://github.com/chef/chef/tree/v19.4.51) (2026-10-29)
+<!-- latest_release 19.4.52 -->
+## [v19.4.52](https://github.com/chef/chef/tree/v19.4.52) (2026-10-29)
 
 #### Merged Pull Requests
-- CHEF-43661: Put Windows system dirs ahead of MSYS bin dirs in default_paths [#16448](https://github.com/chef/chef/pull/16448) ([tpowell-progress](https://github.com/tpowell-progress))
+- Fix chef_client_systemd_timer ignoring the user property [#16376](https://github.com/chef/chef/pull/16376) ([decoyjoe](https://github.com/decoyjoe))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix chef_client_systemd_timer ignoring the user property [#16376](https://github.com/chef/chef/pull/16376) ([decoyjoe](https://github.com/decoyjoe)) <!-- 19.4.52 -->
 - CHEF-43661: Put Windows system dirs ahead of MSYS bin dirs in default_paths [#16448](https://github.com/chef/chef/pull/16448) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.51 -->
 - CHEF-38607: Fix Solaris target mode support for user_ulimit resource (subset) [#16425](https://github.com/chef/chef/pull/16425) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.50 -->
 - CHEF-38501: Fix ArgumentError when dsc_resource sets sensitive true [#16390](https://github.com/chef/chef/pull/16390) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.49 -->
