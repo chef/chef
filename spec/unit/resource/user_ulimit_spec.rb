@@ -63,4 +63,115 @@ describe Chef::Resource::UserUlimit do
       end
     end
   end
+
+  describe "#solaris_project_name" do
+    it "builds the project(4) name from the username" do
+      resource.username("tomcat")
+      expect(resource.solaris_project_name).to eql("user.tomcat")
+    end
+  end
+
+  describe "#solaris_project_exists?" do
+    it "returns true when the project line is present in /etc/project" do
+      allow(::TargetIO::File).to receive(:read).with("/etc/project")
+        .and_return("default:3:Default Project:::\nuser.tomcat:100::tomcat::\n")
+      expect(resource.solaris_project_exists?("user.tomcat")).to be true
+    end
+
+    it "returns false when the project line is absent from /etc/project" do
+      allow(::TargetIO::File).to receive(:read).with("/etc/project")
+        .and_return("default:3:Default Project:::\n")
+      expect(resource.solaris_project_exists?("user.tomcat")).to be false
+    end
+
+    it "returns false when /etc/project cannot be read" do
+      allow(::TargetIO::File).to receive(:read).with("/etc/project").and_raise(Errno::ENOENT)
+      expect(resource.solaris_project_exists?("user.tomcat")).to be false
+    end
+  end
+
+  describe "#solaris_rctl_clauses" do
+    it "sets both basic and privileged to the same value when only the unsuffixed value is given" do
+      expect(resource.solaris_rctl_clauses(8192, nil, nil)).to eql(
+        ["(basic,8192,deny)", "(privileged,8192,deny)"]
+      )
+    end
+
+    it "sets only basic when only a soft value is given" do
+      expect(resource.solaris_rctl_clauses(nil, 1024, nil)).to eql(["(basic,1024,deny)"])
+    end
+
+    it "sets only privileged when only a hard value is given" do
+      expect(resource.solaris_rctl_clauses(nil, nil, 2048)).to eql(["(privileged,2048,deny)"])
+    end
+
+    it "sets both when soft and hard are both given" do
+      expect(resource.solaris_rctl_clauses(nil, 1024, 2048)).to eql(
+        ["(basic,1024,deny)", "(privileged,2048,deny)"]
+      )
+    end
+
+    it "returns an empty array when nothing is given" do
+      expect(resource.solaris_rctl_clauses(nil, nil, nil)).to eql([])
+    end
+  end
+
+  describe "#solaris_rctl_set?" do
+    it "returns true when every required clause is present on the project's line" do
+      allow(::TargetIO::File).to receive(:read).with("/etc/project").and_return(
+        "user.tomcat:100::tomcat::process.max-file-descriptor=(basic,8192,deny),(privileged,8192,deny)\n"
+      )
+      expect(
+        resource.solaris_rctl_set?("user.tomcat", ["(basic,8192,deny)", "(privileged,8192,deny)"])
+      ).to be true
+    end
+
+    it "returns false when a required clause is missing" do
+      allow(::TargetIO::File).to receive(:read).with("/etc/project").and_return(
+        "user.tomcat:100::tomcat::process.max-file-descriptor=(basic,8192,deny)\n"
+      )
+      expect(
+        resource.solaris_rctl_set?("user.tomcat", ["(basic,8192,deny)", "(privileged,8192,deny)"])
+      ).to be false
+    end
+
+    it "returns false when the project does not exist" do
+      allow(::TargetIO::File).to receive(:read).with("/etc/project").and_return("default:3:Default Project:::\n")
+      expect(resource.solaris_rctl_set?("user.tomcat", ["(basic,8192,deny)"])).to be false
+    end
+  end
+
+  describe "#raise_if_unsupported_solaris_properties!" do
+    it "does not raise when only supported properties are set" do
+      resource.filehandle_limit(8192)
+      resource.cpu_limit(60)
+      expect { resource.raise_if_unsupported_solaris_properties! }.not_to raise_error
+    end
+
+    it "raises when an unsupported property is set" do
+      resource.maxlogins_limit(5)
+      expect { resource.raise_if_unsupported_solaris_properties! }
+        .to raise_error(Chef::Exceptions::UnsupportedAction, /maxlogins_limit/)
+    end
+
+    it "raises listing every unsupported property that was set" do
+      resource.locks_limit(10)
+      resource.rtprio_limit(20)
+      expect { resource.raise_if_unsupported_solaris_properties! }
+        .to raise_error(Chef::Exceptions::UnsupportedAction, /locks_limit.*rtprio_limit/)
+    end
+  end
+
+  describe "#raise_unless_target_mode_for_solaris!" do
+    it "does not raise when Target Mode is active" do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+      expect { resource.raise_unless_target_mode_for_solaris! }.not_to raise_error
+    end
+
+    it "raises when Target Mode is not active" do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(false)
+      expect { resource.raise_unless_target_mode_for_solaris! }
+        .to raise_error(RuntimeError, /only available in Target Mode/)
+    end
+  end
 end
