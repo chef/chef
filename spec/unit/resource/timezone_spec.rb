@@ -99,4 +99,33 @@ systemd-timesyncd.service active: yes
       expect(resource.current_rhel_tz).to eql("UTC")
     end
   end
+
+  describe "#current_solaris_tz" do
+    let(:shellout_svccfg_listprop) do
+      double("shell_out", stdout: "timezone/localtime  astring     US/Eastern\n", exitstatus: 0, error?: false)
+    end
+
+    let(:shellout_svccfg_listprop_error) do
+      double("shell_out", stdout: "", exitstatus: 1, error?: true)
+    end
+
+    before do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+    end
+
+    it "returns the TZ" do
+      expect(resource).to receive(:shell_out).with(["svccfg", "-s", "timezone:default", "listprop", "timezone/localtime"]).and_return(shellout_svccfg_listprop)
+      expect(resource.current_solaris_tz).to eql("US/Eastern")
+    end
+
+    it "raises an error when the svccfg command fails" do
+      expect(resource).to receive(:shell_out).and_return(shellout_svccfg_listprop_error)
+      expect { resource.current_solaris_tz }.to raise_error(RuntimeError, "There was an error running the svccfg command")
+    end
+
+    it "raises when not running in Target Mode" do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(false)
+      expect { resource.current_solaris_tz }.to raise_error(RuntimeError, /only available in Target Mode/)
+    end
+  end
 end
