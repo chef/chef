@@ -91,6 +91,14 @@ RSpec.describe ChefUtils::DSL::DefaultPaths do
       )
     end
 
+    it "moves system dirs ahead of the Habitat MSYS bin dir so an unqualified cmd resolves to cmd.exe" do
+      msys = 'C:\hab\pkgs\core\ruby3_4-plus-devkit\3.4.10\20260723071501/msys64/usr/bin'
+      env = { "PATH" => "#{msys};c:\\windows\\system32\\;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\tools" }
+      expect(test_instance.default_paths(env)).to eql(
+        "#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};#{win_sys_dirs};#{msys};C:\\tools"
+      )
+    end
+
     it "does not duplicate system dirs already present in PATH" do
       env = { "PATH" => "#{Gem.bindir};C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem" }
       path_entries = test_instance.default_paths(env).split(";")

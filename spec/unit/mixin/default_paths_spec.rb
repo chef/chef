@@ -85,10 +85,9 @@ describe Chef::Mixin::DefaultPaths do
       allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(ruby_bindir)
       allow(ChefUtils).to receive(:windows?).and_return(true)
       stub_const("ENV", ENV.to_hash.merge("SystemRoot" => 'C:\Windows'))
-      # Use correctly-cased System32 so dedup works (PATH comparison is case-sensitive in Ruby)
-      env = { "PATH" => "C:\\Windows\\System32;C:\\mr\\softie" }
+      env = { "PATH" => "C:\\mr\\softie;C:\\Windows\\System32" }
       @default_paths.enforce_default_paths(env)
-      expect(env["PATH"]).to eq("#{gem_bindir};#{ruby_bindir};C:\\Windows\\System32;C:\\mr\\softie;C:\\Windows;C:\\Windows\\System32\\Wbem")
+      expect(env["PATH"]).to eq("#{gem_bindir};#{ruby_bindir};C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\mr\\softie")
     end
 
     context "on Windows with Habitat-based packaging (Chef 19+)" do

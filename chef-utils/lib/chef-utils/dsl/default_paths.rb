@@ -31,16 +31,30 @@ module ChefUtils
         path_separator = ChefUtils.windows? ? ";" : ":"
         # ensure the Ruby and Gem bindirs are included for packaged chef installs (e.g., habitat)
         new_paths = env_path.split(path_separator)
+        if ChefUtils.windows?
+          # Windows system directories must win over every other PATH entry. The Habitat
+          # runtime PATH carries the bundled MSYS usr/bin, which has an extensionless
+          # `cmd` shell script; PowerShell resolves an unqualified `cmd` to it when it
+          # comes before System32, so move the system dirs to the front (deduplicated).
+          system_keys = __default_paths.map { |path| __windows_path_key(path) }
+          new_paths = __default_paths + new_paths.reject { |path| system_keys.include?(__windows_path_key(path)) }
+        end
         [ __ruby_bindir, __gem_bindir ].compact.each do |path|
           new_paths = [ path ] + new_paths unless new_paths.include?(path)
         end
-        __default_paths.each do |path|
-          new_paths << path unless new_paths.include?(path)
+        unless ChefUtils.windows?
+          __default_paths.each do |path|
+            new_paths << path unless new_paths.include?(path)
+          end
         end
         new_paths.join(path_separator).encode("utf-8", invalid: :replace, undef: :replace)
       end
 
       private
+
+      def __windows_path_key(path)
+        path.tr("/", "\\").sub(/\\+\z/, "").downcase
+      end
 
       def __default_paths
         if ChefUtils.windows?
