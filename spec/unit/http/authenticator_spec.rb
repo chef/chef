@@ -147,6 +147,20 @@ describe Chef::HTTP::Authenticator do
     ::Chef::Config[:node_name] = "foo"
   end
 
+  describe "#load_signing_key" do
+    subject(:authenticator) { described_class.allocate }
+
+    before do
+      allow(authenticator).to receive(:retrieve_certificate_key).and_return(false)
+    end
+
+    it "logs a missing key at debug level without writing to stdout" do
+      expect(Chef::Log).to receive(:debug).with("No key detected")
+
+      expect { authenticator.load_signing_key(nil) }.not_to output.to_stdout
+    end
+  end
+
   context "when handle_request is called" do
     shared_examples_for "merging the server API version into the headers" do
       before do
