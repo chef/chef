@@ -174,4 +174,23 @@ describe Chef::Resource::UserUlimit do
         .to raise_error(RuntimeError, /only available in Target Mode/)
     end
   end
+
+  describe "#solaris_shell_command" do
+    it "joins tokens into a single space-separated string" do
+      expect(resource.solaris_shell_command("projadd", "-U", "tomcat", "user.tomcat"))
+        .to eql("projadd -U tomcat user.tomcat")
+    end
+
+    it "shell-escapes tokens containing parentheses, so the remote shell does not " \
+       "misinterpret them as subshell syntax (the bug behind this fix)" do
+         command = resource.solaris_shell_command(
+           "projmod", "-s", "-K",
+           "process.max-file-descriptor=(basic,8192,deny),(privileged,8192,deny)",
+           "user.tomcat"
+         )
+         expect(command).to eql(
+           "projmod -s -K process.max-file-descriptor\\=\\(basic,8192,deny\\),\\(privileged,8192,deny\\) user.tomcat"
+         )
+       end
+  end
 end
