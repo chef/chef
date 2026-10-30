@@ -519,7 +519,7 @@ GEM
       structured_warnings
     wisper (2.0.1)
     wmi-lite (1.0.7)
-    zlib (3.2.3)
+    zlib (3.2.4)
 
 PLATFORMS
   arm64-darwin-21
