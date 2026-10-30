@@ -18,6 +18,7 @@
 #
 
 require_relative "../resource"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef
   class Resource
@@ -197,6 +198,22 @@ class Chef
           "_hard_limit variants)."
       end
 
+      # Builds a single, shell-escaped command string from the given argv-style
+      # tokens. This is required for Target Mode: when an `execute`/`shell_out`
+      # command is given as an array, Target Mode's Train-backed shell_out
+      # joins the array into a single string for the remote host, but only
+      # quotes tokens that contain a space -- it does not escape shell
+      # metacharacters like the parentheses in a Solaris rctl clause (e.g.
+      # "process.max-file-descriptor=(basic,8192,deny),(privileged,8192,deny)"),
+      # which causes the remote shell to fail with a syntax error. Pre-escaping
+      # every token here and running it as a single string keeps behavior
+      # correct and consistent whether or not a shell is invoked.
+      # @since 19.4.52
+      # @return [String] a safely shell-escaped command string
+      def solaris_shell_command(*tokens)
+        tokens.map { |token| Shellwords.escape(token) }.join(" ")
+      end
+
       action :create, description: "Create a ulimit configuration file." do
         if node["platform_family"] == "solaris2"
           raise_unless_target_mode_for_solaris!
@@ -204,7 +221,7 @@ class Chef
           project_name = solaris_project_name
 
           execute "create Solaris project #{project_name}" do
-            command ["projadd", "-U", new_resource.username, project_name]
+            command solaris_shell_command("projadd", "-U", new_resource.username, project_name)
             not_if { solaris_project_exists?(project_name) }
           end
 
@@ -219,7 +236,7 @@ class Chef
             next if clauses.empty?
 
             execute "set #{rctl} for #{project_name}" do
-              command ["projmod", "-s", "-K", "#{rctl}=#{clauses.join(",")}", project_name]
+              command solaris_shell_command("projmod", "-s", "-K", "#{rctl}=#{clauses.join(",")}", project_name)
               not_if { solaris_rctl_set?(project_name, clauses) }
             end
           end
@@ -278,7 +295,7 @@ class Chef
           project_name = solaris_project_name
 
           execute "delete Solaris project #{project_name}" do
-            command ["projdel", project_name]
+            command solaris_shell_command("projdel", project_name)
             only_if { solaris_project_exists?(project_name) }
           end
         else
