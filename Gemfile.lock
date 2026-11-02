@@ -12,15 +12,15 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: b7033361b2c67838606de7a0a1772076d79857f9
+  revision: f7058cd577b118a7ed3363750470ecd5c0bd18c3
   branch: main
   specs:
-    ohai (19.1.40)
+    ohai (19.1.51)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
       ffi (>= 1.15.5)
-      ffi-yajl (>= 2.2, < 3.0)
+      ffi-yajl (>= 2.2, < 4.0, != 3.0.0)
       ipaddress
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
