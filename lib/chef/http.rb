@@ -349,7 +349,7 @@ class Chef
     # defensively percent-encode any offending characters before parsing so the
     # client stays resilient regardless of server-side escaping behavior.
     def sanitize_uri_string(url)
-      url.gsub(UNSAFE_URI_CHARS) { |char| format("%%%02X", char.ord) }
+      URI::DEFAULT_PARSER.escape(url, UNSAFE_URI_CHARS)
     end
 
     # @api private
