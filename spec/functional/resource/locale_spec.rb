@@ -35,7 +35,8 @@ describe Chef::Resource::Locale, :requires_root do
     end
 
     def unsets_system_locale(*locales)
-      system_locales = File.readlines("/etc/locale.conf")
+      # the file may not exist yet when this runs before any spec that sets locales
+      system_locales = File.exist?("/etc/locale.conf") ? File.readlines("/etc/locale.conf") : []
       expect(system_locales.map(&:strip)).not_to eq(locales)
     end
 
