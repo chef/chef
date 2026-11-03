@@ -19,6 +19,9 @@ jobs:
         os: [windows-2022, windows-2025]
         ruby: ['3.1']
     runs-on: ${{ matrix.os }}
+    env:
+      CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
     steps:
     - uses: actions/checkout@v7
     - name: 'Install Chef/Ohai from Omnitruck'
