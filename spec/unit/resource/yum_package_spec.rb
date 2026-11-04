@@ -89,8 +89,8 @@ describe Chef::Resource::YumPackage, "flush_cache" do
     @resource = Chef::Resource::YumPackage.new("foo")
   end
 
-  it "should default the flush timing to false" do
-    flush_hash = { before: false, after: false }
+  it "should default to flushing after only, matching the historical provider behavior" do
+    flush_hash = { before: false, after: true }
     expect(@resource.flush_cache).to eq(flush_hash)
   end
 

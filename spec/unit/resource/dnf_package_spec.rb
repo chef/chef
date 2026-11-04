@@ -64,8 +64,8 @@ end
 describe Chef::Resource::DnfPackage, "flush_cache" do
   let(:resource) { Chef::Resource::DnfPackage.new("foo") }
 
-  it "defaults the flush timing to false" do
-    flush_hash = { before: false, after: false }
+  it "defaults to flushing after only, matching the historical provider behavior" do
+    flush_hash = { before: false, after: true }
     expect(resource.flush_cache).to eq(flush_hash)
   end
 
