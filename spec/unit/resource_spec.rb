@@ -718,6 +718,18 @@ describe Chef::Resource do
       resource.run_action(:purr)
     end
 
+    it "does not silently no-op when only_if is given an explicit falsy value instead of a command or block" do
+      resource.only_if false
+      expect(resource.only_if).not_to be_empty
+      expect { resource.run_action(:purr) }.to raise_error(ArgumentError, /Invalid only_if\/not_if command/)
+    end
+
+    it "does not silently no-op when not_if is given an explicit falsy value instead of a command or block" do
+      resource.not_if false
+      expect(resource.not_if).not_to be_empty
+      expect { resource.run_action(:purr) }.to raise_error(ArgumentError, /Invalid only_if\/not_if command/)
+    end
+
     it "runs runs an only_if when one is given" do
       snitch_variable = nil
       resource.only_if { snitch_variable = true }

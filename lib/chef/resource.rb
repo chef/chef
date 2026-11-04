@@ -377,7 +377,11 @@ class Chef
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
     def only_if(command = nil, opts = {}, &block)
-      if command || block_given?
+      # command.nil? (not just falsy) distinguishes "no argument given" from an
+      # explicitly-passed falsy value like `only_if false`, which used to be
+      # silently dropped here instead of raising the "invalid command" error
+      # it should (see Conditional#configure).
+      if !command.nil? || block_given?
         @only_if << Conditional.only_if(self, command, opts, &block)
       end
       @only_if
@@ -407,7 +411,8 @@ class Chef
     # @param block [Proc] A ruby block to run. Ignored if a command is given.
     #
     def not_if(command = nil, opts = {}, &block)
-      if command || block_given?
+      # see the comment in #only_if for why this is command.nil? and not just command
+      if !command.nil? || block_given?
         @not_if << Conditional.not_if(self, command, opts, &block)
       end
       @not_if
