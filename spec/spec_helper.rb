@@ -117,6 +117,12 @@ RSpec.configure do |config|
   config.filter_run_excluding external: true
   config.raise_on_warning = true
 
+  # Run specs in random order to surface order dependencies between them.
+  # A failure can be reproduced by passing the printed seed back with
+  # `--seed 1234`, and narrowed down with `--seed 1234 --bisect`.
+  config.order = :random
+  Kernel.srand config.seed
+
   # Explicitly disable :should syntax
   # And set max_formatted_output_length to nil to prevent RSpec from doing truncation.
   config.expect_with :rspec do |c|
@@ -258,6 +264,8 @@ RSpec.configure do |config|
     Chef::Log.setup!
 
     Chef::ServerAPIVersions.instance.reset!
+
+    Chef::CookbookCacheCleaner.instance.reset!
 
     Chef::Config[:log_level] = :fatal
     Chef::Log.level(Chef::Config[:log_level])
