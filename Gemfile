@@ -12,6 +12,15 @@ gem "rest-client", git: "https://github.com/chef/rest-client", branch: "jfm/ucrt
 
 gem "ffi", ">= 1.15.5", force_ruby_platform: true
 
+# Testing-only override: point chef-powershell at the shim repo (instead of the
+# released gem) so we can validate a proposed chef-powershell-shim revision
+# against chef-19 before it ships. Remove once validation is complete.
+install_if -> { RUBY_PLATFORM =~ /mswin|mingw|windows/ } do
+  gem "chef-powershell",
+    git: "https://github.com/chef/chef-powershell-shim",
+    branch: "18-Stable"
+end
+
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
