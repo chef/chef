@@ -967,6 +967,25 @@ RSpec.describe ChefConfig::Config do
           allow(Mixlib::ShellOut).to receive(:new).with("locale -a").and_return(shell_out)
         end
 
+        context "when read as a default" do
+          let(:locale_array) { ["C.UTF-8"] }
+
+          before { ChefConfig::Config.instance_variable_set(:@guessed_internal_locale, nil) }
+          after { ChefConfig::Config.instance_variable_set(:@guessed_internal_locale, nil) }
+
+          it "guesses the locale once and reuses it on later reads" do
+            expect(ChefConfig::Config).to receive(:guess_internal_locale).once.and_call_original
+            expect(ChefConfig::Config[:internal_locale]).to eq "C.UTF-8"
+            expect(ChefConfig::Config[:internal_locale]).to eq "C.UTF-8"
+          end
+
+          it "does not guess the locale when one is configured" do
+            ChefConfig::Config[:internal_locale] = "en_GB.UTF-8"
+            expect(ChefConfig::Config).not_to receive(:guess_internal_locale)
+            expect(ChefConfig::Config[:internal_locale]).to eq "en_GB.UTF-8"
+          end
+        end
+
         shared_examples_for "a suitable locale" do
           it "returns an English UTF-8 locale" do
             expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef Infra Client to use/)
@@ -1048,6 +1067,19 @@ RSpec.describe ChefConfig::Config do
           end
         end
       end
+    end
+  end
+
+  describe "loading chef-config" do
+    it "does not shell out to `locale -a`" do
+      lib_dir = File.expand_path("../../lib", __dir__)
+      script = <<~RUBY
+        require "mixlib/shellout"
+        Mixlib::ShellOut.singleton_class.prepend(Module.new { def new(*args, **kw); abort "shelled out: \#{args.inspect}" if args == ["locale -a"]; super; end })
+        require "chef-config/config"
+      RUBY
+      output = IO.popen([Gem.ruby, "-I", lib_dir, "-e", script, err: %i{child out}], &:read)
+      expect($?).to be_success, output
     end
   end
 
