@@ -24,6 +24,7 @@ require "chef/http/socketless_chef_zero_client"
 
 class Chef::HTTP
   public :create_url
+  public :sanitize_uri_string
 end
 
 describe Chef::HTTP do
@@ -87,7 +88,68 @@ describe Chef::HTTP do
       expect(http.create_url("HTTP://www2.chef.io/")).to eql(URI.parse("http://www2.chef.io/"))
     end
 
+    # As per: CHEF-33402 - org names (or other path segments) containing a raw
+    # space in a server-returned absolute URL (e.g. the sandbox "uri" field)
+    # must not raise URI::InvalidURIError.
+    context "when the server returns an absolute URL with unsafe characters" do
+      let(:http) { Chef::HTTP.new("https://chef.example") }
+
+      it "percent-encodes a literal space before parsing" do
+        url = "https://chef.example/organizations/shahid org/sandboxes/abc123"
+        expect(http.create_url(url)).to eql(URI.parse("https://chef.example/organizations/shahid%20org/sandboxes/abc123"))
+      end
+
+      it "does not raise URI::InvalidURIError for a space in the org name" do
+        url = "https://chef.example/organizations/shahid org/sandboxes/abc123"
+        expect { http.create_url(url) }.not_to raise_error
+      end
+
+      it "does not double-encode a URL that is already percent-escaped" do
+        url = "https://chef.example/organizations/shahid%20org/sandboxes/abc123"
+        expect(http.create_url(url)).to eql(URI.parse("https://chef.example/organizations/shahid%20org/sandboxes/abc123"))
+      end
+
+      it "correctly percent-encodes non-ASCII (multi-byte UTF-8) characters" do
+        url = "https://chef.example/organizations/caf\u00e9/sandboxes/abc123"
+        expect(http.create_url(url)).to eql(URI.parse("https://chef.example/organizations/caf%C3%A9/sandboxes/abc123"))
+      end
+
+      it "correctly percent-encodes multi-byte CJK characters" do
+        url = "https://chef.example/organizations/\u4e2d\u6587/sandboxes/abc123"
+        expect(http.create_url(url)).to eql(URI.parse("https://chef.example/organizations/%E4%B8%AD%E6%96%87/sandboxes/abc123"))
+      end
+    end
+
   end # create_url
+
+  describe "#sanitize_uri_string" do
+    let(:http) { Chef::HTTP.new("https://chef.example") }
+
+    it "percent-encodes a literal space" do
+      expect(http.sanitize_uri_string("https://chef.example/organizations/shahid org"))
+        .to eq("https://chef.example/organizations/shahid%20org")
+    end
+
+    it "leaves an already percent-encoded URL unchanged" do
+      expect(http.sanitize_uri_string("https://chef.example/organizations/shahid%20org"))
+        .to eq("https://chef.example/organizations/shahid%20org")
+    end
+
+    it "leaves a URL with no unsafe characters unchanged" do
+      expect(http.sanitize_uri_string("https://chef.example/organizations/shahid_org"))
+        .to eq("https://chef.example/organizations/shahid_org")
+    end
+
+    it "percent-encodes multi-byte UTF-8 characters using their UTF-8 byte sequence" do
+      expect(http.sanitize_uri_string("https://chef.example/organizations/caf\u00e9"))
+        .to eq("https://chef.example/organizations/caf%C3%A9")
+    end
+
+    it "percent-encodes multi-byte CJK characters using their UTF-8 byte sequence" do
+      expect(http.sanitize_uri_string("https://chef.example/organizations/\u4e2d\u6587"))
+        .to eq("https://chef.example/organizations/%E4%B8%AD%E6%96%87")
+    end
+  end
 
   describe "#stream_to_tempfile" do
 
