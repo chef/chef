@@ -154,6 +154,53 @@ describe Chef::RunList do
     end
   end
 
+  describe "remove" do
+    it "removes the matching item and returns itself so calls can be chained" do
+      @run_list << "recipe[foo]"
+      @run_list << "recipe[bar]"
+      expect(@run_list.remove("recipe[foo]")).to equal(@run_list)
+      expect(@run_list).not_to be_include("recipe[foo]")
+      expect(@run_list).to be_include("recipe[bar]")
+    end
+
+    it "returns itself even when nothing matched" do
+      @run_list << "recipe[foo]"
+      expect(@run_list.remove("recipe[bar]")).to equal(@run_list)
+    end
+  end
+
+  describe "delete" do
+    it "removes the matching item from the run list" do
+      @run_list << "recipe[foo]"
+      @run_list << "recipe[bar]"
+      @run_list.delete("recipe[foo]")
+      expect(@run_list).not_to be_include("recipe[foo]")
+      expect(@run_list).to be_include("recipe[bar]")
+    end
+
+    it "returns the deleted item like Array#delete does" do
+      @run_list << "recipe[foo]"
+      expect(@run_list.delete("recipe[foo]")).to eq(Chef::RunList::RunListItem.new("recipe[foo]"))
+    end
+
+    it "returns nil when nothing was deleted like Array#delete does" do
+      @run_list << "recipe[foo]"
+      expect(@run_list.delete("role[nope]")).to be_nil
+    end
+
+    it "accepts a RunListItem as well as a String" do
+      @run_list << "role[webserver]"
+      item = Chef::RunList::RunListItem.new("role[webserver]")
+      expect(@run_list.delete(item)).to eq(item)
+      expect(@run_list).to be_empty
+    end
+
+    it "yields to the block and returns its value when nothing was deleted" do
+      @run_list << "recipe[foo]"
+      expect(@run_list.delete("role[nope]") { :not_found }).to eq(:not_found)
+    end
+  end
+
   describe "reset" do
     it "should reset the run_list based on the array you pass" do
       @run_list << "chromeo"
