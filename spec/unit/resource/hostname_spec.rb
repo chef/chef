@@ -19,7 +19,11 @@ require "spec_helper"
 
 describe Chef::Resource::Hostname do
 
-  let(:resource) { Chef::Resource::Hostname.new("fakey_fakerton") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::Hostname.new("fakey_fakerton", run_context) }
+  let(:provider) { resource.provider_for_action(:set) }
 
   it "has a resource name of :hostname" do
     expect(resource.resource_name).to eql(:hostname)
@@ -43,5 +47,18 @@ describe Chef::Resource::Hostname do
 
   it "reboots windows nodes by default" do
     expect(resource.windows_reboot).to eql(true)
+  end
+
+  describe "#macos_hostname" do
+    it "falls back to the hostname property when fqdn isn't set" do
+      resource.hostname "macbook"
+      expect(provider.macos_hostname).to eq("macbook")
+    end
+
+    it "uses the fqdn property when set, instead of assuming hostname is the FQDN" do
+      resource.hostname "macbook"
+      resource.fqdn "macbook.example.com"
+      expect(provider.macos_hostname).to eq("macbook.example.com")
+    end
   end
 end
