@@ -611,6 +611,14 @@ class Chef
     #
     def run_ohai
       filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version init_package} : nil
+      # Only needed so transport_connection (below) has a run_context to
+      # delegate to. Callers that bypass do_run (e.g. chef-shell, chef-apply)
+      # call run_ohai directly on a freshly-constructed Client, before
+      # @run_context is ever set, which otherwise raises NoMethodError here.
+      # This has no effect on the actual Infra Client run: it's unused outside
+      # Target Mode, and the real run_context (cookbooks/resources) is always
+      # built separately afterward, by whichever caller invoked run_ohai.
+      @run_context ||= Chef::RunContext.new(nil, nil, events)
       ohai.transport_connection = transport_connection if Chef::Config.target_mode?
       ohai.all_plugins(filter)
       events.ohai_completed(node)
