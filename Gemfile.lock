@@ -259,8 +259,9 @@ GEM
       net-http (~> 0.5)
     fauxhai-ng (9.3.0)
       net-ssh
-    ffi (1.16.3)
-    ffi (1.16.3-x64-mingw-ucrt)
+    ffi (1.17.4)
+    ffi (1.17.4-arm64-darwin)
+    ffi (1.17.4-x64-mingw-ucrt)
     ffi-libarchive (1.1.14)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -336,8 +337,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.27)
       tomlrb
-    mixlib-log (3.1.2.1)
-      ffi (< 1.17.0)
+    mixlib-log (3.0.9)
     mixlib-shellout (3.4.10)
       chef-utils
     mixlib-shellout (3.4.10-x64-mingw-ucrt)
@@ -511,8 +511,8 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
+    win32-service (2.4.0)
+      ffi (~> 1.17.2)
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
       ffi
