@@ -154,10 +154,18 @@ describe Chef::HTTP::Authenticator do
       allow(authenticator).to receive(:retrieve_certificate_key).and_return(false)
     end
 
-    it "logs a missing key at debug level without writing to stdout" do
-      expect(Chef::Log).to receive(:debug).with("No key detected")
+    it "returns nil silently on repeated calls when no key is supplied" do
+      expect(Chef::Log).not_to receive(:debug)
+      expect(Chef::Log).not_to receive(:warn)
 
-      expect { authenticator.load_signing_key(nil) }.not_to output.to_stdout
+      load_without_key = proc do
+        3.times do
+          expect(authenticator.load_signing_key(nil)).to be_nil
+        end
+      end
+
+      expect(&load_without_key).not_to output.to_stdout
+      expect(&load_without_key).not_to output.to_stderr
     end
   end
 
