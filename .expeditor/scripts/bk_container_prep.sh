@@ -17,23 +17,6 @@ echo "--- Installing packages"
 PACKAGE_MANAGER=""
 PACKAGES=""
 
-# for debian 9, we need to update the source list.
-if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
-  echo "sources.list before:"
-  sudo cat /etc/apt/sources.list
-
-  echo "updating sources.list:"
-  sudo tee /etc/apt/sources.list <<EOF
-deb http://cdn-aws.deb.debian.org/debian-archive/debian stretch main
-deb http://archive.debian.org/debian-security stretch/updates main
-deb http://cdn-aws.deb.debian.org/debian-archive/debian-security stretch/updates main
-deb http://archive.debian.org/debian stretch-backports main
-EOF
-
-  echo "sources.list after:"
-  sudo cat /etc/apt/sources.list
-fi
-
 # Debian 11 (bullseye) has moved past LTS into the frozen
 # "oldoldstable-security" suite, so deb.debian.org no longer reliably
 # serves its InRelease/pool files (expired Release + intermittent 404s
@@ -48,12 +31,6 @@ deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T0
 deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main
 deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main
 EOF
-fi
-
-if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
-  echo "updating git on debian 9"
-  sudo apt-get update -y
-  sudo apt-get install -y -t stretch-backports git
 fi
 
 case "$ID" in
