@@ -21,13 +21,10 @@ builder-to-testers-map:
     - amazon-2023-aarch64
   amazon-2023-x86_64:
     - amazon-2023-x86_64  
-  debian-9-x86_64:
-    - debian-9-x86_64
-    - debian-10-x86_64
-    - debian-11-x86_64
-  debian-10-aarch64:
-    - debian-10-aarch64
-    - debian-11-aarch64
+  debian-12-x86_64:
+    - debian-12-x86_64
+  debian-12-aarch64:
+    - debian-12-aarch64
   # el-6-x86_64:
   #   - el-6-x86_64
   el-7-aarch64:
