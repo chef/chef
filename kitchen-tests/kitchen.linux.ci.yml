@@ -77,7 +77,6 @@ platforms:
   - name: amazonlinux-2
   - name: amazonlinux-2023
   - name: debian-12
-  - name: debian-11
   - name: fedora-40
   - name: fedora-latest
   - name: freebsd-13
