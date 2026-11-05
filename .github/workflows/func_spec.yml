@@ -138,7 +138,7 @@ jobs:
         if: matrix.pkg_mgr == 'apt'
         run: |
           apt-get update
-          apt-get install -y build-essential ca-certificates curl git patch pkg-config sudo libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev
+          apt-get install -y build-essential ca-certificates cron curl git locales patch pkg-config sudo libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev
       - uses: actions/checkout@v7
       - name: Install native deps (dnf)
         if: matrix.pkg_mgr == 'dnf'
