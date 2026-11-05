@@ -25,7 +25,7 @@ echo ""
 
 rhel_platforms=("rhel-9" "rhel-9-aarch64")
 rocky_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64")
-debian_platforms=("debian-11" "debian-11-aarch64")
+debian_platforms=("debian-12" "debian-12-aarch64")
 ubuntu_platforms=("ubuntu-2204" "ubuntu-2204-aarch64")
 
 for platform in ${rhel_platforms[@]}; do
