@@ -121,39 +121,30 @@ jobs:
             pkg_mgr: dnf
             label: rocky-8-arm
           - runs-on: ubuntu-24.04
-            container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.x86_tag }}
+            container: debian:12
             pkg_mgr: apt
-            label: debian-11-x86
+            label: debian-12-x86
           - runs-on: ubuntu-24.04-arm
-            container: chefes/omnibus-toolchain-debian-11:${{ needs.config.outputs.arm_tag }}
+            container: debian:12
             pkg_mgr: apt
-            label: debian-11-arm
+            label: debian-12-arm
     runs-on: ${{ matrix.runs-on }}
     container:
       image: ${{ matrix.container }}
       options: --privileged
     timeout-minutes: 90
     steps:
+      - name: Install native deps (apt)
+        if: matrix.pkg_mgr == 'apt'
+        run: |
+          apt-get update
+          apt-get install -y build-essential ca-certificates curl git patch pkg-config sudo libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev
       - uses: actions/checkout@v7
       - name: Install native deps (dnf)
         if: matrix.pkg_mgr == 'dnf'
         run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
-      - name: Install native deps (apt)
-        if: matrix.pkg_mgr == 'apt'
-        run: |
-          # Debian 11 (bullseye) has moved past LTS into the frozen
-          # "oldoldstable-security" suite, so deb.debian.org no longer
-          # reliably serves its InRelease/pool files (expired Release
-          # + 404s on package downloads). Pin to an immutable
-          # snapshot.debian.org mirror instead of the rolling mirror.
-          cat <<'EOF' > /etc/apt/sources.list
-          deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye main
-          deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main
-          deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main
-          EOF
-          apt-get update
-          apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev curl
       - name: Install Ruby via rbenv
+        shell: bash
         run: |
           curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
           export PATH="$HOME/.rbenv/bin:$PATH"
