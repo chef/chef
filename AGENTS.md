@@ -11,3 +11,12 @@
 - [x] No `CHEF_TOKEN`, Buildkite pipeline access, SSH deploy keys, Habitat
   credentials, or signing keys are added or changed. Do not replace the shared
   chef-ci deploy key.
+
+## Chef Foundation installer repair (2026-11-05)
+
+- [x] Existing Buildkite verify credentials and GitHub repository write access
+  have been verified. No new tokens, scopes, deploy keys, or signing keys.
+- [x] Use the root Omnitruck installer and the `current` channel for the existing
+  pinned Foundation version in Linux verify and Omnibus builds.
+- [ ] Package access still requires runtime validation: previous stable-channel
+  package probes returned HTTP 402. No license credentials are changed here.
