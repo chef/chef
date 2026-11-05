@@ -17,6 +17,8 @@
 - [x] Existing Buildkite verify credentials and GitHub repository write access
   have been verified. No new tokens, scopes, deploy keys, or signing keys.
 - [x] Use the root Omnitruck installer and the `stable` channel for the existing
-  pinned Foundation version in Linux verify and Omnibus builds.
+  pinned Foundation version in Linux/Windows verify and Linux Omnibus builds.
+- [x] Buildkite token has `read_pipelines`, `read_builds`, and `write_builds`
+  scopes and can access the chef-18 verify pipeline for reruns.
 - [ ] Package access still requires runtime validation: previous stable-channel
   package probes returned HTTP 402. No license credentials are changed here.
