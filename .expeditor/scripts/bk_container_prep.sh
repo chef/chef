@@ -1,6 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 # This script gets a container ready to run our various tests in BuildKite
 
 . /etc/os-release
+
+if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "12" ]; then
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update -y
+  apt-get install -y ca-certificates git sudo
+fi
 
 echo "--- Installing packages"
 # Set package manager based on os type
@@ -40,14 +50,21 @@ deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T0
 EOF
 fi
 
-echo "updating git on debian 9"
-sudo apt-get update -y
-sudo apt-get install -y -t stretch-backports git
+if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
+  echo "updating git on debian 9"
+  sudo apt-get update -y
+  sudo apt-get install -y -t stretch-backports git
+fi
 
 case "$ID" in
   ubuntu|debian)
     PACKAGE_MANAGER="apt-get"
     PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev pkg-config"
+
+    if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "12" ]; then
+      # Packages supplied by buildkite-platform's Debian Omnibus base container.
+      PACKAGES="$PACKAGES binutils-doc flex gettext ncurses-dev devscripts dpkg-dev fakeroot binutils gnupg wget curl cron locales procps"
+    fi
 
     echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
     sudo $PACKAGE_MANAGER update -y
@@ -98,6 +115,7 @@ export BUNDLE_GEMFILE="/workdir/Gemfile"
 
 # make sure we have the network tools in place for various network specs
 if [ -f /etc/debian_version ]; then
+  mkdir -p /etc/network
   touch /etc/network/interfaces
 fi
 
