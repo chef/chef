@@ -288,12 +288,14 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 
   describe "#install_key_from_keyserver_to_keyring" do
     it "does not raise an error when the key is valid" do
+      expect(provider).to receive(:apt_version).and_return(3)
       expect(provider).to receive(:execute).and_return(nil)
       expect(provider).to receive(:keyring_key_is_valid?).and_return(true)
       expect { provider.install_key_from_keyserver_to_keyring(key, keyserver, keyring) }.not_to raise_error
     end
 
     it "raises an error with the key is invalid" do
+      expect(provider).to receive(:apt_version).and_return(3)
       expect(provider).to receive(:execute).and_return(nil)
       expect(provider).to receive(:keyring_key_is_valid?).and_return(false)
       expect { provider.install_key_from_keyserver_to_keyring(key, keyserver, keyring) }.to raise_error(RuntimeError)
