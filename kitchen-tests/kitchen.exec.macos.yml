@@ -36,8 +36,8 @@ lifecycle:
     - remote: brew install coreutils
 
 platforms:
-  - name: macos-14 # arm64
   - name: macos-15 # arm64
+  - name: macos-latest # arm64
 
 suites:
   - name: end-to-end
