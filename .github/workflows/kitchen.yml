@@ -216,8 +216,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14
           - macos-15
+          - macos-latest
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
