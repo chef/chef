@@ -384,6 +384,27 @@ describe Chef::Client do
     end
   end
 
+  context "when Target Mode is enabled and run_ohai is called before run_context is set " \
+          "(e.g. chef-shell, which calls run_ohai directly without going through do_run)" do
+            before do
+              Chef::Config.target_mode.enabled = true
+              Chef::Config.target_mode.host = "example.org"
+              allow_any_instance_of(Chef::TrainTransport).to receive(:build_transport)
+                .and_return(double("transport", connection: double("connection")))
+            end
+
+            after do
+              Chef::Config.target_mode.enabled = false
+            end
+
+            it "lazily initializes run_context instead of raising NoMethodError on a nil run_context" do
+              expect(client.run_context).to be_nil
+              expect(ohai_system).to receive(:transport_connection=)
+              expect { client.run_ohai }.not_to raise_error
+              expect(client.run_context).to be_a(Chef::RunContext)
+            end
+          end
+
   describe "authentication protocol selection" do
     context "when FIPS is disabled" do
       before do
