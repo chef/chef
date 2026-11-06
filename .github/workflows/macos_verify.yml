@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14]
+        os: [macos-15, macos-latest]
         ruby: ["3.4"]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
@@ -80,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14]
+        os: [macos-15, macos-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     env:
