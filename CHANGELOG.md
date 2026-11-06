@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.57 -->
-## [v19.4.57](https://github.com/chef/chef/tree/v19.4.57) (2026-11-05)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Use Debian 12 minimum for GitHub Actions tests [#16468](https://github.com/chef/chef/pull/16468) ([tpowell-progress](https://github.com/tpowell-progress))
+- ci: replace retired macOS 14 runners and add macOS latest coverage [#16476](https://github.com/chef/chef/pull/16476) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- ci: replace retired macOS 14 runners and add macOS latest coverage [#16476](https://github.com/chef/chef/pull/16476) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.57 -->
 - Use Debian 12 minimum for GitHub Actions tests [#16468](https://github.com/chef/chef/pull/16468) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.57 -->
 - Fix Solaris user_ulimit projmod command failing with shell syntax error in Target Mode [#16452](https://github.com/chef/chef/pull/16452) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.56 -->
 - Fix OrgName with Spaces in Chef360 causes issue with Knife and Chef p… [#16415](https://github.com/chef/chef/pull/16415) ([jashaik](https://github.com/jashaik)) <!-- 19.4.55 -->
