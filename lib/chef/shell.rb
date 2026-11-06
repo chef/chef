@@ -38,6 +38,7 @@ require_relative "workstation_config_loader"
 require_relative "shell/ext"
 require_relative "json_compat"
 require_relative "util/path_helper"
+require_relative "target_mode_config"
 require "chef-licensing/cli_flags/mixlib_cli"
 require_relative "licensing"
 
@@ -323,6 +324,11 @@ module Shell
       description: "The #{ChefUtils::Dist::Server::PRODUCT} URL",
       proc: nil
 
+    option :target,
+      short: "-t TARGET",
+      long: "--target TARGET",
+      description: "Target #{ChefUtils::Dist::Infra::PRODUCT} against a remote system or device"
+
     option :version,
       short: "-v",
       long: "--version",
@@ -403,6 +409,8 @@ module Shell
 
       # finally merge command-line options in
       Chef::Config.merge!(config)
+
+      Chef::TargetModeConfig.apply!(config)
     end
 
     private

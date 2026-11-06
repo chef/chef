@@ -117,6 +117,45 @@ describe Shell do
 
   end
 
+  describe "Shell::Options#parse_opts" do
+    let(:options) { Shell::Options.new }
+
+    before do
+      # avoid actually loading a config file / dot-d dir from disk
+      allow(options).to receive(:config_file_for_shell_mode).and_return(nil)
+    end
+
+    context "when --target is given" do
+      before do
+        ARGV.replace(["-t", "target.example.com"])
+        options.parse_opts
+      end
+
+      it "enables target_mode" do
+        expect(Chef::Config.target_mode.enabled).to be true
+      end
+
+      it "sets target_mode.host to the target" do
+        expect(Chef::Config.target_mode.host).to eq("target.example.com")
+      end
+
+      it "sets node_name to the target host" do
+        expect(Chef::Config[:node_name]).to eq("target.example.com")
+      end
+    end
+
+    context "when --target is NOT given" do
+      before do
+        ARGV.replace([])
+        options.parse_opts
+      end
+
+      it "does not enable target_mode" do
+        expect(Chef::Config.target_mode.enabled).to be false
+      end
+    end
+  end
+
   describe "convenience macros for creating the chef object" do
 
     before do
