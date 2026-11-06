@@ -12,15 +12,15 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: b7033361b2c67838606de7a0a1772076d79857f9
+  revision: 2969946358f95640b1f9010697a9d3715e598d8a
   branch: main
   specs:
-    ohai (19.1.40)
+    ohai (19.1.52)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
       ffi (>= 1.15.5)
-      ffi-yajl (>= 2.2, < 3.0)
+      ffi-yajl (>= 2.2, < 4.0, != 3.0.0)
       ipaddress
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
@@ -254,7 +254,7 @@ GEM
       uuidtools (>= 2.1, < 4.0)
       webrick
     coderay (1.1.3)
-    concurrent-ruby (1.3.7)
+    concurrent-ruby (1.3.8)
     connection_pool (3.0.2)
     cookstyle (9.0.0)
       rubocop (= 1.90.0)
@@ -384,11 +384,11 @@ GEM
       connection_pool (>= 2.2.4, < 4)
     net-protocol (0.2.2)
       timeout
-    net-scp (4.1.0)
-      net-ssh (>= 2.6.5, < 8.0.0)
+    net-scp (4.2.1)
+      net-ssh (>= 2.6.5, < 9.0.0)
     net-sftp (4.1.1)
       net-ssh (>= 5.0.0, < 9.0.0)
-    net-ssh (7.3.8)
+    net-ssh (7.3.9)
       logger
     netrc (0.11.0)
     nori (2.9.1)
@@ -487,7 +487,8 @@ GEM
     time (0.4.2)
       date
     timeout (0.6.1)
-    tomlrb (2.0.4)
+    tomlrb (2.0.5)
+      racc (~> 1.4)
     train-core (3.16.5)
       addressable (~> 2.5)
       ffi (>= 1.16.0, < 1.18)
