@@ -20,14 +20,13 @@
 require_relative "base"
 require_relative "../handler/error_report"
 require_relative "../workstation_config_loader"
-autoload :URI, "uri"
+require_relative "../target_mode_config"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
 module Mixlib
   module Authentication
     autoload :Log, "mixlib/authentication"
   end
 end
-autoload :Train, "train"
 
 # DO NOT MAKE EDITS, see Chef::Application::Base
 #
@@ -119,23 +118,7 @@ class Chef::Application::Client < Chef::Application::Base
     Chef::Config.chef_zero.host = config[:chef_zero_host] if config[:chef_zero_host]
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
-    if config[:target] || Chef::Config.target
-      require "ed25519" # required for net-ssh to support ed25519 keys
-
-      Chef::Config.target_mode.host = config[:target] || Chef::Config.target
-      if URI.parse(Chef::Config.target_mode.host).scheme
-        train_config = Train.unpack_target_from_uri(Chef::Config.target_mode.host)
-        Chef::Config.target_mode = train_config
-      end
-      # Save the operator's identity BEFORE enabling target mode.
-      # client_key must be captured here because its default path changes once
-      # target_mode.enabled = true (it would resolve to /etc/chef/<target>/client.pem
-      # instead of the workstation's /etc/chef/client.pem).
-      Chef::Config[:api_client_name] ||= Chef::Config[:node_name]
-      Chef::Config[:api_client_key]  ||= Chef::Config[:client_key]
-      Chef::Config.target_mode.enabled = true
-      Chef::Config.node_name = Chef::Config.target_mode.host
-    end
+    Chef::TargetModeConfig.apply!(config)
 
     if config[:credentials]
       unless File.exist?(config[:credentials])
