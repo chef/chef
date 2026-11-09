@@ -92,7 +92,7 @@ done
 
 for platform in ${debian_platforms[@]}; do
 
-  image="debian:12"
+  image="dokken/${platform%-aarch64}"
   if [[ $platform == *"-aarch64" ]]; then
     queue="default-privileged-aarch64"
   else

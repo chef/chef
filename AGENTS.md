@@ -11,6 +11,15 @@
 - [x] No `CHEF_TOKEN`, deploy keys (including chef-ci), signing keys, or token
   scopes are added or changed.
 
+## Dokken Debian verify image trial (2026-11-09)
+
+- [x] Docker Hub `dokken/debian-12`, maintained by test-kitchen/dokken-images,
+  publishes amd64 and arm64 images; an anonymous pull succeeds.
+- [x] GitHub CLI repository access and Buildkite read/write-build scopes are
+  verified. Both existing Debian queues passed build 24358.
+- [x] No new tokens, license keys, deploy keys, or registry authentication.
+  Existing `HAB_AUTH_TOKEN` handling is unchanged.
+
 ## Debian 12 GitHub Actions migration (2026-11-05)
 
 - [x] GitHub CLI has repository write access. Workflows retain `contents: read`;
