@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 19.4.58 -->
+## [v19.4.58](https://github.com/chef/chef/tree/v19.4.58) (2026-11-09)
 
 #### Merged Pull Requests
+- Bump tomlrb from 2.0.4 to 2.0.5 [#16436](https://github.com/chef/chef/pull/16436) ([dependabot[bot]](https://github.com/dependabot[bot]))
 - ci: replace retired macOS 14 runners and add macOS latest coverage [#16476](https://github.com/chef/chef/pull/16476) ([neha-p6](https://github.com/neha-p6))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump tomlrb from 2.0.4 to 2.0.5 [#16436](https://github.com/chef/chef/pull/16436) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.58 -->
 - ci: replace retired macOS 14 runners and add macOS latest coverage [#16476](https://github.com/chef/chef/pull/16476) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.57 -->
 - Use Debian 12 minimum for GitHub Actions tests [#16468](https://github.com/chef/chef/pull/16468) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 19.4.57 -->
 - Fix Solaris user_ulimit projmod command failing with shell syntax error in Target Mode [#16452](https://github.com/chef/chef/pull/16452) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.56 -->
