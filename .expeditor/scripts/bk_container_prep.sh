@@ -6,12 +6,6 @@ set -euo pipefail
 
 . /etc/os-release
 
-if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "12" ]; then
-  export DEBIAN_FRONTEND=noninteractive
-  apt-get update -y
-  apt-get install -y ca-certificates git sudo
-fi
-
 echo "--- Installing packages"
 # Set package manager based on os type
 PACKAGE_MANAGER=""
@@ -39,8 +33,8 @@ case "$ID" in
     PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev pkg-config"
 
     if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "12" ]; then
-      # Packages supplied by buildkite-platform's Debian Omnibus base container.
-      PACKAGES="$PACKAGES binutils-doc flex gettext ncurses-dev devscripts dpkg-dev fakeroot binutils gnupg wget curl cron locales procps"
+      export DEBIAN_FRONTEND=noninteractive
+      PACKAGES="git build-essential patch libssl-dev libyaml-dev zlib1g-dev libffi-dev libarchive13 pkg-config"
     fi
 
     echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
