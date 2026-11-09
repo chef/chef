@@ -27,50 +27,56 @@ deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260901T0
 EOF
 fi
 
-case "$ID" in
-  ubuntu|debian)
-    PACKAGE_MANAGER="apt-get"
-    PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev pkg-config"
+if [ "${CHEF_USE_SYSTEM_RUBY:-false}" = "true" ]; then
+  case "$ID:$VERSION_ID" in
+    debian:12) PACKAGES="libarchive13" ;;
+    debian:13) PACKAGES="libarchive13t64" ;;
+    *) echo "Unsupported system Ruby image: $ID $VERSION_ID" >&2; exit 1 ;;
+  esac
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update -y
+  apt-get install -y --no-install-recommends $PACKAGES
+else
+  case "$ID" in
+    ubuntu|debian)
+      PACKAGE_MANAGER="apt-get"
+      PACKAGES="$PACKAGES libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libncurses5-dev libffi-dev libgdbm-dev libarchive-dev pkg-config"
 
-    if [ "$ID" = "debian" ] && [ "$VERSION_ID" = "12" ]; then
-      export DEBIAN_FRONTEND=noninteractive
-      PACKAGES="git build-essential patch libssl-dev libyaml-dev zlib1g-dev libffi-dev libarchive13 pkg-config"
-    fi
+      echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
+      sudo $PACKAGE_MANAGER update -y
+      sudo $PACKAGE_MANAGER install $PACKAGES -y
+      ;;
+    rhel|rocky)
+      PACKAGE_MANAGER="dnf"
+      if [ "$ID" = "rocky" ]; then
+        PACKAGE_MANAGER+=" --enablerepo=devel"
+      fi
+      PACKAGES="$PACKAGES openssl-devel libarchive-devel libffi-devel libyaml-devel pkgconfig"
+      echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
+      sudo $PACKAGE_MANAGER install $PACKAGES -y
+      ;;
+  esac
 
-    echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
-    sudo $PACKAGE_MANAGER update -y
-    sudo $PACKAGE_MANAGER install $PACKAGES -y
-    ;;
-  rhel|rocky)
-    PACKAGE_MANAGER="dnf"
-    if [ "$ID" = "rocky" ]; then
-      PACKAGE_MANAGER+=" --enablerepo=devel"
-    fi
-    PACKAGES="$PACKAGES openssl-devel libarchive-devel libffi-devel libyaml-devel pkgconfig"
-    echo "using $PACKAGE_MANAGER to install packages: $PACKAGES"
-    sudo $PACKAGE_MANAGER install $PACKAGES -y
-    ;;
-esac
+  if [ "$PACKAGE_MANAGER" = "" ]; then
+    echo "Invalid OS type: $ID"
+    exit 1
+  fi
 
-if [ "$PACKAGE_MANAGER" = "" ]; then
-  echo "Invalid OS type: $ID"
-  exit 1
+  # Install Ruby to get the bundler gem.
+  echo "--- Configuring Ruby..."
+
+  RUBY_VERSION=$(cat .buildkite-platform.json | awk -F'"' '/"ruby_version"/ {print $4}')
+  export RUBY_VERSION
+
+  curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+
+  rbenv install ${RUBY_VERSION}
+  rbenv global ${RUBY_VERSION}
+
+  gem install bundler -v $(cat .buildkite-platform.json | awk -F'"' '/"bundle_version"/ {print $4}')
 fi
-
-# Install Ruby to get the bundler gem.
-echo "--- Configuring Ruby..."
-
-RUBY_VERSION=$(cat .buildkite-platform.json | awk -F'"' '/"ruby_version"/ {print $4}')
-export RUBY_VERSION
-
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-
-rbenv install ${RUBY_VERSION}
-rbenv global ${RUBY_VERSION}
-
-gem install bundler -v $(cat .buildkite-platform.json | awk -F'"' '/"bundle_version"/ {print $4}')
 
 echo "Checking Ruby and Bundle version..."
 echo "ruby version:"

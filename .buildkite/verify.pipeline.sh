@@ -25,7 +25,7 @@ echo ""
 
 rhel_platforms=("rhel-9" "rhel-9-aarch64")
 rocky_platforms=("rocky-8" "rocky-8-aarch64" "rocky-9" "rocky-9-aarch64")
-debian_platforms=("debian-12" "debian-12-aarch64")
+debian_platforms=("debian-12" "debian-12-aarch64" "debian-13" "debian-13-aarch64")
 ubuntu_platforms=("ubuntu-2204" "ubuntu-2204-aarch64")
 
 for platform in ${rhel_platforms[@]}; do
@@ -92,7 +92,10 @@ done
 
 for platform in ${debian_platforms[@]}; do
 
-  image="dokken/${platform%-aarch64}"
+  case "${platform%-aarch64}" in
+    debian-12) image="ruby:3.4.12-bookworm" ;;
+    debian-13) image="ruby:3.4.12-trixie" ;;
+  esac
   if [[ $platform == *"-aarch64" ]]; then
     queue="default-privileged-aarch64"
   else
@@ -100,6 +103,8 @@ for platform in ${debian_platforms[@]}; do
   fi
 
   echo "- label: \"Integration $platform :ruby:\""
+  echo "  env:"
+  echo "    CHEF_USE_SYSTEM_RUBY: \"true\""
   echo "  retry:"
   echo "    automatic:"
   echo "      limit: 1"

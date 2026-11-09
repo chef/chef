@@ -1,5 +1,14 @@
 # CI preflight
 
+## Debian Ruby image migration (2026-11-09)
+
+- [x] Public `ruby:3.4.12-bookworm` and `ruby:3.4.12-trixie` manifests include
+  amd64 and arm64; both images were pulled and inspected successfully.
+- [x] Both include Ruby 3.4.12, Bundler 2.6.9, Git and native build tools.
+  Only the distribution-specific libarchive runtime needs adding.
+- [x] Existing Buildkite queues, GitHub access and credential handling remain
+  unchanged. No new tokens, scopes, license keys or deploy keys are required.
+
 ## Main Buildkite Debian 12 verify repair (2026-11-05)
 
 - [x] GitHub CLI has repository write access; Buildkite token has `read_builds`,
