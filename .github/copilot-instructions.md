@@ -428,6 +428,18 @@ For each implementation plan, AI MUST consider:
 - **Concurrency / timing**: Race conditions, parallel execution
 - **External dependency failures**: Network timeouts, missing packages, I/O errors
 
+### Replacing or Reimplementing Upstream Behavior
+
+Applies when a change replaces a vendor or upstream script or command (for example, an installer) with Chef-owned code.
+
+- Before changing code, fetch the full upstream source and the behavior of the path being replaced. List every step it performs.
+- Mark each step as replicated or deliberately skipped, with the reason. Include this list in the PR description.
+- Do not replicate only the steps needed for the reported symptom. Dropped steps surface later as customer bugs (for example, a missing `lib\chocolatey\chocolatey.nupkg` registration broke packages that depend on `chocolatey`).
+- Unit specs that stub `powershell_exec` or `shell_out` only check command strings. They cannot show behavioral parity with the upstream script.
+- Kitchen tests (`kitchen-tests/`) run in CI and must pass before merge, but only cover what they assert. Assert outcomes that consumers rely on, not only that files exist or that a command exits 0. For example, install a package that depends on the thing just installed.
+- Add a regression test for every customer-reported bug, covering the exact failing sequence.
+- State in the PR description what could not be verified locally and is left to CI.
+
 ### Test Execution
 
 ```bash
