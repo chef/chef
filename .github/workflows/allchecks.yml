@@ -15,6 +15,6 @@ jobs:
           # This seems to be working lately even for external
           # contributors, so maybe we don't need to exclude it?
           checks_exclude: ".*(SonarCloud Code Analysis|dokr_lnx_arm64).*"
-          # Retry every minute for 30 minutes...
-          retries: 30
+          # Retry every minute for 90 minutes...
+          retries: 90
           verbose: true
