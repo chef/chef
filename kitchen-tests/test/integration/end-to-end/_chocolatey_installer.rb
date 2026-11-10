@@ -38,4 +38,15 @@ if os.windows?
     its("exit_status") { should eq 0 }
   end
 
+  # The nupkg install must register chocolatey as an installed package (as
+  # Chocolatey's install.ps1 does); otherwise packages that depend on chocolatey,
+  # such as chocolatey.extension, try to install it again from the feed.
+  describe file('C:\ProgramData\chocolatey\lib\chocolatey\chocolatey.nupkg') do
+    it { should exist }
+  end
+
+  describe command("choco list") do
+    its("stdout") { should match(/^chocolatey 2\.4\.2/) }
+  end
+
 end
