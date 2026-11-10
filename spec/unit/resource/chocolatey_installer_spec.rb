@@ -263,6 +263,28 @@ describe Chef::Resource::ChocolateyInstaller do
           expect(commands.any? { |c| c.include?("Invoke-WebRequest") && c.include?("https://some.custom.url/packages/chocolatey.2.0.0.nupkg") && c.include?("-UseBasicParsing") && c.include?(expected_destination) }).to be true
           expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
         end
+
+        it "registers chocolatey in the lib folder after running the bundled installer" do
+          resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_register", run_context)
+          resource.download_url = 'C:\packages\chocolatey.2.0.0.nupkg'
+          install_provider = resource.provider_for_action(:install)
+
+          commands = []
+          shell_out = instance_double("Mixlib::ShellOut", error!: nil)
+
+          allow(resource).to receive(:provider_for_action).with(:install).and_return(install_provider)
+          allow(resource).to receive(:is_choco_installed?).and_return(false)
+          allow(install_provider).to receive(:powershell_exec) do |command|
+            commands << command
+            shell_out
+          end
+          allow(Chef::Log).to receive(:info)
+
+          resource.run_action(:install)
+
+          script = commands.find { |c| c.include?("Expand-Archive") }
+          expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$nupkgPath -Destination \(Join-Path \$chocoPkgDir 'chocolatey\.nupkg'\)/m)
+        end
       end
     end
 
