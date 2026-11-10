@@ -231,6 +231,12 @@ class Chef
                   $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
                   if (-not (Test-Path $installScript)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
                   & $installScript
+
+                  # Register chocolatey as an installed package, as Chocolatey's install.ps1 does, so
+                  # packages that depend on chocolatey (e.g. chocolatey.extension) don't try to install it.
+                  $chocoPkgDir = Join-Path $env:ChocolateyInstall 'lib\\chocolatey'
+                  if (-not (Test-Path $chocoPkgDir -PathType Container)) { New-Item -ItemType Directory -Path $chocoPkgDir -Force | Out-Null }
+                  Copy-Item -LiteralPath $nupkgPath -Destination (Join-Path $chocoPkgDir 'chocolatey.nupkg') -Force
                 PS
                 powershell_exec(ps_code).error!
               end

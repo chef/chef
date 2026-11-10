@@ -151,6 +151,13 @@ describe Chef::Resource::ChocolateyInstaller do
         expect(commands.any? { |c| c.include?("Invoke-WebRequest") && c.include?(url) && c.include?("-UseBasicParsing") && c.include?(expected_destination) }).to be true
         expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
       end
+
+      it "registers chocolatey in the lib folder after running the bundled installer" do
+        commands = run_install_capturing_commands("fakey_fakerton_register", 'C:\packages\chocolatey.2.0.0.nupkg')
+        script = commands.find { |c| c.include?("Expand-Archive") }
+
+        expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$nupkgPath -Destination \(Join-Path \$chocoPkgDir 'chocolatey\.nupkg'\)/m)
+      end
     end
   end
 
