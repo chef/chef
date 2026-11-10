@@ -61,9 +61,7 @@ centos-6 | :whale: | verify, validate/adhoc, validate/release |
 centos-7 | :whale: | verify, validate/adhoc, validate/release |
 centos-8 | :whale: | verify, validate/adhoc, validate/release |
 rhel-9 | :whale: | verify, validate/adhoc, validate/release |
-debian-9 | :whale: | verify, validate/adhoc, validate/release |
-debian-10 | :whale: | verify, validate/adhoc, validate/release |
-debian-11 | :whale: | verify, validate/adhoc, validate/release |
+debian-12 | :whale: | verify, validate/adhoc, validate/release |
 ubuntu-1604 | :whale: | verify, validate/adhoc, validate/release |
 ubuntu-1804 | :whale: | verify, validate/adhoc, validate/release |
 ubuntu-2004 | :whale: | verify, validate/adhoc, validate/release |
