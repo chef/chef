@@ -52,3 +52,16 @@ chocolatey_installer "Install Chocolatey from nupkg URL (idempotent)" do
   action :install
   download_url "https://packages.chocolatey.org/chocolatey.2.4.2.nupkg"
 end
+
+# 6. Install a package that depends on the chocolatey package, after the nupkg install.
+#    chocolatey-community-validation.extension declares a dependency on
+#    chocolatey (>= 2.0.0). The nupkg install must register chocolatey in
+#    lib\chocolatey, as Chocolatey's install.ps1 does. If it did not, choco would
+#    try to fetch chocolatey from the feed (the customer-reported failure with
+#    chocolatey.extension) and could replace the pinned 2.4.2. The InSpec
+#    controls assert the package is installed and chocolatey is still 2.4.2:
+#      kitchen-tests/test/integration/end-to-end/_chocolatey_installer.rb
+chocolatey_package "chocolatey-community-validation.extension" do
+  version "0.2.0"
+  action :install
+end
