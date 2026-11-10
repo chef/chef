@@ -144,6 +144,8 @@ function Invoke-Prepare {
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci
         if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
+        bundle config --local with habitat
+        if (-not $?) { throw "unable to enable Habitat packaging gems" }
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
         $openssl_dir = "$(Get-HabPackagePath core/openssl)"

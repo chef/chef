@@ -35,6 +35,10 @@ group(:packaging) do
   gem "chef-vault"
 end
 
+group(:habitat, optional: true) do
+  gem "nokogiri", "~> 1.18"
+end
+
 gem "repl_type_completor", "~> 0.1.15" # deprecation warnings in chef-shell
 
 group(:packaging, :pry) do

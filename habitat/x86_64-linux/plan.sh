@@ -108,6 +108,7 @@ do_prepare() {
     bundle config --local build.ffi "-Wl,-rpath,'${LD_RUN_PATH}'"
     bundle config --local jobs "$(nproc)"
     bundle config --local without server docgen maintenance pry travis integration ci
+    bundle config --local with habitat
     bundle config --local shebang "$(pkg_path_for "$_chef_client_ruby")/bin/ruby"
     bundle config --local retry 5
     bundle config --local silence_root_warning 1

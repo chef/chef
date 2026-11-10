@@ -34,6 +34,9 @@ for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'chef-solo'; do
   hab pkg exec "${pkg_ident}" "${executable}" -- --version || error "${executable} failed to execute properly"
 done
 
+echo "--- :mag_right: Testing packaged Nokogiri from a recipe"
+hab pkg exec "${pkg_ident}" chef-apply -- "${project_root}/habitat/tests/nokogiri.rb" \
+  || error "packaged Nokogiri failed to load or parse XML"
 
 # For some reason, libarchive is not available to the Ruby runtime. Setting LD_LIBRARY_PATH allows the tests to pass.
 export LD_LIBRARY_PATH="$(hab pkg path core/libarchive)/lib"

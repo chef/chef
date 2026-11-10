@@ -50,6 +50,12 @@ Describe "chef-infra-client" {
             hab pkg exec $PackageIdentifier chef-apply.bat --version
             $? | Should be $true
         }
+
+        It "loads packaged Nokogiri and parses XML from a recipe" {
+            $recipe = Join-Path $PSScriptRoot "nokogiri.rb"
+            hab pkg exec $PackageIdentifier chef-apply.bat -- $recipe
+            $LASTEXITCODE | Should be 0
+        }
     }
 
     Context "chef-solo" {
