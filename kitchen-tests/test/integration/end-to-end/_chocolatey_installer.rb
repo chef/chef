@@ -49,6 +49,13 @@ if os.windows?
     its("stdout") { should match(/^chocolatey 2\.4\.2/) }
   end
 
+  # The package that depends on chocolatey installed, and chocolatey was not
+  # replaced by a newer version fetched from the feed to satisfy the dependency.
+  describe command("choco list") do
+    its("stdout") { should match(/^chocolatey-community-validation\.extension 0\.2\.0/) }
+    its("stdout") { should match(/^chocolatey 2\.4\.2\s*$/) }
+  end
+
   # The chocolatey_source resource ran in the same Chef run as the nupkg URL
   # install (the customer's failing sequence). The source must exist and, after
   # the add/disable/enable cycle, be enabled. Limit-output columns are:
