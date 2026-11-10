@@ -439,6 +439,7 @@ Applies when a change replaces a vendor or upstream script or command (for examp
 - Kitchen tests (`kitchen-tests/`) run in CI and must pass before merge, but only cover what they assert. Assert outcomes that consumers rely on, not only that files exist or that a command exits 0. For example, install a package that depends on the thing just installed.
 - Add a regression test for every customer-reported bug, covering the exact failing sequence.
 - State in the PR description what could not be verified locally and is left to CI.
+- Never guess. State only what has been verified, and label anything inferred as unverified. Do not present a prediction about runtime behavior as fact. Prefer reproducing a failure, or showing a new test fail without the fix, over reasoning about it.
 
 ### Test Execution
 
