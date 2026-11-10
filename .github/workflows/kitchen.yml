@@ -41,7 +41,6 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14
           - macos-15
           - macos-26
     runs-on: ${{ matrix.os }}
@@ -68,7 +67,6 @@ jobs:
           - almalinux-8
           - almalinux-9
           - almalinux-10
-          - debian-11
           - debian-12
           - fedora-40
           - fedora-41
@@ -107,7 +105,6 @@ jobs:
 #          - amazonlinux-2023
 #          - almalinux-8
 #          - almalinux-9
-#          - debian-11
 #          - debian-12
 #          - fedora-40
 #          - fedora-41

@@ -30,4 +30,3 @@ platforms:
   - name: macos-26 # arm64
   - name: macos-15 # arm64
   - name: macos-15-intel # x86_64
-  - name: macos-14 # arm64
