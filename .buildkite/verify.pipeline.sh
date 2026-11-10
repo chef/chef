@@ -18,7 +18,7 @@ echo "  BUILD_TIMESTAMP: $(date +%Y-%m-%d_%H-%M-%S)"
 echo "steps:"
 echo ""
 
-test_platforms=("centos-7" "centos-8" "rhel-9" "rhel-10" "debian-9" "ubuntu-1604" "sles-15")
+test_platforms=("centos-7" "centos-8" "rhel-9" "rhel-10" "debian-12" "ubuntu-1604" "sles-15")
 
 for platform in ${test_platforms[@]}; do
   echo "- label: \"{{matrix}} $platform :ruby:\""
@@ -31,14 +31,25 @@ for platform in ${test_platforms[@]}; do
   echo "    - \"Unit\""
   echo "    - \"Integration\""
   echo "    - \"Functional\""
+  if [ "$platform" = "debian-12" ]; then
+    echo "  env:"
+    echo "    CHEF_USE_SYSTEM_RUBY: \"true\""
+  fi
   echo "  plugins:"
   echo "  - docker#v3.5.0:"
-  echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  if [ "$platform" = "debian-12" ]; then
+    echo "      image: ruby:3.1.7-bookworm"
+  else
+    echo "      image: chefes/omnibus-toolchain-${platform#*:}:$OMNIBUS_TOOLCHAIN_VERSION"
+  fi
   echo "      privileged: true"
   echo "      environment:"
   echo "        - CHEF_FOUNDATION_VERSION"
   echo "      propagate-environment: true"
   echo "  commands:"
+  if [ "$platform" = "debian-12" ]; then
+    echo "    - .expeditor/scripts/bk_container_prep.sh"
+  fi
   echo "    - .expeditor/scripts/prep_and_run_tests.sh {{matrix}}"
   echo "  timeout_in_minutes: 60"
 done

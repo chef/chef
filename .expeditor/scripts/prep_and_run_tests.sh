@@ -9,8 +9,10 @@ fi
 
 TestType=$1
 
-curl -fsSL https://omnitruck.chef.io/install.sh | bash -s -- -c "stable" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
-export PATH="/opt/chef/bin:${PATH}"
+if [ "${CHEF_USE_SYSTEM_RUBY:-false}" != "true" ]; then
+    curl -fsSL https://omnitruck.chef.io/install.sh | bash -s -- -c "stable" -P "chef-foundation" -v "$CHEF_FOUNDATION_VERSION"
+    export PATH="/opt/chef/bin:${PATH}"
+fi
 
 if [ "$TestType" == "Unit" ]
 then

@@ -181,6 +181,8 @@ RSpec.configure do |config|
   config.filter_run_excluding openssl_lt_101: true unless openssl_lt_101?
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
   config.filter_run_excluding validate_only: true unless ENV["BUILDKITE_BUILD_URL"] =~ /validate/ && ENV.fetch("BUILDKITE_LABEL", "") !~ /(Integration |Functional |Unit )/
+  # System Ruby uses the distribution's OpenSSL, not the packaged Foundation version.
+  config.filter_run_excluding openssl_version_check: true if ENV["CHEF_USE_SYSTEM_RUBY"] == "true"
   config.filter_run_excluding broken: true
   config.filter_run_excluding not_wpar: true unless wpar?
   config.filter_run_excluding not_supported_on_s390x: true unless s390x?
