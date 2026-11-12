@@ -425,15 +425,14 @@ GEM
     rainbow (3.1.1)
     rake (13.4.2)
     rb-readline (0.5.5)
-    rbs (4.0.3)
+    rbs (3.10.4)
       logger
-      prism (>= 1.6.0)
       tsort
     regexp_parser (2.12.0)
     reline (0.7.0)
       io-console (~> 0.5)
-    repl_type_completor (0.1.15)
-      prism (~> 1.0)
+    repl_type_completor (0.1.17)
+      prism (>= 1.0)
       rbs (>= 2.7.0)
     rexml (3.4.4)
     rspec (3.13.2)
@@ -596,7 +595,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake (>= 12.3.3)
   rb-readline
-  repl_type_completor (~> 0.1.15)
+  repl_type_completor (~> 0.1.17)
   rest-client!
   rspec
   webmock
