@@ -63,5 +63,6 @@ end
 #      kitchen-tests/test/integration/end-to-end/_chocolatey_installer.rb
 chocolatey_package "chocolatey-community-validation.extension" do
   version "0.2.0"
+  options "--no-progress"
   action :install
 end
