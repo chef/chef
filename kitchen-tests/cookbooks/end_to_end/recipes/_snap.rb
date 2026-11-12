@@ -44,11 +44,16 @@ bash "capture_snap_diagnostics" do
       log_command getent ahosts api.snapcraft.io
       log_command curl -4 -Iv --connect-timeout 10 --max-time 30 https://api.snapcraft.io/
       log_command curl -6 -Iv --connect-timeout 10 --max-time 30 https://api.snapcraft.io/
+      snap_info_url="https://api.snapcraft.io/v2/snaps/info/core?architecture=$(dpkg --print-architecture)"
+      log_command curl -v --connect-timeout 10 --max-time 30 \
+        -H 'Snap-Device-Series: 16' "$snap_info_url"
+      log_command curl -4 -v --connect-timeout 10 --max-time 30 \
+        -H 'Snap-Device-Series: 16' "$snap_info_url"
       log_command journalctl -u snapd --no-pager -n 200
     } 2>&1 | tee /tmp/snap-diagnostics.log
   SH
   live_stream true
-  timeout 420
+  timeout 540
 end
 
 snap_package "core" do
