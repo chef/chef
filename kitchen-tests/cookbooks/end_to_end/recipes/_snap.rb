@@ -6,12 +6,22 @@ service "snapd" do
   action :start
 end
 
-# Wait for snapd to finish any in-progress changes (e.g. background core install on Ubuntu 24.04)
-# before attempting any snap operations, to avoid snap-change-conflict errors.
-# Uses a polling loop rather than 'snap wait system seed.loaded' which hangs on some Ubuntu versions.
-execute "wait_for_snapd_seeding" do
-  command "timeout 60 bash -c 'while snap changes 2>/dev/null | grep -q Doing; do sleep 2; done' || true"
-  ignore_failure true
+# On fresh systems snapd seeds core snaps in the background at boot, and can
+# also auto-refresh snaps on its own schedule. Either can race with our own
+# snap_package installs (of "core", "hello", etc. below) and fail with
+# "snap-change-conflict". "snap wait system seed.loaded" is a no-op (returns
+# immediately) once seeding is already done, so it only blocks when truly
+# necessary. Holding refreshes afterwards prevents anything else from
+# racing with the snap_package resources that follow, without adding any
+# extra wait of its own.
+execute "wait_for_snapd_seed" do
+  command "snap wait system seed.loaded"
+  timeout 300
+end
+
+execute "hold_snap_auto_refresh" do
+  # holds refreshes for all snaps indefinitely; returns 0 even if already held
+  command "snap refresh --hold"
 end
 
 snap_package "core" do
