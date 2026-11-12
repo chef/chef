@@ -42,7 +42,7 @@ if os.windows?
   # Chocolatey's install.ps1 does); otherwise packages that depend on chocolatey,
   # such as chocolatey.extension, try to install it again from the feed.
   describe file('C:\ProgramData\chocolatey\lib\chocolatey\chocolatey.nupkg') do
-    it { should exist }
+    it { should be_file }
   end
 
   describe command("choco list") do

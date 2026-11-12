@@ -264,7 +264,7 @@ describe Chef::Resource::ChocolateyInstaller do
           expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
         end
 
-        it "registers chocolatey in the lib folder after running the bundled installer" do
+        it "retains the staged archive where the bundled bootstrapper expects it and registers a file" do
           resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_register", run_context)
           resource.download_url = 'C:\packages\chocolatey.2.0.0.nupkg'
           install_provider = resource.provider_for_action(:install)
@@ -283,7 +283,13 @@ describe Chef::Resource::ChocolateyInstaller do
           resource.run_action(:install)
 
           script = commands.find { |c| c.include?("Expand-Archive") }
-          expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$nupkgPath -Destination \(Join-Path \$chocoPkgDir 'chocolatey\.nupkg'\)/m)
+          expect(script).to include("$extractPath = Join-Path $env:TEMP 'chocolatey\\chocoInstall'")
+          expect(script).to include("$zipPath = Join-Path $extractPath 'chocolatey.zip'")
+          expect(script).to match(/Copy-Item -LiteralPath \$nupkgPath.*Expand-Archive.*& \$installScript/m)
+          expect(script).not_to include("Remove-Item")
+          expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$zipPath -Destination \$registeredNupkg -Force -ErrorAction Stop/m)
+          expect(script).to include('if (Test-Path $registeredNupkg -PathType Container) { throw')
+          expect(script).to include('if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw')
         end
       end
     end
