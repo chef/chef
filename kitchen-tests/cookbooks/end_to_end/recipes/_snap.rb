@@ -24,6 +24,33 @@ execute "hold_snap_auto_refresh" do
   command "snap refresh --hold"
 end
 
+bash "capture_snap_diagnostics" do
+  code <<~'SH'
+    set +e
+    set -o pipefail
+
+    log_command() {
+      printf '\n>>> '
+      printf '%q ' "$@"
+      printf '\n'
+      timeout 60 "$@"
+      status=$?
+      printf 'Exit status: %s\n' "$status"
+    }
+
+    {
+      log_command snap version
+      log_command snap debug connectivity
+      log_command getent ahosts api.snapcraft.io
+      log_command curl -4 -Iv --connect-timeout 10 --max-time 30 https://api.snapcraft.io/
+      log_command curl -6 -Iv --connect-timeout 10 --max-time 30 https://api.snapcraft.io/
+      log_command journalctl -u snapd --no-pager -n 200
+    } 2>&1 | tee /tmp/snap-diagnostics.log
+  SH
+  live_stream true
+  timeout 420
+end
+
 snap_package "core" do
   # this is an attempt to keep Ubuntu 18.04 from failing
   action :install
