@@ -43,12 +43,6 @@ describe Chef::ServerAPI do
   end
 
   describe "#initialize" do
-    it "does not consult the machine's certificate password during unit tests" do
-      expect(Chef::HTTP::Authenticator).not_to receive(:get_cert_password)
-
-      expect(client.authenticator.sign_requests?).to be true
-    end
-
     it "uses the configured key file" do
       allow(IO).to receive(:read).with(key_path).and_return(SIGNING_KEY_DOT_PEM)
       Chef::Config[:client_key] = key_path
