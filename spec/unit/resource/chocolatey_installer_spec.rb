@@ -288,8 +288,8 @@ describe Chef::Resource::ChocolateyInstaller do
           expect(script).to match(/Copy-Item -LiteralPath \$nupkgPath.*Expand-Archive.*& \$installScript/m)
           expect(script).not_to include("Remove-Item")
           expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$zipPath -Destination \$registeredNupkg -Force -ErrorAction Stop/m)
-          expect(script).to include("if (Test-Path $registeredNupkg -PathType Container) { throw }")
-          expect(script).to include("if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw }")
+          expect(script).to include('if (Test-Path $registeredNupkg -PathType Container) { throw "Cannot register Chocolatey: $registeredNupkg is a directory, not a package archive" }')
+          expect(script).to include('if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw "Chocolatey package archive was not registered at $registeredNupkg" }')
         end
       end
     end
