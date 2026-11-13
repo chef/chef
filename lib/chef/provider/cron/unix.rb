@@ -21,12 +21,15 @@
 require_relative "../../log"
 require_relative "../../provider"
 require_relative "../cron"
+require_relative "../../target_io/dir"
+require_relative "../../target_io/file"
+require_relative "../../target_io/fileutils"
 
 class Chef
   class Provider
     class Cron
       class Unix < Chef::Provider::Cron
-        provides :cron, os: "solaris2"
+        provides :cron, os: "solaris2", target_mode: true
 
         private
 
@@ -45,14 +48,20 @@ class Chef
         end
 
         def write_crontab(crontab)
-          tempcron = Tempfile.new("chef-cron")
-          tempcron << crontab
-          tempcron.flush
-          tempcron.chmod(0644)
+          # In target mode, shell_out runs on the remote target, so the
+          # tempfile holding the crontab contents must also live on the
+          # target rather than on the local controller. TargetIO::Dir/File
+          # transparently fall back to plain ::Dir/::File when not running
+          # in target mode, so this creates a local tempfile exactly as
+          # before in that case.
+          tempdir = ::TargetIO::Dir.mktmpdir("chef-cron")
+          tempcron_path = ::File.join(tempdir, "crontab")
+          ::TargetIO::File.open(tempcron_path, "w") { |f| f.write(crontab) }
+          ::TargetIO::File.chmod(0644, tempcron_path)
           exit_status = 0
           error_message = ""
           begin
-            crontab_write = shell_out("/usr/bin/crontab", tempcron.path, user: @new_resource.user)
+            crontab_write = shell_out("/usr/bin/crontab", tempcron_path, user: @new_resource.user)
             stderr = crontab_write.stderr
             exit_status = crontab_write.status.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
@@ -69,8 +78,9 @@ class Chef
             logger.trace(e.message)
             exit_status = 1
             error_message = e.message
+          ensure
+            ::TargetIO::FileUtils.rm_rf(tempdir)
           end
-          tempcron.close!
           if exit_status > 0
             raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"
           end

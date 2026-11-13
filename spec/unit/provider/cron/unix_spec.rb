@@ -47,6 +47,28 @@ describe Chef::Provider::Cron::Unix do
     expect(provider).to be_a(Chef::Provider::Cron)
   end
 
+  # Regression test: previously `provides :cron, os: "solaris2"` did not
+  # declare `target_mode: true`, so Target Mode runs against a Solaris node
+  # raised Chef::Exceptions::ProviderNotFound for the cron resource even
+  # though this provider existed.
+  describe ".provides" do
+    let(:solaris_node) do
+      node = Chef::Node.new
+      node.automatic[:os] = "solaris2"
+      node
+    end
+
+    it "is resolved for solaris2 nodes in normal (non-target-mode) runs" do
+      allow(Chef::Config).to receive(:target_mode?).and_return(false)
+      expect(Chef.provider_handler_map.get(solaris_node, :cron)).to eq(described_class)
+    end
+
+    it "is resolved for solaris2 nodes in Target Mode runs" do
+      allow(Chef::Config).to receive(:target_mode?).and_return(true)
+      expect(Chef.provider_handler_map.get(solaris_node, :cron)).to eq(described_class)
+    end
+  end
+
   before do
     allow(run_context).to receive(:logger).and_return(logger)
   end
@@ -111,25 +133,41 @@ describe Chef::Provider::Cron::Unix do
   describe "write_crontab" do
     let(:stdout) { "" }
     let(:stderr) { "" }
-    let(:tempfile) { double("foo", path: "/tmp/foo", close: true) }
-
+    # write_crontab uses TargetIO::Dir/File/FileUtils so that in target mode
+    # the scratch crontab file is created on the remote target (where
+    # shell_out's `crontab` command actually runs) rather than on the local
+    # controller. TargetIO falls back to plain ::Dir/::File/::FileUtils when
+    # not in target mode, so these specs exercise the real filesystem to
+    # confirm the on-disk content and cleanup behavior; RSpec cannot stub
+    # TargetIO's method_missing-based dispatch directly.
     before do
-      expect(Tempfile).to receive(:new).and_return(tempfile)
-      expect(tempfile).to receive(:flush)
-      expect(tempfile).to receive(:chmod).with(420)
-      expect(tempfile).to receive(:close!)
-      allow(tempfile).to receive(:<<)
-      allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username).and_return(shell_out)
+      allow(provider).to receive(:shell_out_compacted).and_return(shell_out)
     end
 
     it "should call crontab for the user" do
       provider.send(:write_crontab, "Foo")
-      expect(provider).to have_received(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username)
+      expect(provider).to have_received(:shell_out_compacted).with("/usr/bin/crontab", anything, user: username)
     end
 
     it "should call crontab with a file containing the crontab" do
+      content = nil
+      allow(provider).to receive(:shell_out_compacted) do |*args, **_kwargs|
+        content = IO.read(args[1])
+        shell_out
+      end
       provider.send(:write_crontab, "Foo\n# wibble\n wah!!")
-      expect(tempfile).to have_received(:<<).with("Foo\n# wibble\n wah!!")
+      expect(content).to eq("Foo\n# wibble\n wah!!")
+    end
+
+    it "should remove the tempdir used to stage the crontab after writing" do
+      tempdir = nil
+      allow(provider).to receive(:shell_out_compacted) do |*args, **_kwargs|
+        tempdir = ::File.dirname(args[1])
+        expect(::Dir.exist?(tempdir)).to be true
+        shell_out
+      end
+      provider.send(:write_crontab, "Foo")
+      expect(::Dir.exist?(tempdir)).to be false
     end
 
     context "when writing the crontab fails" do
@@ -138,6 +176,16 @@ describe Chef::Provider::Cron::Unix do
         expect do
           provider.send(:write_crontab, "Foo")
         end.to raise_error(Chef::Exceptions::Cron, /Error updating state of #{new_resource.name}, exit: 1/)
+      end
+
+      it "should still remove the tempdir" do
+        tempdir = nil
+        allow(provider).to receive(:shell_out_compacted) do |*args, **_kwargs|
+          tempdir = ::File.dirname(args[1])
+          shell_out
+        end
+        provider.send(:write_crontab, "Foo") rescue nil
+        expect(::Dir.exist?(tempdir)).to be false
       end
     end
   end
