@@ -54,7 +54,13 @@ $env:OPENSSL_ROOT_DIR = $openssl_dir
 $env:OPENSSL_INCLUDE_DIR = "$openssl_dir\include"
 $env:OPENSSL_LIB_DIR = "$openssl_dir\lib"
 
-$env:Path = "$openssl_dir\bin;$ruby_dir\bin;" + $env:Path
+Write-Output "--- Installing libarchive via Habitat"
+hab pkg install core/libarchive --channel base-2025
+if (-not $?) { throw "Could not install libarchive via Habitat." }
+$libarchive_dir = & hab pkg path core/libarchive
+if (-not $libarchive_dir) { throw "Could not determine core/libarchive installation directory." }
+
+$env:Path = "$openssl_dir\bin;$ruby_dir\bin;$libarchive_dir\bin;" + $env:Path
 
 Write-Output "Configure bundle to build openssl gem with $openssl_dir"
 bundle config build.openssl --with-openssl-dir=$openssl_dir
