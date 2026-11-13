@@ -212,15 +212,25 @@ class Chef
                   if (-not (Test-Path $env:ChocolateyInstall)) { New-Item -ItemType Directory -Path $env:ChocolateyInstall -Force | Out-Null }
 
                   $nupkgPath = '#{nupkg_path}'
-                  $extractPath = Join-Path $env:TEMP 'chocolatey_nupkg_extract'
-                  if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
-                  $zipPath = Join-Path $env:TEMP 'chocolatey_nupkg.zip'
-                  Copy-Item $nupkgPath $zipPath
-                  Expand-Archive $zipPath $extractPath -Force
-                  Remove-Item $zipPath -Force
+                  # The bundled bootstrapper looks for this archive to register Chocolatey.
+                  # Keep the same staging layout as Chocolatey's install.ps1, including the ZIP.
+                  $extractPath = Join-Path $env:TEMP 'chocolatey\\chocoInstall'
+                  if (-not (Test-Path $extractPath -PathType Container)) { New-Item -ItemType Directory -Path $extractPath -Force -ErrorAction Stop | Out-Null }
+                  $zipPath = Join-Path $extractPath 'chocolatey.zip'
+                  Copy-Item -LiteralPath $nupkgPath -Destination $zipPath -Force -ErrorAction Stop
+                  Expand-Archive -LiteralPath $zipPath -DestinationPath $extractPath -Force -ErrorAction Stop
                   $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
-                  if (-not (Test-Path $installScript)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
+                  if (-not (Test-Path $installScript -PathType Leaf)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
                   & $installScript
+
+                  # Register chocolatey as an installed package, as Chocolatey's install.ps1 does, so
+                  # packages that depend on chocolatey (e.g. chocolatey.extension) don't try to install it.
+                  $chocoPkgDir = Join-Path $env:ChocolateyInstall 'lib\\chocolatey'
+                  if (-not (Test-Path $chocoPkgDir -PathType Container)) { New-Item -ItemType Directory -Path $chocoPkgDir -Force -ErrorAction Stop | Out-Null }
+                  $registeredNupkg = Join-Path $chocoPkgDir 'chocolatey.nupkg'
+                  if (Test-Path $registeredNupkg -PathType Container) { throw "Cannot register Chocolatey: $registeredNupkg is a directory, not a package archive" }
+                  Copy-Item -LiteralPath $zipPath -Destination $registeredNupkg -Force -ErrorAction Stop
+                  if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw "Chocolatey package archive was not registered at $registeredNupkg" }
                 PS
                 powershell_exec(ps_code).error!
               end
