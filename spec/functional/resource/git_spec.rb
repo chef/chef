@@ -261,6 +261,29 @@ describe Chef::Resource::Git do
     end
   end
 
+  context "when a tag is moved in the origin repository" do
+    it "syncs and moves the local tag to match" do
+      shell_out!("git", "tag", "moving", rev_foo, cwd: origin_repo)
+      git deploy_directory do
+        repository origin_repo
+        revision "master"
+        action :sync
+      end.should_be_updated
+      expect_revision_to_be("moving", rev_foo)
+
+      shell_out!("git", "tag", "-f", "moving", rev_testing, cwd: origin_repo)
+      # Go back a commit so that the next sync fetches again
+      shell_out!("git", "reset", "--hard", rev_foo, cwd: deploy_directory)
+
+      git deploy_directory do
+        repository origin_repo
+        revision "master"
+        action :sync
+      end.should_be_updated
+      expect_revision_to_be("moving", rev_testing)
+    end
+  end
+
   context "when dealing with a repo with a degenerate tag named 'HEAD'", not_supported_on_windows: true, git_no_tag_head: true do
     before do
       shell_out!("git", "tag", "-m \"degenerate tag\"", "HEAD", "ed181b3419b6f489bedab282348162a110d6d3a1", cwd: origin_repo)
