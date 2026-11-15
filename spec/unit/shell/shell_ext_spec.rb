@@ -17,6 +17,7 @@
 #
 
 require "spec_helper"
+require "irb"
 
 describe Shell::Extensions do
   let(:test_shell_session) do
@@ -80,16 +81,16 @@ describe Shell::Extensions do
       irb_context = double("context", main: target_context_obj)
       irb_session = double("irb session", context: irb_context)
       @job_manager.jobs = [[:thread, irb_session]]
-      allow(@root_context).to receive(:jobs).and_return(@job_manager)
+      allow(@root_context).to receive(:job_manager).and_return(@job_manager)
       @root_context.ensure_session_select_defined
-      expect(@root_context.jobs.select_shell_session(target_context_obj)).to eq(irb_session)
-      expect(@root_context.jobs.select_shell_session(:idontexist)).to be_nil
+      expect(@root_context.job_manager.select_shell_session(target_context_obj)).to eq(irb_session)
+      expect(@root_context.job_manager.select_shell_session(:idontexist)).to be_nil
     end
 
     it "finds, then switches to a session" do
       @job_manager.jobs = []
       allow(@root_context).to receive(:ensure_session_select_defined)
-      allow(@root_context).to receive(:jobs).and_return(@job_manager)
+      allow(@root_context).to receive(:job_manager).and_return(@job_manager)
       expect(@job_manager).to receive(:select_shell_session).and_return(:the_shell_session)
       expect(@job_manager).to receive(:switch).with(:the_shell_session)
       @root_context.find_or_create_session_for(:foo)
@@ -97,9 +98,9 @@ describe Shell::Extensions do
 
     it "creates a new session if an existing one isn't found" do
       @job_manager.jobs = []
-      allow(@root_context).to receive(:jobs).and_return(@job_manager)
+      allow(@root_context).to receive(:job_manager).and_return(@job_manager)
       allow(@job_manager).to receive(:select_shell_session).and_return(nil)
-      expect(@root_context).to receive(:irb).with(:foo)
+      expect(IRB).to receive(:irb).with(nil, :foo)
       @root_context.find_or_create_session_for(:foo)
     end
 
