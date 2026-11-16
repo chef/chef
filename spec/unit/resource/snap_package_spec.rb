@@ -76,6 +76,33 @@ describe Chef::Resource::SnapPackage, "initialize" do
       resource.run_action(:install)
     end
 
+    it "warns after retries for a Snap Store request deadline without marking it updated" do
+      error = { "message" => 'Get "https://api.snapcraft.io/v2/snaps/info/core?architecture=amd64&fields=version%2Cname": context deadline exceeded' }.inspect
+      allow(provider).to receive(:run_action) do
+        resource.updated_by_last_action(true)
+        raise Chef::Exceptions::Package, error
+      end
+      expect(Chef::Log).to receive(:warn).with(/Snap repository issues: Snap Store request timed out.*coverage was not completed/)
+
+      resource.run_action(:install)
+
+      expect(provider).to have_received(:run_action).exactly(4).times
+      expect(resource).not_to be_updated_by_last_action
+    end
+
+    [
+      'Get "https://other.example/v2/snaps/info/core": context deadline exceeded',
+      'Get "https://api.snapcraft.io.other.example/v2/snaps/info/core": context deadline exceeded',
+      "context deadline exceeded",
+    ].each do |message|
+      it "does not ignore an unrelated deadline: #{message}" do
+        allow(provider).to receive(:run_action).and_raise(Chef::Exceptions::Package, { "message" => message }.inspect)
+        expect(Chef::Log).not_to receive(:warn)
+
+        expect { resource.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /context deadline exceeded/)
+      end
+    end
+
     it "still raises unrelated package failures after retries" do
       allow(provider).to receive(:run_action).and_raise(Chef::Exceptions::Package, '{"message" => "snap not found"}')
       expect(Chef::Log).not_to receive(:warn)
