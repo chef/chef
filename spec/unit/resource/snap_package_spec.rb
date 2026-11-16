@@ -95,6 +95,37 @@ describe Chef::Resource::SnapPackage, "initialize" do
       end
     end
 
+    it "warns after retries for the exact Snap operation timeout and stops notifications" do
+      allow(provider).to receive(:run_action) do
+        resource.updated_by_last_action(true)
+        raise "Snap operating timed out after 300 seconds."
+      end
+      downstream = Chef::Resource::RubyBlock.new("next snap check", run_context)
+      downstream.block { raise "notification must not run" }
+      downstream.action :nothing
+      run_context.resource_collection.insert(downstream)
+      resource.notifies :run, downstream, :immediately
+
+      expect(Chef::Log).to receive(:warn).with("Skipping remaining Snap end-to-end checks due to Snap operation timeout: Snap operating timed out after 300 seconds. Snap coverage was not completed.")
+      Chef::Runner.new(run_context).run_action(resource, :install)
+
+      expect(provider).to have_received(:run_action).exactly(4).times
+      expect(resource).not_to be_updated_by_last_action
+    end
+
+    [
+      [RuntimeError, "Snap operating timed out after 30 seconds."],
+      [Chef::Exceptions::Package, "Snap operating timed out after 300 seconds."],
+    ].each do |error_class, message|
+      it "does not ignore #{error_class} with #{message.inspect}" do
+        allow(provider).to receive(:run_action).and_raise(error_class, message)
+        expect(Chef::Log).not_to receive(:warn)
+
+        expect { resource.run_action(:install) }.to raise_error(error_class, /#{Regexp.escape(message)}/)
+        expect(provider).to have_received(:run_action).exactly(4).times
+      end
+    end
+
     [
       'Get "https://other.example/v2/snaps/info/core": context deadline exceeded',
       'Get "https://api.snapcraft.io.other.example/v2/snaps/info/core": context deadline exceeded',
