@@ -146,3 +146,10 @@ snap_package "multi-package" do
   retries 3
   retry_delay 60
 end
+
+run_context.resource_collection.each do |resource|
+  next unless resource.is_a?(Chef::Resource::SnapPackage) &&
+    resource.cookbook_name == "end_to_end" && resource.recipe_name == "_snap"
+
+  resource.extend(EndToEndSnapStoreRateLimit)
+end
