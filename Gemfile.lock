@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 1faf71b5a20dc6ef0ff972a456bef64b5eb63aa2
+  revision: ce1943ab15a550dbd1b778d72bfc312411a882a9
   branch: main
   specs:
-    ohai (19.1.52)
+    ohai (19.1.53)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -384,7 +384,7 @@ GEM
       connection_pool (>= 2.2.4, < 4)
     net-protocol (0.2.2)
       timeout
-    net-scp (4.2.1)
+    net-scp (4.2.2)
       net-ssh (>= 2.6.5, < 9.0.0)
     net-sftp (4.1.1)
       net-ssh (>= 5.0.0, < 9.0.0)
