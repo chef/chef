@@ -441,6 +441,30 @@ Applies when a change replaces a vendor or upstream script or command (for examp
 - State in the PR description what could not be verified locally and is left to CI.
 - Never guess. State only what has been verified, and label anything inferred as unverified. Do not present a prediction about runtime behavior as fact. Prefer reproducing a failure, or showing a new test fail without the fix, over reasoning about it.
 
+### Regression containment — mandatory
+
+These rules keep a focused bug fix from changing unrelated behavior and
+introducing regressions.
+
+- Approval to fix a bug does not include refactoring, cleanup, helper extraction,
+  or changes to unrelated tests. Get separate approval for those changes.
+- Before editing, document the current behavior and what must not change. Include
+  configuration precedence, private feeds, credentials, environment scopes,
+  version formats, reboot states, recovery, idempotency, and why-run behavior.
+- For each defect, write a regression test that fails before the fix. Assert the
+  required customer outcome, not details of the current implementation.
+- Keep existing compatibility assertions. Do not change expected results just
+  to make the new implementation pass.
+- Check every removed behavior against the baseline. Explain its replacement
+  and test coverage; stop if either is unclear.
+- Get renewed approval if the fix requires rewriting an action, changing shared
+  configuration precedence, or changing a supported customer workflow.
+- Command-string mocks and coverage percentages do not prove runtime parity.
+  Test the real boundary with isolated fixtures. Require disposable integration
+  tests for installation, upgrade, reboot, and recovery sequences.
+- In the report, label verification as source-reviewed, mocked,
+  fixture-runtime, or end-to-end. Do not claim scenarios work unless they were tested.
+  
 ### Test Execution
 
 ```bash
