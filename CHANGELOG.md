@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.4.62 -->
-## [v19.4.62](https://github.com/chef/chef/tree/v19.4.62) (2026-11-13)
+<!-- latest_release 19.4.63 -->
+## [v19.4.63](https://github.com/chef/chef/tree/v19.4.63) (2026-11-16)
 
 #### Merged Pull Requests
-- CHEF-37827: Register chocolatey package after nupkg install [#16489](https://github.com/chef/chef/pull/16489) ([johnmccrae](https://github.com/johnmccrae))
+- Bump repl_type_completor from 0.1.15 to 0.1.17 [#16498](https://github.com/chef/chef/pull/16498) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump repl_type_completor from 0.1.15 to 0.1.17 [#16498](https://github.com/chef/chef/pull/16498) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.63 -->
 - CHEF-37827: Register chocolatey package after nupkg install [#16489](https://github.com/chef/chef/pull/16489) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.4.62 -->
 - Fix chef-shell crash in Target Mode by initializing run_context before run_ohai [#16465](https://github.com/chef/chef/pull/16465) ([neha-p6](https://github.com/neha-p6)) <!-- 19.4.61 -->
 - Bump ohai from `b703336` to `1faf71b` [#16483](https://github.com/chef/chef/pull/16483) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.4.60 -->
