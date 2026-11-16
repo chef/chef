@@ -2,9 +2,9 @@ module EndToEndSnapStoreRateLimit
   def run_action(action, notification_type = nil, notifying_resource = nil)
     super
   rescue Chef::Exceptions::Package => e
-    reason = if e.message.end_with?('{"message" => "too many requests"}')
+    reason = if e.message.match?(/\{"message" ?=> ?"too many requests"\}\z/)
                "too many requests"
-             elsif e.message.match?(%r{\{"message" => "Get \\"https://api\.snapcraft\.io/[^"\\]+\\": context deadline exceeded"\}\z})
+             elsif e.message.match?(%r{\{"message" ?=> ?"Get \\"https://api\.snapcraft\.io/[^"\\]+\\": context deadline exceeded"\}\z})
                "Snap Store request timed out (context deadline exceeded)"
              end
     raise unless reason
