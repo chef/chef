@@ -50,22 +50,24 @@ describe Chef::Resource::SnapPackage, "initialize" do
       resource.retries 3
     end
 
-    it "warns only after exhausting retries and stops subsequent notifications" do
-      allow(provider).to receive(:run_action) do
-        resource.updated_by_last_action(true)
-        raise rate_limit_error
+    ["=>", " => "].each do |separator|
+      it "warns after retries and stops notifications for a rate limit using #{separator.inspect}" do
+        allow(provider).to receive(:run_action) do
+          resource.updated_by_last_action(true)
+          raise Chef::Exceptions::Package, %({"message"#{separator}"too many requests"})
+        end
+        downstream = Chef::Resource::RubyBlock.new("next snap check", run_context)
+        downstream.block { raise "notification must not run" }
+        downstream.action :nothing
+        run_context.resource_collection.insert(downstream)
+        resource.notifies :run, downstream, :immediately
+
+        expect(Chef::Log).to receive(:warn).with(/Snap repository issues: too many requests.*coverage was not completed/)
+        Chef::Runner.new(run_context).run_action(resource, :install)
+
+        expect(provider).to have_received(:run_action).exactly(4).times
+        expect(resource).not_to be_updated_by_last_action
       end
-      downstream = Chef::Resource::RubyBlock.new("next snap check", run_context)
-      downstream.block { raise "notification must not run" }
-      downstream.action :nothing
-      run_context.resource_collection.insert(downstream)
-      resource.notifies :run, downstream, :immediately
-
-      expect(Chef::Log).to receive(:warn).with(/Snap repository issues: too many requests.*coverage was not completed/)
-      Chef::Runner.new(run_context).run_action(resource, :install)
-
-      expect(provider).to have_received(:run_action).exactly(4).times
-      expect(resource).not_to be_updated_by_last_action
     end
 
     it "allows recovery during the existing retries without warning" do
@@ -76,18 +78,21 @@ describe Chef::Resource::SnapPackage, "initialize" do
       resource.run_action(:install)
     end
 
-    it "warns after retries for a Snap Store request deadline without marking it updated" do
-      error = { "message" => 'Get "https://api.snapcraft.io/v2/snaps/info/core?architecture=amd64&fields=version%2Cname": context deadline exceeded' }.inspect
-      allow(provider).to receive(:run_action) do
-        resource.updated_by_last_action(true)
-        raise Chef::Exceptions::Package, error
+    ["=>", " => "].each do |separator|
+      it "warns after retries for a Snap Store deadline using #{separator.inspect} without marking it updated" do
+        message = 'Get "https://api.snapcraft.io/v2/snaps/info/core?architecture=amd64&fields=version%2Cname": context deadline exceeded'
+        error = %({"message"#{separator}#{message.inspect}})
+        allow(provider).to receive(:run_action) do
+          resource.updated_by_last_action(true)
+          raise Chef::Exceptions::Package, error
+        end
+        expect(Chef::Log).to receive(:warn).with(/Snap repository issues: Snap Store request timed out.*coverage was not completed/)
+
+        resource.run_action(:install)
+
+        expect(provider).to have_received(:run_action).exactly(4).times
+        expect(resource).not_to be_updated_by_last_action
       end
-      expect(Chef::Log).to receive(:warn).with(/Snap repository issues: Snap Store request timed out.*coverage was not completed/)
-
-      resource.run_action(:install)
-
-      expect(provider).to have_received(:run_action).exactly(4).times
-      expect(resource).not_to be_updated_by_last_action
     end
 
     [
