@@ -103,4 +103,10 @@ describe Chef::Resource::ChocolateyPackage do
       expect(resource.returns).to eql(val)
     end
   end
+
+  describe "sensitive property masking" do
+    it "marks password as sensitive" do
+      expect(Chef::Resource::ChocolateyPackage.properties[:password].sensitive?).to be true
+    end
+  end
 end

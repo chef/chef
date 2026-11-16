@@ -20,7 +20,7 @@ module TargetIO
 
     def write_file(remote_file, content)
       tempfile = ::Tempfile.new
-      tempfile.write(tempfile, content)
+      tempfile.write(content)
       tempfile.close
 
       upload(tempfile.path, remote_file)

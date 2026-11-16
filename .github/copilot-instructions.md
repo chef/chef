@@ -4,6 +4,11 @@
 
 Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure. This repository contains the core Chef Infra Client and related utilities.
 
+## Environment Rules
+Copilot must always detect the OS and Shell and provide commands specific to that OS and shell.
+If the OS is not specified, Copilot must ask the user to specify it before providing any commands.
+Copilot should never mix commands across different platforms.
+
 ## Repository Structure
 
 The Chef repository follows a modular structure with the following key components:
@@ -19,11 +24,9 @@ chef/
 ├── ext/                        # External extensions (e.g., win32-eventlog)
 ├── habitat/                    # Habitat packaging configuration
 ├── kitchen-tests/              # Test Kitchen integration tests
-├── knife/                      # Knife CLI tool for Chef management
 ├── lib/                        # Main Chef library code
 │   ├── chef.rb                 # Main entry point
 │   └── chef/                   # Core Chef modules and classes
-├── omnibus/                    # Omnibus packaging for distribution
 ├── spec/                       # Test specifications
 │   ├── unit/                   # Unit tests
 │   ├── functional/             # Functional tests
@@ -93,12 +96,28 @@ When implementing tasks in this repository, follow this comprehensive workflow:
 
 When prompted to create a PR:
 
-- Use GitHub CLI (`gh`) to create a branch named after the Jira ID
+- Use GitHub CLI (`gh`) for branch and PR operations
+- Branch naming:
+  - Ask for preferred developer initials the first time encountered
+  - If a Jira ID is provided, include it in the branch name
+  - For work based on `main`, create branches as `{dev-initials}/{jira-id}-{short-description}` (or `{dev-initials}/{short-description}` when no Jira ID exists)
+  - For work based on a release branch (for example `chef-18`), create branches as `{dev-initials}/{release-branch}-{jira-id}-{short-description}` (or `{dev-initials}/{release-branch}-{short-description}` when no Jira ID exists)
+- Create commits with DCO sign-off (`git commit -s`)
 - Push changes to the new branch
 - Create a PR with:
   - **Title**: Clear, descriptive title referencing the Jira ID
   - **Description**: HTML-formatted summary of changes made
+- For CVE fixes, add the `CVE` label and prefix the PR description with `[CVE]`
 - All operations should be performed on the local repository
+
+## Dependency (Gem) Updates
+
+When bumping a gem version (e.g. from a mixlib-install update, CVE fix, or routine bump):
+
+- Update the version/constraint in the relevant `.gemspec` (or `Gemfile`) only if the existing constraint doesn't already allow the new version.
+- Always use `bundle update --conservative <gem-name>` (or `bundle lock --update <gem-name> --conservative` when a plain update bumps unrelated gems) to update `Gemfile.lock`. This updates only the named gem (and dependencies strictly required by it), making the smallest possible change. Never run a bare `bundle update`.
+- Capture the exact command and its full output, plus the resulting `Gemfile.lock` diff, in the PR description (in fenced code blocks). Danger fails the PR if the description has no `--conservative` command output; add `#gemlock_major_upgrade` only for intentional major updates.
+- If the update pulls in a security fix from an upstream PR/issue, summarize the relevant changes (what was fixed, files touched) in the PR description with a link to the upstream PR/issue.
 
 ## MCP Server Integration
 
@@ -122,12 +141,22 @@ When working with Jira integration:
 ### Branch and PR Management
 
 ```bash
-# Create and switch to new branch (using Jira ID as branch name)
+# Create and switch to a new branch from main
 gh repo view --json defaultBranch | jq -r '.defaultBranch' # Check default branch
-git checkout -b JIRA-123 # Replace with actual Jira ID
+git checkout main
+git pull --ff-only origin main
+git checkout -b tp/JIRA-123-short-description
+
+# Create and switch to a new branch from a release branch (example: chef-18)
+git checkout chef-18
+git pull --ff-only origin chef-18
+git checkout -b tp/chef-18-JIRA-123-short-description
+
+# Commit with DCO sign-off
+git commit -s -m "JIRA-123: Brief description"
 
 # Push changes and create PR
-git push origin JIRA-123
+git push origin tp/JIRA-123-short-description
 gh pr create --title "JIRA-123: Brief description" \
   --body "<h2>Summary</h2><p>Description of changes</p>"
 ```
@@ -162,6 +191,19 @@ rake coverage
 - **Functional Tests**: `spec/functional/` - Test component interactions
 - **Integration Tests**: `spec/integration/` - Test full system behavior
 - **Support Files**: `spec/support/` - Shared test utilities
+
+### Replacing or Reimplementing Upstream Behavior
+
+Applies when a change replaces a vendor or upstream script or command (for example, an installer) with Chef-owned code.
+
+- Before changing code, fetch the full upstream source and the behavior of the path being replaced. List every step it performs.
+- Mark each step as replicated or deliberately skipped, with the reason. Include this list in the PR description.
+- Do not replicate only the steps needed for the reported symptom. Dropped steps surface later as customer bugs (for example, a missing `lib\chocolatey\chocolatey.nupkg` registration broke packages that depend on `chocolatey`).
+- Unit specs that stub `powershell_exec` or `shell_out` only check command strings. They cannot show behavioral parity with the upstream script.
+- Kitchen tests (`kitchen-tests/`) run in CI and must pass before merge, but only cover what they assert. Assert outcomes that consumers rely on, not only that files exist or that a command exits 0. For example, install a package that depends on the thing just installed.
+- Add a regression test for every customer-reported bug, covering the exact failing sequence.
+- State in the PR description what could not be verified locally and is left to CI.
+- Never guess. State only what has been verified, and label anything inferred as unverified. Do not present a prediction about runtime behavior as fact. Prefer reproducing a failure, or showing a new test fail without the fix, over reasoning about it.
 
 ## File Modification Guidelines
 
@@ -251,13 +293,12 @@ rake spec
 - **Buildkite**: Continuous integration and testing
 - **RuboCop**: Code style and quality checking
 - **Test Kitchen**: Infrastructure testing
-- **Omnibus**: Package building
+- **Habitat**: Package building
 
 ### Related Repositories
 
 - `chef-utils`: Utility functions
 - `chef-config`: Configuration management
-- `knife`: CLI tool
 - `chef-bin`: Binary executables
 
 ## Emergency Procedures

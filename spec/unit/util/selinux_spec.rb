@@ -127,21 +127,21 @@ describe Chef::Util::Selinux do
     end
 
     it "should call restorecon non-recursive by default" do
-      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, path).twice
       @test_instance.restore_security_context(path)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)
     end
 
     it "should call restorecon recursive when recursive is set" do
-      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", "-r", path).twice
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
       @test_instance.restore_security_context(path, true)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path, true)
     end
 
     it "should call restorecon non-recursive when recursive is not set" do
-      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, "-R", path).twice
+      expect(@test_instance).to receive(:shell_out_compacted!).with(@restorecon_enabled_path, path).twice
       @test_instance.restore_security_context(path)
       expect(File).not_to receive(:executable?)
       @test_instance.restore_security_context(path)

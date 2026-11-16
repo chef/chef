@@ -1,4 +1,8 @@
-set -e pipefail
+#!/usr/bin/env bash
+
+test_target="${1:-linux}"
+
+set -euo pipefail
 
 export HAB_ORIGIN='chef'
 export PLAN='chef-infra-client'
@@ -18,7 +22,22 @@ echo "--- License serverl url is $CHEF_LICENSE_SERVER"
 git config --global --add safe.directory /workdir
 
 echo "--- Downloading package artifact"
-export PKG_ARTIFACT=$(buildkite-agent meta-data get "INFRA_HAB_ARTIFACT_LINUX")
+
+case "$test_target" in
+  *linux)
+    arch=$(uname -m)
+    if [[ $arch == "aarch64" ]]; then
+      artifact_key="INFRA_HAB_ARTIFACT_LINUX_AARCH64"
+    else
+      artifact_key="INFRA_HAB_ARTIFACT_LINUX"
+    fi
+    ;;
+  *darwin)
+    artifact_key="INFRA_HAB_ARTIFACT_DARWIN_ARM64"
+    ;;
+esac
+
+export PKG_ARTIFACT=$(buildkite-agent meta-data get "$artifact_key")
 buildkite-agent artifact download "$PKG_ARTIFACT" .
 
 echo ":key: Downloading origin key"
@@ -29,8 +48,12 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "--- Installing $PKG_ARTIFACT"
-sudo hab pkg install $PKG_ARTIFACT --auth $HAB_AUTH_TOKEN --binlink
+sudo -E hab pkg install $PKG_ARTIFACT --binlink
 
 pkg_ident=$(hab pkg list "$HAB_ORIGIN"/"$PLAN")
 echo "--- Resolved package identifier: $pkg_ident, attempting to run tests"
-./habitat/tests/test.sh "$pkg_ident"
+if [[ $test_target =~ "darwin" ]]; then
+  ./habitat/tests/test.darwin.sh "$pkg_ident"
+else
+  ./habitat/tests/test.sh "$pkg_ident"
+fi

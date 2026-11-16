@@ -48,8 +48,8 @@ class Chef
 
       def restore_security_context(file_path, recursive = false)
         if restorecon_path
-          restorecon_flags = [ "-R" ]
-          restorecon_flags << "-r" if recursive
+          restorecon_flags = []
+          restorecon_flags << "-R" if recursive
           restorecon_flags << file_path
           Chef::Log.trace("Restoring selinux security content with #{restorecon_path}")
           shell_out!(restorecon_path, restorecon_flags)

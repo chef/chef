@@ -55,7 +55,13 @@ class Chef
               command "#{homebrew_bin_path(new_resource.homebrew_path)} install --cask #{new_resource.cask_name} #{new_resource.options}"
               user new_resource.owner
               cwd ::Dir.home(new_resource.owner)
-              login true
+              # NOTE: intentionally not using `login true` here. Executing brew via a login
+              # shell can cause Homebrew's vendored (setgid) portable-ruby to fail with
+              # "no -I allowed while running setgid (SecurityError)" during cask installs.
+              # See https://github.com/chef/chef/issues/14885 for the same issue in the
+              # homebrew_package provider. We instead set the environment explicitly, which
+              # is what a login shell would otherwise have done for us.
+              environment "HOME" => ::Dir.home(new_resource.owner), "RUBYOPT" => nil, "TMPDIR" => nil
             end
           end
         end
@@ -68,7 +74,8 @@ class Chef
               command "#{homebrew_bin_path(new_resource.homebrew_path)} uninstall --cask #{new_resource.cask_name}"
               user new_resource.owner
               cwd ::Dir.home(new_resource.owner)
-              login true
+              # See NOTE above in :install about avoiding `login true`.
+              environment "HOME" => ::Dir.home(new_resource.owner), "RUBYOPT" => nil, "TMPDIR" => nil
             end
           end
         end
@@ -87,9 +94,8 @@ class Chef
           shell_out!(
             "#{homebrew_bin_path(new_resource.homebrew_path)} list --cask 2>/dev/null",
             user: new_resource.owner,
-            env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
-            cwd: ::Dir.home(new_resource.owner),
-            login: true
+            env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner, "RUBYOPT" => nil, "TMPDIR" => nil },
+            cwd: ::Dir.home(new_resource.owner)
           ).stdout.split.include?(unscoped_name)
         end
       end

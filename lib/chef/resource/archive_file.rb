@@ -20,6 +20,7 @@
 
 require_relative "../resource"
 require "fileutils" unless defined?(FileUtils)
+
 begin
   # The explicit call to FFI::DynamicLibrary.open was added to address an issue specific to the Habitat packaging of Chef Infra Client on windows.
   # In the Habitat environment, the libarchive library (archive.dll) is installed in a non-standard location that is not included
@@ -37,34 +38,29 @@ begin
   # This code dynamically determines the path to archive.dll using the Habitat CLI (`hab pkg path core/libarchive`) and explicitly
   # loads the library using FFI::DynamicLibrary.open. This ensures that the library is correctly loaded in the Habitat environment.
   #
-  # Note: This logic is gated by a check for Habitat-specific environment variables (HAB_CACHE_SRC_PATH or HAB_PKG_PATH) to ensure
-  # that it is only applied in Habitat runs. For other environments (e.g., Omnibus, plain gem installations, or git checkouts),
-  # the default behavior of FFI is sufficient, as the libraries are installed in standard locations or embedded paths that are
-  # included in the default search paths.
-  if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && (ENV["HAB_CACHE_SRC_PATH"] || ENV["HAB_PKG_PATH"])
+  # Note: This logic is gated by a check that we are running from a Habitat package
+  # path to ensure it is only applied in Habitat runs. For other environments
+  # (e.g., Omnibus, plain gem installations, or git checkouts), the default behavior
+  # of FFI is sufficient, as the libraries are installed in standard locations or
+  # embedded paths that are included in the default search paths.
+  # Detect Habitat runtime environment reliably. HAB_CACHE_SRC_PATH is only set
+  # during `hab pkg build` (studio), not at runtime. HAB_PKG_PATH is also not
+  # guaranteed at runtime. Checking __FILE__ is reliable: when chef-client runs
+  # from a Hab package via `hab pkg exec`, this file's path always contains
+  # "hab/pkgs".
+  if RUBY_PLATFORM.match?(/mswin|mingw|windows/) && __FILE__.match?(%r{hab[/\\]pkgs})
     require "ffi" unless defined?(FFI)
-    require "open3" unless defined?(Open3)
-    # Dynamically determine the path to the core/libarchive package
-    stdout, stderr, status = Open3.capture3("hab pkg path core/libarchive")
-    unless status.success?
-      Chef::Log.debug("Failed to determine Habitat libarchive path: #{stderr}")
-      return
-    end
+    require_relative "helpers/archive_dll_locator"
 
-    habitat_libarchive_path = File.join(stdout.strip.tr("\\", "/"), "bin")
-    unless Dir.exist?(habitat_libarchive_path)
-      Chef::Log.debug("Habitat libarchive path not found: #{habitat_libarchive_path}")
-      return
-    end
+    # Search order: RUBY_DLL_PATH, then the hab CLI, then a search of the hab root.
+    archive_dll_path = Chef::ResourceHelpers::ArchiveDllLocator.find(source_file: __FILE__)
 
-    archive_dll_path = File.join(habitat_libarchive_path, "archive.dll")
-    unless File.exist?(archive_dll_path)
-      Chef::Log.debug("archive.dll not found in Habitat path: #{habitat_libarchive_path}")
-      return
+    if archive_dll_path
+      FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY)
+      Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
+    else
+      Chef::Log.debug("archive.dll not located via Habitat; relying on default library search paths")
     end
-
-    FFI::DynamicLibrary.open(archive_dll_path, FFI::DynamicLibrary::RTLD_LAZY) # Explicitly load the DLL
-    Chef::Log.debug("Explicitly loaded archive.dll from Habitat path: #{archive_dll_path}")
   end
 
   # ffi-libarchive must be eager loaded see: https://github.com/chef/chef/issues/12228
@@ -171,8 +167,14 @@ class Chef
 
         if new_resource.owner || new_resource.group
           converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
+            dest_realpath = ::File.expand_path(new_resource.destination)
             Archive::Reader.open_filename(new_resource.path, nil, strip_components: new_resource.strip_components) do |archive|
               archive.each_entry do |e|
+                # Validate path is within destination before chown-ing.
+                # Use expand_path for security check, original string for the chown call.
+                chown_path_expanded = ::File.expand_path("#{new_resource.destination}/#{e.pathname}")
+                next unless chown_path_expanded.start_with?(dest_realpath + ::File::SEPARATOR) || chown_path_expanded == dest_realpath
+
                 FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
               end
             end
@@ -211,10 +213,16 @@ class Chef
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
           modified = false
+          dest_realpath = ::File.expand_path(dest)
           Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
             Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
             archive.each_entry do |e|
-              pathname = ::File.expand_path(e.pathname, dest)
+              pathname = ::File.expand_path(e.pathname, dest_realpath)
+              # Skip archive entries that resolve outside the destination directory.
+              # A traversal entry (e.g. "../escaped") must not influence the mtime
+              # comparison and must never trigger extraction.
+              next unless pathname.start_with?(dest_realpath + ::File::SEPARATOR) || pathname == dest_realpath
+
               if ::File.exist?(pathname)
                 Chef::Log.trace("#{pathname} mtime is #{::File.mtime(pathname)} and archive is #{e.mtime}")
                 modified = true unless ::File.mtime(pathname) == e.mtime
@@ -236,12 +244,33 @@ class Chef
         # @return [void]
         def extract(src, dest, options = [])
           converge_by("extract #{src} to #{dest}") do
-            flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
+            user_flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|).to_i
+            # Always apply libarchive security flags to prevent path traversal.
+            # These are not user-overridable hence directly added here
+            # instead of options array. NODOTDOT blocks "../" sequences,
+            # NOABSOLUTEPATHS blocks absolute-path entries, SECURE_SYMLINKS prevents
+            # symlink attacks. Combined with the check below in archive.each_entry
+            # they safeguard against Zip Slip / CWE-22 attacks.
+            security_flags = Archive::EXTRACT_SECURE_NODOTDOT |
+              Archive::EXTRACT_SECURE_NOABSOLUTEPATHS |
+              Archive::EXTRACT_SECURE_SYMLINKS
+            all_flags = user_flags | security_flags
+            dest_realpath = ::File.expand_path(dest)
 
             Dir.chdir(dest) do
               Archive::Reader.open_filename(src, nil, strip_components: new_resource.strip_components) do |archive|
                 archive.each_entry do |e|
-                  archive.extract(e, flags.to_i)
+                  # reject any entry whose resolved path
+                  # falls outside the destination directory before calling into libarchive.
+                  entry_realpath = ::File.expand_path(e.pathname, dest_realpath)
+                  unless entry_realpath.start_with?(dest_realpath + ::File::SEPARATOR) || entry_realpath == dest_realpath
+                    raise Chef::Exceptions::ValidationFailed,
+                      "Refusing to extract archive entry #{e.pathname.inspect}: resolved path " \
+                      "#{entry_realpath.inspect} is outside destination #{dest_realpath.inspect}. " \
+                      "This archive may contain a path traversal attack."
+                  end
+
+                  archive.extract(e, all_flags)
                 end
               end
             end

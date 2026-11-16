@@ -217,4 +217,10 @@ describe Chef::Resource::PowershellPackageSource do
   #     expect(provider.get_package_source_details.result).to eql("Unregistered")
   #   end
   # end
+
+  describe "sensitive property masking" do
+    it "marks password as sensitive" do
+      expect(Chef::Resource::PowershellPackageSource.properties[:password].sensitive?).to be true
+    end
+  end
 end

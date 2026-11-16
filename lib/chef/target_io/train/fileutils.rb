@@ -16,7 +16,7 @@ module TargetIO
         end
 
         def chmod_R(mode, list, noop: nil, verbose: nil, force: nil)
-          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ""), mode_to_s(mode), Array(list).join(" "))
+          cmd = sprintf("chmod -R%s %s %s", (force ? "f" : ""), __mode_to_s(mode), Array(list).join(" "))
 
           Chef::Log.debug cmd if verbose
           return if noop
@@ -77,7 +77,7 @@ module TargetIO
         def install(src, dest, mode: nil, owner: nil, group: nil, preserve: nil, noop: nil, verbose: nil)
           cmd = "install -c"
           cmd << " -p" if preserve
-          cmd << " -m " << mode_to_s(mode) if mode
+          cmd << " -m " << __mode_to_s(mode) if mode
           cmd << " -o #{owner}" if owner
           cmd << " -g #{group}" if group
           cmd << " " << [src, dest].flatten.join(" ")

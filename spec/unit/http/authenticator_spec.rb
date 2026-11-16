@@ -245,3 +245,154 @@ describe Chef::HTTP::Authenticator do
     end
   end
 end
+
+describe Chef::HTTP::Authenticator, :windows_only do
+  let(:client_name) { "test-node" }
+
+  before do
+    allow(described_class).to receive(:get_cert_user).and_return("LocalMachine")
+  end
+
+  describe ".get_the_key_ps" do
+    it "uses GetRandomFileName to generate a unique temp file path rather than a hardcoded name" do
+      ps_code = described_class.get_the_key_ps(client_name, "s3cr3t")
+      expect(ps_code).to include("GetRandomFileName()")
+      expect(ps_code).not_to include("export_pfx.pfx")
+    end
+
+    it "uses Path::Combine to safely join the temp directory and unique filename" do
+      ps_code = described_class.get_the_key_ps(client_name, "s3cr3t")
+      expect(ps_code).to include("GetTempPath()")
+      expect(ps_code).to include("Combine(")
+    end
+  end
+
+  describe ".retrieve_certificate_key" do
+    context "on Windows" do
+      before do
+        allow(ChefUtils).to receive(:windows?).and_return(true)
+        allow(described_class).to receive(:get_cert_password).and_return("s3cr3t")
+      end
+
+      context "when ps_blob is false (PowerShell Catch fired due to race condition)" do
+        before do
+          allow(described_class).to receive(:check_certstore_for_key).and_return(true)
+          allow(described_class).to receive(:powershell_exec!).and_return(double("ps", result: false))
+        end
+
+        it "returns false without raising NoMethodError" do
+          expect { described_class.retrieve_certificate_key(client_name) }.not_to raise_error
+          expect(described_class.retrieve_certificate_key(client_name)).to eq(false)
+        end
+      end
+
+      context "when ps_blob is nil" do
+        before do
+          allow(described_class).to receive(:check_certstore_for_key).and_return(true)
+          allow(described_class).to receive(:powershell_exec!).and_return(double("ps", result: nil))
+        end
+
+        it "returns false without raising NoMethodError" do
+          expect { described_class.retrieve_certificate_key(client_name) }.not_to raise_error
+        end
+      end
+
+      context "when ps_blob is a Hash but missing PSPath key" do
+        before do
+          allow(described_class).to receive(:check_certstore_for_key).and_return(true)
+          allow(described_class).to receive(:powershell_exec!).and_return(double("ps", result: { "OtherKey" => "value" }))
+        end
+
+        it "returns false without raising NoMethodError" do
+          expect(described_class.retrieve_certificate_key(client_name)).to eq(false)
+        end
+      end
+
+      context "when the PowerShell cert export succeeds" do
+        let(:pfx_path) { "/tmp/export_pfx.pfx" }
+        let(:mock_ps_blob) { { "PSPath" => "Microsoft.PowerShell.Security\\Certificate::#{pfx_path}" } }
+        let(:mock_key) { double("OpenSSL::PKey::RSA", private_to_pem: "-----BEGIN RSA PRIVATE KEY-----\n...") }
+        let(:mock_cert) { double("OpenSSL::X509::Certificate", not_after: (Time.now + 3600 * 24 * 30).utc) }
+        let(:mock_pkcs) { double("OpenSSL::PKCS12", key: mock_key, certificate: mock_cert) }
+
+        before do
+          allow(described_class).to receive(:check_certstore_for_key).and_return(true)
+          allow(described_class).to receive(:powershell_exec!).and_return(double("ps", result: mock_ps_blob))
+          allow(File).to receive(:binread).with(pfx_path).and_return("pfx_data")
+          allow(File).to receive(:exist?).with(pfx_path).and_return(true)
+          allow(File).to receive(:delete).with(pfx_path)
+          allow(OpenSSL::PKCS12).to receive(:new).with("pfx_data", "s3cr3t").and_return(mock_pkcs)
+          allow(described_class).to receive(:is_certificate_expiring?).and_return(false)
+        end
+
+        it "returns the private key in PEM format" do
+          expect(described_class.retrieve_certificate_key(client_name)).to eq("-----BEGIN RSA PRIVATE KEY-----\n...")
+        end
+
+        it "deletes the temp file via ensure on the happy path" do
+          expect(File).to receive(:delete).with(pfx_path)
+          described_class.retrieve_certificate_key(client_name)
+        end
+      end
+
+      context "when File.binread raises after export (e.g. file deleted by another thread)" do
+        let(:pfx_path) { "/tmp/chef_pfx_abc123.pfx" }
+        let(:mock_ps_blob) { { "PSPath" => "Microsoft.PowerShell.Security\\Certificate::#{pfx_path}" } }
+
+        before do
+          allow(described_class).to receive(:check_certstore_for_key).and_return(true)
+          allow(described_class).to receive(:powershell_exec!).and_return(double("ps", result: mock_ps_blob))
+          allow(File).to receive(:binread).with(pfx_path).and_raise(Errno::ENOENT, "No such file or directory")
+          allow(File).to receive(:exist?).with(pfx_path).and_return(true)
+        end
+
+        it "attempts to delete the temp file via ensure even when an exception is raised" do
+          expect(File).to receive(:delete).with(pfx_path)
+          expect { described_class.retrieve_certificate_key(client_name) }.to raise_error(Errno::ENOENT)
+        end
+      end
+
+      context "when called concurrently from multiple threads" do
+        let(:thread_count) { 10 }
+        let(:mutex) { Mutex.new }
+        let(:exported_paths) { [] }
+        let(:deleted_paths) { [] }
+        let(:mock_key) { double("OpenSSL::PKey::RSA", private_to_pem: "-----BEGIN RSA PRIVATE KEY-----\n...") }
+        let(:mock_cert) { double("OpenSSL::X509::Certificate", not_after: (Time.now + 3600 * 24 * 30).utc) }
+        let(:mock_pkcs) { double("OpenSSL::PKCS12", key: mock_key, certificate: mock_cert) }
+
+        before do
+          require "securerandom" unless defined?(SecureRandom)
+          allow(described_class).to receive(:check_certstore_for_key).and_return(true)
+          allow(described_class).to receive(:powershell_exec!) do
+            unique_path = "/tmp/chef_pfx_#{SecureRandom.hex(8)}.pfx"
+            mutex.synchronize { exported_paths << unique_path }
+            double("ps", result: { "PSPath" => "Microsoft.PowerShell.Security\\Certificate::#{unique_path}" })
+          end
+          allow(File).to receive(:binread).and_return("pfx_data")
+          allow(File).to receive(:exist?).and_return(true)
+          allow(File).to receive(:delete) { |path| mutex.synchronize { deleted_paths << path } }
+          allow(OpenSSL::PKCS12).to receive(:new).and_return(mock_pkcs)
+          allow(described_class).to receive(:is_certificate_expiring?).and_return(false)
+        end
+
+        it "does not raise NoMethodError under concurrent access" do
+          threads = thread_count.times.map { Thread.new { described_class.retrieve_certificate_key(client_name) } }
+          expect { threads.each(&:join) }.not_to raise_error
+        end
+
+        it "uses a unique temp file path per thread so no two threads share a file" do
+          threads = thread_count.times.map { Thread.new { described_class.retrieve_certificate_key(client_name) } }
+          threads.each(&:join)
+          expect(exported_paths.uniq.length).to eq(thread_count)
+        end
+
+        it "cleans up every unique temp file so no PFX files are orphaned on disk" do
+          threads = thread_count.times.map { Thread.new { described_class.retrieve_certificate_key(client_name) } }
+          threads.each(&:join)
+          expect(deleted_paths.sort).to eq(exported_paths.sort)
+        end
+      end
+    end
+  end
+end

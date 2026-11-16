@@ -28,8 +28,6 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
 
   # Platform specific setup, cleanup and validation helpers.
   def setup_device_for_mount
-    # use ramdisk for creating a test device for mount.
-    # This can cleaner if we have chef resource/provider for ramdisk.
     case ohai[:platform_family]
     when "aix"
       # On AIX, we can't create a ramdisk inside a WPAR, so we use
@@ -38,20 +36,9 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
       device = "/"
       fstype = "namefs"
     when "debian", "rhel", "amazon"
-      device = "/dev/ram1"
-      unless File.exist?(device)
-        shell_out("mknod -m 660 #{device} b 1 0")
-        shell_out("chown root:disk #{device}")
-      end
-      shell_out("ls -1 /dev/ram*").stdout.each_line do |d|
-        if shell_out("mount | grep #{d}").exitstatus == "1"
-          # this device is not mounted, so use it.
-          device = d
-          break
-        end
-      end
+      # Use tmpfs with a unique label — works in containers without /dev/ram* devices.
+      device = "chef_tmpfs_test"
       fstype = "tmpfs"
-      shell_out!("mkfs -q #{device} 512")
     when "solaris2"
       device = "swap"
       fstype = "tmpfs"

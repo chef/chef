@@ -122,7 +122,9 @@ class Chef
     #     will create a deprecation warning.
     #
     def initialize(**options)
-      options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
+      # `**options` is already a fresh hash owned by this method, so normalize the
+      # keys in place rather than building a second hash to hold the same data.
+      options.transform_keys!(&:to_sym)
       @options = options
       options[:name] = options[:name].to_sym if options[:name]
       options[:instance_variable_name] = options[:instance_variable_name].to_sym if options[:instance_variable_name]
@@ -543,6 +545,14 @@ class Chef
           Chef::Mixin::ParamsValidate.validate({ name => value }, { name => validation_options })
         end
       end
+    rescue Chef::Exceptions::ValidationFailed
+      # validation_options strips :sensitive before it ever reaches the
+      # validators below, so they have no way to redact the value themselves --
+      # do it here instead of leaking it in the exception message.
+      raise unless sensitive?
+
+      raise Chef::Exceptions::ValidationFailed,
+        "Property #{name}'s value does not pass validation. The value has been suppressed because 'sensitive' is set to true on this property."
     end
 
     #
@@ -698,7 +708,7 @@ class Chef
       # Weeding out class methods avoids unnecessary deprecations such Chef::Resource
       # defining a `name` property when there's an already-existing `name` method
       # for a Module.
-      return false unless declared_in.instance_methods.include?(name)
+      return false unless declared_in.method_defined?(name)
 
       # Only emit deprecations for some well-known classes. This will still
       # allow more advanced users to subclass their own custom resources and

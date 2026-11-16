@@ -59,7 +59,7 @@ class Chef
         description: "The desired bit length of the generated key.",
         default: 2048
 
-      property :key_pass, String,
+      property :key_pass, String, sensitive: true,
         description: "The desired passphrase for the key."
 
       property :key_cipher, String,

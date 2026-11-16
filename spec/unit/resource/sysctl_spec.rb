@@ -53,7 +53,7 @@ describe Chef::Resource::Sysctl do
     expect(resource.value).to eql("1.1")
   end
 
-  context "#contruct_sysctl_content" do
+  context "#construct_sysctl_content" do
     before do
       resource.key("foo")
       resource.value("bar")
@@ -62,15 +62,26 @@ describe Chef::Resource::Sysctl do
     context "when comment is a String" do
       it "Returns content for use with a file resource" do
         resource.comment("This sets foo / bar on our system")
-        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar\n")
+        expect(provider.construct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar\n")
       end
     end
 
     context "when comment is an Array" do
       it "Returns content for use with a file resource" do
         resource.comment(["This sets foo / bar on our system", "We need for baz"])
-        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar\n")
+        expect(provider.construct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar\n")
       end
+    end
+  end
+
+  context "#sysctl_reload_command" do
+    it "uses --system instead of -p, so it works on distros without a default /etc/sysctl.conf (e.g. Debian 13)" do
+      expect(provider.sysctl_reload_command).to eql("sysctl --system")
+    end
+
+    it "adds -e when ignore_error is set" do
+      resource.ignore_error true
+      expect(provider.sysctl_reload_command).to eql("sysctl -e --system")
     end
   end
 end

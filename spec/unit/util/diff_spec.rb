@@ -560,3 +560,103 @@ describe Chef::Util::Diff do
     it_behaves_like "a diff util"
   end
 end
+
+describe "Chef::Util::Diff in target mode" do
+  let(:differ) { Chef::Util::Diff.new }
+
+  # new_file is always a path on the chef-client host itself (e.g. a rendered
+  # content tempfile, per Chef::Provider::File#do_contents_changes), even when
+  # running in Target Mode. It must never be routed through TargetIO/the
+  # target transport connection.
+  context "when new_file is a local tempfile" do
+    let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec-new") }
+    let(:new_file) { new_tempfile.path }
+
+    before do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+      new_tempfile.write("bar")
+      new_tempfile.close
+    end
+
+    after do
+      new_tempfile.unlink
+    end
+
+    it "does not check TargetIO::File or the transport connection for new_file" do
+      allow(TargetIO::File).to receive(:exist?).with("/does/not/exist/old_file").and_return(false)
+      expect(TargetIO::File).not_to receive(:exist?).with(new_file)
+      expect(Chef).not_to receive(:run_context)
+      differ.diff("/does/not/exist/old_file", new_file)
+    end
+
+    it "produces a diff using the local new_file content" do
+      allow(TargetIO::File).to receive(:exist?).with("/does/not/exist/old_file").and_return(false)
+      differ.diff("/does/not/exist/old_file", new_file)
+      expect(differ.for_output.join("\n")).to match(/\+bar/)
+    end
+  end
+
+  # old_file (current_resource.path) may genuinely exist on the target node.
+  # When it does, its content should be fetched through the sudo-aware
+  # TargetIO::File.read (TargetIO::Support#read_file), not through a raw,
+  # unprivileged transport_connection.download -- the latter cannot read
+  # root-owned/restrictive-permission files (e.g. a sudoers.d fragment)
+  # even when the Target Mode connection has sudo enabled.
+  context "when old_file exists on the target node" do
+    let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec-new") }
+    let(:new_file) { new_tempfile.path }
+    let(:old_file) { "/etc/sudoers.d/webadmin_apache" }
+
+    before do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+      new_tempfile.write("new content\n")
+      new_tempfile.close
+      allow(TargetIO::File).to receive(:exist?).with(old_file).and_return(true)
+      allow(TargetIO::File).to receive(:read).with(old_file).and_return("old content\n")
+    end
+
+    after do
+      new_tempfile.unlink
+    end
+
+    it "reads the remote content via the sudo-aware TargetIO::File.read, not a raw download" do
+      expect(Chef).not_to receive(:run_context)
+      differ.diff(old_file, new_file)
+    end
+
+    it "produces a diff between the downloaded remote content and the local new_file" do
+      differ.diff(old_file, new_file)
+      output = differ.for_output.join("\n")
+      expect(output).to match(/-old content/)
+      expect(output).to match(/\+new content/)
+    end
+  end
+
+  context "when old_file does not exist on the target node" do
+    let!(:new_tempfile) { Tempfile.new("chef-util-diff-spec-new") }
+    let(:new_file) { new_tempfile.path }
+    let(:old_file) { "/etc/sudoers.d/does_not_exist_yet" }
+
+    before do
+      allow(ChefConfig::Config).to receive(:target_mode?).and_return(true)
+      new_tempfile.write("new content\n")
+      new_tempfile.close
+      allow(TargetIO::File).to receive(:exist?).with(old_file).and_return(false)
+    end
+
+    after do
+      new_tempfile.unlink
+    end
+
+    it "does not attempt to read the (nonexistent) remote file" do
+      expect(TargetIO::File).not_to receive(:read).with(old_file)
+      differ.diff(old_file, new_file)
+    end
+
+    it "diffs against an empty old_file" do
+      differ.diff(old_file, new_file)
+      output = differ.for_output.join("\n")
+      expect(output).to match(/\+new content/)
+    end
+  end
+end

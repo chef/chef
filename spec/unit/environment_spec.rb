@@ -456,7 +456,7 @@ describe Chef::Environment do
           Chef::Environment.load("foo")
         end.to raise_error(
           an_instance_of(Chef::Exceptions::InvalidEnvironmentPath).and having_attributes(
-            message: "Environment path '#{windows? ? "C:/var/chef/environments" : "/var/chef/environments"}' is invalid"
+            message: "Environment path '#{Chef::Config[:environment_path]}' is invalid"
           )
         )
       end

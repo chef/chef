@@ -92,4 +92,10 @@ describe Chef::Resource::WindowsCertificate do
     resource.exportable true
     expect { resource.action :create }.not_to raise_error
   end
+
+  describe "sensitive property masking" do
+    it "marks pfx_password as sensitive" do
+      expect(Chef::Resource::WindowsCertificate.properties[:pfx_password].sensitive?).to be true
+    end
+  end
 end

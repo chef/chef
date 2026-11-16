@@ -3,25 +3,179 @@ name: func_spec
 
 "on":
   pull_request:
+    branches: [main, "chef-*"]
   push:
-    branches:
-      - main
+    branches: [main, "chef-*"]
+
+permissions:
+  contents: read
 
 concurrency:
-  group: func-spec-${{ github.ref }}
+  group: func-spec-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
+env:
+  CHEF_LICENSE: accept-no-persist
+  FORCE_FFI_YAJL: ext
+
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      x86_tag: ${{ steps.tags.outputs.x86_tag }}
+      arm_tag: ${{ steps.tags.outputs.arm_tag }}
+    steps:
+      - id: tags
+        run: |
+          echo "x86_tag=3.0.39" >> $GITHUB_OUTPUT
+          echo "arm_tag=aarch64" >> $GITHUB_OUTPUT
+
+  functional:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - windows-2022
+          - windows-2025
+          - macos-15
+          - macos-latest
+        ruby: ["3.4"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install native deps (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+      - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
+          bundle install
+      - name: Configure WinRM for functional tests (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: winrm quickconfig -q
+      - name: Set RUBY_DLL_PATH for chef-powershell (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $gem_lib = gem which chef-powershell 2>$null | Select-Object -First 1
+          if ($gem_lib) {
+            $gem_path = Split-Path $gem_lib | Split-Path
+            echo "RUBY_DLL_PATH=$gem_path/bin/ruby_bin_folder/$env:PROCESSOR_ARCHITECTURE" >> $env:GITHUB_ENV
+          }
+      - name: Fix Windows PowerShell module paths for subprocesses (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Propagate the machine-level PSModulePath into GITHUB_ENV so that
+          # all child processes (including powershell.exe -NoProfile subshells
+          # spawned by specs) inherit it. Without this the Security module DLL
+          # cannot be resolved when starting PS5.1 from a D:\ working dir.
+          $machinePath = [System.Environment]::GetEnvironmentVariable("PSModulePath", "Machine")
+          echo "PSModulePath=$machinePath" >> $env:GITHUB_ENV
+      - name: Install NuGet PackageProvider for functional tests (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Install-PackageProvider -Name NuGet -Force -ErrorAction SilentlyContinue
+      - run: bundle exec rake spec:functional
+
+  functional-docker:
+    needs: config
+    name: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-rocky-9:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: dnf
+            label: rocky-9-x86
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rocky-9:${{ needs.config.outputs.arm_tag }}
+            pkg_mgr: dnf
+            label: rocky-9-arm
+          - runs-on: ubuntu-24.04
+            container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.x86_tag }}
+            pkg_mgr: dnf
+            label: rocky-8-x86
+          - runs-on: ubuntu-24.04-arm
+            container: chefes/omnibus-toolchain-rocky-8:${{ needs.config.outputs.arm_tag }}
+            pkg_mgr: dnf
+            label: rocky-8-arm
+          - runs-on: ubuntu-24.04
+            container: debian:12
+            pkg_mgr: apt
+            label: debian-12-x86
+          - runs-on: ubuntu-24.04-arm
+            container: debian:12
+            pkg_mgr: apt
+            label: debian-12-arm
+    runs-on: ${{ matrix.runs-on }}
+    container:
+      image: ${{ matrix.container }}
+      options: --privileged
+    timeout-minutes: 90
+    steps:
+      - name: Install native deps (apt)
+        if: matrix.pkg_mgr == 'apt'
+        run: |
+          apt-get update
+          apt-get install -y build-essential ca-certificates cron curl git locales patch pkg-config sudo libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev
+      - uses: actions/checkout@v7
+      - name: Install native deps (dnf)
+        if: matrix.pkg_mgr == 'dnf'
+        run: dnf install -y --enablerepo=devel openssl-devel libarchive-devel libffi-devel libyaml-devel readline-devel zlib-devel
+      - name: Install Ruby via rbenv
+        shell: bash
+        run: |
+          curl -fsSL https://github.com/rbenv/rbenv-installer/raw/HEAD/bin/rbenv-installer | bash
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          rbenv install 3.4.8
+          rbenv global 3.4.8
+          gem install bundler
+          echo "$HOME/.rbenv/bin" >> $GITHUB_PATH
+          echo "$HOME/.rbenv/shims" >> $GITHUB_PATH
+      - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
+          bundle install
+      - run: bundle exec rake spec:functional
+
   choco:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, windows-2022]
-        # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['3.4.2']
+        os: [windows-2022, windows-2025]
+        ruby: ["3.4"]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
@@ -29,21 +183,40 @@ jobs:
     - run: |
         gem uninstall date --all --ignore-dependencies || true
         gem install date --version 3.3.3 --platform=ruby
+        # Disable Git's background auto-maintenance/GC/commit-graph writers so
+        # they can't mutate Bundler's shared git cache repo (for our git-sourced
+        # Gemfile deps: ohai, cheffish, rest-client) while another process is
+        # concurrently cloning/hardlinking from it -- avoids intermittent
+        # "fatal: hardlink different from source" bundle install failures.
+        # See https://github.com/dependabot/dependabot-core/issues/15827.
+        git config --global maintenance.auto false
+        git config --global gc.auto 0
+        git config --global fetch.writeCommitGraph false
         bundle install
         bundle exec rspec spec/functional/resource/chocolatey_package_spec.rb
   userdefaults:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-15, macos-26]
-        # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: ['3.4']
+        os: [macos-15, macos-latest]
+        ruby: ["3.4"]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: false
-    - run: bundle install
+    - run: |
+        # Disable Git's background auto-maintenance/GC/commit-graph writers so
+        # they can't mutate Bundler's shared git cache repo (for our git-sourced
+        # Gemfile deps: ohai, cheffish, rest-client) while another process is
+        # concurrently cloning/hardlinking from it -- avoids intermittent
+        # "fatal: hardlink different from source" bundle install failures.
+        # See https://github.com/dependabot/dependabot-core/issues/15827.
+        git config --global maintenance.auto false
+        git config --global gc.auto 0
+        git config --global fetch.writeCommitGraph false
+        bundle install
     - run: sudo bundle exec rspec spec/functional/resource/macos_userdefaults_spec.rb

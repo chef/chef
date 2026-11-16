@@ -38,7 +38,7 @@ class Chef
         use_package_name_for_source
         use_magic_version
 
-        provides :package, platform_family: "fedora_derived"
+        provides :package, platform_family: %w{fedora rhel amazon}
 
         provides :yum_package
 

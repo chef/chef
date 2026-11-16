@@ -26,9 +26,9 @@ describe Chef::Provider::Mount::Mount do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::Mount.new("/tmp/foo")
-    @new_resource.device      "/dev/sdz1"
+    @new_resource.device "/dev/sdz1"
     @new_resource.device_type :device
-    @new_resource.fstype      "ext3"
+    @new_resource.fstype "ext3"
 
     @new_resource.supports remount: false
 
@@ -279,9 +279,9 @@ describe Chef::Provider::Mount::Mount do
   context "after the mount's state has been discovered" do
     before do
       @current_resource = Chef::Resource::Mount.new("/tmp/foo")
-      @current_resource.device       "/dev/sdz1"
-      @current_resource.device_type  :device
-      @current_resource.fstype       "ext3"
+      @current_resource.device "/dev/sdz1"
+      @current_resource.device_type :device
+      @current_resource.fstype "ext3"
 
       @provider.current_resource = @current_resource
     end
@@ -513,9 +513,9 @@ describe Chef::Provider::Mount::Mount do
         @run_context = Chef::RunContext.new(@node, {}, @events)
 
         @new_resource = Chef::Resource::Mount.new("/tmp/bar")
-        @new_resource.device      "cephserver:6789:/"
+        @new_resource.device "cephserver:6789:/"
         @new_resource.device_type :device
-        @new_resource.fstype      "cephfs"
+        @new_resource.fstype "cephfs"
 
         @new_resource.supports remount: false
 
@@ -529,9 +529,9 @@ describe Chef::Provider::Mount::Mount do
 
       before do
         @current_resource = Chef::Resource::Mount.new("/tmp/foo")
-        @current_resource.device       "cephserver:6789:/"
-        @current_resource.device_type  :device
-        @current_resource.fstype       "cephfs"
+        @current_resource.device "cephserver:6789:/"
+        @current_resource.device_type :device
+        @current_resource.fstype "cephfs"
 
         @provider.current_resource = @current_resource
       end

@@ -18,13 +18,16 @@ targets = [
 ]
 
 arm_targets = [
-  "centos-7-arm:centos-7-arm",
-  "amazon-2-arm:amazon-2-arm",
-  "rhel-9-arm:rhel-9-arm",
-  "ubuntu-1804-arm:ubuntu-1804-arm",
-  "ubuntu-2004-arm:ubuntu-2004-arm",
-  "ubuntu-2204-arm:ubuntu-2204-arm",
-  "amazon-2023-arm:amazon-2023-arm"
+  "amazon-2-aarch64:centos-7",
+  "centos-7-aarch64:centos-7",
+  "rhel-9-aarch64:rhel-9",
+  "debian-10-aarch64:debian-9",
+  "debian-11-aarch64:debian-9",
+  "ubuntu-2004-aarch64:ubuntu-2004",
+  "ubuntu-2204-aarch64:ubuntu-2204",
+  "rocky-8-aarch64:rocky-8",
+  "rocky-9-aarch64:rocky-9",
+  "amazon-2023-aarch64:amazon-2023"
 ]
 
 # because windows queues are very different, the target queue is very explicit.
@@ -34,12 +37,14 @@ win_targets = [
   "windows-2025:single-use-windows-2025"
 ]
 
+mac_targets = [
+  "macos-arm64:core-14-arm64"
+]
+
 # Update target list
 targets.concat(win_targets)
-
-if ENV['ARM_ENABLED'] == '1'
-  targets.concat(arm_targets)
-end
+targets.concat(arm_targets)
+targets.concat(mac_targets)
 
 pipeline = {
   "env" => {
@@ -52,53 +57,45 @@ pipeline = {
 if ENV['BUILDKITE_PIPELINE_SLUG'].match?(/chef-chef-main-validate-(adhoc|release)/)
   pipeline["steps"] << {
     "label" => ":habicat::linux: Building Habitat package",
+    "command" => "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh x86_64-linux",
+    "agents" => {
+      "queue" => "habitat-x86_64-linux"
+    },
+    "timeout_in_minutes" => 120
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::linux: Building ARM Habitat package",
     "commands" => [
-      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh",
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-linux",
     ],
     "agents" => {
-      "queue" => "default-privileged"
-    },
-    "plugins" => {
-      "docker#v3.5.0" => {
-        "image" => "chefes/omnibus-toolchain-centos-7:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
-        "privileged" => true,
-        "propagate-environment" => true,
-        "environment" => [
-          'HAB_AUTH_TOKEN'
-        ]
-      }
+      "queue" => "habitat-aarch64-linux"
     },
     "timeout_in_minutes" => 120
   }
   pipeline["steps"] << {
     "label" => ":habicat::windows: Building Habitat package",
+    "command" => "./.expeditor/scripts/chef_adhoc_build.ps1",
+    "agents" => {
+      "queue" => "habitat-x86_64-windows"
+    },
+  }
+  pipeline["steps"] << {
+    "label" => ":habicat::macos: Building Habitat package",
     "commands" => [
-      "./.expeditor/scripts/chef_adhoc_build.ps1",
+      "sudo -E ./.expeditor/scripts/chef_adhoc_build.sh aarch64-darwin"
     ],
     "agents" => {
-      "queue" => "default-windows-2019-privileged"
+      "queue" => "default-macos-arm64-privileged"
     },
     "plugins" => {
-      "docker#v3.5.0" => {
-        "image" => "chefes/omnibus-toolchain-windows-2019:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
-        "shell" => [
-          "powershell",
-          "-Command"
-        ],
-        "volumes" => [
-          "C:\\buildkite-agent:C:\\buildkite-agent"
-        ],
-        "environment" => [
-          'HAB_AUTH_TOKEN',
-          'BUILDKITE_AGENT_ACCESS_TOKEN',
-          'AWS_ACCESS_KEY_ID',
-          'AWS_SECRET_ACCESS_KEY',
-          'AWS_SESSION_TOKEN',
-        ],
-        "propagate-environment" => true
+     "chef/anka#v0.7.2" => {
+        "vm-name" => "buildkite-core-14-arm64",
+        "always-pull" => true,
+        "wait-network" => true,
+        "inherit-environment-vars" => true
       }
-    },
-    "timeout_in_minutes" => 120
+    }
   }
 else
   # nightly pipeline, get package from unstable.
@@ -110,7 +107,8 @@ targets.each do |target|
   platform, queue_platform = target.split(":")
   step = {}
 
-  if platform.include?("windows")
+  case platform
+  when /windows/
     step = {
       "label" => ":mag::windows:#{platform}",
       "key" => "validate-#{platform}",
@@ -147,17 +145,51 @@ targets.each do |target|
       ],
       "timeout_in_minutes" => 120
     }
+  when /macos/
+    step = {
+      "label" => ":habicat::macos: #{platform}",
+      "key" => "validate-#{platform}",
+      "retry" => {
+        "automatic" => {
+          "limit" => 1
+        }
+      },
+      "agents" => {
+        "queue" => "default-macos-arm64-privileged"
+      },
+      "plugins" => {
+        "chef/anka#v0.7.2" => {
+          "vm-name" => "buildkite-core-14-arm64",
+          "always-pull" => true,
+          "wait-network" => true,
+          "inherit-environment-vars" => true
+        }
+      },
+      "commands" => [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-darwin",
+        "sudo -E ./.expeditor/scripts/validate_adhoc_build.sh aarch64-darwin"
+      ],
+      "timeout_in_minutes" => 120
+    }
   else
-    commands = ["sudo ./.expeditor/scripts/install-hab.sh x86_64-linux"]
+    commands = [
+      "sudo -E ./.expeditor/scripts/install-hab.sh x86_64-linux",
+      "./.expeditor/scripts/validate_adhoc_build.sh x86_64-linux"
+    ]
     agents = {
       "queue" => "default-privileged"
     }
+    docker_image = "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}"
 
-    if platform.include?("arm")
-      commands = ["sudo ./.expeditor/scripts/install-hab.sh <arm>"]
-      agents["queue"] = "docker-linux-arm64"
+    if platform.include?("aarch64")
+      base_platform = platform.sub("-aarch64", "")
+      commands = [
+        "sudo -E ./.expeditor/scripts/install-hab.sh aarch64-linux",
+        "./.expeditor/scripts/validate_adhoc_build.sh aarch64-linux"
+      ]
+      agents["queue"] = "default-privileged-aarch64"
+      docker_image = "chefes/omnibus-toolchain-#{base_platform}:aarch64"
     end
-    commands << "./.expeditor/scripts/validate_adhoc_build.sh"
 
     step = {
       "label" => ":mag::docker:#{platform}",
@@ -170,7 +202,7 @@ targets.each do |target|
       "agents" => agents,
       "plugins" => {
         "docker#v3.5.0" => {
-          "image" => "chefes/omnibus-toolchain-#{platform}:#{ENV['OMNIBUS_TOOLCHAIN_VERSION']}",
+          "image" => docker_image,
           "privileged" => true,
           "propagate-environment" => true,
           "environment" => [

@@ -324,7 +324,7 @@ class Chef
       return path if path.is_a?(URI)
 
       if %r{^(http|https|chefzero)://}i.match?(path)
-        URI.parse(path)
+        URI.parse(sanitize_uri_string(path))
       elsif path.nil? || path.empty?
         URI.parse(@url)
       else
@@ -333,6 +333,23 @@ class Chef
         # way they are always joined correctly using just one slash.
         URI.parse(@url.gsub(%r{/+$}, "") + "/" + path.gsub(%r{^/+}, ""))
       end
+    end
+
+    # Matches any character that is not valid, unescaped, in a URI (per RFC 3986
+    # unreserved + reserved + '%' so that existing percent-escapes are preserved).
+    UNSAFE_URI_CHARS = %r{[^\-_.!~*'()a-zA-Z\d;/?:@&=+$,\[\]%]}
+    private_constant :UNSAFE_URI_CHARS
+
+    # @api private
+    # Chef Infra Server is expected to return fully escaped absolute URLs (e.g.
+    # the sandbox "uri" field, or S3/bookshelf presigned upload URLs). Org names
+    # and other identifiers may contain characters like spaces that are invalid
+    # in a URI; an older or misconfigured server may emit these unescaped. Rather
+    # than raise URI::InvalidURIError deep inside `chef push`/cookbook upload,
+    # defensively percent-encode any offending characters before parsing so the
+    # client stays resilient regardless of server-side escaping behavior.
+    def sanitize_uri_string(url)
+      URI::DEFAULT_PARSER.escape(url, UNSAFE_URI_CHARS)
     end
 
     # @api private
@@ -510,9 +527,9 @@ class Chef
 
     # @api private
     def redirected_to(response)
-      return nil  unless response.is_a?(Net::HTTPRedirection)
+      return nil unless response.is_a?(Net::HTTPRedirection)
       # Net::HTTPNotModified is undesired subclass of Net::HTTPRedirection so test for this
-      return nil  if response.is_a?(Net::HTTPNotModified)
+      return nil if response.is_a?(Net::HTTPNotModified)
 
       response["location"]
     end

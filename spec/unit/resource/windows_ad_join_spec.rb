@@ -52,4 +52,10 @@ describe Chef::Resource::WindowsAdJoin do
     expect { resource.reboot :never }.not_to raise_error
     expect { resource.reboot :nopenope }.to raise_error(ArgumentError)
   end
+
+  describe "sensitive property masking" do
+    it "marks domain_password as sensitive" do
+      expect(Chef::Resource::WindowsAdJoin.properties[:domain_password].sensitive?).to be true
+    end
+  end
 end

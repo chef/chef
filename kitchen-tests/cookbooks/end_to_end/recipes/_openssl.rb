@@ -10,6 +10,20 @@ directory base do
   recursive true
 end
 
+# Write the openssl binary path so InSpec tests can find it.
+# Hab pkgs are at /opt/hab/pkgs on macOS and /hab/pkgs on Linux.
+openssl_bin = if platform_family?("windows")
+                ::Dir.glob("C:/hab/pkgs/core/openssl/*/*/bin/openssl.exe").max
+              elsif macos?
+                ::Dir.glob("/opt/hab/pkgs/core/openssl/*/*/bin/openssl").max
+              else
+                ::Dir.glob("/hab/pkgs/core/openssl/*/*/bin/openssl").max
+              end
+
+file "#{base}/openssl_path.txt" do
+  content openssl_bin
+end
+
 #
 # DHPARAM HERE
 #

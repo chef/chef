@@ -66,6 +66,7 @@ class Chef
         @events = events
         @expanded_run_list = {}
         @deprecations = Set.new
+        @http_output_locations_clients = {}
       end
 
       # Hook to grab the run_status.  We also make the decision to run or not run here (our

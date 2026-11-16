@@ -353,8 +353,14 @@ module ChefConfig
     # DEPRECATED
     default :enforce_path_sanity, false
 
-    # Enforce default paths by default for all APIs, not just the default internal shell_out
-    default :enforce_default_paths, false
+    # Enforce default paths by default for all APIs, not just the default internal shell_out.
+    # On Windows, defaults to true so that standard system directories (C:\Windows\System32,
+    # C:\Windows, C:\Windows\System32\Wbem) are always present in the subprocess PATH.
+    # This restores Chef 18 (Omnibus) behavior for Chef 19 (Habitat-based) installs where
+    # the Habitat launcher strips those directories from the process PATH. On standard
+    # Windows installs where System32 is already in PATH, the dedup logic in default_paths
+    # prevents any duplicate entries — making this a safe no-op for non-Habitat installs.
+    default(:enforce_default_paths) { ChefUtils.windows? }
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     default :formatter, "null"
@@ -388,7 +394,7 @@ module ChefConfig
       end
     end
 
-    # Returns true only if the path exists and is readable and writeable for the user.
+    # Returns true only if the path exists and is readable and writable for the user.
     #
     # @param path [String]
     def self.path_accessible?(path)
@@ -484,6 +490,14 @@ module ChefConfig
     # toggle info level log items that can create a lot of output
     default :verbose_logging, true
     default :node_name, nil
+
+    # When target mode is active, these hold the operator's original Chef Server
+    # identity so that API auth uses the admin credentials rather than the
+    # target node name.  Set in Chef::Application::Client#reconfigure before
+    # target_mode.enabled is flipped to true.
+    default :api_client_name, nil
+    default :api_client_key, nil
+
     default :diff_disabled,           false
     default :diff_filesize_threshold, 10000000
     default :diff_output_threshold,   1000000
@@ -1306,7 +1320,9 @@ module ChefConfig
     # sure Chef runs do not crash.
     # @api private
     def self.enable_fips_mode
+      # Enable FIPS mode in OpenSSL.
       OpenSSL.fips_mode = true
+
       require "digest" unless defined?(Digest)
       require "digest/sha1" unless defined?(Digest::SHA1)
       require "digest/md5" unless defined?(Digest::MD5)
@@ -1314,8 +1330,6 @@ module ChefConfig
       # amount of log spam and warnings.
       Digest.send(:remove_const, "SHA1") if Digest.const_defined?(:SHA1)
       Digest.const_set(:SHA1, OpenSSL::Digest::SHA1)
-      OpenSSL::Digest.send(:remove_const, "MD5") if OpenSSL::Digest.const_defined?(:MD5)
-      OpenSSL::Digest.const_set(:MD5, Digest::MD5)
       ChefConfig.logger.debug "FIPS mode is enabled."
     end
   end

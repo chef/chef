@@ -1,4 +1,11 @@
-gemspec = instance_eval(File.read(File.expand_path("chef.gemspec", __dir__)))
+# rubocop:disable Chef/Ruby/GemspecLicense
+# License is in the included gemspec.
+gemspec = Gem::Specification.load(File.expand_path("chef.gemspec", __dir__))
+
+# In situations like Dependabot, the above returns nil, so create an empty
+# gemspec so that the rest of this file doesn't error out trying to call
+# methods on nil
+gemspec = Gem::Specification.new unless gemspec
 
 gemspec.platform = Gem::Platform.new(%w{universal mingw-ucrt})
 
@@ -6,7 +13,7 @@ gemspec.add_dependency "win32-api", "~> 1.10.0"
 gemspec.add_dependency "win32-event", "~> 0.6.1"
 # TODO: Relax this pin and make the necessary updaets. The issue originally
 # leading to this pin has been fixed in 0.6.5.
-gemspec.add_dependency "win32-eventlog", "0.6.3"
+gemspec.add_dependency "win32-eventlog", "0.6.7"
 gemspec.add_dependency "win32-mmap", "~> 0.4.1"
 gemspec.add_dependency "win32-mutex", "~> 0.4.2"
 gemspec.add_dependency "win32-process", "~> 0.9"

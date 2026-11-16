@@ -44,6 +44,18 @@ describe "Chef::Win32::Security", :windows_only do
     end
   end
 
+  describe "self.set_security_descriptor_dacl" do
+    it "is callable as a class method, matching set_security_descriptor_sacl/owner/group" do
+      security_descriptor = double("security descriptor", null?: false)
+      acl = double("acl")
+
+      expect(Chef::ReservedNames::Win32::Security).to receive(:SetSecurityDescriptorDacl)
+        .with(security_descriptor, true, acl, false).and_return(true)
+
+      expect { Chef::ReservedNames::Win32::Security.set_security_descriptor_dacl(security_descriptor, acl) }.to_not raise_error
+    end
+  end
+
   describe "self.set_named_security_info" do
     context "when HR result is ERROR_SUCCESS" do
       it "does not raise the exception" do

@@ -89,7 +89,11 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
     end
 
     context "with a valid dsc resource" do
-      let(:tmp_file_name) { Dir::Tmpname.create("tmpfile") {} }
+      # DSC's LCM runs as SYSTEM. On GitHub Actions, Dir.tmpdir points to the
+      # runner workspace (e.g. D:/a/_temp) which SYSTEM cannot access. Use
+      # the Windows system temp directory which SYSTEM always has access to.
+      let(:tmp_dir) { ENV.key?("SYSTEMROOT") ? "#{ENV["SYSTEMROOT"]}\\Temp" : Dir.tmpdir }
+      let(:tmp_file_name) { Dir::Tmpname.create("dsc_resource_test", tmp_dir) {} }
       let(:test_text) { "'\"!@#$%^&*)(}{][\u2713~n" }
 
       before do

@@ -1,32 +1,101 @@
 version: 2
 updates:
-- package-ecosystem: bundler
-  target-branch: "main"
-  directory: "/omnibus"
-  schedule:
-    interval: daily
-    time: "06:00"
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 10
-  labels:
-  - "Type: Chore"
-- package-ecosystem: bundler
-  target-branch: "chef-18"
-  directory: "/omnibus"
-  schedule:
-    interval: daily
-    time: "06:00"
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 10
-  labels:
-  - "Type: Chore"
-- package-ecosystem: bundler
-  target-branch: "chef-17"
-  directory: "/omnibus"
-  schedule:
-    interval: daily
-    time: "06:00"
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 10
-  labels:
-  - "Type: Chore"
+  - package-ecosystem: bundler
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 20
+    labels:
+      - "Type: Chore"
+    ignore:
+      # Due to FIPS builds and having to couple the openssl
+      # build itself, we don't let dependabot bump openssl
+      - dependency-name: "openssl"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+    groups:
+      aws:
+        patterns: ["aws-sdk-*"]
+      train:
+        patterns: ["train-*"]
+
+  - package-ecosystem: bundler
+    directory: "/"
+    target-branch: "chef-18"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 20
+    labels:
+      - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+    groups:
+      aws:
+        patterns: ["aws-sdk-*"]
+      train:
+        patterns: ["train-*"]
+    ignore:
+        # Due to FIPS builds and having to couple the openssl
+        # build itself, we don't let dependabot bump openssl
+      - dependency-name: "openssl"
+        # chef-18 needs to stay on inspec 5, the pre-license version
+      - dependency-name: "inspec-core-bin"
+        versions: [">= 6"]
+        # chef-18 needs to stay on toml 1 which is less strict
+      - dependency-name: "tomlrb"
+        versions: [">= 2"]
+        # chef-18 is locked to Ruby 3.1, which means we cannot move
+        # past pry-byebug 3.11
+      - dependency-name: "pry-byebug"
+        versions: [">= 3.12.0"]
+        # CentOS7 requires bigdecimal < 4.1.2, and tha tmeans staying
+        # on aws-sdk-s3 < 1.219 (see PR #15952) for Chef-18
+        dependency-name: "aws-sdk-s3"
+        versions: [">= 1.219.0"]
+
+  - package-ecosystem: bundler
+    directory: "/omnibus"
+    target-branch: "chef-18"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+    groups:
+      all-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: "chef-18"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    labels:
+      - "Type: Chore"
+    # don't automatically rebase on every single time we're out of date with
+    # base (whith is always) because it kills CI capacity
+    rebase-strategy: disabled
+    groups:
+      all-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

@@ -75,8 +75,8 @@ module ChefHTTPShared
       {
         "Content-Length" => nyan_uncompressed_size.to_s,
       }) do
-        File.binread(nyan_uncompressed_filename)
-      end
+      File.binread(nyan_uncompressed_filename)
+    end
 
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_content_length_compressed.png", 200, nil,
@@ -85,8 +85,8 @@ module ChefHTTPShared
         "Content-Type" => "application/gzip",
         "Content-Encoding" => "gzip",
       }) do
-        File.binread(nyan_compressed_filename)
-      end
+      File.binread(nyan_compressed_filename)
+    end
 
     #
     # endpoints that simulate truncated downloads (bad content-length header)
@@ -97,8 +97,8 @@ module ChefHTTPShared
       {
         "Content-Length" => (nyan_uncompressed_size + 1).to_s,
       }) do
-        File.binread(nyan_uncompressed_filename)
-      end
+      File.binread(nyan_uncompressed_filename)
+    end
 
     # (expected_content should be uncompressed)
     @api.get("/nyan_cat_truncated_compressed.png", 200, nil,
@@ -107,8 +107,8 @@ module ChefHTTPShared
         "Content-Type" => "application/gzip",
         "Content-Encoding" => "gzip",
       }) do
-        File.binread(nyan_compressed_filename)
-      end
+      File.binread(nyan_compressed_filename)
+    end
 
     #
     # in the presence of a transfer-encoding header, we must ignore the content-length (this bad content-length should work)
@@ -120,8 +120,8 @@ module ChefHTTPShared
         "Content-Length" => (nyan_uncompressed_size + 1).to_s,
         "Transfer-Encoding" => "anything",
       }) do
-        File.binread(nyan_uncompressed_filename)
-      end
+      File.binread(nyan_uncompressed_filename)
+    end
 
     #
     # 403 with a Content-Length

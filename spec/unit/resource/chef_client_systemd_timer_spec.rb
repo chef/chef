@@ -35,8 +35,8 @@ describe Chef::Resource::ChefClientSystemdTimer do
     expect(resource.action).to eql([:add])
   end
 
-  it "user defaults to root" do
-    expect(resource.user).to eql("root")
+  it "user has no default so that no User= directive is written to the unit" do
+    expect(resource.user).to be_nil
   end
 
   it "validates the cpu_quota property input" do
@@ -56,7 +56,7 @@ describe Chef::Resource::ChefClientSystemdTimer do
 
   describe "#chef_client_cmd" do
 
-    let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
+    let(:root_path) { File.join(ChefConfig::Config.etc_chef_dir, "client.rb") }
 
     it "creates a valid command if using all default properties" do
       expect(provider.chef_client_cmd).to eql("#{chef_habitat_binary_path} -c #{root_path}")
@@ -85,6 +85,15 @@ describe Chef::Resource::ChefClientSystemdTimer do
   end
 
   describe "#service_content" do
+    it "does not set User if user property is not set" do
+      expect(provider.service_content["Service"]).not_to have_key("User")
+    end
+
+    it "sets User if user property is set" do
+      resource.user "custom-chef-user"
+      expect(provider.service_content["Service"]["User"]).to eq("custom-chef-user")
+    end
+
     it "does not set ConditionACPower if run_on_battery property is set to true (the default)" do
       expect(provider.service_content["Service"]).not_to have_key("ConditionACPower")
     end

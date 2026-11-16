@@ -73,8 +73,8 @@ HLOCAL LocalFree(
           result = command_line_to_argv_w(argv, argc)
           str_ptr = result.read_pointer
           offset = 0
-          number_of_agrs = argc.read_int
-          number_of_agrs.times do
+          number_of_args = argc.read_int
+          number_of_args.times do
             new_str_pointer = str_ptr.+(offset)
             argument = new_str_pointer.read_wstring
             arguments_list << argument

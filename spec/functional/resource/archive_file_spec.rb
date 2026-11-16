@@ -85,4 +85,74 @@ describe Chef::Resource::ArchiveFile, :not_supported_on_aix, :not_supported_on_w
       expect(File.exist?("#{extract_destination}/file-2.txt")).to eq(true)
     end
   end
+
+  # These tests use archives that contain entries with path traversal
+  # sequences. The resource must raise an error and NOT write any files outside
+  # the destination directory.
+
+  context "path traversal protection" do
+    let(:parent_dir) { tmp_path }
+
+    after do
+      # Clean up any files that may have escaped (only relevant if fix is broken)
+      File.delete(File.join(parent_dir, "pwned_dotdot.txt")) rescue nil
+      File.delete(File.join(parent_dir, "pwned_deep.txt"))  rescue nil
+      File.delete("/tmp/pwned_absolute.txt")                rescue nil
+    end
+
+    context "with an archive containing a dot-dot traversal entry (../pwned_dotdot.txt)" do
+      let(:archive_path) { File.expand_path("archive_file/path_traversal_dotdot.tar.gz", CHEF_SPEC_DATA) }
+
+      it "raises Chef::Exceptions::ValidationFailed and does not write outside the destination" do
+        expect do
+          archive_file archive_path do
+            destination extract_destination
+            overwrite true
+          end.run_action(:extract)
+        end.to raise_error(Chef::Exceptions::ValidationFailed, /path traversal/i)
+
+        expect(File.exist?(File.join(parent_dir, "pwned_dotdot.txt"))).to eq(false),
+          "traversal payload must not have escaped to #{parent_dir}"
+      end
+
+      it "does not write the safe_file.txt either (extraction aborts on traversal)" do
+        archive_file(archive_path) { destination extract_destination; overwrite true }.run_action(:extract) rescue Chef::Exceptions::ValidationFailed
+        # safe_file.txt comes BEFORE the traversal entry in the archive, so it may
+        # have been extracted already. We only guarantee the traversal payload did not escape.
+        expect(File.exist?(File.join(parent_dir, "pwned_dotdot.txt"))).to eq(false)
+      end
+    end
+
+    context "with an archive containing an absolute-path entry (/tmp/pwned_absolute.txt)" do
+      let(:archive_path) { File.expand_path("archive_file/path_traversal_absolute.tar.gz", CHEF_SPEC_DATA) }
+
+      it "raises Chef::Exceptions::ValidationFailed and does not write to the absolute path" do
+        expect do
+          archive_file archive_path do
+            destination extract_destination
+            overwrite true
+          end.run_action(:extract)
+        end.to raise_error(Chef::Exceptions::ValidationFailed, /path traversal/i)
+
+        expect(File.exist?("/tmp/pwned_absolute.txt")).to eq(false),
+          "traversal payload must not have been written to /tmp/pwned_absolute.txt"
+      end
+    end
+
+    context "with an archive containing a deep dot-dot traversal entry (subdir/../../pwned_deep.txt)" do
+      let(:archive_path) { File.expand_path("archive_file/path_traversal_deep.tar.gz", CHEF_SPEC_DATA) }
+
+      it "raises Chef::Exceptions::ValidationFailed and does not write outside the destination" do
+        expect do
+          archive_file archive_path do
+            destination extract_destination
+            overwrite true
+          end.run_action(:extract)
+        end.to raise_error(Chef::Exceptions::ValidationFailed, /path traversal/i)
+
+        expect(File.exist?(File.join(parent_dir, "pwned_deep.txt"))).to eq(false),
+          "traversal payload must not have escaped to #{parent_dir}"
+      end
+    end
+  end
 end

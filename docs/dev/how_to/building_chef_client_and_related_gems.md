@@ -61,12 +61,12 @@ In Essence:
 4. Announce the build in Slack to #sous-chefs and #general
 5. Update Homebrew
 6. Update Chocolatey
-7. Backport to Chef 17 and Chef 16 as appropriate
+7. Backport to Chef 18 as appropriate
    1. Git Pull Chef
-   2. git checkout chef17
-   3. git checkout -b my_branch_based_on_chef17
-   4. Do my work on chef17 branch
-   5. Merge it back to Chef17
+   2. git checkout chef18
+   3. git checkout -b my_branch_based_on_chef18
+   4. Do my work on chef18 branch
+   5. Merge it back to Chef18
 
 
 
@@ -78,7 +78,7 @@ In Essence:
 
 **What to do**:
 
-You have a feature or a bug you just fixed. Now what? Write your tests and, run rake to look for linting errors, spelling mistakes etc. Then push your branch back to main and create a pull request. This kicks off a build that will run your code against all 20 or so operating systems we support. Builds take a while. Once your build starts you have 2-3 hours or so to do something else. Once your build passes, get it approved and merged back to main. You’re done, unless you’re in charge of releases this week, in which case see the item just above about promoting builds
+You have a feature or a bug you just fixed. Now what? Write your tests and, run rake to look for linting errors, spelling mistakes etc. Then push your branch back to main and create a pull request. This kicks off a build that will run your code against all operating systems we support. Builds take a while. Once your build passes, get it approved and merged back to main. You’re done, unless you’re in charge of releases this week, in which case see the item just above about promoting builds
 
 
 
@@ -90,15 +90,13 @@ You have a feature or a bug you just fixed. Now what? Write your tests and, run 
 
 **What to do**:
 
-You have some code that may or may not really dodgy and you kinda need/want to see where the possible problems are with it. You can do an ad-hoc build against your branch to give it a go. To do that, you do this: There are 2 paths you can follow for a build. Chef stand-alone and Chef as part of the Chef Workstation product.
+You have some code that may or may not really dodgy and you kinda need/want to see where the possible problems are with it. You can do an ad-hoc build against your branch to give it a go. To do that, you do this: 
 
-[Chef Client Ad-Hoc Build Site](https://buildkite.com/chef/chef-chef-master-omnibus-adhoc/)
-
-[Chef Workstation Ad Hoc Build Site](https://buildkite.com/chef/chef-chef-workstation-master-omnibus-adhoc/)
+[Chef Client Ad-Hoc Build Site](https://buildkite.com/chef/chef-chef-main-validate-adhoc)
 
 Steps:
 
-1. Click either link and if asked, confirm your login settings and then click the link in the verification email.
+1. Click the link and if asked, confirm your login settings and then click the link in the verification email.
 
 2. Once past that you’ll need to add a ‘Pipeline’ - create a name for your pipeline and git it the root of github repo you want to build from
 

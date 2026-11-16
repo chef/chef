@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "stringio" unless defined?(StringIO)
 require_relative "../internal"
 
 module ChefUtils
@@ -54,6 +53,8 @@ module ChefUtils
       #
       def file_open(*args, &block)
         if __transport_connection
+          require "stringio" unless defined?(StringIO)
+
           content = __transport_connection.file(args[0]).content
           string_io = StringIO.new content
           yield string_io if block_given?

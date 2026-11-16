@@ -32,7 +32,7 @@ class Chef
         @events = events
       end
 
-      # Installs the gems into the omnibus gemset.
+      # Installs the gems into the gemset.
       #
       def install
         cookbook_gems = Hash.new { |h, k| h[k] = [] }

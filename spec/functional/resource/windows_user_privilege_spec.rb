@@ -23,6 +23,11 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
   let(:users) { nil }
   let(:sensitive) { true }
 
+  # Use the current user account for privilege tests. The built-in "Administrator"
+  # account is often disabled on GitHub Actions Windows runners, causing SID lookup
+  # failures. The current runner user always exists and has admin rights.
+  let(:test_account) { ENV.fetch("USERNAME", "Administrator") }
+
   let(:windows_test_run_context) do
     node = Chef::Node.new
     node.consume_external_attrs(OHAI_SYSTEM.data, {}) # node[:languages][:powershell][:version]
@@ -46,7 +51,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
     after { subject.run_action(:remove) }
 
     context "when privilege is passed as string" do
-      let(:principal) { "Administrator" }
+      let(:principal) { test_account }
       let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
 
       it "adds user to privilege" do
@@ -64,7 +69,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
     end
 
     context "when privilege is passed as array" do
-      let(:principal) { "Administrator" }
+      let(:principal) { test_account }
       let(:privilege) { %w{SeCreateSymbolicLinkPrivilege SeCreatePagefilePrivilege} }
 
       it "adds user to privilege" do
@@ -81,10 +86,10 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
   end
 
   describe "#set privilege" do
-    after { remove_user_privilege("Administrator", subject.privilege) }
+    after { remove_user_privilege(test_account, subject.privilege) }
 
     let(:principal) { "user_privilege" }
-    let(:users) { %w{Administrators Administrator} }
+    let(:users) { ["Administrators", test_account] }
     let(:privilege) { %w{SeCreateSymbolicLinkPrivilege} }
 
     it "sets user to privilege" do
@@ -108,7 +113,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
   end
 
   describe "#remove privilege" do
-    let(:principal) { "Administrator" }
+    let(:principal) { test_account }
     context "when privilege is passed as array" do
       let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
       it "remove user from privilege" do

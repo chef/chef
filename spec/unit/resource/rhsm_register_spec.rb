@@ -330,4 +330,10 @@ describe Chef::Resource::RhsmRegister do
       end
     end
   end
+
+  describe "sensitive property masking" do
+    it "marks password as sensitive" do
+      expect(Chef::Resource::RhsmRegister.properties[:password].sensitive?).to be true
+    end
+  end
 end

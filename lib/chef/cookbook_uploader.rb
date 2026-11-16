@@ -54,7 +54,7 @@ class Chef
         checksum_files.merge!(cb.checksums)
       end
 
-      checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
+      checksums = checksum_files.to_h { |checksum, _path| [checksum, nil] }
       new_sandbox = rest.post("sandboxes", { checksums: checksums })
 
       Chef::Log.info("Uploading files")
@@ -130,7 +130,7 @@ class Chef
         rescue Net::HTTPClientException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
           error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
           error_message << "\n#{e.response.body}" if e.respond_to?(:response)
-          Chef::Knife.ui.error(error_message)
+          Chef::Log.error(error_message)
           raise
         end
       end

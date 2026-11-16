@@ -153,4 +153,14 @@ describe Chef::Resource::YumRepository do
       expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
     end
   end
+
+  describe "sensitive property masking" do
+    it "marks password as sensitive" do
+      expect(Chef::Resource::YumRepository.properties[:password].sensitive?).to be true
+    end
+
+    it "marks proxy_password as sensitive" do
+      expect(Chef::Resource::YumRepository.properties[:proxy_password].sensitive?).to be true
+    end
+  end
 end

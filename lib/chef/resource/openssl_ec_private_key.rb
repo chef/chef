@@ -60,7 +60,7 @@ class Chef
         description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options.",
         default: "prime256v1"
 
-      property :key_pass, String,
+      property :key_pass, String, sensitive: true,
         description: "The desired passphrase for the key."
 
       property :key_cipher, String,

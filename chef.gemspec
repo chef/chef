@@ -10,8 +10,17 @@ if File.exist?(vs_path)
   $: << File.join(file_directory, "chef-utils", "lib")
 end
 # if the path doesn't exist then we're just in the wild gem and not in the git repo
-require "chef-utils/version_string"
-require "chef/version"
+begin
+  require "chef-utils/version_string"
+  require "chef/version"
+rescue LoadError
+  # lib/ is not available in all contexts (e.g. Dependabot security scans
+  # fetch only gemspec files, not the full repo). Provide a stub so the
+  # gemspec can still be evaluated to inspect its dependencies.
+  module Chef
+    VERSION = "0.0.0".freeze
+  end
+end
 
 Gem::Specification.new do |s|
   s.name = "chef"
@@ -25,10 +34,11 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
+  # help dependabot by specifying a default. If the default is in
+  # the 'else', dependabot misses it and falls back to a very old ruby
+  s.required_ruby_version = ">= 3.1.0"
   if RUBY_PLATFORM =~ /aix/
     s.required_ruby_version = ">= 3.0.3"
-  else
-    s.required_ruby_version = ">= 3.1.0"
   end
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
@@ -41,13 +51,14 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
   s.add_dependency "mixlib-log", ">= 2.0.3", "< 4.0"
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
-  s.add_dependency "mixlib-shellout", "~> 3.3.8"
+  s.add_dependency "mixlib-shellout", ">= 3.3.8", "< 3.5.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 19.0"
-  s.add_dependency "inspec-core", "~> 7.0.95"
+  s.add_dependency "inspec-core", "~> 7.2.1"
 
   s.add_dependency "ffi", ">= 1.15.5", "< 1.18.0"
-  s.add_dependency "ffi-yajl", "~> 2.2"
+  # ffi-yajl has a stale version in 3.0.0 specifically that is in use. 3.0.1 and higher is ok again
+  s.add_dependency "ffi-yajl", ">= 2.2", "!= 3.0.0", "< 4.0"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 5.0" # remote_file resource
   s.add_dependency "net-ftp" # remote_file resource
   s.add_dependency "ed25519", "~> 1.2" # ssh-ed25519 support for target mode
@@ -60,19 +71,19 @@ Gem::Specification.new do |s|
 
   s.add_dependency "plist", "~> 3.2" # launchd, dscl/mac user, macos_userdefaults, and plist resources
   s.add_dependency "iniparse", "~> 1.4" # systemd_unit resource
-  s.add_dependency "addressable"
+  s.add_dependency "addressable", ">= 2.9.0"
   s.add_dependency "syslog"
   s.add_dependency "csv", "~> 3.3.5" # really needs to come from inspec?
   s.add_dependency "syslog-logger", "~> 1.6"
   s.add_dependency "unf_ext", "~> 0.0.9.1" # older platforms
-  s.add_dependency "uri", "~> 1.0.4" # CVE-2025-61594 fixed in >= 1.0.4
-  s.add_dependency "corefoundation", "~> 0.3.4" # macos_userdefaults resource
+  s.add_dependency "uri", ">= 1.0.4", "< 1.2.0" # CVE-2025-61594 fixed in >= 1.0.4
+  s.add_dependency "corefoundation", "~> 0.3.19" # macos_userdefaults resource
 
   s.add_dependency "proxifier2", "~> 1.1"
 
   s.add_dependency "aws-sdk-s3", "~> 1.91" # s3 recipe-url support
   s.add_dependency "aws-sdk-secretsmanager", "~> 1.46"
-  s.add_dependency "vault", "~> 0.18.2" # hashi vault official client gem
+  s.add_dependency "vault", ">= 0.18.2", "< 0.21.0" # hashi vault official client gem
   s.add_dependency "chef-licensing", "~> 1.3"
 
   s.bindir = "bin"

@@ -30,11 +30,7 @@ describe Chef::Application::Base, "setup_application" do
 
   context "when validation key is not supplied" do
     it "should return default path for validation_key" do
-      if windows?
-        expect(Chef::Config.validation_key).to eql("C:\\chef\\validation.pem")
-      else
-        expect(Chef::Config.validation_key).to eql("/etc/chef/validation.pem")
-      end
+      expect(Chef::Config.validation_key).to eql(ChefConfig::PathHelper.cleanpath(File.join(ChefConfig::Config.etc_chef_dir, "validation.pem")))
     end
   end
 end

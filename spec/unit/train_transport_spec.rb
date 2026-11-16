@@ -51,7 +51,7 @@ describe Chef::TrainTransport do
 
   describe "credentials_file_path" do
     let(:config_cred_file_path) { "/somewhere/credentials" }
-    let(:host_cred_file_path) { Chef::Platform.windows? ? "C:\\chef\\foo.example.org\\credentials" : "/etc/chef/foo.example.org/credentials" }
+    let(:host_cred_file_path) { ChefConfig::PathHelper.cleanpath(File.join(ChefConfig::Config.etc_chef_dir, "foo.example.org", "credentials")) }
 
     context "when CHEF_CREDENTIALS_FILE environment variable is set" do
       before(:all) do

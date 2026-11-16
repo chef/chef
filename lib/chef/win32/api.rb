@@ -125,11 +125,11 @@ class Chef
         # perform pointer arithmetic. BaseTsd.h:
         # if defined(_WIN64) host.typedef __int64 LONG_PTR; #else host.typedef long LONG_PTR;
         if win64
-          host.typedef :int64,    :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
-          host.typedef :int64,    :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
+          host.typedef :int64, :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
+          host.typedef :int64, :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
         else
-          host.typedef :long,    :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
-          host.typedef :long,    :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
+          host.typedef :long, :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
+          host.typedef :long, :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
         end
         host.typedef :pointer, :LPBOOL # Pointer to a BOOL. WinDef.h as follows: #host.typedef BOOL far *LPBOOL;
         host.typedef :pointer, :LPBYTE # Pointer to a BYTE. WinDef.h as follows: #host.typedef BYTE far *LPBYTE;

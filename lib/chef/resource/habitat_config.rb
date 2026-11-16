@@ -56,7 +56,7 @@ class Chef
       property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
         description: "Address for remote supervisor http port. Used to pull existing."
 
-      property :gateway_auth_token, String, desired_state: false,
+      property :gateway_auth_token, String, sensitive: true, desired_state: false,
         description: "Auth token for accessing the remote supervisor's http port."
 
       property :user, String, desired_state: false,

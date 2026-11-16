@@ -27,7 +27,7 @@ hab origin key download $env:HAB_ORIGIN
 if (-not $?) { throw "Unable to download origin key" }
 
 Write-Host "--- Installing $env:PKG_ARTIFACT"
-hab pkg install $env:PKG_ARTIFACT --auth $HAB_AUTH_TOKEN
+hab pkg install $env:PKG_ARTIFACT --auth $env:HAB_AUTH_TOKEN
 if (-not $?) { throw "Unable to install $env:PKG_ARTIFACT" }
 
 $pkgIdent = hab pkg list chef/chef-infra-client

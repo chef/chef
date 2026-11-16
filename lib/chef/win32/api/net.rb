@@ -39,7 +39,6 @@ class Chef
         UF_ACCOUNTDISABLE      = 0x000002
         UF_PASSWD_CANT_CHANGE  = 0x000040
         UF_NORMAL_ACCOUNT      = 0x000200
-        # cspell:disable-next-line
         UF_DONT_EXPIRE_PASSWD  = 0x010000
 
         USE_NOFORCE = 0
@@ -84,9 +83,8 @@ class Chef
           end
 
           def as_ruby
-            members.inject({}) do |memo, key|
-              memo[key] = get(key)
-              memo
+            members.to_h do |key|
+              [key, get(key)]
             end
           end
         end

@@ -17,7 +17,7 @@ describe "chef-client with compliance phase" do
   # creates batch wrappers for installed gems, but we don't have batch wrappers
   # in the source tree.
   # * Other `chef-client` in PATH: A common case is running the tests on a
-  # machine that has omnibus chef installed. In that case we need to ensure
+  # machine that has chef package installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai --always-dump-stacktrace" }

@@ -91,7 +91,7 @@ class Chef
                     end
                   end
                   # Create the file itself
-                  container.add_child(CookbookFile.new(parts[parts.length - 1], container, file))
+                  container.add_child(CookbookFile.new(parts[-1], container, file))
                 end
               end
               @children = @children.sort_by(&:name)

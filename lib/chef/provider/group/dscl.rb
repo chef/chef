@@ -61,7 +61,6 @@ class Chef
               val.strip! if val
               case key.downcase
               when "primarygroupid"
-                new_resource.gid(val) unless new_resource.gid
                 current_resource.gid(val)
               when "groupmembership"
                 current_resource.members(val.split(" "))
@@ -99,10 +98,15 @@ class Chef
         end
 
         def set_gid
-          new_resource.gid(get_free_gid) if [nil, ""].include? new_resource.gid
-          raise(Chef::Exceptions::Group, "gid is already in use") if gid_used?(new_resource.gid)
+          # Resolve the gid into a local so that the desired state on the new
+          # resource is left alone. Memoizing a free gid back onto the resource
+          # would mean a reused resource object gets the same gid every time
+          # rather than a fresh free one.
+          gid = new_resource.gid
+          gid = get_free_gid if [nil, ""].include?(gid)
+          raise(Chef::Exceptions::Group, "gid is already in use") if gid_used?(gid)
 
-          safe_dscl("create", "/Groups/#{new_resource.group_name}", "PrimaryGroupID", new_resource.gid)
+          safe_dscl("create", "/Groups/#{new_resource.group_name}", "PrimaryGroupID", gid)
         end
 
         def set_members

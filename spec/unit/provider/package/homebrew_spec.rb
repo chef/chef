@@ -307,6 +307,23 @@ describe Chef::Provider::Package::Homebrew do
       expect(provider.brew_cmd_output("info", "opts", "bananas")).to eql("homestarrunner")
     end
 
+    it "hands the resource's timeout to shell_out" do
+      new_resource.timeout(3600)
+      allow(provider).to receive(:homebrew_bin_path).and_return(default_brew_path)
+      expect(provider).to receive(:shell_out!)
+        .with(default_brew_path, "install", hash_including(timeout: 3600))
+        .and_return(OpenStruct.new(stdout: ""))
+      provider.brew_cmd_output("install")
+    end
+
+    it "leaves the timeout unset when the resource does not specify one" do
+      allow(provider).to receive(:homebrew_bin_path).and_return(default_brew_path)
+      expect(provider).to receive(:shell_out!)
+        .with(default_brew_path, "install", hash_including(timeout: nil))
+        .and_return(OpenStruct.new(stdout: ""))
+      provider.brew_cmd_output("install")
+    end
+
     context "when new_resource is Package" do
       let(:new_resource) { Chef::Resource::Package.new("emacs") }
 

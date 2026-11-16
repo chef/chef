@@ -5,14 +5,17 @@ describe "openssl checks" do
     if macos?
       "1.1.1m"
     else
-      "3.5.5"
+      # this will break whenever your upstream openssl version changes, but this is meant to make
+      # sure we're actually using the version we expect to be using, and not some system version that might be present on the build machine
+      "3.5.8"
     end
   end
 
   %w{version library_version}.each do |method|
     # macOS just picks up its own for some reason, maybe it circumvents a build step
     example "check #{method}", not_supported_on_macos: true, openssl_version_check: true do
-      expect(OpenSSL.const_get("OPENSSL_#{method.upcase}")).to match(openssl_version_default), "OpenSSL doesn't match omnibus_overrides.rb"
+      actual_version = OpenSSL.const_get("OPENSSL_#{method.upcase}")
+      expect(actual_version).to match(openssl_version_default), "OpenSSL doesn't match packaged build version expectation (expected match: #{openssl_version_default.inspect}, actual: #{actual_version.inspect})"
     end
   end
 end

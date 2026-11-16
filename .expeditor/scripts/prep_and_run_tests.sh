@@ -14,9 +14,11 @@ then
     mkdir spec/data/nodes && touch spec/data/nodes/test.rb && touch spec/data/nodes/default.rb && touch spec/data/nodes/test.example.com.rb
 fi
 
-echo "--- Update PATH and activate ruby and bundle"
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+if [ "${CHEF_USE_SYSTEM_RUBY:-false}" != "true" ]; then
+    echo "--- Update PATH and activate ruby and bundle"
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+fi
 
 ruby -v
 bundle -v
@@ -36,6 +38,10 @@ case $TestType in
 
     Functional)
         RakeTest=("spec:functional")
+        ;;
+
+    TargetMode)
+        RakeTest=("spec:target_mode" "target_mode:static_analysis")
         ;;
 
     *)

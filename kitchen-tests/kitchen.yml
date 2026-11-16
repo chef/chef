@@ -35,7 +35,6 @@ platforms:
   - name: almalinux-10
   - name: amazonlinux-2
   - name: amazonlinux-2023
-  - name: debian-11
   - name: debian-12
   - name: debian-13
   - name: fedora-41

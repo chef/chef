@@ -108,7 +108,7 @@ class Chef
       property :channel, String, default: "stable",
       description: "The release channel to install your package from."
 
-      property :auth_token, String,
+      property :auth_token, String, sensitive: true,
       description: "Auth token for installing a package from a private organization on Habitat builder."
 
       property :binlink, [true, false, :force], default: false,

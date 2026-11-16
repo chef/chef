@@ -21,7 +21,7 @@ class Chef
   class Provider
     class Package
       class YumTM < Chef::Provider::Package::Yum
-        provides :package, platform_family: "fedora_derived", target_mode: true, agent_mode: false
+        provides :package, platform_family: %w{fedora rhel amazon}, target_mode: true, agent_mode: false
         provides :yum_package, target_mode: true, agent_mode: false
 
         def load_current_resource

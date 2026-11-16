@@ -19,7 +19,7 @@ LABEL maintainer="Progress Chef <docker@chef.io>"
 
 #TODO: Change back to stable when 19.x is GA
 ARG CHANNEL=unstable
-ARG VERSION=19.1.164
+ARG VERSION=19.4.46
 ARG ARCH=x86_64
 
 ENV HAB_LICENSE="accept-no-persist"
@@ -30,7 +30,7 @@ RUN --mount=type=secret,id=hab_token \
     mkdir /tmp/hab && \
     tar -xzf /tmp/hab.tar.gz -C /tmp/hab && \
     HAB_DIR=$(find /tmp/hab -type d -name "hab-*") && \
-    $HAB_DIR/hab pkg install --binlink --force --channel "stable" "core/hab" && \
+    $HAB_DIR/hab pkg install --binlink --force --channel "stable" "chef/hab" --auth "$(cat /run/secrets/hab_token)" && \
     rm -rf /tmp/* && \
     HAB_AUTH_TOKEN=$(cat /run/secrets/hab_token) hab pkg install --binlink --force --auth "$(cat /run/secrets/hab_token)" --channel "${CHANNEL}" "chef/chef-infra-client/${VERSION}" && \
     rm -rf /hab/cache

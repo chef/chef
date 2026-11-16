@@ -140,11 +140,11 @@ class Chef
           directory new_resource.conf_dir
 
           file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
-            content contruct_sysctl_content
+            content construct_sysctl_content
           end
 
           execute "Load sysctl values" do
-            command "sysctl #{"-e " if new_resource.ignore_error}-p"
+            command sysctl_reload_command
             default_env true
             action :run
           end
@@ -161,7 +161,7 @@ class Chef
 
             execute "Load sysctl values" do
               default_env true
-              command "sysctl -p"
+              command sysctl_reload_command
               action :run
             end
           end
@@ -180,11 +180,28 @@ class Chef
         end
 
         #
+        # The command used to reload sysctl settings from disk.
+        #
+        # `sysctl -p` only reads /etc/sysctl.conf (or an explicit file), which
+        # some distros (e.g. Debian 13 "trixie") no longer ship by default, since
+        # they rely entirely on systemd-sysctl loading /etc/sysctl.d/*.conf.
+        # `sysctl --system` reloads from all of the standard locations --
+        # including the conf_dir this resource writes to -- and simply skips
+        # /etc/sysctl.conf if it doesn't exist, so it works whether or not that
+        # file is present.
+        #
+        # @return [String] The sysctl reload command
+        #
+        def sysctl_reload_command
+          "sysctl #{"-e " if new_resource.ignore_error}--system"
+        end
+
+        #
         # construct a string, joining members of new_resource.comment and new_resource.value
         #
         # @return [String] The text file content
         #
-        def contruct_sysctl_content
+        def construct_sysctl_content
           sysctl_lines = Array(new_resource.comment).map { |c| "# #{c.strip}" }
 
           sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
@@ -219,7 +236,7 @@ class Chef
       def get_sysctld_value(key)
         raise unless ::TargetIO::File.exist?("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf")
 
-        k, v = ::Target_IO::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
+        k, v = ::TargetIO::File.read("/etc/sysctl.d/99-chef-#{key.tr("/", ".")}.conf").match(/(.*) = (.*)/).captures
         raise "Unknown sysctl key!" if k.nil?
         raise "Unknown sysctl value!" if v.nil?
 

@@ -3,7 +3,7 @@
 Chef Infra can be built and installed in two distinct ways:
 
 - A gem built from this repository and installed into your own Ruby installation
-- A system native package containing its own Ruby built using our Omnibus packaging system
+- A Habitat package containing the runtime and dependencies used for Chef Infra Client distribution
 
 **NOTE:** As an end user, please download the [Chef Infra package](https://www.chef.io/downloads/tools/infra-client) for managing systems, or the [Chef Workstation package](https://www.chef.io/downloads/tools/workstation) for authoring Chef cookbooks and administering your Chef infrastructure.
 
@@ -32,15 +32,4 @@ bundle exec rake install
 
 ## Building the Full System Native Package
 
-To build Chef as a standalone package, we use the [omnibus](omnibus/README.md) packaging system.
-
-To build:
-
-```bash
-git clone https://github.com/chef/chef.git
-cd chef/omnibus
-bundle install
-bundle exec omnibus build chef
-```
-
-The prerequisites necessary to run omnibus itself are not documented in this repository. See the [Omnibus project repository](https://github.com/chef/omnibus) for additional details.
+To build Chef Infra Client as a distributed package, we use the Habitat packaging workflow in this repository. The package definitions live under the habitat directory and official package builds are produced through the Buildkite and Expeditor Habitat pipelines.

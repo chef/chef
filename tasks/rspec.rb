@@ -25,7 +25,7 @@ begin
 
   desc "Run specs for Chef's Gem Components"
   task :component_specs do
-    %w{chef-utils chef-config knife}.each do |gem|
+    %w{chef-utils chef-config}.each do |gem|
       Dir.chdir(gem) do
         puts "--- Running #{gem} specs"
         Bundler.with_unbundled_env do
@@ -80,6 +80,14 @@ begin
         t.rspec_opts = %w{--profile --format doc}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
+    end
+
+    desc "Run target mode unit specs (spec/unit/target_io/)"
+    RSpec::Core::RakeTask.new(:target_mode) do |t|
+      puts "--- Running target_mode specs"
+      t.verbose = false
+      t.rspec_opts = %w{--profile --format doc}
+      t.pattern = FileList["spec/unit/target_io/**/*_spec.rb"]
     end
   end
 rescue LoadError

@@ -9,8 +9,11 @@ name: kitchen
     branches:
       - main
 
+  # allow manual runs
+  workflow_dispatch:
+
 concurrency:
-  group: kitchen-${{ github.ref }}
+  group: kitchen-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 permissions: {}
@@ -21,7 +24,6 @@ defaults:
 
 jobs:
   workflow_guard:
-    if: github.event_name == 'pull_request_target'
     uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
     permissions:
       contents: read
@@ -45,10 +47,12 @@ jobs:
       HAB_BLDR_CHANNEL: base-2025
       HAB_REFRESH_CHANNEL: base-2025
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
+          allow-unsafe-pr-checkout: true
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           clean: true
@@ -56,9 +60,8 @@ jobs:
       - name: Install Habitat CLI
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.ps1 -OutFile install-habitat.ps1
-          .\install-habitat.ps1
-          $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;C:\opscode\chef-workstation\bin;C:\opscode\chef-workstation\embedded\bin;" + $env:PATH
+          & "${{ github.workspace }}\.expeditor\scripts\ensure-minimum-viable-hab.ps1"
+          $env:PATH = "C:\Program Files\Habitat;C:\hab\bin;" + $env:PATH
           echo "PATH=$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           hab license accept
           hab --version
@@ -104,9 +107,11 @@ jobs:
           Write-Host "Installed Chef Infra Client version:"
           chef-client --version
 
-      - name: Install Chef Workstation (for kitchen CLI)
+      - name: Install Test-Kitchen-Enterprise
         shell: pwsh
-        run: choco install -y chef-workstation
+        run: |
+          hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
+          kitchen --version
 
       - name: Kitchen Test
         shell: pwsh
@@ -133,8 +138,9 @@ jobs:
   #     HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
   #   steps:
   #   - name: Checkout PR code
-  #     uses: actions/checkout@v6
+  #     uses: actions/checkout@v7
   #     with:
+  #       allow-unsafe-pr-checkout: true
   #       ref: ${{ github.event.pull_request.head.sha }}
   #       persist-credentials: false
   #       clean: true
@@ -200,29 +206,9 @@ jobs:
   #           Exit 1
   #       }
 
-#  mac_x86_64:
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os:
-#          - macos-15-intel
-#    runs-on: ${{ matrix.os }}
-#    env:
-#      CHEF_LICENSE: accept-no-persist
-#      KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
-#    steps:
-#      - name: Check out code
-#        uses: actions/checkout@v5
-#        with:
-#            clean: true
-#      - name: Install Chef
-#        uses: actionshub/chef-install@main
-#        with:
-#          version: "25.5.1084"
-#      - name: Kitchen Test
-#        run: kitchen verify ${{ matrix.os }}
-#
+  # end-to-end recipe testing on macOS ARM64 using test-kitchen-enterprise and habitat package of Infra Client
   mac_arm64:
+    name: mac_arm64_hab
     needs: workflow_guard
     permissions:
       contents: read
@@ -230,26 +216,60 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-14
           - macos-15
-          - macos-26
+          - macos-latest
     runs-on: ${{ matrix.os }}
     env:
       CHEF_LICENSE: accept-no-persist
+      CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
       KITCHEN_LOCAL_YAML: kitchen.exec.macos.yml
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           clean: true
-      - name: Install Chef
-        uses: actionshub/chef-install@main
-        with:
-          version: "25.5.1084"
+          allow-unsafe-pr-checkout: true
+
+      - name: Install Habitat CLI
+        run: |
+          sudo -E ../.expeditor/scripts/install-hab.sh aarch64-darwin
+          sudo hab license accept
+          hab --version
+
+      - name: Generate Habitat Origin Key
+        run: sudo hab origin key generate "$HAB_ORIGIN"
+
+      - name: Build Habitat Package
+        working-directory: .
+        run: |
+          echo "Building habitat package from habitat/aarch64-darwin"
+          sudo -E hab pkg build habitat/aarch64-darwin
+          source ./results/last_build.env
+          echo "Built package: $pkg_artifact"
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+
+      - name: Install Chef Infra Client from Habitat Package
+        working-directory: .
+        run: |
+          sudo -E hab pkg install kitchen-tests/chef-infra-client-latest.hart --binlink --force
+          echo "Installed Chef Infra Client version:"
+          /usr/local/bin/chef-client --version
+
+      - name: Install Test-Kitchen-Enterprise
+        run: |
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise --channel unstable
+          kitchen --version
+          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+
       - name: Kitchen Test
-        run: kitchen verify ${{ matrix.os }}
+        run: kitchen verify end-to-end-${{ matrix.os }}
 
   # end-to-end recipe testing using test-kitchen-enterprise and habitat package of Infra Client
   docr_lnx_x86_64:
@@ -265,10 +285,10 @@ jobs:
           - almalinux-8
           - almalinux-9
           - almalinux-10
-          - debian-11
           - debian-12
           - debian-13
           - fedora-42
+          - fedora-43
           - opensuse-leap-15
           - oraclelinux-8
           - oraclelinux-9
@@ -287,27 +307,26 @@ jobs:
       HAB_BLDR_CHANNEL: base-2025 # Explicitly set the builder channel
       HAB_REFRESH_CHANNEL: base-2025 # Explicitly set the refresh channel
       HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: accept-no-persist
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
+          allow-unsafe-pr-checkout: true
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
           clean: true
       - name: Install Habitat CLI
         run: |
-          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo bash -s -- -c stable
-          sudo hab license accept
-          sudo hab --version
+          # ubuntu-latest (26.04) uses sudo-rs, which ignores -E; preserve the Hab vars explicitly
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL ../.expeditor/scripts/install-hab.sh x86_64-linux
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab --version
       - name: Install Test-Kitchen-Enterprise
         run: |
-          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.3 --channel unstable
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
           kitchen --version
           # chef-cli is needed for some kitchen operations
-          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
-      - name: Install the kitchen-dokken driver latest to pick up docker fix
-        run: |
-          sudo -E hab pkg exec chef/chef-test-kitchen-enterprise gem install kitchen-dokken --version 2.22.2
+          sudo --preserve-env=HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg install --binlink --force chef/chef-cli --channel unstable
       - name: Generate fake Habitat Origin Key
         run: |
           hab origin key generate "$HAB_ORIGIN"
@@ -317,7 +336,11 @@ jobs:
         run: |
           # Move out of default kitchen-tests dir to the repo root
           cd ..
-          hab pkg build .
+          # hab as root reads keys from /hab/cache/keys; the key was generated as the runner user in ~/.hab/cache/keys
+          sudo mkdir -p /hab/cache/keys
+          sudo cp "$HOME"/.hab/cache/keys/* /hab/cache/keys/
+          # hab re-runs itself with 'sudo -E' when not root, which sudo-rs ignores; run as root with an explicit env list instead
+          sudo --preserve-env=HOME,HAB_AUTH_TOKEN,HAB_LICENSE,HAB_ORIGIN,HAB_BLDR_CHANNEL,HAB_REFRESH_CHANNEL hab pkg build .
           source ./results/last_build.env
           cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
       - name: Set up HAB token file # Set up a token file to be mounted inside the dokken container
@@ -335,6 +358,75 @@ jobs:
           kitchen converge end-to-end-${{ matrix.os }}
           kitchen destroy end-to-end-${{ matrix.os }}
 
+  # end-to-end recipe testing on ARM64 using test-kitchen-enterprise and habitat package of Infra Client
+  docr_lnx_arm64:
+    name: dokr_lnx_arm64_hab
+    needs: workflow_guard
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - almalinux-9
+          - almalinux-10
+          - debian-12
+          - debian-13
+          - fedora-42
+          - fedora-43
+          - opensuse-leap-15
+          - oraclelinux-8
+          - oraclelinux-9
+          - rockylinux-9
+          - rockylinux-10
+          - ubuntu-2204
+          - ubuntu-2404
+    runs-on: ubuntu-24.04-arm
+    env:
+      FORCE_FFI_YAJL: ext
+      CHEF_LICENSE: accept-no-persist
+      KITCHEN_LOCAL_YAML: kitchen.dokken.yml
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: accept-no-persist
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          clean: true
+      - name: Install Habitat CLI
+        run: |
+          sudo -E ../.expeditor/scripts/install-hab.sh aarch64-linux
+          sudo -E hab --version
+      - name: Install Test-Kitchen-Enterprise
+        run: |
+          sudo -E hab pkg install --binlink --force chef/chef-test-kitchen-enterprise/2.0.12 --channel unstable
+          kitchen --version
+          sudo -E hab pkg install --binlink --force chef/chef-cli --channel unstable
+      - name: Generate fake Habitat Origin Key
+        run: |
+          hab origin key generate "$HAB_ORIGIN"
+          hab origin key export "$HAB_ORIGIN" > "$HAB_ORIGIN-key.tar.gz"
+      - name: Build Habitat Package (for testing purpose only)
+        run: |
+          cd ..
+          hab pkg build .
+          source ./results/last_build.env
+          cp "./results/$pkg_artifact" kitchen-tests/chef-infra-client-latest.hart
+      - name: Set up HAB token file
+        run: |
+          echo "${{ secrets.HAB_AUTH_TOKEN }}" > hab_token
+          chmod 600 hab_token
+      - name: Kitchen Test
+        run: |
+          kitchen converge end-to-end-${{ matrix.os }}
+          kitchen destroy end-to-end-${{ matrix.os }}
+
 #  vm_lnx_x86_64:
 #    strategy:
 #      fail-fast: false
@@ -345,11 +437,11 @@ jobs:
 #          - almalinux-8
 #          - almalinux-9
 #          - almalinux-10
-#          - debian-11
 #          - debian-12
 #          # - debian-13 # not officially supported yet, has issue with apt_repository resource due to signing changes
 #          - fedora-41
 #          - fedora-42
+#          - fedora-43
 #          - opensuse-leap-15
 #          - oraclelinux-8
 #          - oraclelinux-9
@@ -365,8 +457,9 @@ jobs:
 #      KITCHEN_LOCAL_YAML: kitchen.linux.ci.yml
 #    steps:
 #      - name: Checkout PR code
-#        uses: actions/checkout@v6
+#        uses: actions/checkout@v7
 #        with:
+#          allow-unsafe-pr-checkout: true
 #          ref: ${{ github.event.pull_request.head.sha }}
 #          persist-credentials: false
 #          clean: true

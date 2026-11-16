@@ -1,0 +1,124 @@
+---
+name: macos_verify
+
+"on":
+  pull_request_target:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: macos-verify-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CHEF_LICENSE: accept-no-persist
+  CHEF_LICENSE_SERVER: http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000/
+  FORCE_FFI_YAJL: ext
+
+jobs:
+  workflow_guard:
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    permissions:
+      contents: read
+
+  # ──────────────────────────────────────────────────────────────────
+  # Job 1: Integration tests (equivalent to
+  #         prep_and_run_tests.sh Integration)
+  # ──────────────────────────────────────────────────────────────────
+  integration:
+    needs: workflow_guard
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-latest]
+        ruby: ["3.4"]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: false
+
+      - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
+          bundle install
+
+      - run: bundle exec rake spec:integration
+
+  # ──────────────────────────────────────────────────────────────────
+  # Job 2: Habitat plan build + test.darwin.sh (equivalent to
+  #         verify-plan.sh)
+  # ──────────────────────────────────────────────────────────────────
+  habitat-plan:
+    needs: workflow_guard
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    env:
+      HAB_ORIGIN: gha
+      HAB_BLDR_CHANNEL: base-2025
+      HAB_REFRESH_CHANNEL: base-2025
+      HAB_AUTH_TOKEN: ${{ secrets.HAB_AUTH_TOKEN }}
+      HAB_LICENSE: accept-no-persist
+      HAB_NONINTERACTIVE: "true"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          allow-unsafe-pr-checkout: true
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          clean: true
+
+      - name: Install Habitat CLI
+        run: |
+          curl https://raw.githubusercontent.com/habitat-sh/habitat/main/components/hab/install.sh | sudo -E bash -s -- -t aarch64-darwin
+          hab license accept
+          hab --version
+
+      - name: Generate Habitat Origin Key
+        run: hab origin key generate "$HAB_ORIGIN"
+
+      - name: Build Habitat Package
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          hab pkg build .
+
+      - name: Install Habitat Package
+        run: |
+          source ./results/last_build.env
+          echo "Installing: $pkg_ident ($pkg_artifact)"
+          sudo -E hab pkg install "./results/$pkg_artifact"
+
+      - name: Run test.darwin.sh
+        run: |
+          source ./results/last_build.env
+          sudo -E ./habitat/tests/test.darwin.sh "$pkg_ident"

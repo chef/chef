@@ -26,6 +26,9 @@ RSpec.describe ChefConfig::Config do
 
   before(:each) do
     ChefConfig::Config.reset
+    ChefConfig::Config.instance_variable_set(:@var_chef_dir, nil)
+    ChefConfig::Config.instance_variable_set(:@etc_chef_dir, nil)
+    ChefConfig::Config.instance_variable_set(:@var_root_dir, nil)
 
     # By default, treat deprecation warnings as errors in tests.
     ChefConfig::Config.treat_deprecation_warnings_as_errors(true)
@@ -192,7 +195,7 @@ RSpec.describe ChefConfig::Config do
     # if TTY and not(force-logger)
     #   formatter = configured formatter or default formatter
     #   formatter goes to STDOUT/ERR
-    #   if log file is writeable
+    #   if log file is writable
     #     log level is configured level or info
     #     log location is file
     #   else
@@ -245,16 +248,18 @@ RSpec.describe ChefConfig::Config do
     end
 
     context "on windows", :windows_only do
-      it "var_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.var_chef_dir).to eql("C:\\#{dirname}")
+      let(:windows_drive) { ChefConfig::Config.windows_installation_drive || "C:" }
+
+      it "var_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.var_chef_dir).to eql("#{windows_drive}\\#{dirname}")
       end
 
       it "var_root_dir is C:\\" do
         expect(ChefConfig::Config.var_root_dir).to eql("C:\\")
       end
 
-      it "etc_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.etc_chef_dir).to eql("C:\\#{dirname}")
+      it "etc_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.etc_chef_dir).to eql("#{windows_drive}\\#{dirname}")
       end
     end
 
@@ -273,16 +278,18 @@ RSpec.describe ChefConfig::Config do
     end
 
     context "when forced to windows" do
-      it "var_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.var_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      let(:windows_drive) { ChefConfig::Config.windows_installation_drive || "C:" }
+
+      it "var_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.var_chef_dir(windows: true)).to eql("#{windows_drive}\\#{dirname}")
       end
 
       it "var_root_dir is C:\\" do
         expect(ChefConfig::Config.var_root_dir(windows: true)).to eql("C:\\")
       end
 
-      it "etc_chef_dir is C:\\chef" do
-        expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      it "etc_chef_dir is on the windows installation drive" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("#{windows_drive}\\#{dirname}")
       end
     end
 
@@ -608,6 +615,10 @@ RSpec.describe ChefConfig::Config do
           expect(ChefConfig::Config[:stream_execute_output]).to eq(false)
         end
 
+        it "ChefConfig::Config[:enforce_default_paths] defaults to true on Windows, false on non-Windows" do
+          expect(ChefConfig::Config[:enforce_default_paths]).to eq(is_windows)
+        end
+
         it "ChefConfig::Config[:show_download_progress] defaults to false" do
           expect(ChefConfig::Config[:show_download_progress]).to eq(false)
         end
@@ -728,9 +739,9 @@ RSpec.describe ChefConfig::Config do
 
         end
 
-        # On Windows, we'll detect an omnibus build and set this to the
+        # On Windows, we'll detect embedded install and set this to the
         # cacert.pem included in the package, but it's nil if you're on Windows
-        # w/o omnibus (e.g., doing development on Windows, custom build, etc.)
+        # w/o embedded install (e.g., doing development on Windows, custom build, etc.)
         unless is_windows
           it "ChefConfig::Config[:ssl_ca_file] defaults to nil" do
             expect(ChefConfig::Config[:ssl_ca_file]).to be_nil
@@ -860,7 +871,7 @@ RSpec.describe ChefConfig::Config do
           describe "finding the windows embedded dir" do
             let(:default_config_location) { "c:/opscode/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
             let(:alternate_install_location) { "c:/my/alternate/install/place/chef/embedded/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
-            let(:non_omnibus_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
+            let(:non_package_location) { "c:/my/dev/stuff/lib/ruby/gems/1.9.1/gems/chef-11.6.0/lib/chef/config.rb" }
 
             let(:default_ca_file) { "c:/opscode/chef/embedded/ssl/certs/cacert.pem" }
 
@@ -874,8 +885,8 @@ RSpec.describe ChefConfig::Config do
               expect(ChefConfig::Config.embedded_dir).to eq("c:/my/alternate/install/place/chef/embedded")
             end
 
-            it "doesn't error when not in an omnibus install" do
-              allow(ChefConfig::Config).to receive(:_this_file).and_return(non_omnibus_location)
+            it "doesn't error when not in an package install" do
+              allow(ChefConfig::Config).to receive(:_this_file).and_return(non_package_location)
               expect(ChefConfig::Config.embedded_dir).to be_nil
             end
 

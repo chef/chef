@@ -2,11 +2,10 @@ source "https://rubygems.org"
 
 gem "rake", ">= 12.3.3" # required to build some native extensions
 gem "chef", path: ".."
-gem "knife", path: "../knife"
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "main" # avoids failures when we bump chef major
 gem "chef-cli"
 gem "kitchen-dokken", ">= 2.0"
 gem "kitchen-vagrant", ">= 1.0"
 gem "kitchen-inspec", ">= 3.1.0"
-gem "inspec", "= 7.0.95"
+gem "inspec", "= 7.1.7"
 gem "test-kitchen"

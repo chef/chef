@@ -625,10 +625,10 @@ class Chef
     end
 
     def with_umask
-      old_value = ::File.umask(umask.oct) if umask
+      old_value = ::File.umask((umask.respond_to?(:oct) ? umask.oct : umask.to_i) & 0777) if umask
       yield
     ensure
-      ::File.umask(old_value) if umask
+      ::File.umask(old_value) if old_value
     end
 
     #

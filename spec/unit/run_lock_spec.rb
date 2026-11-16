@@ -20,7 +20,7 @@ require "chef/client"
 
 # FIXME: these are disabled on MacOS due to timing issues in our anka build cluster
 # these issues should be fixed and the tests should be re-eenabled.  If we are getting
-# omnibus test phases on mac tests which are reasonable and not ~3 hours long, then the
+# chef package test phases on mac tests which are reasonable and not ~3 hours long, then the
 # condition to avoid this testing on macs can be deleted
 describe Chef::RunLock, :not_supported_on_macos do
 

@@ -895,6 +895,20 @@ describe Chef::DataCollector do
     end
   end
 
+  describe "#send_to_http_location(http_url, message)" do
+    let(:message) { "message" }
+    let(:http_client) { instance_double(Chef::ServerAPI) }
+
+    it "posts the message using a memoized http client per URL rather than raising NoMethodError on a nil cache" do
+      expect(data_collector).to receive(:setup_http_client).once.with("https://automate.example.com").and_return(http_client)
+      expect(http_client).to receive(:post).twice.with(nil, message, data_collector.send(:headers))
+
+      expect { data_collector.send(:send_to_http_location, "https://automate.example.com", message) }.not_to raise_error
+      # a second call for the same URL should reuse the cached client instead of creating a new one
+      data_collector.send(:send_to_http_location, "https://automate.example.com", message)
+    end
+  end
+
   describe "#send_to_datacollector" do
     def stub_http_client(exception = nil)
       if exception.nil?

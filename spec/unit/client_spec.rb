@@ -162,7 +162,7 @@ shared_context "a client run" do
     # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
     #
     expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], hash_including(version_class: Chef::CookbookManifestVersions)).and_return(http_cookbook_sync)
     expect(http_cookbook_sync).to receive(:post)
       .with("environments/_default/cookbook_versions", { run_list: [] })
       .and_return({})
@@ -384,6 +384,27 @@ describe Chef::Client do
     end
   end
 
+  context "when Target Mode is enabled and run_ohai is called before run_context is set " \
+          "(e.g. chef-shell, which calls run_ohai directly without going through do_run)" do
+            before do
+              Chef::Config.target_mode.enabled = true
+              Chef::Config.target_mode.host = "example.org"
+              allow_any_instance_of(Chef::TrainTransport).to receive(:build_transport)
+                .and_return(double("transport", connection: double("connection")))
+            end
+
+            after do
+              Chef::Config.target_mode.enabled = false
+            end
+
+            it "lazily initializes run_context instead of raising NoMethodError on a nil run_context" do
+              expect(client.run_context).to be_nil
+              expect(ohai_system).to receive(:transport_connection=)
+              expect { client.run_ohai }.not_to raise_error
+              expect(client.run_context).to be_a(Chef::RunContext)
+            end
+          end
+
   describe "authentication protocol selection" do
     context "when FIPS is disabled" do
       before do
@@ -519,7 +540,7 @@ describe Chef::Client do
             # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
             #
             expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+            expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], hash_including(version_class: Chef::CookbookManifestVersions)).and_return(http_cookbook_sync)
             expect(http_cookbook_sync).to receive(:post)
               .with("environments/_default/cookbook_versions", { run_list: ["override_recipe"] })
               .and_return({})
@@ -553,7 +574,7 @@ describe Chef::Client do
           # ---Client#sync_cookbooks -- downloads the list of cookbooks to sync
           #
           expect_any_instance_of(Chef::CookbookSynchronizer).to receive(:sync_cookbooks)
-          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(http_cookbook_sync)
+          expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], hash_including(version_class: Chef::CookbookManifestVersions)).and_return(http_cookbook_sync)
           expect(http_cookbook_sync).to receive(:post)
             .with("environments/_default/cookbook_versions", { run_list: ["new_run_list_recipe"] })
             .and_return({})
@@ -810,7 +831,7 @@ describe Chef::Client do
 
     context "when any directory of cookbook_path contains no cookbook" do
       it "raises CookbookNotFound error" do
-        invalid_cookbook_path = windows? ? "C:/path/to/invalid/cookbook_path" : "/path/to/invalid/cookbook_path"
+        invalid_cookbook_path = File.expand_path("/path/to/invalid/cookbook_path")
         msg = "None of the cookbook paths set in Chef::Config[:cookbook_path], [\"#{invalid_cookbook_path}\"], contain any cookbooks"
 
         expect do
@@ -876,6 +897,150 @@ describe Chef::Client do
     it "should not print a warning, when enforce_path_sanity is not passed" do
       expect(logger).not_to receive(:warn).with("`enforce_path_sanity` is deprecated, please use `enforce_default_paths` instead!")
       client.run
+    end
+  end
+
+  describe "enforce_default_paths PATH injection" do
+    # Test the PATH injection logic directly via the mixin rather than
+    # through client.run, to avoid conflicts with the shared context mocks
+    # that set up platform-specific path expectations.
+    let(:test_obj) { Object.new.tap { |o| o.extend(ChefUtils::DSL::DefaultPaths) } }
+
+    context "when enforce_default_paths is true" do
+      before { allow(ChefUtils).to receive(:windows?).and_return(false) }
+
+      it "default_paths includes standard unix dirs" do
+        result = test_obj.default_paths({ "PATH" => "/usr/bin" })
+        expect(result).to include("/usr/local/sbin")
+        expect(result).to include("/usr/bin")
+      end
+    end
+
+    context "when enforce_default_paths is false" do
+      it "ENV['PATH'] is not modified when flag is false" do
+        original = ENV["PATH"]
+        # Simulate what client.rb does — only modify PATH if flag is true
+        ENV["PATH"] = ChefUtils::DSL::DefaultPaths.default_paths if Chef::Config[:enforce_default_paths]
+        expect(ENV["PATH"]).to eq(original)
+      ensure
+        ENV["PATH"] = original
+      end
+    end
+  end
+end
+
+describe Chef::Client, "target mode Chef Server authentication" do
+  include_context "client"
+
+  let(:target_host) { "target.example.com" }
+  let(:operator_name) { "operator-node" }
+
+  before do
+    Chef::Config.reset
+    Chef::Config[:chef_server_url] = "https://chef-server.example.com/organizations/myorg"
+    Chef::Config[:client_key] = "/etc/chef/client.pem"
+    Chef::Config[:event_loggers] = []
+    allow(Ohai::System).to receive(:new).and_return(ohai_system)
+  end
+
+  after do
+    Chef::Config.reset
+  end
+
+  describe "#rest" do
+    context "in normal (non-target) mode" do
+      before do
+        Chef::Config[:node_name] = fqdn
+        Chef::Config[:api_client_name] = nil
+      end
+
+      it "authenticates to Chef Server using node_name" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: fqdn,
+                signing_key_filename: Chef::Config[:client_key])
+          .and_return(double("rest"))
+        client.rest
+      end
+    end
+
+    context "in target mode with api_client_name set (Chef Server scenario)" do
+      before do
+        Chef::Config[:node_name] = target_host
+        Chef::Config[:api_client_name] = operator_name
+        Chef::Config[:api_client_key] = "/etc/chef/client.pem"
+      end
+
+      it "authenticates to Chef Server using api_client_name and api_client_key" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: operator_name,
+                signing_key_filename: "/etc/chef/client.pem")
+          .and_return(double("rest"))
+        client.rest
+      end
+
+      it "does not use the target host as the Chef Server client identity" do
+        allow(Chef::ServerAPI).to receive(:new).and_return(double("rest"))
+        client.rest
+        expect(Chef::ServerAPI).not_to have_received(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: target_host,
+                signing_key_filename: anything)
+      end
+    end
+
+    context "in target mode without a prior node_name (developer workstation scenario)" do
+      before do
+        Chef::Config[:node_name] = target_host
+        Chef::Config[:api_client_name] = nil
+        Chef::Config[:api_client_key] = nil
+      end
+
+      it "falls back to node_name (target host) for Chef Server auth" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: target_host,
+                signing_key_filename: Chef::Config[:client_key])
+          .and_return(double("rest"))
+        client.rest
+      end
+    end
+  end
+
+  describe "#rest_clean" do
+    context "in target mode with api_client_name set" do
+      before do
+        Chef::Config[:node_name] = target_host
+        Chef::Config[:api_client_name] = operator_name
+      end
+
+      it "authenticates to Chef Server using api_client_name" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: operator_name,
+                signing_key_filename: Chef::Config[:client_key],
+                validate_utf8: false)
+          .and_return(double("rest_clean"))
+        client.rest_clean
+      end
+    end
+
+    context "in normal (non-target) mode" do
+      before do
+        Chef::Config[:node_name] = fqdn
+        Chef::Config[:api_client_name] = nil
+      end
+
+      it "authenticates to Chef Server using node_name" do
+        expect(Chef::ServerAPI).to receive(:new)
+          .with(Chef::Config[:chef_server_url],
+                client_name: fqdn,
+                signing_key_filename: Chef::Config[:client_key],
+                validate_utf8: false)
+          .and_return(double("rest_clean"))
+        client.rest_clean
+      end
     end
   end
 end

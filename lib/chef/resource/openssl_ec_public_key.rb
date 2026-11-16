@@ -56,10 +56,10 @@ class Chef
       property :private_key_path, String,
         description: "The path to the private key file."
 
-      property :private_key_content, String,
+      property :private_key_content, String, sensitive: true,
         description: "The content of the private key including new lines. This property is used in place of private_key_path in instances where you want to avoid having to first write the private key to disk"
 
-      property :private_key_pass, String,
+      property :private_key_pass, String, sensitive: true,
         description: "The passphrase of the provided private key."
 
       property :owner, [String, Integer],

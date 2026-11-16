@@ -144,38 +144,25 @@ class Chef
       action :set, description: "Set Windows Update settings." do
         actual_day = convert_day(new_resource.scheduled_install_day)
 
+        windows_update_values = [{
+          name: "DisableOSUpgrade",
+          type: :dword,
+          data: new_resource.disable_os_upgrades ? 1 : 0,
+        },
+        {
+          name: "ElevateNonAdmins",
+          type: :dword,
+          data: new_resource.elevate_non_admins ? 1 : 0,
+        },
+        {
+          name: "TargetGroupEnabled",
+          type: :dword,
+          data: new_resource.target_wsus_group_name ? 1 : 0,
+        }] + wsus_registry_values
+
         registry_key "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate" do
           recursive true
-          values [{
-            name: "DisableOSUpgrade",
-            type: :dword,
-            data: new_resource.disable_os_upgrades ? 1 : 0,
-          },
-          {
-            name: "ElevateNonAdmins",
-            type: :dword,
-            data: new_resource.elevate_non_admins ? 1 : 0,
-          },
-          {
-            name: "TargetGroupEnabled",
-            type: :dword,
-            data: new_resource.target_wsus_group_name ? 1 : 0,
-          },
-          {
-            name: "TargetGroup",
-            type: :string,
-            data: new_resource.target_wsus_group_name,
-          },
-          {
-            name: "WUServer",
-            type: :string,
-            data: new_resource.wsus_server_url,
-          },
-          {
-            name: "WUStatusServer",
-            type: :string,
-            data: new_resource.wsus_server_url, # status server and server need to be the same. Why? Ask Microsoft
-          }]
+          values windows_update_values
           action :create
         end
 
@@ -248,6 +235,40 @@ class Chef
       action_class do
         def convert_day(day)
           DAYS.index(day)
+        end
+
+        # The WSUS registry values are only meaningful once a WSUS server or
+        # target group has been configured. Emitting them with nil data makes
+        # registry_key rewrite them on every run, so leave them out entirely
+        # when the matching property is unset.
+        #
+        # @return [Array<Hash>]
+        def wsus_registry_values
+          values = []
+
+          if new_resource.target_wsus_group_name
+            values << {
+              name: "TargetGroup",
+              type: :string,
+              data: new_resource.target_wsus_group_name,
+            }
+          end
+
+          if new_resource.wsus_server_url
+            values << {
+              name: "WUServer",
+              type: :string,
+              data: new_resource.wsus_server_url,
+            }
+            values << {
+              name: "WUStatusServer",
+              type: :string,
+              # status server and server need to be the same. Why? Ask Microsoft
+              data: new_resource.wsus_server_url,
+            }
+          end
+
+          values
         end
 
         # support the old name as well

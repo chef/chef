@@ -61,4 +61,10 @@ describe Chef::Resource::OpensslRsaPrivateKey do
     expect(resource.force).to eql(false)
   end
 
+  describe "sensitive property masking" do
+    it "marks key_pass as sensitive" do
+      expect(Chef::Resource::OpensslRsaPrivateKey.properties[:key_pass].sensitive?).to be true
+    end
+  end
+
 end

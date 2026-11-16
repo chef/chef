@@ -8,39 +8,46 @@ on:
       - main
 
 concurrency:
-  group: lint-${{ github.ref }}
+  group: lint-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   cookstyle:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_WITHOUT: ruby_shadow:omnibus_package
+      BUNDLE_WITHOUT: ruby_shadow:packaging
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4
           bundler-cache: false
       - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
       - run: |
+          # Disable Git's background auto-maintenance/GC/commit-graph writers so
+          # they can't mutate Bundler's shared git cache repo (for our git-sourced
+          # Gemfile deps: ohai, cheffish, rest-client) while another process is
+          # concurrently cloning/hardlinking from it -- avoids intermittent
+          # "fatal: hardlink different from source" bundle install failures.
+          # See https://github.com/dependabot/dependabot-core/issues/15827.
+          git config --global maintenance.auto false
+          git config --global gc.auto 0
+          git config --global fetch.writeCommitGraph false
           bundle install
           bundle exec cookstyle --chefstyle -c .rubocop.yml
 
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - run: |
-          curl --location 'https://raw.githubusercontent.com/chef/chef_dictionary/main/chef.txt' --output chef_dictionary.txt
-      - uses: streetsidesoftware/cspell-action@v2.12.0
+      - uses: actions/checkout@v7
+      - uses: crate-ci/typos@v1.50.2
 
   linelint:
     runs-on: ubuntu-latest
     name: Check if all files end in newline
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Linelint
         uses: fernandrone/linelint@master
         id: linelint

@@ -42,6 +42,11 @@ module ChefConfig
         # Do greedy matching by adding wildcard if it is not specified
         match = "*" + match unless match.start_with?("*")
         Fuzzyurl.matches?(Fuzzyurl.mask(hostname: match), hostname)
+      rescue ArgumentError
+        # Fuzzyurl cannot parse certain URL formats, notably IPv6 addresses
+        # (bare, bracketed, or embedded in URLs). When parsing fails, the URL
+        # cannot match a no_proxy pattern, so return false.
+        false
       end
 
     end

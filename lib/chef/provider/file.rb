@@ -197,7 +197,7 @@ class Chef
       # be overridden in subclasses.
       def managing_content?
         return true if new_resource.checksum
-        return true if !new_resource.content.nil? && @action != :create_if_missing
+        return true if new_resource.property_is_set?(:content) && @action != :create_if_missing
 
         false
       end
@@ -472,11 +472,14 @@ class Chef
       end
 
       def load_resource_attributes_from_file(resource)
-        if ChefUtils.windows?
+        if ChefUtils.windows? && !Chef::Config.target_mode?
           # This is a work around for CHEF-3554.
           # OC-6534: is tracking the real fix for this workaround.
           # Add support for Windows equivalent, or implicit resource
           # reporting won't work for Windows.
+          # In target mode on Windows, we still read remote attributes via
+          # TargetIO (ScanAccessControl is TargetIO-aware), so idempotency
+          # checks work correctly when targeting a remote Linux host.
           return
         end
 

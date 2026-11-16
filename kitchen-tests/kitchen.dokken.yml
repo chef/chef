@@ -25,7 +25,7 @@ provisioner:
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
-  chef_license: "accept-no-persist"
+  chef_license: accept-no-persist
   chef_license_key: free-79df705d-b685-419a-8b68-88401f74ff72-3999
   #chef_license_server:
     #- http://hosted-license-service-lb-8000-606952349.us-west-2.elb.amazonaws.com:8000
@@ -39,7 +39,6 @@ lifecycle:
     - remote: sudo ln -s /usr/bin/install /bin/install
       includes:
         - opensuse-leap-15
-        - debian-11
     - remote: sudo yum install centos-release-scl
       includes:
         - centos-7
@@ -47,24 +46,25 @@ lifecycle:
       includes:
         - centos-7
         - oraclelinux-7
-    - remote: hab license accept
+    - remote: echo "****[DEBUG] Habitat version****"
+    - remote: sh -c "hab --version"
     - remote: echo "****Importing Habitat Origin Key****"
-    - remote: sh -c "cat /gha-key.tar.gz | hab origin key import"
+    - remote: sh -c "cat /gha-key.tar.gz | HAB_LICENSE=accept-no-persist hab origin key import"
 
     - remote: echo "****Checking for Habitat package****"
     - remote: sh -c "if [ ! -f /chef-infra-client-latest.hart ]; then echo 'Habitat package not found!'; exit 1; fi"
 
     - remote: echo "****Installing Habitat package for Chef Infra Client****"
-    - remote: sh -c "hab pkg install /chef-infra-client-latest.hart --auth \"$(cat /hab_token)\""
+    - remote: sh -c "HAB_AUTH_TOKEN=$(cat /hab_token) HAB_LICENSE=accept-no-persist hab pkg install /chef-infra-client-latest.hart"
     - remote: echo "****Installed chef-infra-client version:****"
-    - remote: hab pkg exec gha/chef-infra-client chef-client -v
+    - remote: sh -c "HAB_LICENSE=accept-no-persist hab pkg exec gha/chef-infra-client chef-client -v"
 
     # Create a symlink from chef/chef-infra-client package to custom built gha/chef-infra-client
     - remote: echo "****Creating symlink to use our custom package in test kitchen runs****"
     - remote: |
         sh -c "
-        CUSTOM_PKG=$(hab pkg path gha/chef-infra-client)
-        DEFAULT_PKG=$(hab pkg path chef/chef-infra-client)
+        CUSTOM_PKG=$(HAB_LICENSE=accept-no-persist hab pkg path gha/chef-infra-client)
+        DEFAULT_PKG=$(HAB_LICENSE=accept-no-persist hab pkg path chef/chef-infra-client)
         echo 'Custom pkg: '$CUSTOM_PKG
         echo 'Default pkg: '$DEFAULT_PKG
 
@@ -92,14 +92,6 @@ platforms:
   - name: debian-12
     driver:
       image: dokken/debian-12
-      pid_one_command: /bin/systemd
-      intermediate_instructions:
-        - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
-
-  - name: debian-11
-    driver:
-      image: dokken/debian-11
       pid_one_command: /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
@@ -197,6 +189,14 @@ platforms:
         - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
         - RUN dnf -y install python3-libdnf python3-dnf
 
+  - name: fedora-43
+    driver:
+      image: dokken/fedora-43
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+        - RUN dnf -y install python3-libdnf5 python3-rpm
+
   - name: ubuntu-22.04
     driver:
       image: dokken/ubuntu-22.04
@@ -204,6 +204,8 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+        # Mask apt background services so unattended-upgrades never holds the dpkg lock during converge
+        - RUN for s in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service unattended-upgrades.service; do ln -sf /dev/null /etc/systemd/system/$s; done
 
   - name: ubuntu-24.04
     driver:
@@ -212,6 +214,8 @@ platforms:
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
         - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+        # Mask apt background services so unattended-upgrades never holds the dpkg lock during converge
+        - RUN for s in apt-daily.timer apt-daily-upgrade.timer apt-daily.service apt-daily-upgrade.service unattended-upgrades.service; do ln -sf /dev/null /etc/systemd/system/$s; done
 
   - name: opensuse-leap-15
     driver:

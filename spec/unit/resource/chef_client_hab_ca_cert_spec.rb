@@ -49,8 +49,8 @@ describe Chef::Resource::ChefClientHabCaCert do
     before do
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
-      allow_any_instance_of(Chef::Resource::ChefClientHabCaCert::ActionClass).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
-      allow_any_instance_of(Chef::Resource::ChefClientHabCaCert::ActionClass).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
+      allow_any_instance_of(Chef::Resource::ChefClientHabCaCert::ActionClass).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: dependencies_output, error?: false))
+      allow_any_instance_of(Chef::Resource::ChefClientHabCaCert::ActionClass).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: pkg_path_output, error?: false))
     end
 
     it "returns the correct ca cert path" do
@@ -59,7 +59,7 @@ describe Chef::Resource::ChefClientHabCaCert do
 
     context "when shell_out fails for dependencies" do
       before do
-        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(error?: true))
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(error?: true))
       end
 
       it "raises an error" do
@@ -69,11 +69,45 @@ describe Chef::Resource::ChefClientHabCaCert do
 
     context "when core/cacerts is not found in dependencies" do
       before do
-        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: "other/dependency\n", error?: false))
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: "other/dependency\n", error?: false))
       end
 
       it "raises an error" do
         expect { provider.ca_cert_path }.to raise_error(RuntimeError, /Unable to find 'core\/cacerts'/) # rubocop:disable Style/RegexpLiteral
+      end
+    end
+  end
+
+  describe "#ca_cert_path", :linux_only do
+    context "when hab is installed under a non-standard root (e.g. /opt/hab)" do
+      let(:mock_chef_path) { "/opt/hab/pkgs/chef/chef-infra-client/19.0.0/20250101010101/bin/chef-client" }
+      let(:mock_hab_path) { "/opt/hab/bin/hab" }
+      let(:dependencies_output) { "core/cacerts/2023.1.0\nother/dependency" }
+      let(:pkg_path_output) { "/opt/hab/pkgs/core/cacerts/2023.1.0\n" }
+
+      before do
+        allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path)
+        allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: dependencies_output, error?: false))
+        allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: pkg_path_output, error?: false))
+      end
+
+      it "still resolves the correct package ident regardless of the hab root prefix" do
+        expect(provider.ca_cert_path).to eq("/opt/hab/pkgs/core/cacerts/2023.1.0/ssl/certs/cacert.pem")
+      end
+    end
+
+    context "when the chef-client path does not contain a 'pkgs' segment" do
+      let(:mock_chef_path) { "/usr/local/bin/chef-client" }
+      let(:mock_hab_path) { "/hab/bin/hab" }
+
+      before do
+        allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path)
+        allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
+      end
+
+      it "raises a descriptive error" do
+        expect { provider.ca_cert_path }.to raise_error(RuntimeError, /Unable to determine habitat package ident/)
       end
     end
   end
@@ -87,8 +121,8 @@ describe Chef::Resource::ChefClientHabCaCert do
     before do
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path_windows)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path_windows)
-      allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
-      allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: dependencies_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path_windows} pkg path core/cacerts/2023.1.0", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: pkg_path_output, error?: false))
     end
 
     it "extracts version correctly from Windows paths" do
@@ -131,8 +165,8 @@ describe Chef::Resource::ChefClientHabCaCert do
     before do
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_package_binary_path).and_return(mock_chef_path)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
-      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
-      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: dependencies_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: pkg_path_output, error?: false))
 
       # Write initial content to temp cert file
       temp_cert_file.write("# Existing CA Bundle\n")
@@ -243,8 +277,8 @@ describe Chef::Resource::ChefClientHabCaCert do
     before do
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:chef_client_hab_binary_path).and_return(mock_chef_path)
       allow(Chef::ResourceHelpers::PathHelpers).to receive(:hab_executable_binary_path).and_return(mock_hab_path)
-      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101").and_return(double(stdout: dependencies_output, error?: false))
-      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0").and_return(double(stdout: pkg_path_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg dependencies chef/chef-infra-client/19.0.0/20250101010101", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: dependencies_output, error?: false))
+      allow(provider).to receive(:shell_out).with("#{mock_hab_path} pkg path core/cacerts/2023.1.0", environment: { "HAB_LICENSE" => "accept-no-persist" }).and_return(double(stdout: pkg_path_output, error?: false))
 
       temp_cert_file.write("# Existing CA Bundle\n")
       temp_cert_file.close

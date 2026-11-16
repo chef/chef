@@ -100,6 +100,23 @@ describe Chef::Provider::File::Content do
 
   end
 
+  describe "when the resource has lazy content" do
+    let(:new_resource) do
+      resource = Chef::Resource::File.new("seattle.txt")
+      resource.path(resource_path)
+      resource
+    end
+
+    it "evaluates the lazy block only once" do
+      call_count = 0
+      new_resource.content Chef::DelayedEvaluator.new { call_count += 1; "hello" }
+
+      content.tempfile
+
+      expect(call_count).to eq(1)
+    end
+  end
+
   describe "when the resource does not have a content property set" do
 
     before do

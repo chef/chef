@@ -132,11 +132,30 @@ describe Chef::PolicyBuilder::Policyfile do
 
   let(:err_namespace) { Chef::PolicyBuilder::Policyfile }
 
-  it "configures a Chef HTTP API client" do
+  it "configures a Chef HTTP API client with operator credentials" do
     http = double("Chef::ServerAPI")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    expect(Chef::ServerAPI).to receive(:new).with(server_url, version_class: Chef::CookbookManifestVersions).and_return(http)
+    Chef::Config[:api_client_name] = "admin-user"
+    Chef::Config[:api_client_key]  = "/etc/chef/admin-user.pem"
+    expect(Chef::ServerAPI).to receive(:new).with(server_url,
+      client_name: "admin-user",
+      signing_key_filename: "/etc/chef/admin-user.pem",
+      version_class: Chef::CookbookManifestVersions).and_return(http)
+    expect(policy_builder.api_service).to eq(http)
+  end
+
+  it "configures a Chef HTTP API client falling back to node_name when api_client_name is not set" do
+    http = double("Chef::ServerAPI")
+    server_url = "https://api.opscode.com/organizations/example"
+    Chef::Config[:chef_server_url] = server_url
+    Chef::Config[:node_name] = "my-node"
+    Chef::Config[:api_client_name] = nil
+    Chef::Config[:api_client_key]  = nil
+    expect(Chef::ServerAPI).to receive(:new).with(server_url,
+      client_name: "my-node",
+      signing_key_filename: Chef::Config[:client_key],
+      version_class: Chef::CookbookManifestVersions).and_return(http)
     expect(policy_builder.api_service).to eq(http)
   end
 

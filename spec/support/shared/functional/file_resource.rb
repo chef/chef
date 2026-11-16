@@ -980,12 +980,19 @@ shared_examples_for "a configured file resource" do
     end
 
     before do
+      # The stripped path (without drive letter) may resolve to a different
+      # drive than test_file_dir on GHA runners, so ensure its directory exists.
+      FileUtils.mkdir_p(File.dirname(path))
       File.open(path, "wb") { |f| f.print expected_content }
       now = Time.now.to_i
       File.utime(now - 9000, now - 9000, path)
 
       @expected_mtime = File.stat(path).mtime
       @expected_checksum = sha256_checksum(path)
+    end
+
+    after do
+      FileUtils.rm_rf(File.dirname(path))
     end
 
     describe ":create action should run without any updates" do

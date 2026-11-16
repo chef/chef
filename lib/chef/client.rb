@@ -385,8 +385,8 @@ class Chef
     #
     # @api private
     def rest
-      @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: node_name,
-                                    signing_key_filename: Chef::Config[:client_key])
+      @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: api_client_name,
+                                    signing_key_filename: api_client_key)
     end
 
     # A rest object with validate_utf8 set to false.  This will not throw exceptions
@@ -397,8 +397,26 @@ class Chef
     # @api private
     def rest_clean
       @rest_clean ||=
-        Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: node_name,
-                            signing_key_filename: Chef::Config[:client_key], validate_utf8: false)
+        Chef::ServerAPI.new(Chef::Config[:chef_server_url], client_name: api_client_name,
+                            signing_key_filename: api_client_key, validate_utf8: false)
+    end
+
+    # Returns the client name to use for Chef Server API auth. In target mode the
+    # operator's original identity is stored in api_client_name so that API calls
+    # authenticate as the workstation client rather than as the target node.
+    #
+    # @api private
+    def api_client_name
+      Chef::Config[:api_client_name] || node_name
+    end
+
+    # Returns the signing key path to use for Chef Server API auth. In target mode
+    # the operator's original key is stored in api_client_key so that API calls
+    # use the workstation key rather than the target node's key.
+    #
+    # @api private
+    def api_client_key
+      Chef::Config[:api_client_key] || Chef::Config[:client_key]
     end
 
     #
@@ -593,6 +611,14 @@ class Chef
     #
     def run_ohai
       filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version init_package} : nil
+      # Only needed so transport_connection (below) has a run_context to
+      # delegate to. Callers that bypass do_run (e.g. chef-shell, chef-apply)
+      # call run_ohai directly on a freshly-constructed Client, before
+      # @run_context is ever set, which otherwise raises NoMethodError here.
+      # This has no effect on the actual Infra Client run: it's unused outside
+      # Target Mode, and the real run_context (cookbooks/resources) is always
+      # built separately afterward, by whichever caller invoked run_ohai.
+      @run_context ||= Chef::RunContext.new(nil, nil, events)
       ohai.transport_connection = transport_connection if Chef::Config.target_mode?
       ohai.all_plugins(filter)
       events.ohai_completed(node)
