@@ -51,4 +51,13 @@ export HAB_TEST="true"
 
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/unit
 hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/functional
-hab pkg exec "${pkg_ident}" rspec --profile -f documentation -- ./spec/integration
+
+# The compliance integration specs call the hosted CI licensing server, which
+# intermittently returns 403 to GitHub-hosted macOS runners. Re-run only the
+# failed examples once so a transient licensing error doesn't fail the build.
+rspec_status_file="$(mktemp)"
+if ! hab pkg exec "${pkg_ident}" rspec --profile -f documentation --example-status-persistence-file-path "${rspec_status_file}" -- ./spec/integration; then
+  echo "--- :repeat: Re-running failed integration examples once"
+  hab pkg exec "${pkg_ident}" rspec --profile -f documentation --example-status-persistence-file-path "${rspec_status_file}" --only-failures -- ./spec/integration
+fi
+rm -f "${rspec_status_file}"
