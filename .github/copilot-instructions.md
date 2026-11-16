@@ -463,7 +463,7 @@ introducing regressions.
   Test the real boundary with isolated fixtures. Require disposable integration
   tests for installation, upgrade, reboot, and recovery sequences.
 - In the report, label verification as source-reviewed, mocked,
-  fixture-runtime, or end-to-end. Do not claim unrun scenarios work.
+  fixture-runtime, or end-to-end. Do not claim scenarios work unless they were tested.
   
 ### Test Execution
 
