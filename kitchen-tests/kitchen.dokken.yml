@@ -35,7 +35,10 @@ provisioner:
 
 lifecycle:
   pre_converge:
-    - remote: sudo dnf clean all && sudo dnf -y --refresh makecache
+    - remote: sudo dnf clean all
+      includes:
+        - rockylinux-8
+    - remote: sudo dnf -y --refresh makecache
       includes:
         - rockylinux-8
     # back compat for pre-unified-/usr distros, do not add new OSes
