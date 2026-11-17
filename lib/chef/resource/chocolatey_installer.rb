@@ -226,7 +226,10 @@ class Chef
                   $extractPath = Join-Path $workPath 'extract'
                   $zipPath = Join-Path $workPath 'chocolatey_nupkg.zip'
                   Copy-Item -LiteralPath $nupkgPath -Destination $zipPath
-                  Expand-Archive -LiteralPath $zipPath -DestinationPath $extractPath -Force
+                  # Use .NET directly: Expand-Archive can resolve to the PowerShell 7 Archive module, whose
+                  # ExtractToDirectory overload doesn't exist in the .NET Framework host that runs this script.
+                  Add-Type -AssemblyName System.IO.Compression.FileSystem
+                  [System.IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $extractPath)
                   Remove-Item -LiteralPath $zipPath -Force
                   $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
                   if (-not (Test-Path $installScript)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }

@@ -132,14 +132,14 @@ describe Chef::Resource::ChocolateyInstaller do
         commands = run_install_capturing_commands("fakey_fakerton_local_path", 'C:\packages\chocolatey.2.0.0.nupkg')
 
         expect(commands.none? { |c| c.include?("Invoke-WebRequest") }).to be true
-        expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") && c.include?('C:\packages\chocolatey.2.0.0.nupkg') }).to be true
+        expect(commands.any? { |c| c.include?("ZipFile]::ExtractToDirectory") && c.include?("chocolateyInstall.ps1") && c.include?('C:\packages\chocolatey.2.0.0.nupkg') }).to be true
       end
 
       it "uses a UNC path directly without downloading, then extracts and installs" do
         commands = run_install_capturing_commands("fakey_fakerton_unc_path", '\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg')
 
         expect(commands.none? { |c| c.include?("Invoke-WebRequest") }).to be true
-        expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") && c.include?('\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg') }).to be true
+        expect(commands.any? { |c| c.include?("ZipFile]::ExtractToDirectory") && c.include?("chocolateyInstall.ps1") && c.include?('\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg') }).to be true
       end
 
       it "downloads, extracts, and installs from a nupkg URL for air-gapped environments" do
@@ -149,12 +149,19 @@ describe Chef::Resource::ChocolateyInstaller do
 
         expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value '#{url}'")
         expect(commands.any? { |c| c.include?("Invoke-WebRequest") && c.include?(url) && c.include?("-UseBasicParsing") && c.include?(expected_destination) }).to be true
-        expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
+        expect(commands.any? { |c| c.include?("ZipFile]::ExtractToDirectory") && c.include?("chocolateyInstall.ps1") }).to be true
+      end
+
+      it "extracts with .NET ZipFile rather than the Expand-Archive cmdlet" do
+        script = run_install_capturing_commands("fakey_fakerton_zipfile", 'C:\packages\chocolatey.2.0.0.nupkg').find { |c| c.include?("chocolateyInstall.ps1") }
+
+        expect(script).to include("[System.IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $extractPath)")
+        expect(script).not_to include("Expand-Archive -")
       end
 
       it "registers chocolatey in the lib folder after running the bundled installer" do
         commands = run_install_capturing_commands("fakey_fakerton_register", 'C:\packages\chocolatey.2.0.0.nupkg')
-        script = commands.find { |c| c.include?("Expand-Archive") }
+        script = commands.find { |c| c.include?("ZipFile]::ExtractToDirectory") }
 
         expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$nupkgPath -Destination \(Join-Path \$chocoPkgDir 'chocolatey\.nupkg'\)/m)
       end
@@ -333,7 +340,7 @@ describe Chef::Resource::ChocolateyInstaller do
     it "extracts into a unique per-run directory rather than a fixed TEMP path" do
       r = Chef::Resource::ChocolateyInstaller.new("extract_dir_test", run_context)
       r.download_url = "C:\\packages\\chocolatey.nupkg"
-      script = capture_commands(r, :install).find { |c| c.include?("Expand-Archive") }
+      script = capture_commands(r, :install).find { |c| c.include?("ZipFile]::ExtractToDirectory") }
 
       expect(script).to include("[guid]::NewGuid()")
       expect(script).not_to include("chocolatey_nupkg_extract")
