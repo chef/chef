@@ -99,6 +99,13 @@ do_prepare() {
   build_line " ** Securing the /src directory"
   git config --global --add safe.directory /src
 
+  # Stop git's background maintenance from mutating Bundler's git cache while it
+  # clones/copies git-sourced gems (intermittent "failed to copy file to
+  # .../.git/objects/maintenance.lock").
+  git config --global maintenance.auto false
+  git config --global gc.auto 0
+  git config --global fetch.writeCommitGraph false
+
   ( cd "$CACHE_PATH"
     bundle config --local build.nokogiri "--use-system-libraries \
         --with-zlib-dir=$(pkg_path_for zlib) \
