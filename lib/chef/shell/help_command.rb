@@ -15,18 +15,28 @@
 # limitations under the License.
 #
 
-require "irb/command" unless defined?(IRB::Command::Base)
+begin
+  require "irb/command"
+rescue LoadError
+  # irb versions bundled before 1.14 keep their commands in IRB::Command itself.
+end
 
 module Shell
   # IRB answers a registered command by calling +execute+ on it and reads
-  # +description+ and +category+ off it to build the help listing, so the
-  # registration has to be a command class rather than a bare Proc.
-  class HelpCommand < IRB::Command::Base
-    category "Chef Shell"
-    description "Prints the chef-shell help."
+  # +description+ and +category+ off it to build the help listing, so on those
+  # versions the registration has to be a command class rather than a Proc.
+  if defined?(IRB::Command::Base) && IRB::Command::Base.is_a?(Class)
+    class HelpCommand < IRB::Command::Base
+      category "Chef Shell"
+      description "Prints the chef-shell help."
 
-    def execute(_arg = nil)
-      Shell::Options.print_help
+      def execute(_arg = nil)
+        Shell::Options.print_help
+      end
     end
+  else
+    # Older irb calls the registered object directly and never asks it for a
+    # description, so the Proc stays as it was.
+    HelpCommand = proc { Shell::Options.print_help }
   end
 end
