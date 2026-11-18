@@ -218,8 +218,9 @@ class Chef
                   if (-not (Test-Path $extractPath -PathType Container)) { New-Item -ItemType Directory -Path $extractPath -Force -ErrorAction Stop | Out-Null }
                   $zipPath = Join-Path $extractPath 'chocolatey.zip'
                   Copy-Item -LiteralPath $nupkgPath -Destination $zipPath -Force -ErrorAction Stop
-                  # Use .NET directly: Expand-Archive can resolve to the PowerShell 7 Archive module, whose
-                  # ExtractToDirectory overload doesn't exist in the .NET Framework host that runs this script.
+                  # Use .NET directly: the built-in archive-extraction cmdlet can resolve to the PowerShell 7
+                  # Archive module, whose ExtractToDirectory overload doesn't exist in the .NET Framework host
+                  # that runs this script.
                   Add-Type -AssemblyName System.IO.Compression.FileSystem
                   $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
                   try {
