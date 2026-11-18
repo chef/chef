@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.5.2 -->
-## [v19.5.2](https://github.com/chef/chef/tree/v19.5.2) (2026-11-18)
+<!-- latest_release 19.5.3 -->
+## [v19.5.3](https://github.com/chef/chef/tree/v19.5.3) (2026-11-18)
 
 #### Merged Pull Requests
-- Fix cron resource under Target Mode on Solaris [#16502](https://github.com/chef/chef/pull/16502) ([neha-p6](https://github.com/neha-p6))
+- CHEF-29558 Remove_SLA_from_readme [#15553](https://github.com/chef/chef/pull/15553) ([Saburesh07](https://github.com/Saburesh07))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- CHEF-29558 Remove_SLA_from_readme [#15553](https://github.com/chef/chef/pull/15553) ([Saburesh07](https://github.com/Saburesh07)) <!-- 19.5.3 -->
 - Fix cron resource under Target Mode on Solaris [#16502](https://github.com/chef/chef/pull/16502) ([neha-p6](https://github.com/neha-p6)) <!-- 19.5.2 -->
 - [chef-19] Adding safety boundaries for stopping regressions [#16511](https://github.com/chef/chef/pull/16511) ([johnmccrae](https://github.com/johnmccrae)) <!-- 19.5.1 -->
 - Add -t/--target CLI flag support to chef-shell [#16475](https://github.com/chef/chef/pull/16475) ([neha-p6](https://github.com/neha-p6)) <!-- 19.5.0 -->
