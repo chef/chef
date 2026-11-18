@@ -95,27 +95,35 @@ describe Chef::Resource::SnapPackage, "initialize" do
       end
     end
 
-    it "warns after retries for the exact Snap operation timeout and stops notifications" do
-      allow(provider).to receive(:run_action) do
-        resource.updated_by_last_action(true)
-        raise "Snap operating timed out after 300 seconds."
+    [
+      ["Snap operating timed out after 300 seconds.", "Snap operation timeout: Snap operating timed out after 300 seconds"],
+      ["status: Not Found, kind: , message: not found", "Snap repository issues: Snap API returned Not Found"],
+    ].each do |message, reason|
+      it "warns after retries for #{message.inspect} and stops notifications" do
+        allow(provider).to receive(:run_action) do
+          resource.updated_by_last_action(true)
+          raise message
+        end
+        downstream = Chef::Resource::RubyBlock.new("next snap check", run_context)
+        downstream.block { raise "notification must not run" }
+        downstream.action :nothing
+        run_context.resource_collection.insert(downstream)
+        resource.notifies :run, downstream, :immediately
+
+        expect(Chef::Log).to receive(:warn).with("Skipping remaining Snap end-to-end checks due to #{reason}. Snap coverage was not completed.")
+        Chef::Runner.new(run_context).run_action(resource, :install)
+
+        expect(provider).to have_received(:run_action).exactly(4).times
+        expect(resource).not_to be_updated_by_last_action
       end
-      downstream = Chef::Resource::RubyBlock.new("next snap check", run_context)
-      downstream.block { raise "notification must not run" }
-      downstream.action :nothing
-      run_context.resource_collection.insert(downstream)
-      resource.notifies :run, downstream, :immediately
-
-      expect(Chef::Log).to receive(:warn).with("Skipping remaining Snap end-to-end checks due to Snap operation timeout: Snap operating timed out after 300 seconds. Snap coverage was not completed.")
-      Chef::Runner.new(run_context).run_action(resource, :install)
-
-      expect(provider).to have_received(:run_action).exactly(4).times
-      expect(resource).not_to be_updated_by_last_action
     end
 
     [
       [RuntimeError, "Snap operating timed out after 30 seconds."],
       [Chef::Exceptions::Package, "Snap operating timed out after 300 seconds."],
+      [Chef::Exceptions::Package, "status: Not Found, kind: , message: not found"],
+      [RuntimeError, "status: Not Found, kind: snap-not-found, message: not found"],
+      [RuntimeError, "status: Not Found, kind: , message: snap not found"],
     ].each do |error_class, message|
       it "does not ignore #{error_class} with #{message.inspect}" do
         allow(provider).to receive(:run_action).and_raise(error_class, message)
