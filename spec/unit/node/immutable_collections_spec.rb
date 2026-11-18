@@ -75,7 +75,7 @@ shared_examples_for "Immutable#to_yaml" do
   it "should create a YAML string with content" do
     # Roundtrip the test string through YAML to compensate for some changes in libyaml-0.2.5
     # See: https://github.com/yaml/libyaml/pull/186
-    expected = YAML.dump(YAML.load(parsed_yaml))
+    expected = YAML.dump(YAML.safe_load(parsed_yaml))
 
     expect(copy).to eq(expected)
   end

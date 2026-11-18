@@ -64,9 +64,8 @@ class Chef
       def all_nodes
         node_uris_by_name = Chef::Node.list
 
-        node_uris_by_name.keys.inject({}) do |nodes_by_name, name|
-          nodes_by_name[name] = Chef::Node.new.tap { |n| n.name(name) }
-          nodes_by_name
+        node_uris_by_name.keys.to_h do |name|
+          [name, Chef::Node.new.tap { |n| n.name(name) }]
         end
       end
 
