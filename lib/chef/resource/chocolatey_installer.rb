@@ -218,7 +218,20 @@ class Chef
                   if (-not (Test-Path $extractPath -PathType Container)) { New-Item -ItemType Directory -Path $extractPath -Force -ErrorAction Stop | Out-Null }
                   $zipPath = Join-Path $extractPath 'chocolatey.zip'
                   Copy-Item -LiteralPath $nupkgPath -Destination $zipPath -Force -ErrorAction Stop
-                  Expand-Archive -LiteralPath $zipPath -DestinationPath $extractPath -Force -ErrorAction Stop
+                  # Use .NET directly: the built-in archive-extraction cmdlet can resolve to the PowerShell 7
+                  # Archive module, whose ExtractToDirectory overload doesn't exist in the .NET Framework host
+                  # that runs this script.
+                  Add-Type -AssemblyName System.IO.Compression.FileSystem
+                  $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+                  try {
+                    foreach ($entry in $zip.Entries) {
+                      $target = [System.IO.Path]::GetFullPath((Join-Path $extractPath $entry.FullName))
+                      if (-not $target.StartsWith([System.IO.Path]::GetFullPath($extractPath), [System.StringComparison]::OrdinalIgnoreCase)) { throw "Unsafe path in Chocolatey package: $($entry.FullName)" }
+                      if ($entry.FullName.EndsWith('/')) { New-Item -ItemType Directory -Path $target -Force | Out-Null; continue }
+                      New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
+                      [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target, $true)
+                    }
+                  } finally { $zip.Dispose() }
                   $installScript = Join-Path $extractPath 'tools\\chocolateyInstall.ps1'
                   if (-not (Test-Path $installScript -PathType Leaf)) { throw "Could not find chocolateyInstall.ps1 in the extracted Chocolatey package at $extractPath" }
                   & $installScript

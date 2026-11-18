@@ -215,7 +215,7 @@ describe Chef::Resource::ChocolateyInstaller do
           resource.run_action(:install)
 
           expect(commands.none? { |c| c.include?("Invoke-WebRequest") }).to be true
-          expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") && c.include?('C:\packages\chocolatey.2.0.0.nupkg') }).to be true
+          expect(commands.any? { |c| c.include?("ZipFile") && c.include?("chocolateyInstall.ps1") && c.include?('C:\packages\chocolatey.2.0.0.nupkg') }).to be true
         end
 
         it "uses a UNC path directly without downloading, then extracts and installs" do
@@ -237,7 +237,7 @@ describe Chef::Resource::ChocolateyInstaller do
           resource.run_action(:install)
 
           expect(commands.none? { |c| c.include?("Invoke-WebRequest") }).to be true
-          expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") && c.include?('\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg') }).to be true
+          expect(commands.any? { |c| c.include?("ZipFile") && c.include?("chocolateyInstall.ps1") && c.include?('\\\\fileserver\\packages\\chocolatey.2.0.0.nupkg') }).to be true
         end
 
         it "downloads, extracts, and installs from a nupkg URL for air-gapped environments" do
@@ -261,7 +261,7 @@ describe Chef::Resource::ChocolateyInstaller do
 
           expect(commands).to include("Set-Item -path env:ChocolateyDownloadUrl -Value 'https://some.custom.url/packages/chocolatey.2.0.0.nupkg'")
           expect(commands.any? { |c| c.include?("Invoke-WebRequest") && c.include?("https://some.custom.url/packages/chocolatey.2.0.0.nupkg") && c.include?("-UseBasicParsing") && c.include?(expected_destination) }).to be true
-          expect(commands.any? { |c| c.include?("Expand-Archive") && c.include?("chocolateyInstall.ps1") }).to be true
+          expect(commands.any? { |c| c.include?("ZipFile") && c.include?("chocolateyInstall.ps1") }).to be true
         end
 
         it "retains the staged archive where the bundled bootstrapper expects it and registers a file" do
@@ -282,11 +282,12 @@ describe Chef::Resource::ChocolateyInstaller do
 
           resource.run_action(:install)
 
-          script = commands.find { |c| c.include?("Expand-Archive") }
+          script = commands.find { |c| c.include?("ZipFile") }
           expect(script).to include("$extractPath = Join-Path $env:TEMP 'chocolatey\\chocoInstall'")
           expect(script).to include("$zipPath = Join-Path $extractPath 'chocolatey.zip'")
-          expect(script).to match(/Copy-Item -LiteralPath \$nupkgPath.*Expand-Archive.*& \$installScript/m)
+          expect(script).to match(/Copy-Item -LiteralPath \$nupkgPath.*ExtractToFile.*& \$installScript/m)
           expect(script).not_to include("Remove-Item")
+          expect(script).not_to include("Expand-Archive")
           expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$zipPath -Destination \$registeredNupkg -Force -ErrorAction Stop/m)
           expect(script).to include('if (Test-Path $registeredNupkg -PathType Container) { throw "Cannot register Chocolatey: $registeredNupkg is a directory, not a package archive" }')
           expect(script).to include('if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw "Chocolatey package archive was not registered at $registeredNupkg" }')
