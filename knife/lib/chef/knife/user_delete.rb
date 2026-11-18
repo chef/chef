@@ -78,7 +78,7 @@ class Chef
       end
 
       def disassociate_user(orgs, username)
-        orgs.each  { |org| org.dissociate_user(username) }
+        orgs.each { |org| org.dissociate_user(username) }
       end
 
       def org_memberships(username)

@@ -10,6 +10,8 @@ AllCops:
     - "omnibus/**/*"
 Security/Eval:
   Enabled: false
+Layout/BlockAlignment:
+  EnforcedStyleAlignWith: either
 Lint/UselessAssignment:
   Enabled: false
 Lint/DeprecatedClassMethods:

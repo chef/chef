@@ -84,7 +84,8 @@ class Chef::EncryptedDataBagItem
       end
 
       def for_decrypted_item
-        YAML.load(decrypted_data)
+        # Preserve version-0 YAML decoding with older Psych on supported AIX Ruby.
+        YAML.load(decrypted_data) # rubocop:disable Security/YAMLLoad
       end
 
       def decrypted_data

@@ -25,9 +25,9 @@ describe Chef::Provider::User::Pw do
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
     @new_resource = Chef::Resource::User::PwUser.new("adam")
-    @new_resource.comment   "Adam Jacob"
-    @new_resource.uid       1000
-    @new_resource.gid       1000
+    @new_resource.comment "Adam Jacob"
+    @new_resource.uid 1000
+    @new_resource.gid 1000
     @new_resource.home      "/home/adam"
     @new_resource.shell     "/usr/bin/zsh"
     @new_resource.password  "abracadabra"
@@ -35,9 +35,9 @@ describe Chef::Provider::User::Pw do
     @new_resource.manage_home true
 
     @current_resource = Chef::Resource::User::PwUser.new("adam")
-    @current_resource.comment  "Adam Jacob"
-    @current_resource.uid      1000
-    @current_resource.gid      1000
+    @current_resource.comment "Adam Jacob"
+    @current_resource.uid 1000
+    @current_resource.gid 1000
     @current_resource.home     "/home/adam"
     @current_resource.shell    "/usr/bin/zsh"
     @current_resource.password "abracadabra"
