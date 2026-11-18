@@ -8,6 +8,8 @@ module EndToEndSnapStoreRateLimit
                "Snap repository issues: Snap Store request timed out (context deadline exceeded)"
              elsif e.instance_of?(RuntimeError) && e.message.match?(/(?:\A|: )Snap operating timed out after 300 seconds\.\z/)
                "Snap operation timeout: Snap operating timed out after 300 seconds"
+             elsif e.instance_of?(RuntimeError) && e.message.match?(/(?:\A|: )status: Not Found, kind: , message: not found\z/)
+               "Snap repository issues: Snap API returned Not Found"
              end
     raise unless reason
 
