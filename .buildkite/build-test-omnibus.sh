@@ -254,7 +254,7 @@ then
       cf_version="$CHEF_FOUNDATION_VERSION"
     fi
     echo "  plugins:"
-    echo "  - chef/omnibus#v0.2.107:"
+    echo "  - chef/omnibus#d87a631fad445ed791e19b0c9e09d753574dca7b:"
     echo "      build: chef"
     echo "      chef-foundation-version: $cf_version"
     echo "      config: omnibus/omnibus.rb"
