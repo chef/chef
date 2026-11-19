@@ -56,4 +56,11 @@ if os.windows?
     its("stdout") { should match(/^chocolatey 2\.4\.2\s*$/) }
   end
 
+  # The source was added and enabled after the nupkg install in the same Chef
+  # run. `False` in the third limit-output column means the source is enabled.
+  describe command("choco source list --limit-output") do
+    its("exit_status") { should eq 0 }
+    its("stdout") { should match(%r{^chef-kitchen-test-source\|https://community\.chocolatey\.org/api/v2/\|False\|[^|]*\|[^|]*\|10\|}) }
+  end
+
 end

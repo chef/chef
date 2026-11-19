@@ -159,6 +159,13 @@ describe Chef::Resource::ChocolateyInstaller do
 
     let(:resource) { Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_custom") }
 
+    describe "PowerShell string quoting" do
+      it "escapes straight and typographic single quotes" do
+        expect(resource.ps_quote("proxy's password")).to eq("'proxy''s password'")
+        expect(resource.ps_quote("proxy\u2019s password")).to eq("'proxy\u2019\u2019s password'")
+      end
+    end
+
     # we save off the ENV and set ALLUSERSPROFILE so these specs will work on *nix and non-C drive Windows installs
     before(:each) do
       @original_env = ENV.to_hash
@@ -264,6 +271,54 @@ describe Chef::Resource::ChocolateyInstaller do
           expect(commands.any? { |c| c.include?("ZipFile") && c.include?("chocolateyInstall.ps1") }).to be true
         end
 
+        it "repairs missing package registration from the available nupkg without logging the URL" do
+          resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_repair", run_context)
+          resource.download_url = "https://some.custom.url/packages/chocolatey.2.0.0.nupkg?token=secret"
+          expected_archive = Chef::Util::PathHelper.join(
+            ChefConfig::Config.etc_chef_dir(windows: true),
+            "chocolatey.2.0.0.nupkg"
+          )
+          install_provider = resource.provider_for_action(:install)
+
+          commands = []
+          log_messages = []
+          shell_out = instance_double("Mixlib::ShellOut", error!: nil)
+
+          allow(resource).to receive(:provider_for_action).with(:install).and_return(install_provider)
+          allow(resource).to receive(:is_choco_installed?).and_return(true)
+          allow(resource).to receive(:is_chocolatey_package_registered?).and_return(false)
+          allow(install_provider).to receive(:powershell_exec) do |command|
+            commands << command
+            shell_out
+          end
+          allow(resource).to receive(:powershell_exec) do |command|
+            commands << command
+            shell_out
+          end
+          allow(Chef::Log).to receive(:info) { |message| log_messages << message }
+
+          resource.run_action(:install)
+
+          repair_script = commands.find { |c| c.include?("$archiveVersion -ne $installedVersion") }
+          expect(repair_script).to include("$archivePath = '#{expected_archive}'")
+          expect(repair_script).to include("chocolatey\\.nuspec")
+          expect(repair_script).to include("Copy-Item -LiteralPath $archivePath -Destination $registeredNupkg")
+          expect(log_messages.join).not_to include("token=secret")
+        end
+
+        it "fails clearly when registration is missing and no nupkg source was provided" do
+          resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_unrepairable", run_context)
+          install_provider = resource.provider_for_action(:install)
+
+          allow(resource).to receive(:provider_for_action).with(:install).and_return(install_provider)
+          allow(resource).to receive(:is_choco_installed?).and_return(true)
+          allow(resource).to receive(:is_chocolatey_package_registered?).and_return(false)
+
+          expect do
+            resource.run_action(:install)
+          end.to raise_error(Chef::Exceptions::Package, /Supply the matching \.nupkg download_url/)
+        end
+
         it "retains the staged archive where the bundled bootstrapper expects it and registers a file" do
           resource = Chef::Resource::ChocolateyInstaller.new("fakey_fakerton_register", run_context)
           resource.download_url = 'C:\packages\chocolatey.2.0.0.nupkg'
@@ -283,11 +338,22 @@ describe Chef::Resource::ChocolateyInstaller do
           resource.run_action(:install)
 
           script = commands.find { |c| c.include?("ZipFile") }
-          expect(script).to include("$extractPath = Join-Path $env:TEMP 'chocolatey\\chocoInstall'")
-          expect(script).to include("$zipPath = Join-Path $extractPath 'chocolatey.zip'")
+          work_path = "$workPath = Join-Path $env:TEMP " \
+            "('chocolatey_nupkg_' + [guid]::NewGuid().ToString('N'))"
+          expect(script).to include(work_path)
+          expect(script).to include("$extractPath = Join-Path $workPath 'extract'")
+          expect(script).to include("$zipPath = Join-Path $workPath 'chocolatey_nupkg.zip'")
           expect(script).to match(/Copy-Item -LiteralPath \$nupkgPath.*ExtractToFile.*& \$installScript/m)
           expect(script).not_to include("Remove-Item")
           expect(script).not_to include("Expand-Archive")
+          expect(script).to include(
+            "$extractRootWithSeparator = $extractRoot + " \
+            "[System.IO.Path]::DirectorySeparatorChar"
+          )
+          expect(script).to include(
+            "$target.StartsWith($extractRootWithSeparator, " \
+            "[System.StringComparison]::OrdinalIgnoreCase)"
+          )
           expect(script).to match(/& \$installScript.*Copy-Item -LiteralPath \$zipPath -Destination \$registeredNupkg -Force -ErrorAction Stop/m)
           expect(script).to include('if (Test-Path $registeredNupkg -PathType Container) { throw "Cannot register Chocolatey: $registeredNupkg is a directory, not a package archive" }')
           expect(script).to include('if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw "Chocolatey package archive was not registered at $registeredNupkg" }')
