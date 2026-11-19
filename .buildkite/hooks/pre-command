@@ -16,6 +16,14 @@ OMNIBUS_TOOLCHAIN_VERSION=$(cat .buildkite-platform.json | jq -r '.omnibus_toolc
 export OMNIBUS_TOOLCHAIN_VERSION
 echo "Omnibus Toolchain Version: $OMNIBUS_TOOLCHAIN_VERSION"
 
+if [[ "${BUILDKITE_STEP_KEY:-}" == "build-freebsd-13-amd64" ]]; then
+  installer_url="https://omnitruck.chef.io/chef/install.sh"
+  echo "--- Chef Foundation installer diagnostics: $installer_url"
+  if ! curl -fvSL --max-time 30 -o /dev/null "$installer_url" 2>&1 | sed -E 's/^([<>] ([Pp]roxy-)?[Aa]uthorization:).*/\1 [REDACTED]/; s/^([<>] ([Ss]et-)?[Cc]ookie:).*/\1 [REDACTED]/'; then
+    echo "Chef Foundation installer diagnostic request failed" >&2
+  fi
+fi
+
 if [[ "$BUILDKITE_STEP_KEY" == "build-windows-2019" ]] && [[ "$BUILDKITE_ORGANIZATION_SLUG" =~ chef(-canary)?$ ]]
 then
   TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
