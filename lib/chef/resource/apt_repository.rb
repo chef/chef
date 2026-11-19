@@ -110,6 +110,17 @@ class Chef
         end
         ```
 
+        **Add repository in the deb822 format**:
+
+        ```ruby
+        apt_repository 'nginx' do
+          uri           'http://nginx.org/packages/ubuntu/'
+          components    ['nginx']
+          key           'https://nginx.org/keys/nginx_signing.key'
+          source_format :deb822
+        end
+        ```
+
         **Remove a repository from the list**:
 
         ```ruby
@@ -184,8 +195,34 @@ class Chef
         description: "Additional options to set for the repository",
         default: [], coerce: proc { |x| Array(x) }
 
+      property :source_format, Symbol,
+        description: "The format of the APT source file to write: `:one_line` writes the traditional one-line format to `<repo_name>.list`, `:deb822` writes the deb822 format to `<repo_name>.sources`. When the format changes, the file in the other format is removed.",
+        equal_to: %i{one_line deb822},
+        default: :one_line
+
       default_action :add
       allowed_actions :add, :remove
+
+      # deb822 field names for the one-line format's `[key=value]` options
+      DEB822_OPTION_FIELDS = {
+        "arch" => "Architectures",
+        "lang" => "Languages",
+        "target" => "Targets",
+        "pdiffs" => "PDiffs",
+        "by-hash" => "By-Hash",
+        "allow-insecure" => "Allow-Insecure",
+        "allow-weak" => "Allow-Weak",
+        "allow-downgrade-to-insecure" => "Allow-Downgrade-To-Insecure",
+        "trusted" => "Trusted",
+        "signed-by" => "Signed-By",
+        "check-valid-until" => "Check-Valid-Until",
+        "valid-until-min" => "Valid-Until-Min",
+        "valid-until-max" => "Valid-Until-Max",
+        "check-date" => "Check-Date",
+        "date-max-future" => "Date-Max-Future",
+        "inrelease-path" => "InRelease-Path",
+        "snapshot" => "Snapshot",
+      }.freeze
 
       action_class do
         LIST_APT_KEY_FINGERPRINTS = %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}.freeze
@@ -529,6 +566,59 @@ class Chef
           repo
         end
 
+        # build a deb822 repository stanza (sources.list(5) "DEB822-STYLE FORMAT")
+        #
+        # Takes the same arguments as build_repo. One-line `key=value` options are
+        # mapped to their deb822 field names, comma-separated values become
+        # space-separated, and `key+=`/`key-=` become `Field-Add`/`Field-Remove`.
+        # As in the one-line format, a repository without a distribution uses the
+        # components as the suite (a flat repository).
+        #
+        # @param [String] uri
+        # @param [String] distribution
+        # @param [Array] components
+        # @param [Boolean] trusted
+        # @param [String] arch
+        # @param [String] signed_by
+        # @param [Array] options
+        # @param [Boolean] add_src
+        #
+        # @return [String] complete repo config text
+        def build_repo_deb822(uri, distribution, components, trusted, arch, signed_by, options, add_src = false)
+          uri = make_ppa_url(uri) if is_ppa_url?(uri)
+
+          uri = Addressable::URI.parse(uri)
+          components = Array(components).join(" ")
+          suites = distribution || components
+          fields = []
+          fields << ["Types", add_src ? "deb deb-src" : "deb"]
+          fields << ["URIs", uri.normalize.to_s]
+          fields << ["Suites", suites]
+          fields << ["Components", components] if distribution && !components.empty?
+          fields << ["Architectures", arch] if arch
+          fields << %w{Trusted yes} if trusted
+          fields << ["Signed-By", signed_by] if signed_by
+          Array(options).each do |option|
+            key, value = option.split("=", 2)
+            # one-line `key+=value` / `key-=value` become deb822 `Field-Add` / `Field-Remove`
+            suffix = { "+" => "-Add", "-" => "-Remove" }[key[-1]]
+            key = key[0..-2] if suffix
+            name = DEB822_OPTION_FIELDS.fetch(key) { key.split("-").map(&:capitalize).join("-") }
+            fields << ["#{name}#{suffix}", value.to_s.tr(",", " ")]
+          end
+          fields.map { |name, value| "#{name}: #{value}\n" }.join
+        end
+
+        # path of the source file for a source_format
+        #
+        # @param [Symbol] format :one_line or :deb822
+        #
+        # @return [String]
+        def repo_file_path(format = new_resource.source_format)
+          ext = format == :deb822 ? "sources" : "list"
+          "/etc/apt/sources.list.d/#{new_resource.repo_name}.#{ext}"
+        end
+
         # clean up a potentially legacy file from before we fixed the usage of
         # new_resource.name vs. new_resource.repo_name. We might have the
         # name.list file hanging around and need to clean it up.
@@ -586,7 +676,8 @@ class Chef
           end
         end
 
-        repo = build_repo(
+        builder = new_resource.source_format == :deb822 ? :build_repo_deb822 : :build_repo
+        repo = send(builder,
           new_resource.uri,
           new_resource.distribution,
           repo_components,
@@ -594,10 +685,16 @@ class Chef
           new_resource.arch,
           signed_by,
           new_resource.options,
-          new_resource.deb_src
-        )
+          new_resource.deb_src)
 
-        file "/etc/apt/sources.list.d/#{new_resource.repo_name}.list" do
+        other_format = new_resource.source_format == :deb822 ? :one_line : :deb822
+        file repo_file_path(other_format) do
+          sensitive new_resource.sensitive
+          action :delete
+          notifies :run, "execute[apt-cache gencaches]", :immediately
+        end
+
+        file repo_file_path do
           owner "root"
           group "root"
           mode "0644"
@@ -613,7 +710,10 @@ class Chef
         return unless debian?
 
         cleanup_legacy_file!
-        if ::TargetIO::File.exist?("/etc/apt/sources.list.d/#{new_resource.repo_name}.list")
+        repo_files = [repo_file_path(:one_line), repo_file_path(:deb822)].select { |f| ::TargetIO::File.exist?(f) }
+        if repo_files.empty?
+          logger.debug("No #{new_resource.repo_name} repository file in /etc/apt/sources.list.d/. Nothing to do")
+        else
           converge_by "Removing #{new_resource.repo_name} repository from /etc/apt/sources.list.d/" do
             apt_update new_resource.name do
               ignore_failure true
@@ -625,14 +725,14 @@ class Chef
               action :delete
             end
 
-            file "/etc/apt/sources.list.d/#{new_resource.repo_name}.list" do
-              sensitive new_resource.sensitive
-              action :delete
-              notifies :update, "apt_update[#{new_resource.name}]", :immediately if new_resource.cache_rebuild
+            repo_files.each do |repo_file|
+              file repo_file do
+                sensitive new_resource.sensitive
+                action :delete
+                notifies :update, "apt_update[#{new_resource.name}]", :immediately if new_resource.cache_rebuild
+              end
             end
           end
-        else
-          logger.debug("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
         end
       end
 
