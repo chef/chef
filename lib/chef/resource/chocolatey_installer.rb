@@ -86,6 +86,15 @@ class Chef
         ::File.exist?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe")
       end
 
+      # BEGIN: recovery helpers for Chocolatey installs missing nupkg registration
+      def is_chocolatey_package_registered?
+        ::File.file?(chocolatey_package_registration_path)
+      end
+
+      def chocolatey_package_registration_path
+        "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\lib\\chocolatey\\chocolatey.nupkg"
+      end
+
       def get_choco_version
         powershell_exec("choco --version").result
       end
@@ -113,6 +122,59 @@ class Chef
         Chef::Util::PathHelper.join(ChefConfig::Config.etc_chef_dir(windows: true), filename)
       end
 
+      def ps_quote(value)
+        "'#{value.to_s.gsub(/['\u2018\u2019\u201A\u201B]/) { |c| c * 2 }}'"
+      end
+
+      def repair_chocolatey_package_registration
+        unless download_url && !download_url_script?
+          raise Chef::Exceptions::Package,
+            "Chocolatey is installed but its package registration is missing. " \
+            "Supply the matching .nupkg download_url or uninstall and reinstall Chocolatey."
+        end
+
+        is_filesystem_path =
+          download_url.match?(%r{^[a-zA-Z]:[\\/]}) ||
+          download_url.start_with?("\\\\")
+        nupkg_path = is_filesystem_path ? download_url : download_destination
+        powershell_exec(<<~PS).error!
+          $archivePath = #{ps_quote(nupkg_path)}
+          if (-not (Test-Path $archivePath -PathType Leaf)) { throw "Cannot repair Chocolatey package registration: the source .nupkg is not available at $archivePath" }
+
+          $chocoInstall = $env:ChocolateyInstall
+          if (-not $chocoInstall) { $chocoInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey' }
+          $chocoExe = Join-Path $chocoInstall 'bin\\choco.exe'
+
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($archivePath)
+          try {
+            $nuspecEntry = $archive.Entries | Where-Object { $_.FullName -match '(^|/)chocolatey\\.nuspec$' } | Select-Object -First 1
+            if (-not $nuspecEntry) { throw "Cannot repair Chocolatey package registration: no chocolatey.nuspec was found in $archivePath" }
+            $reader = New-Object System.IO.StreamReader($nuspecEntry.Open())
+            try {
+              $nuspec = New-Object System.Xml.XmlDocument
+              $nuspec.XmlResolver = $null
+              $nuspec.LoadXml($reader.ReadToEnd())
+            } finally { $reader.Dispose() }
+            $versionNode = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='version']")
+            if (-not $versionNode) { throw "Cannot repair Chocolatey package registration: no package version was found in $archivePath" }
+            $archiveVersion = $versionNode.InnerText.Trim()
+          } finally { $archive.Dispose() }
+
+          $installedVersion = (& $chocoExe --version | Out-String).Trim()
+          if ($LASTEXITCODE -ne 0 -or -not $installedVersion) { throw "Cannot determine the installed Chocolatey version from $chocoExe" }
+          if ($archiveVersion -ne $installedVersion) { throw "Cannot repair Chocolatey package registration: source package version $archiveVersion does not match installed version $installedVersion" }
+
+          $chocoPkgDir = Join-Path $chocoInstall 'lib\\chocolatey'
+          if (-not (Test-Path $chocoPkgDir -PathType Container)) { New-Item -ItemType Directory -Path $chocoPkgDir -Force -ErrorAction Stop | Out-Null }
+          $registeredNupkg = Join-Path $chocoPkgDir 'chocolatey.nupkg'
+          if (Test-Path $registeredNupkg -PathType Container) { throw "Cannot register Chocolatey: $registeredNupkg is a directory, not a package archive" }
+          Copy-Item -LiteralPath $archivePath -Destination $registeredNupkg -Force -ErrorAction Stop
+          if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw "Chocolatey package archive was not registered at $registeredNupkg" }
+        PS
+      end
+      # END: recovery helpers for Chocolatey installs missing nupkg registration
+
       def define_resource_requirements
         requirements.assert(:install, :upgrade).each do |a|
           a.assertion do
@@ -139,16 +201,17 @@ class Chef
           # a pure-digit segment (e.g. ".3" from a version path like /chocolatey/2.7.3).
           if !ext.empty? && !ext.match?(/^\.\d+$/) && ext != ".ps1" && ext != ".nupkg"
             raise Chef::Exceptions::ValidationFailed,
-              "download_url must point to a .ps1 PowerShell install script or a .nupkg Chocolatey package. Got: #{new_resource.download_url}"
+              "download_url must point to a .ps1 PowerShell install script or a .nupkg Chocolatey package. " \
+              "Got extension: #{ext}"
           end
         end
 
         if new_resource.download_url
-          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value '#{new_resource.download_url}'")
+          powershell_exec("Set-Item -path env:ChocolateyDownloadUrl -Value #{ps_quote(new_resource.download_url)}")
         end
 
         if new_resource.chocolatey_version
-          powershell_exec("Set-Item -path env:ChocolateyVersion -Value '#{new_resource.chocolatey_version}'")
+          powershell_exec("Set-Item -path env:ChocolateyVersion -Value #{ps_quote(new_resource.chocolatey_version)}")
         end
 
         if new_resource.use_native_unzip
@@ -160,11 +223,22 @@ class Chef
         end
 
         if new_resource.proxy_url
-          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value '#{new_resource.proxy_url}'")
+          powershell_exec("Set-Item -path env:ChocolateyProxyLocation -Value #{ps_quote(new_resource.proxy_url)}")
         end
 
         if new_resource.proxy_user && new_resource.proxy_password
-          powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value '#{new_resource.proxy_user}'; Set-Item -path env:ChocolateyProxyPassword -Value '#{new_resource.proxy_password}'")
+          powershell_exec(
+            "Set-Item -path env:ChocolateyProxyUser -Value #{ps_quote(new_resource.proxy_user)}; " \
+            "Set-Item -path env:ChocolateyProxyPassword -Value #{ps_quote(new_resource.proxy_password)}"
+          )
+        end
+
+        if is_choco_installed? && !is_chocolatey_package_registered?
+          # BEGIN: recovery for Chocolatey installs missing nupkg registration
+          converge_by("repair Chocolatey package registration") do
+            repair_chocolatey_package_registration
+          end
+          # END: recovery for Chocolatey installs missing nupkg registration
         end
 
         # Guard on actual installed state rather than property comparison.
@@ -175,30 +249,45 @@ class Chef
         unless is_choco_installed?
           converge_by("install Chocolatey") do
             if new_resource.download_url
-              Chef::Log.info("Using custom download URL for Chocolatey installation: #{new_resource.download_url}")
+              Chef::Log.info("Using a custom download source for Chocolatey installation.")
               # If it's a PowerShell script, download and execute it directly
               if download_url_script?
-                powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('#{new_resource.download_url}'))").error!
+                ps_install = <<~PS
+                  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                  Invoke-Expression ((New-Object System.Net.WebClient).DownloadString(#{ps_quote(new_resource.download_url)}))
+                PS
+                powershell_exec(ps_install).error!
               else
                 # nupkg or archive: fully air-gapped environment support.
                 # A Chocolatey .nupkg is a ZIP archive containing tools/chocolateyInstall.ps1,
                 # which is the actual bootstrapper. Download (if remote), extract, and run it.
-                is_filesystem_path = new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/]}) || new_resource.download_url.start_with?("\\\\")
+                is_filesystem_path =
+                  new_resource.download_url.match?(%r{^[a-zA-Z]:[\\/]}) ||
+                  new_resource.download_url.start_with?("\\\\")
                 nupkg_path = is_filesystem_path ? new_resource.download_url : download_destination
 
                 unless is_filesystem_path
                   if new_resource.proxy_url && !new_resource.ignore_proxy && new_resource.proxy_user && new_resource.proxy_password
                     ps_download = <<~EOH
                       [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-                      $proxyCredential = New-Object System.Management.Automation.PSCredential('#{new_resource.proxy_user}', (ConvertTo-SecureString '#{new_resource.proxy_password}' -AsPlainText -Force))
-                      Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing -Proxy '#{new_resource.proxy_url}' -ProxyCredential $proxyCredential -OutFile '#{nupkg_path}'
+                      $proxyCredential = New-Object System.Management.Automation.PSCredential(#{ps_quote(new_resource.proxy_user)}, (ConvertTo-SecureString #{ps_quote(new_resource.proxy_password)} -AsPlainText -Force))
+                      Invoke-WebRequest #{ps_quote(new_resource.download_url)} -UseBasicParsing -Proxy #{ps_quote(new_resource.proxy_url)} -ProxyCredential $proxyCredential -OutFile #{ps_quote(nupkg_path)}
                     EOH
                     powershell_exec(ps_download).error!
                   else
-                    proxy_param = (new_resource.proxy_url && !new_resource.ignore_proxy) ? " -Proxy '#{new_resource.proxy_url}'" : ""
-                    powershell_exec("[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-WebRequest '#{new_resource.download_url}' -UseBasicParsing#{proxy_param} -OutFile '#{nupkg_path}'").error!
+                    proxy_param =
+                      if new_resource.proxy_url && !new_resource.ignore_proxy
+                        " -Proxy #{ps_quote(new_resource.proxy_url)}"
+                      else
+                        ""
+                      end
+                    ps_download = <<~PS
+                      [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                      Invoke-WebRequest #{ps_quote(new_resource.download_url)} -UseBasicParsing#{proxy_param} -OutFile #{ps_quote(nupkg_path)}
+                    PS
+                    powershell_exec(ps_download).error!
                   end
-                  Chef::Log.info("Downloaded Chocolatey package from #{new_resource.download_url} to #{nupkg_path}")
+                  Chef::Log.info("Downloaded custom Chocolatey package.")
                 end
 
                 ps_code = <<~PS
@@ -211,12 +300,15 @@ class Chef
                   }
                   if (-not (Test-Path $env:ChocolateyInstall)) { New-Item -ItemType Directory -Path $env:ChocolateyInstall -Force | Out-Null }
 
-                  $nupkgPath = '#{nupkg_path}'
+                  $nupkgPath = #{ps_quote(nupkg_path)}
                   # The bundled bootstrapper looks for this archive to register Chocolatey.
                   # Keep the same staging layout as Chocolatey's install.ps1, including the ZIP.
-                  $extractPath = Join-Path $env:TEMP 'chocolatey\\chocoInstall'
-                  if (-not (Test-Path $extractPath -PathType Container)) { New-Item -ItemType Directory -Path $extractPath -Force -ErrorAction Stop | Out-Null }
-                  $zipPath = Join-Path $extractPath 'chocolatey.zip'
+                  # Use a unique directory to avoid collisions between concurrent runs and
+                  # a pre-created path under the shared TEMP directory.
+                  $workPath = Join-Path $env:TEMP ('chocolatey_nupkg_' + [guid]::NewGuid().ToString('N'))
+                  $extractPath = Join-Path $workPath 'extract'
+                  New-Item -ItemType Directory -Path $extractPath -Force -ErrorAction Stop | Out-Null
+                  $zipPath = Join-Path $workPath 'chocolatey_nupkg.zip'
                   Copy-Item -LiteralPath $nupkgPath -Destination $zipPath -Force -ErrorAction Stop
                   # Use .NET directly: the built-in archive-extraction cmdlet can resolve to the PowerShell 7
                   # Archive module, whose ExtractToDirectory overload doesn't exist in the .NET Framework host
@@ -224,9 +316,12 @@ class Chef
                   Add-Type -AssemblyName System.IO.Compression.FileSystem
                   $zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
                   try {
+                    $extractRoot = [System.IO.Path]::GetFullPath($extractPath).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+                    $extractRootWithSeparator = $extractRoot + [System.IO.Path]::DirectorySeparatorChar
                     foreach ($entry in $zip.Entries) {
                       $target = [System.IO.Path]::GetFullPath((Join-Path $extractPath $entry.FullName))
-                      if (-not $target.StartsWith([System.IO.Path]::GetFullPath($extractPath), [System.StringComparison]::OrdinalIgnoreCase)) { throw "Unsafe path in Chocolatey package: $($entry.FullName)" }
+                      $isInsideExtractRoot = $target.Equals($extractRoot, [System.StringComparison]::OrdinalIgnoreCase) -or $target.StartsWith($extractRootWithSeparator, [System.StringComparison]::OrdinalIgnoreCase)
+                      if (-not $isInsideExtractRoot) { throw "Unsafe path in Chocolatey package: $($entry.FullName)" }
                       if ($entry.FullName.EndsWith('/')) { New-Item -ItemType Directory -Path $target -Force | Out-Null; continue }
                       New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
                       [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target, $true)
