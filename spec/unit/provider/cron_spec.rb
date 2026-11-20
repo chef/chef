@@ -1195,7 +1195,7 @@ describe Chef::Provider::Cron do
       end
     end
     context "When given" do
-      let(:time_out_str_val) { " timeout 10;" }
+      let(:time_out_str_val) { " timeout 10" }
       context "as String" do
         it "returns string" do
           @new_resource.time_out "10"
@@ -1215,9 +1215,18 @@ describe Chef::Provider::Cron do
         end
         it "also contains properties" do
           @new_resource.time_out "duration" => "10", "foreground" => "true", "signal" => "FOO"
-          expect(@provider.send(:time_out_str)).to eq " timeout --foreground --signal FOO 10;"
+          expect(@provider.send(:time_out_str)).to eq " timeout --foreground --signal FOO 10"
         end
       end
+    end
+  end
+
+  describe "#get_crontab_entry" do
+    it "does not separate the timeout invocation from the command with a semicolon, so the command runs as timeout's argument" do
+      @new_resource.command "date"
+      @new_resource.time_out "kill-after" => "5"
+      expect(@provider.send(:get_crontab_entry)).to include("timeout --kill-after 5 date\n")
+      expect(@provider.send(:get_crontab_entry)).not_to include(";")
     end
   end
 
