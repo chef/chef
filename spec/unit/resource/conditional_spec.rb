@@ -37,7 +37,7 @@ describe Chef::Resource::Conditional do
     # treated as an (invalid) command and raise once configured, same as any
     # other non-String/Array/nil command.
     conditional = Chef::Resource::Conditional.send(:new, :always, @parent_resource, false, {})
-    expect { conditional.configure }.to raise_error(ArgumentError, /Invalid only_if\/not_if command/)
+    expect { conditional.configure }.to raise_error(ArgumentError, %r{Invalid only_if/not_if command})
   end
 
   it "does not evaluate a guard interpreter on initialization of the conditional" do
