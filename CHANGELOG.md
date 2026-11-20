@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.5.11 -->
-## [v19.5.11](https://github.com/chef/chef/tree/v19.5.11) (2026-11-20)
+<!-- latest_release 19.5.12 -->
+## [v19.5.12](https://github.com/chef/chef/tree/v19.5.12) (2026-11-20)
 
 #### Merged Pull Requests
-- Build PathHelper separator regexes once instead of per call [#16395](https://github.com/chef/chef/pull/16395) ([tas50](https://github.com/tas50))
+- Read Property#name from an ivar instead of the options hash [#16276](https://github.com/chef/chef/pull/16276) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Read Property#name from an ivar instead of the options hash [#16276](https://github.com/chef/chef/pull/16276) ([tas50](https://github.com/tas50)) <!-- 19.5.12 -->
 - Build PathHelper separator regexes once instead of per call [#16395](https://github.com/chef/chef/pull/16395) ([tas50](https://github.com/tas50)) <!-- 19.5.11 -->
 - Bump uri from 1.1.1 to 1.1.2 [#16420](https://github.com/chef/chef/pull/16420) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.10 -->
 - Only probe the system FIPS setting once per process [#16396](https://github.com/chef/chef/pull/16396) ([tas50](https://github.com/tas50)) <!-- 19.5.9 -->
