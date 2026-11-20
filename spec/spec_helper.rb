@@ -117,10 +117,10 @@ RSpec.configure do |config|
   config.filter_run_excluding external: true
   config.raise_on_warning = true
 
-  # Run specs in random order to surface order dependencies between them.
-  # A failure can be reproduced by passing the printed seed back with
-  # `--seed 1234`, and narrowed down with `--seed 1234 --bisect`.
-  config.order = :random
+  # `rake spec:unit` runs specs in random order to surface order dependencies
+  # between them. A failure can be reproduced by passing the printed seed
+  # back with `--seed 1234`, and narrowed down with `--seed 1234 --bisect`.
+  # Seeding Kernel.rand from it makes rand-based code repeat with the seed too.
   Kernel.srand config.seed
 
   # Explicitly disable :should syntax

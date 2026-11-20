@@ -69,6 +69,9 @@ describe Chef::HTTP::Authenticator, :windows_only do
     end
 
     it "should return a password of at least 14 characters in length" do
+      # Start from an empty hive so this reads a newly generated password, not
+      # one an earlier example left in the registry.
+      delete_registry_hive
       password = class_instance.get_cert_password
       expect(password.length).to eql(14)
     end

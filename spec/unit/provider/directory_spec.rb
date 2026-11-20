@@ -212,7 +212,9 @@ describe Chef::Provider::Directory do
       end
     end
 
-    describe "on macOS" do
+    # unix_only: on Windows the real Windows ACL code runs against these
+    # nonexistent macOS paths.
+    describe "on macOS", :unix_only do
       before do
         allow(ChefUtils).to receive(:macos?).and_return(true)
         new_resource.path "/usr/bin/chef_test"
