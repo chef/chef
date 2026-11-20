@@ -754,8 +754,18 @@ module ChefConfig
       if ENV["CHEF_FIPS"] == ""
         false
       else
-        !ENV["CHEF_FIPS"].nil? || ChefConfig.fips?
+        !ENV["CHEF_FIPS"].nil? || system_fips?
       end
+    end
+
+    # ChefConfig.fips? reads /proc or the registry, and the fips default above is
+    # re-evaluated on every read (including once per signed API request via
+    # authentication_protocol_version), so only probe the system once.
+    #
+    # @api private
+    def self.system_fips?
+      @system_fips = ChefConfig.fips? if @system_fips.nil?
+      @system_fips
     end
 
     # Initialize openssl
