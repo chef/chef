@@ -93,4 +93,34 @@ describe Shell::ModelWrapper do
 
   end
 
+  describe "when transforming objects" do
+    before do
+      @node_1 = Chef::Node.new
+      @node_1.name("sammich")
+      @node_1.run_list("recipe[bread]", "role[deprecated]")
+      @node_2 = Chef::Node.new
+      @node_2.name("yummy")
+      @node_2.run_list("recipe[bread]")
+      @server_response = { node_1: @node_1, node_2: @node_2 }
+      @wrapper = Shell::ModelWrapper.new(Chef::Node)
+      allow(Chef::Node).to receive(:list).and_return(@server_response)
+    end
+
+    it "saves only the objects for which the block returns a truthy value" do
+      expect(@node_1).to receive(:save)
+      expect(@node_2).not_to receive(:save)
+      @wrapper.transform(:all) { |node| node.name == "sammich" }
+    end
+
+    # Regression test for chef/chef#12932: RunList#delete used to return the
+    # run list itself, so `nodes.transform { |n| n.run_list.delete(...) }`
+    # re-saved every node whether or not the item was in its run list.
+    it "only saves the nodes whose run list changed when the block deletes a run list item" do
+      expect(@node_1).to receive(:save)
+      expect(@node_2).not_to receive(:save)
+      @wrapper.transform(:all) { |node| node.run_list.delete("role[deprecated]") }
+      expect(@node_1.run_list).not_to be_include("role[deprecated]")
+    end
+  end
+
 end
