@@ -172,7 +172,7 @@ class Chef
         # @return [Integer]
         #
         def splay_sleep_time(splay)
-          return 0 if splay.zero?
+          return 0 if splay == 0
 
           seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
           random = Random.new(seed.to_i)
