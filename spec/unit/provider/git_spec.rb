@@ -428,7 +428,7 @@ describe Chef::Provider::Git do
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     expected_cmd1 = "git fetch --prune origin"
     expect(@provider).to receive(:shell_out!).with(expected_cmd1, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
-    expected_cmd2 = "git fetch origin --tags"
+    expected_cmd2 = "git fetch origin --tags --force"
     expect(@provider).to receive(:shell_out!).with(expected_cmd2, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
     expected_cmd3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     expect(@provider).to receive(:shell_out!).with(expected_cmd3, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
@@ -446,7 +446,7 @@ describe Chef::Provider::Git do
                                                                   user: "whois", group: "thisis",
                                                                   log_tag: "git[web2.0 app]",
                                                                   environment: { "HOME" => "/home/whois" })
-    expected_cmd2 = "git fetch origin --tags"
+    expected_cmd2 = "git fetch origin --tags --force"
     expect(@provider).to receive(:shell_out!).with(expected_cmd2, cwd: "/my/deploy/dir",
                                                                   user: "whois", group: "thisis",
                                                                   log_tag: "git[web2.0 app]",
@@ -464,7 +464,7 @@ describe Chef::Provider::Git do
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     fetch_command1 = "git fetch --prune origin"
     expect(@provider).to receive(:shell_out!).with(fetch_command1, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
-    fetch_command2 = "git fetch origin --tags"
+    fetch_command2 = "git fetch origin --tags --force"
     expect(@provider).to receive(:shell_out!).with(fetch_command2, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
     fetch_command3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     expect(@provider).to receive(:shell_out!).with(fetch_command3, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
@@ -476,7 +476,7 @@ describe Chef::Provider::Git do
     expect(@provider).to receive(:setup_remote_tracking_branches).with(@resource.remote, @resource.repository)
     fetch_command1 = "git fetch --prune opscode"
     expect(@provider).to receive(:shell_out!).with(fetch_command1, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
-    fetch_command2 = "git fetch opscode --tags"
+    fetch_command2 = "git fetch opscode --tags --force"
     expect(@provider).to receive(:shell_out!).with(fetch_command2, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
     fetch_command3 = "git reset --hard d35af14d41ae22b19da05d7d03a0bafc321b244c"
     expect(@provider).to receive(:shell_out!).with(fetch_command3, cwd: "/my/deploy/dir", log_tag: "git[web2.0 app]")
