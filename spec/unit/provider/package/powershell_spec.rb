@@ -26,9 +26,15 @@ describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
 
   let(:new_resource) { Chef::Resource::PowershellPackage.new("windows_test_pkg") }
 
+  # Set the version rather than relying on OHAI_SYSTEM: Ohai's
+  # languages/powershell is missing when powershell.exe is slow to start on
+  # the test host, which failed every example here.
+  let(:powershell_version) { "5.1.26100.1" }
+
   let(:provider) do
     node = Chef::Node.new
     node.consume_external_attrs(OHAI_SYSTEM.data.dup, {})
+    node.automatic["languages"]["powershell"]["version"] = powershell_version
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
     Chef::Provider::Package::Powershell.new(new_resource, run_context)
