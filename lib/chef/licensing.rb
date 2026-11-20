@@ -47,6 +47,16 @@ class Chef
 
       def check_software_entitlement_compliance_phase!
         Chef::Log.info "Checking software entitlement for compliance phase..."
+        # Skip for the same reason as check_software_entitlement!: fetch_and_persist
+        # skipped these environments, so there is no license key to check.
+        # Inspec::Runner#run makes its own entitlement check when the compliance
+        # phase runs the profiles, so mark licensing optional for this process
+        # to skip that check too.
+        if skip_license_validation?
+          Chef::Log.info "****Skipping compliance phase entitlement check..."
+          ChefLicensing::Config.make_licensing_optional = true
+          return
+        end
         # set the chef_entitlement_id to the value for Compliance Phase entitlement (i.e. InSpec's entitlement ID)
         ChefLicensing::Config.chef_entitlement_id = Chef::LicensingConfig::COMPLIANCE_ENTITLEMENT_ID
         ChefLicensing.check_software_entitlement!
