@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 18.11.31 -->
-## [v18.11.31](https://github.com/chef/chef/tree/v18.11.31) (2026-11-19)
+<!-- latest_release 18.11.32 -->
+## [v18.11.32](https://github.com/chef/chef/tree/v18.11.32) (2026-11-20)
 
 #### Merged Pull Requests
-- Restore Knife net-ssh upper bound on chef-18 [#16531](https://github.com/chef/chef/pull/16531) ([tpowell-progress](https://github.com/tpowell-progress))
+- Bump zlib from 3.2.3 to 3.2.4 [#16424](https://github.com/chef/chef/pull/16424) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=18.11.11 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump zlib from 3.2.3 to 3.2.4 [#16424](https://github.com/chef/chef/pull/16424) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.32 -->
 - Restore Knife net-ssh upper bound on chef-18 [#16531](https://github.com/chef/chef/pull/16531) ([tpowell-progress](https://github.com/tpowell-progress)) <!-- 18.11.31 -->
 - Bump win32-certstore from 0.6.16 to 0.6.22 [#16474](https://github.com/chef/chef/pull/16474) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.30 -->
 - Bump actions/upload-artifact from 4 to 7 [#16408](https://github.com/chef/chef/pull/16408) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 18.11.29 -->
