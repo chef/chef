@@ -23,10 +23,12 @@ describe Chef::FileAccessControl do
   describe "Unix" do
     before do
       platform_mock :unix do
-        # we have to re-load the file so the proper
-        # platform specific module is mixed in
+        # Test the Unix module through a subclass. Re-loading
+        # file_access_control.rb here would mix Unix into the real class for
+        # the rest of the run, so later specs on Windows would silently get
+        # the Unix implementation.
         @node = Chef::Node.new
-        load File.join(__dir__, "..", "..", "lib", "chef", "file_access_control.rb")
+        @fac_class = Class.new(Chef::FileAccessControl) { include Chef::FileAccessControl::Unix }
         @resource = Chef::Resource::File.new("/tmp/a_file.txt")
         @resource.owner("toor")
         @resource.group("wheel")
@@ -38,13 +40,13 @@ describe Chef::FileAccessControl do
         @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context, :create)
         @provider = double("File provider", requirements: @provider_requirements, manage_symlink_access?: false)
 
-        @fac = Chef::FileAccessControl.new(@current_resource, @resource, @provider)
+        @fac = @fac_class.new(@current_resource, @resource, @provider)
       end
     end
 
     describe "class methods" do
       it "responds to #writable?" do
-        expect(Chef::FileAccessControl).to respond_to(:writable?)
+        expect(@fac_class).to respond_to(:writable?)
       end
     end
 
@@ -72,13 +74,13 @@ describe Chef::FileAccessControl do
 
     it "does not attempt to resolve the uid if the user is not specified" do
       resource = Chef::Resource::File.new("a file")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.target_uid).to be_nil
     end
 
     it "does not want to update the owner if none is specified" do
       resource = Chef::Resource::File.new("a file")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.should_update_owner?).to be_falsey
     end
 
@@ -127,7 +129,7 @@ describe Chef::FileAccessControl do
       resource = Chef::Resource::File.new("a file")
       resource.owner(2342)
       @current_resource.owner(100)
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.describe_changes).to eq(["change owner from '100' to '2342'"])
     end
 
@@ -169,13 +171,13 @@ describe Chef::FileAccessControl do
 
     it "does not attempt to resolve a gid when none is supplied" do
       resource = Chef::Resource::File.new("crab")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.target_gid).to be_nil
     end
 
     it "does not want to update the group when no target group is specified" do
       resource = Chef::Resource::File.new("crab")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.should_update_group?).to be_falsey
     end
 
@@ -200,7 +202,7 @@ describe Chef::FileAccessControl do
       resource = Chef::Resource::File.new("crab")
       resource.group(2342)
       @current_resource.group(815)
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.describe_changes).to eq(["change group from '815' to '2342'"])
     end
 
@@ -241,13 +243,13 @@ describe Chef::FileAccessControl do
 
     it "does not try to determine the mode when none is given" do
       resource = Chef::Resource::File.new("blahblah")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.target_mode).to be_nil
     end
 
     it "doesn't want to update the mode when no target mode is given" do
       resource = Chef::Resource::File.new("blahblah")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.should_update_mode?).to be_falsey
     end
 
@@ -267,7 +269,7 @@ describe Chef::FileAccessControl do
       resource = Chef::Resource::File.new("blahblah")
       resource.mode("0750")
       @current_resource.mode("0444")
-      fac = Chef::FileAccessControl.new(@current_resource, resource, @provider)
+      fac = @fac_class.new(@current_resource, resource, @provider)
       expect(fac.describe_changes).to eq(["change mode from '0444' to '0750'"])
     end
 
