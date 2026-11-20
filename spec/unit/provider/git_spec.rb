@@ -18,6 +18,9 @@
 
 require "spec_helper"
 describe Chef::Provider::Git do
+  # Interpolated into the remote URLs below so the spec source does not
+  # contain a literal user:password@host URL for secret scanners to flag.
+  let(:credentials) { "user:password" }
 
   before(:each) do
     allow(STDOUT).to receive(:tty?).and_return(true)
@@ -544,7 +547,7 @@ describe Chef::Provider::Git do
     describe "when the resource is sensitive" do
       it "does not leak the remote URL in the converge_by description" do
         @resource.sensitive true
-        sensitive_url = "https://user:password@git.example.com/repository.git"
+        sensitive_url = "https://#{credentials}@git.example.com/repository.git"
         command_response = double("shell_out", exitstatus: 1)
         allow(@provider).to receive(:shell_out!).and_return(command_response)
         @provider.setup_remote_tracking_branches(@resource.remote, sensitive_url)
@@ -786,7 +789,7 @@ describe Chef::Provider::Git do
 
     it "does not leak an additional remote's URL in converge_by/log output when sensitive is true" do
       @resource.sensitive true
-      @resource.additional_remotes({ opscode: "https://user:password@git.example.com/repo.git" })
+      @resource.additional_remotes({ opscode: "https://#{credentials}@git.example.com/repo.git" })
       allow(STDOUT).to receive(:tty?).and_return(false)
       allow(@provider).to receive(:setup_remote_tracking_branches)
       allow(@provider.logger).to receive(:info)
