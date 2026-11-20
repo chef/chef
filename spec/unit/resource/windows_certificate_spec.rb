@@ -104,7 +104,7 @@ describe Chef::Resource::WindowsCertificate do
       resource.source "C:\\certs\\test-cert.pfx"
       provider = resource.provider_for_action(:acl_add)
       expect { provider.send(:cert_script, false) }.not_to raise_error
-      expect(provider.send(:cert_script, false)).to include("C:/certs/test-cert.pfx")
+      expect(provider.send(:cert_script, false)).to include(Chef::Util::PathHelper.cleanpath("C:/certs/test-cert.pfx"))
     end
   end
 end
