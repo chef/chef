@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.5.7 -->
-## [v19.5.7](https://github.com/chef/chef/tree/v19.5.7) (2026-11-19)
+<!-- latest_release 19.5.8 -->
+## [v19.5.8](https://github.com/chef/chef/tree/v19.5.8) (2026-11-20)
 
 #### Merged Pull Requests
-- Bump ohai from `1faf71b` to `f1a7266` [#16522](https://github.com/chef/chef/pull/16522) ([dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump chef-vault from 4.2.12 to 4.2.16 [#16529](https://github.com/chef/chef/pull/16529) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef-vault from 4.2.12 to 4.2.16 [#16529](https://github.com/chef/chef/pull/16529) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.8 -->
 - Bump ohai from `1faf71b` to `f1a7266` [#16522](https://github.com/chef/chef/pull/16522) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.7 -->
 - Bump actions/upload-artifact from 4 to 6 [#16409](https://github.com/chef/chef/pull/16409) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.6 -->
 - Bump actions/checkout from 4 to 7 [#16348](https://github.com/chef/chef/pull/16348) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.5 -->
