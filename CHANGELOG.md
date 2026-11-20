@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.5.14 -->
-## [v19.5.14](https://github.com/chef/chef/tree/v19.5.14) (2026-11-20)
+<!-- latest_release 19.5.15 -->
+## [v19.5.15](https://github.com/chef/chef/tree/v19.5.15) (2026-11-20)
 
 #### Merged Pull Requests
-- Fix data collector &#39;No HTTP Code&#39; fallback for nil HTTP responses [#16293](https://github.com/chef/chef/pull/16293) ([tas50](https://github.com/tas50))
+- Bump danger/danger-js from 13.0.10 to 14.1.0 [#16340](https://github.com/chef/chef/pull/16340) ([dependabot[bot]](https://github.com/dependabot[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump danger/danger-js from 13.0.10 to 14.1.0 [#16340](https://github.com/chef/chef/pull/16340) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.15 -->
 - Fix data collector &#39;No HTTP Code&#39; fallback for nil HTTP responses [#16293](https://github.com/chef/chef/pull/16293) ([tas50](https://github.com/tas50)) <!-- 19.5.14 -->
 - Give RunList#delete Array#delete semantics [#16324](https://github.com/chef/chef/pull/16324) ([tas50](https://github.com/tas50)) <!-- 19.5.13 -->
 - Read Property#name from an ivar instead of the options hash [#16276](https://github.com/chef/chef/pull/16276) ([tas50](https://github.com/tas50)) <!-- 19.5.12 -->
