@@ -140,4 +140,29 @@ describe "chef-client with compliance phase" do
       expect(result["status"]).to eq("passed")
     end
   end
+
+  when_the_repository "has no compliance profiles" do
+    let(:inspec_loaded_file) { path_to("inspec_loaded") }
+
+    before do
+      directory "cookbooks/x" do
+        # Record at process exit, after every event subscriber has run,
+        # whether anything in the client loaded InSpec.
+        file "recipes/default.rb", <<~FILE
+          at_exit { ::File.write(#{inspec_loaded_file.inspect}, defined?(::Inspec::Runner).inspect) }
+        FILE
+      end
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+        log_level :warn
+      EOM
+    end
+
+    it "does not load InSpec" do
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'recipe[x]'", cwd: chef_dir)
+
+      expect(File.read(inspec_loaded_file)).to eq("nil")
+    end
+  end
 end
