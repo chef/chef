@@ -29,7 +29,7 @@ module TargetIO
       class << self
 
         def method_missing(m, *args, **kwargs, &block)
-          Chef::Log.debug format("Shadow::Passwd::%s(%s)", m.to_s, args.join(", "))
+          Chef::Log.debug format("Shadow::Passwd::%s(%s)", m.to_s, args.join(", ")) if Chef::Log.debug?
 
           if ChefConfig::Config.target_mode? && !Chef.run_context.transport_connection.os.unix?
             raise "Shadow support only on Unix, this is " + Chef.run_context.transport_connection.platform.title
