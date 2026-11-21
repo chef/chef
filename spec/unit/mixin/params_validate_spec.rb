@@ -412,6 +412,38 @@ describe Chef::Mixin::ParamsValidate do
     expect(@vo.set_or_return(:test, nil, {})).to eq("fauxbar")
   end
 
+  describe "coerce:" do
+    let(:to_integer) { proc { |v| Integer(v) } }
+
+    it "coerces an option whose key matches the validation key" do
+      symbol_opts = { one: "2" }
+      @vo.validate(symbol_opts, { one: { coerce: to_integer } })
+      expect(symbol_opts).to eq({ one: 2 })
+
+      string_opts = { "one" => "2" }
+      @vo.validate(string_opts, { "one" => { coerce: to_integer } })
+      expect(string_opts).to eq({ "one" => 2 })
+    end
+
+    it "coerces a String-keyed option validated with a Symbol key" do
+      opts = { "one" => "2" }
+      @vo.validate(opts, { one: { coerce: to_integer } })
+      expect(opts).to eq({ "one" => 2 })
+    end
+
+    it "coerces a Symbol-keyed option validated with a String key" do
+      opts = { one: "2" }
+      @vo.validate(opts, { "one" => { coerce: to_integer } })
+      expect(opts).to eq({ one: 2 })
+    end
+
+    it "validates the coerced value of a String-keyed option" do
+      opts = { "one" => "2" }
+      expect { @vo.validate(opts, { one: { coerce: to_integer, kind_of: Integer } }) }.not_to raise_error
+      expect(opts).to eq({ "one" => 2 })
+    end
+  end
+
   it "should not evaluate non DelayedEvaluator instances" do
     value = lambda { "test" }
     @vo.set_or_return(:test, value, {})
