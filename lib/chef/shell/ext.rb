@@ -36,17 +36,22 @@ module Shell
     # These objects are extended with this module.
     module ObjectCoreExtensions
 
+      def job_manager
+        require "irb/ext/multi-irb"
+        ::IRB.JobManager
+      end
+
       def ensure_session_select_defined
         # irb breaks if you prematurely define IRB::JobManager
         # so these methods need to be defined at the latest possible time.
-        unless jobs.respond_to?(:select_session_by_context)
-          def jobs.select_session_by_context(&block) # rubocop:disable Lint/NestedMethodDefinition
+        unless job_manager.respond_to?(:select_session_by_context)
+          def job_manager.select_session_by_context(&block) # rubocop:disable Lint/NestedMethodDefinition
             @jobs.select { |job| block.call(job[1].context.main) }
           end
         end
 
-        unless jobs.respond_to?(:session_select)
-          def jobs.select_shell_session(target_context) # rubocop:disable Lint/NestedMethodDefinition
+        unless job_manager.respond_to?(:session_select)
+          def job_manager.select_shell_session(target_context) # rubocop:disable Lint/NestedMethodDefinition
             session = if target_context.is_a?(Class)
                         select_session_by_context { |main| main.is_a?(target_context) }
                       else
@@ -59,10 +64,10 @@ module Shell
 
       def find_or_create_session_for(context_obj)
         ensure_session_select_defined
-        if subsession = jobs.select_shell_session(context_obj)
-          jobs.switch(subsession)
+        if subsession = job_manager.select_shell_session(context_obj)
+          job_manager.switch(subsession)
         else
-          irb(context_obj) # rubocop: disable Lint/Debugger
+          ::IRB.irb(nil, context_obj)
         end
       end
 
