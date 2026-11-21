@@ -465,11 +465,11 @@ class Chef
         if opts.key?(key.to_s)
           raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
 
-          opts[key.to_s] = instance_exec(opts[key], &coercer)
+          opts[key.to_s] = instance_exec(opts[key.to_s], &coercer)
         elsif opts.key?(key.to_sym)
           raise Exceptions::CannotValidateStaticallyError, "coerce must be evaluated for each resource." if self == Chef::Mixin::ParamsValidate
 
-          opts[key.to_sym] = instance_exec(opts[key], &coercer)
+          opts[key.to_sym] = instance_exec(opts[key.to_sym], &coercer)
         end
       end
 
