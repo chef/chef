@@ -20,28 +20,19 @@ class Chef
   module Mixin
     module Securable
 
-      def owner(arg = nil)
-        set_or_return(
-          :owner,
-          arg,
-          regex: Chef::Config[:user_valid_regex]
-        )
+      # set_or_return builds a new Property on every call. owner, group and
+      # mode are read and written many times per file-type resource, so reuse
+      # one Property per name and validation. The validations are either
+      # mode_validation or built from the configured user/group regexes, so
+      # this holds a handful of entries.
+      def self.set_or_return_property(name, validation)
+        @set_or_return_properties ||= {}
+        @set_or_return_properties[[name, validation]] ||=
+          Chef::Mixin::ParamsValidate::SetOrReturnProperty.new(name: name, **validation)
       end
 
-      alias :user :owner
-
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          regex: Chef::Config[:group_valid_regex]
-        )
-      end
-
-      def mode(arg = nil)
-        set_or_return(
-          :mode,
-          arg,
+      def self.mode_validation
+        @mode_validation ||= {
           callbacks: {
             "not in valid numeric range" => lambda do |m|
               if m.is_a?(String)
@@ -55,8 +46,22 @@ class Chef
                 Integer(m).between?(0, 07777)
               end
             end,
-          }
-        )
+          }.freeze,
+        }.freeze
+      end
+
+      def owner(arg = nil)
+        Securable.set_or_return_property(:owner, { regex: Chef::Config[:user_valid_regex] }).call(self, arg)
+      end
+
+      alias :user :owner
+
+      def group(arg = nil)
+        Securable.set_or_return_property(:group, { regex: Chef::Config[:group_valid_regex] }).call(self, arg)
+      end
+
+      def mode(arg = nil)
+        Securable.set_or_return_property(:mode, Securable.mode_validation).call(self, arg)
       end
 
       # Defines methods for adding attributes to a chef resource to describe
