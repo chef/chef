@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 19.5.17 -->
-## [v19.5.17](https://github.com/chef/chef/tree/v19.5.17) (2026-11-21)
+<!-- latest_release 19.5.18 -->
+## [v19.5.18](https://github.com/chef/chef/tree/v19.5.18) (2026-11-21)
 
 #### Merged Pull Requests
-- Set the PowerShell version in the powershell package provider spec [#16533](https://github.com/chef/chef/pull/16533) ([tas50](https://github.com/tas50))
+- Load rubyzip only when the chocolatey provider reads a nupkg [#16536](https://github.com/chef/chef/pull/16536) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=19.4.46 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Load rubyzip only when the chocolatey provider reads a nupkg [#16536](https://github.com/chef/chef/pull/16536) ([tas50](https://github.com/tas50)) <!-- 19.5.18 -->
 - Set the PowerShell version in the powershell package provider spec [#16533](https://github.com/chef/chef/pull/16533) ([tas50](https://github.com/tas50)) <!-- 19.5.17 -->
 - Fix ArgumentError when splay is 0 in chef_client_* scheduler resources [#16296](https://github.com/chef/chef/pull/16296) ([tas50](https://github.com/tas50)) <!-- 19.5.16 -->
 - Bump danger/danger-js from 13.0.10 to 14.1.0 [#16340](https://github.com/chef/chef/pull/16340) ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 19.5.15 -->
