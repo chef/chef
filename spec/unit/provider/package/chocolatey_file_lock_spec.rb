@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "zip"
 
 describe "Chocolatey File Lock Retry", :windows_only do
   let(:new_resource) { Chef::Resource::ChocolateyPackage.new("testpackage") }
