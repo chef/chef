@@ -22,7 +22,6 @@
 require_relative "../package"
 require_relative "../../resource/chocolatey_package"
 require_relative "../../win32/api/command_line_helper" if ChefUtils.windows?
-require "zip" unless defined?(Zip)
 
 class Chef
   class Provider
@@ -571,6 +570,7 @@ class Chef
           with_file_lock_retry("get package data for #{path}") do
             t = ::File.join(path, "*.nupkg")
             targets = Dir.glob(t)
+            require "zip" unless defined?(Zip)
 
             # Extract package version from the first nuspec file in this nupkg
             targets.each do |target|
