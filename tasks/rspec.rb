@@ -78,6 +78,10 @@ begin
         puts "--- Running chef #{sub} specs"
         t.verbose = false
         t.rspec_opts = %w{--profile --format doc}
+        # Only the unit specs run in random order for now. The functional and
+        # integration specs change real system state and still have order
+        # dependencies between them.
+        t.rspec_opts += %w{--order random} if sub == :unit
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
