@@ -48,6 +48,19 @@ describe Chef::Resource::AptRepository do
     expect(resource.distribution).to eql("superduper")
   end
 
+  it "source_format defaults to :one_line" do
+    expect(resource.source_format).to eql(:one_line)
+  end
+
+  it "accepts :one_line and :deb822 for source_format" do
+    expect { resource.source_format :one_line }.not_to raise_error
+    expect { resource.source_format :deb822 }.not_to raise_error
+  end
+
+  it "rejects other source_format values" do
+    expect { resource.source_format :sources }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
   it "allows setting key to an Array of keys and does not coerce it" do
     resource.key = %w{key1 key2}
     expect(resource.key).to eql(%w{key1 key2})

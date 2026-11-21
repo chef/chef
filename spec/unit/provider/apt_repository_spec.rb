@@ -367,4 +367,72 @@ C5986B4F1257FFA86632CBA746181433FBB75451
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil, nil, [])).to eql(target)
     end
   end
+
+  describe "#build_repo_deb822" do
+    it "creates a repository stanza" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: unstable\nComponents: main\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", false, nil, nil, [])).to eql(target)
+    end
+
+    it "creates a repository stanza with spaces" do
+      target = "Types: deb\nURIs: http://test/uri%20with%20spaces\nSuites: unstable\nComponents: main\n"
+      expect(provider.build_repo_deb822("http://test/uri with spaces", "unstable", "main", false, nil, nil, [])).to eql(target)
+    end
+
+    it "uses the components as the suite when there is no distribution" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: main\n"
+      expect(provider.build_repo_deb822("http://test/uri", nil, "main", false, nil, nil, [])).to eql(target)
+    end
+
+    it "creates a repository stanza with source" do
+      target = "Types: deb deb-src\nURIs: http://test/uri\nSuites: unstable\nComponents: main\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", false, nil, nil, [], true)).to eql(target)
+    end
+
+    it "creates a repository stanza with trusted" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: unstable\nComponents: main\nTrusted: yes\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", true, nil, nil, [])).to eql(target)
+    end
+
+    it "creates a repository stanza with signed-by" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: unstable\nComponents: main\nSigned-By: /etc/apt/keyrings/test.gpg\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", false, nil, "/etc/apt/keyrings/test.gpg", [])).to eql(target)
+    end
+
+    it "maps custom options to deb822 fields" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: unstable\nComponents: main\nBy-Hash: no\nLanguages: en de\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", false, nil, nil, ["by-hash=no", "lang=en,de"])).to eql(target)
+    end
+
+    it "maps += and -= options to -Add and -Remove fields" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: unstable\nComponents: main\nTargets-Remove: Contents-deb\nArchitectures-Add: i386\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", false, nil, nil, ["target-=Contents-deb", "arch+=i386"])).to eql(target)
+    end
+
+    it "creates a repository stanza with trusted, arch, and custom options" do
+      target = "Types: deb\nURIs: http://test/uri\nSuites: unstable\nComponents: main\nArchitectures: amd64\nTrusted: yes\nBy-Hash: no\n"
+      expect(provider.build_repo_deb822("http://test/uri", "unstable", "main", true, "amd64", nil, ["by-hash=no"])).to eql(target)
+    end
+
+    it "handles a ppa repo" do
+      target = "Types: deb\nURIs: http://ppa.launchpad.net/chef/main/ubuntu\nSuites: unstable\nComponents: main\n"
+      expect(provider).to receive(:make_ppa_url).with("ppa:chef/main").and_return("http://ppa.launchpad.net/chef/main/ubuntu")
+      expect(provider.build_repo_deb822("ppa:chef/main", "unstable", "main", false, nil, nil, [])).to eql(target)
+    end
+  end
+
+  describe "#repo_file_path" do
+    it "uses .list for the one-line format" do
+      expect(provider.repo_file_path(:one_line)).to eql("/etc/apt/sources.list.d/multiverse.list")
+    end
+
+    it "uses .sources for the deb822 format" do
+      expect(provider.repo_file_path(:deb822)).to eql("/etc/apt/sources.list.d/multiverse.sources")
+    end
+
+    it "defaults to the resource's source_format" do
+      new_resource.source_format :deb822
+      expect(provider.repo_file_path).to eql("/etc/apt/sources.list.d/multiverse.sources")
+    end
+  end
 end
