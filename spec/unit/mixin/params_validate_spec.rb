@@ -412,6 +412,44 @@ describe Chef::Mixin::ParamsValidate do
     expect(@vo.set_or_return(:test, nil, {})).to eq("fauxbar")
   end
 
+  describe "option keys given as strings" do
+    it "finds a required option" do
+      expect { @vo.validate({ "one" => "two" }, { one: { required: true } }) }.not_to raise_error
+      expect { @vo.validate({ "one" => nil }, { one: { required: true } }) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "checks an option against is:" do
+      expect { @vo.validate({ "one" => "two" }, { one: { is: String } }) }.not_to raise_error
+      expect { @vo.validate({ "one" => 2 }, { one: { is: String } }) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe "is:" do
+    it "accepts a single value" do
+      expect { @vo.validate({ one: "two" }, { one: { is: String } }) }.not_to raise_error
+      expect { @vo.validate({ one: 2 }, { one: { is: String } }) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+
+    it "accepts a list of values without modifying it" do
+      allowed = [ String, Integer ].freeze
+      expect { @vo.validate({ one: 2 }, { one: { is: allowed } }) }.not_to raise_error
+      expect { @vo.validate({ one: :two }, { one: { is: allowed } }) }.to raise_error(Chef::Exceptions::ValidationFailed, /String, Integer/)
+    end
+
+    it "treats an object that converts to an Array as a list" do
+      allowed = Object.new
+      def allowed.to_ary
+        [ String, Integer ]
+      end
+      expect { @vo.validate({ one: 2 }, { one: { is: allowed } }) }.not_to raise_error
+      expect { @vo.validate({ one: :two }, { one: { is: allowed } }) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  it "raises for an unknown validation check" do
+    expect { @vo.validate({ one: "two" }, { one: { no_such_check: true } }) }.to raise_error(ArgumentError, /unknown check: no_such_check/)
+  end
+
   it "should not evaluate non DelayedEvaluator instances" do
     value = lambda { "test" }
     @vo.set_or_return(:test, value, {})
