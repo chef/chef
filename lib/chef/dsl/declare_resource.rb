@@ -260,7 +260,7 @@ class Chef
       #   end
       #
       def declare_resource(type, name, created_at: nil, run_context: self.run_context, enclosing_provider: nil, &resource_attrs_block)
-        created_at ||= caller[0]
+        created_at ||= caller(1, 1).first
 
         resource = build_resource(type, name, created_at: created_at, enclosing_provider: enclosing_provider, &resource_attrs_block)
 

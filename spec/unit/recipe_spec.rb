@@ -219,6 +219,20 @@ describe Chef::Recipe do
       end
     end
 
+    describe "recording where a resource was declared" do
+      it "records the caller's file and line for a DSL method" do
+        line = __LINE__ + 1
+        resource = recipe.zen_master "source-line-dsl"
+        expect(resource.source_line).to start_with("#{__FILE__}:#{line}:")
+      end
+
+      it "records the caller's file and line for declare_resource" do
+        line = __LINE__ + 1
+        resource = recipe.declare_resource(:zen_master, "source-line-declare")
+        expect(resource.source_line).to start_with("#{__FILE__}:#{line}:")
+      end
+    end
+
     describe "creating resources via declare_resource" do
       let(:zm_resource) do
         recipe.declare_resource(:zen_master, "klopp") do
