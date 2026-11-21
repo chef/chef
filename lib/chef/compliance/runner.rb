@@ -1,11 +1,6 @@
-# Requiring inspec instead of lazy loading temporarily to get past License validation failures in Inspec 6.
-# When compliance phase of Infra Client is run, the lazy loading ends up calling production environment values for few variables(such as Licensing server URL)
-# which are set as default in Inspec, instead of the test values passed in pipelines
-#
-# autoload :Inspec, "inspec"
-require "inspec"
 
 require_relative "default_attributes"
+require_relative "load_inspec"
 
 class Chef
   module Compliance
@@ -28,7 +23,7 @@ class Chef
         # renamed from Chef Visibility in 2017, so should capture all modern versions of the audit cookbook.
         audit_cookbook_present = defined?(::Reporter::ChefAutomate)
 
-        logger.debug("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
+        logger.debug("#{self.class}##{__method__}: #{ChefUtils::Dist::Inspec::PRODUCT} profiles? #{inspec_profiles.any?}")
         logger.debug("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
         logger.debug("#{self.class}##{__method__}: compliance phase attr? #{node["audit"]["compliance_phase"]}")
 
@@ -229,6 +224,7 @@ class Chef
       end
 
       def generate_report(opts: inspec_opts, profiles: inspec_profiles)
+        Chef::Compliance.load_inspec!
         load_fetchers!
 
         logger.debug "Options are set to: #{opts}"
@@ -365,6 +361,8 @@ class Chef
       # or the configuration required by a reporter is not provided.
       def load_and_validate!
         return unless enabled?
+
+        Chef::Compliance.load_inspec!
 
         @reporters = {}
         # Note that the docs don't say you can use an array, but our implementation
