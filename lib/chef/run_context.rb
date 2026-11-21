@@ -330,8 +330,7 @@ class Chef
     # @return [Array[Notification]]
     #
     def before_notifications(resource)
-      key = resource.is_a?(String) ? resource : resource.declared_key
-      before_notification_collection[key]
+      notifications_for(before_notification_collection, resource)
     end
 
     # Get the list of immediate notifications sent by the given resource.
@@ -339,9 +338,23 @@ class Chef
     # @return [Array[Notification]]
     #
     def immediate_notifications(resource)
-      key = resource.is_a?(String) ? resource : resource.declared_key
-      immediate_notification_collection[key]
+      notifications_for(immediate_notification_collection, resource)
     end
+
+    # Returned for a resource with no notifications of a kind.
+    NO_NOTIFICATIONS = [].freeze
+
+    # Looks up the notifications for a resource without adding an entry to
+    # the collection. The collections default missing keys to a new Array so
+    # that notifies_* can append, which made every lookup of a resource with
+    # no notifications store an empty Array under its key.
+    def notifications_for(collection, resource)
+      return NO_NOTIFICATIONS if collection.empty?
+
+      key = resource.is_a?(String) ? resource : resource.declared_key
+      collection.fetch(key, NO_NOTIFICATIONS)
+    end
+    private :notifications_for
 
     # Get the list of immediate notifications pending to the given resource
     #
@@ -362,8 +375,7 @@ class Chef
     # @return [Array[Notification]]
     #
     def delayed_notifications(resource)
-      key = resource.is_a?(String) ? resource : resource.declared_key
-      delayed_notification_collection[key]
+      notifications_for(delayed_notification_collection, resource)
     end
 
     #
