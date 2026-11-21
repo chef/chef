@@ -1,0 +1,42 @@
+#--
+# Copyright:: Copyright (c) 2009-2026 Progress Software Corporation and/or its subsidiaries or affiliates. All Rights Reserved.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+begin
+  require "irb/command"
+rescue LoadError
+  # irb versions bundled before 1.14 keep their commands in IRB::Command itself.
+end
+
+module Shell
+  # IRB answers a registered command by calling +execute+ on it and reads
+  # +description+ and +category+ off it to build the help listing, so on those
+  # versions the registration has to be a command class rather than a Proc.
+  if defined?(IRB::Command::Base) && IRB::Command::Base.is_a?(Class)
+    class HelpCommand < IRB::Command::Base
+      category "Chef Shell"
+      description "Prints the chef-shell help."
+
+      def execute(_arg = nil)
+        Shell::Options.print_help
+      end
+    end
+  else
+    # Older irb calls the registered object directly and never asks it for a
+    # description, so the Proc stays as it was.
+    HelpCommand = proc { Shell::Options.print_help }
+  end
+end

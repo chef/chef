@@ -36,6 +36,7 @@ require_relative "config_fetcher"
 require_relative "shell/shell_session"
 require_relative "workstation_config_loader"
 require_relative "shell/ext"
+require_relative "shell/help_command"
 require_relative "json_compat"
 require_relative "util/path_helper"
 require_relative "target_mode_config"
@@ -60,10 +61,7 @@ module Shell
   def self.start
     setup_logger
 
-    IRB::Command.register(
-      :help,
-      proc { Shell::Options.print_help }
-    )
+    IRB::Command.register(:help, Shell::HelpCommand)
 
     parse_opts
     Chef::Config[:shell_config] = options.config
