@@ -570,8 +570,11 @@ module ChefConfig
       # typical additional keys: host, user, password
     end
 
+    # Called for every TargetIO file, dir and etc operation, so read the value
+    # directly rather than through the generated target_mode and enabled
+    # accessors, which allocate on each call.
     def self.target_mode?
-      target_mode.enabled
+      self[:target_mode][:enabled]
     end
 
     default :chef_server_url, "https://localhost:443"

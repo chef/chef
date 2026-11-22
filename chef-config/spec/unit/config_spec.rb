@@ -1419,6 +1419,33 @@ RSpec.describe ChefConfig::Config do
 
   end
 
+  describe "target_mode?" do
+    it "is false by default" do
+      expect(ChefConfig::Config.target_mode?).to be false
+    end
+
+    it "is true when enabled through the accessor" do
+      ChefConfig::Config.target_mode.enabled = true
+      expect(ChefConfig::Config.target_mode?).to be true
+    end
+
+    it "is true when enabled with hash access" do
+      ChefConfig::Config[:target_mode][:enabled] = true
+      expect(ChefConfig::Config.target_mode?).to be true
+    end
+
+    it "is true when enabled by merging config" do
+      ChefConfig::Config.merge!(target_mode: { enabled: true, host: target_mode_host })
+      expect(ChefConfig::Config.target_mode?).to be true
+    end
+
+    it "is false again after being disabled" do
+      ChefConfig::Config.target_mode.enabled = true
+      ChefConfig::Config.target_mode.enabled = false
+      expect(ChefConfig::Config.target_mode?).to be false
+    end
+  end
+
   describe "validation_client_name" do
     context "with a normal server URL" do
       before { ChefConfig::Config[:chef_server_url] = "https://chef.example/organizations/myorg" }
