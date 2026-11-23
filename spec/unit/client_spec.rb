@@ -917,6 +917,10 @@ describe Chef::Client do
     end
 
     context "when enforce_default_paths is false" do
+      # The default is true on Windows, so set it explicitly rather than
+      # relying on an earlier client.run having already rewritten PATH.
+      before { Chef::Config[:enforce_default_paths] = false }
+
       it "ENV['PATH'] is not modified when flag is false" do
         original = ENV["PATH"]
         # Simulate what client.rb does — only modify PATH if flag is true

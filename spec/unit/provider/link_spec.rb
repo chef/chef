@@ -82,7 +82,11 @@ describe Chef::Resource::Link do
       # We test create in unit tests because there is no other way to ensure
       # it does no work.  Other create and delete scenarios are covered in
       # the functional tests for links.
-      context "when the desired state is identical" do
+      #
+      # unix_only: the stubbed state is a uid/gid owner, and on Windows the
+      # real Windows ACL code would read the security descriptor of a link
+      # that does not exist.
+      context "when the desired state is identical", :unix_only do
         let(:new_resource) do
           result = Chef::Resource::Link.new("#{CHEF_SPEC_DATA}/fofile-link")
           result.to "#{CHEF_SPEC_DATA}/fofile"

@@ -33,24 +33,24 @@ describe Chef::DSL::Resources do
   subject { declared_resources }
   after do
     # Always clean up after ourselves.
-    described_class.remove_resource_dsl(:test_resource)
+    described_class.remove_resource_dsl(:dsl_resources_spec_resource)
   end
 
   context "with a resource added" do
     before do
-      Chef::DSL::Resources.add_resource_dsl(:test_resource)
+      Chef::DSL::Resources.add_resource_dsl(:dsl_resources_spec_resource)
       test_class.new.instance_eval do
-        test_resource "test_name" do
+        dsl_resources_spec_resource "test_name" do
         end
       end
     end
-    it { is_expected.to eq [[:test_resource, "test_name"]] }
+    it { is_expected.to eq [[:dsl_resources_spec_resource, "test_name"]] }
   end
 
   context "with no resource added" do
     subject do
       test_class.new.instance_eval do
-        test_resource "test_name" do
+        dsl_resources_spec_resource "test_name" do
         end
       end
     end
@@ -60,12 +60,12 @@ describe Chef::DSL::Resources do
 
   context "with a resource added and removed" do
     before do
-      Chef::DSL::Resources.add_resource_dsl(:test_resource)
-      Chef::DSL::Resources.remove_resource_dsl(:test_resource)
+      Chef::DSL::Resources.add_resource_dsl(:dsl_resources_spec_resource)
+      Chef::DSL::Resources.remove_resource_dsl(:dsl_resources_spec_resource)
     end
     subject do
       test_class.new.instance_eval do
-        test_resource "test_name" do
+        dsl_resources_spec_resource "test_name" do
         end
       end
     end
@@ -75,11 +75,11 @@ describe Chef::DSL::Resources do
 
   context "with a nameless resource" do
     before do
-      Chef::DSL::Resources.add_resource_dsl(:test_resource)
+      Chef::DSL::Resources.add_resource_dsl(:dsl_resources_spec_resource)
       test_class.new.instance_eval do
-        test_resource {}
+        dsl_resources_spec_resource {}
       end
     end
-    it { is_expected.to eq [[:test_resource, nil]] }
+    it { is_expected.to eq [[:dsl_resources_spec_resource, nil]] }
   end
 end
