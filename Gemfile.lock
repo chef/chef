@@ -163,7 +163,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.9.2)
+    addressable (2.10.0)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
@@ -295,7 +295,7 @@ GEM
     fuzzyurl (0.9.0)
     gssapi (1.3.1)
       ffi (>= 1.0.1)
-    hashdiff (1.2.1)
+    hashdiff (1.3.0)
     hashie (5.1.0)
       logger
     http-accept (2.1.1)
@@ -535,7 +535,7 @@ GEM
       aws-sigv4
       base64
       net-http-persistent (~> 4.0, >= 4.0.2)
-    webmock (3.34.0)
+    webmock (3.36.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
