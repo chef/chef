@@ -580,8 +580,9 @@ class Chef
       resolve_notification_references
       validate_action(action)
 
-      if Chef::Config[:verbose_logging] || logger.level == :debug
-        # This can be noisy
+      # This can be noisy. Check info? first so the message, which parses the
+      # source line for defined_at, is only built when it will be logged.
+      if logger.info? && (Chef::Config[:verbose_logging] || logger.level == :debug)
         logger.info("Processing #{self} action #{action} (#{defined_at})")
       end
 

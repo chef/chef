@@ -775,6 +775,36 @@ describe Chef::Resource do
       expect(snitch_var2).to be_falsey
     end
 
+    describe "logging the action being processed" do
+      let(:logger) { resource.logger }
+
+      it "logs the action at info level when verbose_logging is on" do
+        Chef::Config[:verbose_logging] = true
+        allow(logger).to receive(:info?).and_return(true)
+        allow(logger).to receive(:info)
+        resource.run_action(:purr)
+        expect(logger).to have_received(:info).with(/\AProcessing #{Regexp.escape(resource.to_s)} action purr \(/)
+      end
+
+      it "logs the action at debug level when verbose_logging is off" do
+        Chef::Config[:verbose_logging] = false
+        allow(logger).to receive(:info?).and_return(true)
+        allow(logger).to receive(:level).and_return(:debug)
+        allow(logger).to receive(:info)
+        resource.run_action(:purr)
+        expect(logger).to have_received(:info).with(/\AProcessing #{Regexp.escape(resource.to_s)} action purr \(/)
+      end
+
+      it "does not build the message when info logging is off" do
+        Chef::Config[:verbose_logging] = true
+        allow(logger).to receive(:info?).and_return(false)
+        allow(logger).to receive(:info)
+        expect(resource).not_to receive(:defined_at)
+        resource.run_action(:purr)
+        expect(logger).not_to have_received(:info).with(/\AProcessing /)
+      end
+    end
+
     it "reports 0 elapsed time if actual elapsed time is < 0" do
       expected = Time.now
       allow(Time).to receive(:now).and_return(expected, expected - 1)
