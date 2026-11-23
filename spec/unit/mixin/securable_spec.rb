@@ -42,6 +42,59 @@ describe Chef::Mixin::Securable do
     expect(@securable).to respond_to(:user)
   end
 
+  describe "property reuse" do
+    let(:other) do
+      Object.new.tap do |o|
+        o.extend(Chef::Mixin::Securable)
+        o.extend(Chef::Mixin::ParamsValidate)
+      end
+    end
+
+    it "does not build a new property on each owner, group or mode call" do
+      @securable.owner "root"
+      @securable.group "root"
+      @securable.mode "0644"
+
+      expect(Chef::Mixin::ParamsValidate::SetOrReturnProperty).not_to receive(:new)
+      @securable.owner
+      @securable.group
+      @securable.mode
+      other.owner "nobody"
+      other.group "nogroup"
+      other.mode "0600"
+    end
+
+    it "keeps values separate for each object sharing a property" do
+      @securable.owner "root"
+      @securable.mode "0644"
+      other.owner "nobody"
+      other.mode "0600"
+
+      expect(@securable.owner).to eq("root")
+      expect(@securable.mode).to eq("0644")
+      expect(other.owner).to eq("nobody")
+      expect(other.mode).to eq("0600")
+    end
+
+    it "validates owner and group against the regex configured at call time" do
+      @securable.owner "root"
+      @securable.group "root"
+
+      Chef::Config[:user_valid_regex] = /^only_this_user$/
+      Chef::Config[:group_valid_regex] = /^only_this_group$/
+
+      expect { other.owner "root" }.to raise_error(ArgumentError)
+      expect { other.owner "only_this_user" }.not_to raise_error
+      expect { other.group "root" }.to raise_error(ArgumentError)
+      expect { other.group "only_this_group" }.not_to raise_error
+    end
+
+    it "treats passing nil as a read, as set_or_return does" do
+      @securable.mode "0644"
+      expect(@securable.mode(nil)).to eq("0644")
+    end
+  end
+
   describe "unix-specific behavior" do
     before(:each) do
       platform_mock :unix do
