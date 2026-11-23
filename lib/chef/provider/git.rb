@@ -162,8 +162,8 @@ class Chef
       def add_remotes
         if new_resource.additional_remotes.length > 0
           new_resource.additional_remotes.each_pair do |remote_name, remote_url|
-            converge_by("add remote #{remote_name} from #{remote_url}") do
-              logger.info "#{new_resource} adding git remote #{remote_name} = #{remote_url}"
+            converge_by("add remote #{remote_name} from #{mask_sensitive_url(remote_url)}") do
+              logger.info "#{new_resource} adding git remote #{remote_name} = #{mask_sensitive_url(remote_url)}"
               setup_remote_tracking_branches(remote_name, remote_url)
             end
           end
@@ -247,8 +247,8 @@ class Chef
       end
 
       def setup_remote_tracking_branches(remote_name, remote_url)
-        converge_by("set up remote tracking branches for #{remote_url} at #{remote_name}") do
-          logger.trace "#{new_resource} configuring remote tracking branches for repository #{remote_url} " + "at remote #{remote_name}"
+        converge_by("set up remote tracking branches for #{mask_sensitive_url(remote_url)} at #{remote_name}") do
+          logger.trace "#{new_resource} configuring remote tracking branches for repository #{mask_sensitive_url(remote_url)} " + "at remote #{remote_name}"
           check_remote_command = ["config", "--get", "remote.#{remote_name}.url"]
           remote_status = git(check_remote_command, cwd: cwd, returns: [0, 1, 2])
           case remote_status.exitstatus
@@ -398,11 +398,15 @@ class Chef
       # repository URL is returned
       # @return [String]
       def repo_url
-        if new_resource.sensitive
-          "**Suppressed Sensitive URL**"
-        else
-          new_resource.repository
-        end
+        mask_sensitive_url(new_resource.repository)
+      end
+
+      # Masks any URL (the primary repository, an additional remote, etc.) when
+      # the resource is marked sensitive, so credentials embedded in the URL
+      # don't leak into converge_by/log messages.
+      # @return [String]
+      def mask_sensitive_url(url)
+        new_resource.sensitive ? "**Suppressed Sensitive URL**" : url
       end
 
       # Returns the home directory of the user
