@@ -6,9 +6,9 @@ param (
 # some of the functional tests require that winrm be configured
 winrm quickconfig -quiet
 
-$chef_gem_root = (hab pkg exec $PackageIdentifier gem.cmd which chef | Split-Path | Split-Path)
+$project_root = "$(git rev-parse --show-toplevel)"
 try {
-    Push-Location $chef_gem_root
+    Push-Location $project_root
     $env:PATH = "C:\hab\bin;$env:PATH"
 
     # Put chef's GEM_PATH in the machine environment so that the windows service
@@ -18,7 +18,7 @@ try {
     SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
     hab pkg binlink --force $PackageIdentifier
-    /hab/bin/rspec --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
+    hab pkg exec $PackageIdentifier rspec -I chef-config/lib -I chef-utils/lib --tag ~executables --tag ~choco_installed --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb'
     if (-not $?) { throw "functional testing failed"}
 } finally {
     Pop-Location
