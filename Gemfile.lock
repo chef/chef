@@ -12,10 +12,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 1722ab55f33a3ca4722a35668e60c80d17c24e04
+  revision: 0e332b0eb2bfd0ef438cb53bf43c36c68a397866
   branch: main
   specs:
-    ohai (19.1.56)
+    ohai (19.1.57)
       base64
       chef-config (>= 14.12, < 20)
       chef-utils (>= 16.0, < 20)
@@ -163,7 +163,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.9.2)
+    addressable (2.10.0)
       public_suffix (>= 2.0.2, < 8.0)
     appbundler (0.13.4)
       mixlib-cli (>= 1.4, < 3.0)
