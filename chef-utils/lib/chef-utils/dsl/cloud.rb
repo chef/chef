@@ -149,6 +149,17 @@ module ChefUtils
         node.key?("softlayer")
       end
 
+      # Determine if the current node is running in Scaleway.
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 19.5
+      #
+      # @return [Boolean]
+      #
+      def scaleway?(node = __getnode)
+        node.key?("scaleway")
+      end
+
       # Determine if the current node is running in Oracle Cloud Infrastructure (OCI).
       #
       # @param [Chef::Node] node the node to check
