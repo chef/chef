@@ -116,11 +116,25 @@ describe Chef::Provider::RemoteFile::SFTP do
       fetcher.fetch
     end
 
+    it "should connect to the default port when the URI does not specify one" do
+      expect(Net::SFTP).to receive(:start).with("opscode.com", "conan", password: "cthu1hu")
+      fetcher.fetch
+    end
+
     context "and the URI specifies an alternate port" do
       let(:uri) { URI.parse("sftp://conan:cthu1hu@opscode.com:8021/seattle.txt") }
 
       it "should connect on an alternate port when one is provided" do
-        expect(Net::SFTP).to receive(:start).with("opscode.com:8021", "conan", password: "cthu1hu")
+        expect(Net::SFTP).to receive(:start).with("opscode.com", "conan", password: "cthu1hu", port: 8021)
+        fetcher.fetch
+      end
+
+      it "should not fold the port into the hostname" do
+        expect(Net::SFTP).to receive(:start) do |host, _user, opts|
+          expect(host).to eq("opscode.com")
+          expect(opts[:port]).to eq(8021)
+          sftp
+        end
         fetcher.fetch
       end
 
