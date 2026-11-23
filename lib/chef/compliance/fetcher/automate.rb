@@ -1,4 +1,6 @@
 require "uri" unless defined?(URI)
+require_relative "../load_inspec"
+Chef::Compliance.load_inspec!
 require "plugins/inspec-compliance/lib/inspec-compliance"
 
 class Chef
