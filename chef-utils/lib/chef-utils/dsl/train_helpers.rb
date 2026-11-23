@@ -71,7 +71,7 @@ module ChefUtils
 
       def file_directory?(path)
         if __transport_connection
-          __transport_connection.file(filename).directory?
+          __transport_connection.file(path).directory?
         else
           File.directory?(path)
         end
