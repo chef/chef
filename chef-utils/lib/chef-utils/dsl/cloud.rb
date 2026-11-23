@@ -160,6 +160,17 @@ module ChefUtils
         node.key?("oci")
       end
 
+      # Determine if the current node is running in Hetzner Cloud.
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 19.5
+      #
+      # @return [Boolean]
+      #
+      def hetzner?(node = __getnode)
+        node.key?("hetzner")
+      end
+
       extend self
     end
   end

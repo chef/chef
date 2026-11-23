@@ -133,6 +133,7 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `digital_ocean?` - if the node is running in digital ocean
 * `softlayer?` - if the node is running in softlayer
 * `oci?` - if the node is running in oracle cloud infrastructure
+* `hetzner?` - if the node is running in hetzner cloud
 
 ### Virtualization Helpers
 
