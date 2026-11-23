@@ -51,14 +51,14 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install native deps
         run: |
           sudo apt-get update
           sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1
         with:
           ruby-version: "3.4"
           bundler-cache: false
@@ -186,9 +186,9 @@ jobs:
     timeout-minutes: 45
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1
         with:
           ruby-version: "3.4"
           bundler-cache: false
@@ -213,7 +213,7 @@ jobs:
         shell: pwsh
         run: wsl --set-default-version 2
 
-      - uses: Vampire/setup-wsl@v7
+      - uses: Vampire/setup-wsl@4c48163d9f981914dd8caa0fc335fe19cca5bff4 # v7
         with:
           distribution: Ubuntu-24.04
           use-cache: "true"

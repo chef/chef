@@ -17,12 +17,12 @@ jobs:
     env:
       BUNDLE_WITHOUT: ruby_shadow:packaging
     steps:
-      - uses: actions/checkout@v7
-      - uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1
         with:
           ruby-version: 3.4
           bundler-cache: false
-      - uses: r7kamura/rubocop-problem-matchers-action@v1  # this shows the failures in the PR
+      - uses: r7kamura/rubocop-problem-matchers-action@59f1a0759f50cc2649849fd850b8487594bb5a81 # v1 - this shows the failures in the PR
       - run: |
           # Disable Git's background auto-maintenance/GC/commit-graph writers so
           # they can't mutate Bundler's shared git cache repo (for our git-sourced
@@ -39,15 +39,15 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: crate-ci/typos@v1.50.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: crate-ci/typos@512fc24f32f44ab01972217aaaf3dc86ec234d53 # v1.50.2
 
   linelint:
     runs-on: ubuntu-latest
     name: Check if all files end in newline
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Linelint
-        uses: fernandrone/linelint@master
+        uses: fernandrone/linelint@7907a5dca0c28ea7dd05c6d8d8cacded713aca11 # master
         id: linelint
