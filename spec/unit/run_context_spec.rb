@@ -240,18 +240,54 @@ describe Chef::RunContext do
       end
     end
 
+    shared_context "looking up a resource without notifications" do
+      let(:notifying_resource) { Chef::Resource.new("gerbil") }
+      let(:quiet_resource) { Chef::Resource.new("hamster") }
+
+      it "returns no notifications and does not add an entry when there are none at all" do
+        expect(run_context.send(getter, quiet_resource)).to eq([])
+        expect(run_context.send(collection)).to be_empty
+      end
+
+      it "returns no notifications and does not add an entry when only other resources notify" do
+        run_context.send(setter, notification)
+        expect(run_context.send(getter, quiet_resource)).to eq([])
+        expect(run_context.send(getter, "hamster[hamster]")).to eq([])
+        expect(run_context.send(collection).keys).to eq([notifying_resource.declared_key])
+      end
+
+      it "still records notifications added after a lookup" do
+        run_context.send(getter, notifying_resource)
+        run_context.send(setter, notification)
+        expect(run_context.send(getter, notifying_resource)).to eq([notification])
+      end
+    end
+
+    describe "of the before kind" do
+      let(:setter) { :notifies_before }
+      let(:getter) { :before_notifications }
+      let(:collection) { :before_notification_collection }
+      include_context "notifying resource is a Chef::Resource"
+      include_context "notifying resource is a subclass of Chef::Resource"
+      include_context "looking up a resource without notifications"
+    end
+
     describe "of the immediate kind" do
       let(:setter) { :notifies_immediately }
       let(:getter) { :immediate_notifications }
+      let(:collection) { :immediate_notification_collection }
       include_context "notifying resource is a Chef::Resource"
       include_context "notifying resource is a subclass of Chef::Resource"
+      include_context "looking up a resource without notifications"
     end
 
     describe "of the delayed kind" do
       let(:setter) { :notifies_delayed }
       let(:getter) { :delayed_notifications }
+      let(:collection) { :delayed_notification_collection }
       include_context "notifying resource is a Chef::Resource"
       include_context "notifying resource is a subclass of Chef::Resource"
+      include_context "looking up a resource without notifications"
     end
   end
 end
