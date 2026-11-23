@@ -114,6 +114,28 @@ class Chef
           run_noninteractive("apt-get", "-q", "-y", options, "purge", package_name)
         end
 
+        # apt-cache policy (which populates current_version) reports "(none)" as the
+        # installed version both when a package was never installed and when it's in
+        # dpkg's "rc" state (removed, but config files remain) -- removing_package?
+        # (and thus :remove) correctly treats both cases the same, since there's no
+        # package left to remove. But :purge exists specifically to clean up that
+        # leftover config-files case, so check dpkg directly for it here instead of
+        # relying on current_version.
+        #
+        # @return [Boolean]
+        def purging_package?
+          return true if removing_package?
+
+          package_name_array.any? { |name| dpkg_config_files_remain?(name) }
+        end
+
+        # @return [Boolean] whether dpkg reports this package as "rc" (removed, config
+        # files remain) -- distinct from dpkg having no record of the package at all.
+        def dpkg_config_files_remain?(name)
+          status = shell_out("dpkg-query", "--show", "--showformat=${Status}", name, returns: [0, 1]).stdout
+          status.split(" ").last == "config-files"
+        end
+
         def lock_package(name, version)
           run_noninteractive("apt-mark", options, "hold", name)
         end
