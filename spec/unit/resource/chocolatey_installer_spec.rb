@@ -226,6 +226,41 @@ describe Chef::Resource::ChocolateyInstaller do
     end
   end
 
+  describe "recovering missing Chocolatey package registration" do
+    let(:resource) { Chef::Resource::ChocolateyInstaller.new("recover_chocolatey", run_context) }
+    let(:provider) { resource.provider_for_action(:install) }
+    let(:registration_path) { 'C:\ProgramData\chocolatey\lib\chocolatey\chocolatey.nupkg' }
+
+    before do
+      allow(resource).to receive(:provider_for_action).with(:install).and_return(provider)
+      allow(resource).to receive(:is_choco_installed?).and_return(true)
+      allow(::File).to receive(:file?).and_call_original
+      allow(::File).to receive(:file?).with(registration_path).and_return(false)
+      allow(provider).to receive(:powershell_exec).and_return(instance_double("Mixlib::ShellOut", error!: nil))
+    end
+
+    it "repairs registration using the matching cached archive" do
+      resource.download_url = "https://some.server/chocolatey.2.0.0.nupkg"
+
+      allow(provider).to receive(:powershell_exec).with(/Set-Item/).and_return(instance_double("Mixlib::ShellOut", error!: nil))
+      expect(provider).to receive(:powershell_exec).with(
+        a_string_including("$archiveVersion -ne $installedVersion", "Copy-Item -LiteralPath $archivePath -Destination $registeredNupkg")
+      ).and_return(instance_double("Mixlib::ShellOut", error!: nil))
+      resource.run_action(:install)
+    end
+
+    it "fails when no package source is available" do
+      expect { resource.run_action(:install) }.to raise_error(Chef::Exceptions::Package, /Supply the matching \.nupkg download_url/)
+    end
+
+    it "does not repair an already registered installation" do
+      allow(::File).to receive(:file?).with(registration_path).and_return(true)
+      expect(provider).not_to receive(:powershell_exec)
+      resource.run_action(:install)
+      expect(resource).not_to be_updated
+    end
+  end
+
   describe "Chocolatey is idempotent because" do
     context "on windows", :windows_only do
       it "it does not install choco again if it is already installed" do
@@ -371,6 +406,7 @@ describe Chef::Resource::ChocolateyInstaller do
         provider = r.provider_for_action(:install)
         allow(r).to receive(:provider_for_action).with(:install).and_return(provider)
         allow(r).to receive(:is_choco_installed?).and_return(true)
+        allow(r).to receive(:is_chocolatey_package_registered?).and_return(true)
         allow(provider).to receive(:powershell_exec).and_return(double("shell_out", error!: nil))
         expect { r.run_action(:install) }.not_to raise_error
       end
