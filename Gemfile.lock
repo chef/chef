@@ -556,8 +556,8 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.10.0)
       ffi (>= 1.0.0)
-    win32-service (2.3.2)
-      ffi
+    win32-service (2.4.0)
+      ffi (~> 1.17.2)
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
       ffi
