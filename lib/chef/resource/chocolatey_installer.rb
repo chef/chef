@@ -151,7 +151,7 @@ class Chef
             if (-not (Test-Path $archivePath -PathType Leaf)) { throw "Cannot repair Chocolatey package registration: the source .nupkg is not available at $archivePath" }
 
             $chocoInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
-            $chocoExe = Join-Path $chocoInstall 'bin\\choco.exe'
+            $chocoExe = Join-Path $chocoInstall 'choco.exe'
 
             Add-Type -AssemblyName System.IO.Compression.FileSystem
             $archive = [System.IO.Compression.ZipFile]::OpenRead($archivePath)
