@@ -128,6 +128,34 @@ ruby_block "Simulate legacy Chocolatey installation missing package registration
   end
 end
 
+ruby_block "Reject incorrect Chocolatey package IDs during recovery" do
+  block do
+    archive = ::File.join(Chef::Config[:file_cache_path], "invalid-chocolatey.nupkg")
+    registered_nupkg = ::File.join(ENV["ALLUSERSPROFILE"], "chocolatey", "lib", "chocolatey", "chocolatey.nupkg")
+    begin
+      [nil, "other-package"].each do |id|
+        Zip::OutputStream.open(archive) do |zip|
+          zip.put_next_entry("chocolatey.nuspec")
+          id_element = id ? "<id>#{id}</id>" : ""
+          zip.write("<package><metadata>#{id_element}<version>2.4.2</version></metadata></package>")
+        end
+        installer = Chef::Resource::ChocolateyInstaller.new("Reject invalid Chocolatey package ID", run_context)
+        installer.download_url(archive)
+        begin
+          installer.run_action(:install)
+        rescue StandardError => e
+          raise unless e.message.include?("package ID is not chocolatey")
+        else
+          raise "Chocolatey installer accepted an invalid package ID"
+        end
+        raise "Chocolatey package was registered despite an invalid ID" if ::File.exist?(registered_nupkg)
+      end
+    ensure
+      ::File.delete(archive) if ::File.exist?(archive)
+    end
+  end
+end
+
 ruby_block "Reject mismatched Chocolatey package during recovery" do
   block do
     archive = ::File.join(Chef::Config[:file_cache_path], "mismatched-chocolatey.nupkg")
@@ -135,7 +163,7 @@ ruby_block "Reject mismatched Chocolatey package during recovery" do
     begin
       Zip::OutputStream.open(archive) do |zip|
         zip.put_next_entry("chocolatey.nuspec")
-        zip.write("<package><metadata><version>0.0.1</version></metadata></package>")
+        zip.write("<package><metadata><id>chocolatey</id><version>0.0.1</version></metadata></package>")
       end
       installer = Chef::Resource::ChocolateyInstaller.new("Reject mismatched Chocolatey package", run_context)
       installer.download_url(archive)
@@ -153,9 +181,20 @@ ruby_block "Reject mismatched Chocolatey package during recovery" do
   end
 end
 
-chocolatey_installer "Repair Chocolatey package registration" do
-  action :install
-  download_url "https://packages.chocolatey.org/chocolatey.2.4.2.nupkg"
+ruby_block "Repair Chocolatey package registration with a conflicting environment root" do
+  block do
+    original_root = ENV["ChocolateyInstall"]
+    begin
+      ENV["ChocolateyInstall"] = ::File.join(Chef::Config[:file_cache_path], "other-chocolatey")
+      installer = Chef::Resource::ChocolateyInstaller.new("Repair Chocolatey package registration", run_context)
+      installer.download_url("https://packages.chocolatey.org/chocolatey.2.4.2.nupkg")
+      installer.run_action(:install)
+      registered_nupkg = ::File.join(ENV["ALLUSERSPROFILE"], "chocolatey", "lib", "chocolatey", "chocolatey.nupkg")
+      raise "Chocolatey registration was not repaired at the installed root" unless ::File.file?(registered_nupkg)
+    ensure
+      ENV["ChocolateyInstall"] = original_root
+    end
+  end
 end
 
 # 8. The customer's failing sequence: after installing from a custom .nupkg URL,
