@@ -17,11 +17,14 @@
 #      This is the primary scenario covered by the bug fix: previously the
 #      resource only downloaded the nupkg and never ran the installer.
 #   6. Idempotency after nupkg-URL install
+#   7. Recovery when package registration is missing
 #
 # Idempotency is asserted inside the run (ruby_block + updated_by_last_action?)
 # because CI runs `kitchen verify`, which converges once and does not run
 # Test Kitchen's idempotency_test.
 #
+
+require "zip"
 
 choco_exe = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe"
 choco_config = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\config\\chocolatey.config"
@@ -118,7 +121,83 @@ ruby_block "Assert nupkg URL install is idempotent" do
   end
 end
 
-# 7. The customer's failing sequence: after installing from a custom .nupkg URL,
+ruby_block "Simulate legacy Chocolatey installation missing package registration" do
+  block do
+    registered_nupkg = ::File.join(ENV["ALLUSERSPROFILE"], "chocolatey", "lib", "chocolatey", "chocolatey.nupkg")
+    ::File.delete(registered_nupkg)
+  end
+end
+
+ruby_block "Reject incorrect Chocolatey package IDs during recovery" do
+  block do
+    archive = ::File.join(Chef::Config[:file_cache_path], "invalid-chocolatey.nupkg")
+    registered_nupkg = ::File.join(ENV["ALLUSERSPROFILE"], "chocolatey", "lib", "chocolatey", "chocolatey.nupkg")
+    begin
+      [nil, "other-package"].each do |id|
+        Zip::OutputStream.open(archive) do |zip|
+          zip.put_next_entry("chocolatey.nuspec")
+          id_element = id ? "<id>#{id}</id>" : ""
+          zip.write("<package><metadata>#{id_element}<version>2.4.2</version></metadata></package>")
+        end
+        installer = Chef::Resource::ChocolateyInstaller.new("Reject invalid Chocolatey package ID", run_context)
+        installer.download_url(archive)
+        begin
+          installer.run_action(:install)
+        rescue StandardError => e
+          raise unless e.message.include?("package ID is not chocolatey")
+        else
+          raise "Chocolatey installer accepted an invalid package ID"
+        end
+        raise "Chocolatey package was registered despite an invalid ID" if ::File.exist?(registered_nupkg)
+      end
+    ensure
+      ::File.delete(archive) if ::File.exist?(archive)
+    end
+  end
+end
+
+ruby_block "Reject mismatched Chocolatey package during recovery" do
+  block do
+    archive = ::File.join(Chef::Config[:file_cache_path], "mismatched-chocolatey.nupkg")
+    registered_nupkg = ::File.join(ENV["ALLUSERSPROFILE"], "chocolatey", "lib", "chocolatey", "chocolatey.nupkg")
+    begin
+      Zip::OutputStream.open(archive) do |zip|
+        zip.put_next_entry("chocolatey.nuspec")
+        zip.write("<package><metadata><id>chocolatey</id><version>0.0.1</version></metadata></package>")
+      end
+      installer = Chef::Resource::ChocolateyInstaller.new("Reject mismatched Chocolatey package", run_context)
+      installer.download_url(archive)
+      begin
+        installer.run_action(:install)
+      rescue StandardError => e
+        raise unless e.message.include?("does not match installed version")
+      else
+        raise "Chocolatey installer accepted a mismatched package"
+      end
+      raise "Chocolatey package was registered despite a version mismatch" if ::File.exist?(registered_nupkg)
+    ensure
+      ::File.delete(archive) if ::File.exist?(archive)
+    end
+  end
+end
+
+ruby_block "Repair Chocolatey package registration with a conflicting environment root" do
+  block do
+    original_root = ENV["ChocolateyInstall"]
+    begin
+      ENV["ChocolateyInstall"] = ::File.join(Chef::Config[:file_cache_path], "other-chocolatey")
+      installer = Chef::Resource::ChocolateyInstaller.new("Repair Chocolatey package registration", run_context)
+      installer.download_url("https://packages.chocolatey.org/chocolatey.2.4.2.nupkg")
+      installer.run_action(:install)
+      registered_nupkg = ::File.join(ENV["ALLUSERSPROFILE"], "chocolatey", "lib", "chocolatey", "chocolatey.nupkg")
+      raise "Chocolatey registration was not repaired at the installed root" unless ::File.file?(registered_nupkg)
+    ensure
+      ENV["ChocolateyInstall"] = original_root
+    end
+  end
+end
+
+# 8. The customer's failing sequence: after installing from a custom .nupkg URL,
 #    add and enable a source with chocolatey_source in the same Chef run.
 #
 #    WHY THE :disable ACTION IS HERE (TEST-ONLY; do not remove it as "redundant"):
@@ -157,7 +236,7 @@ ruby_block "Assert chocolatey_source add is idempotent" do
   end
 end
 
-# 8. Install a package that depends on the chocolatey package, after the nupkg install.
+# 9. Install a package that depends on the chocolatey package, after the nupkg install.
 #    chocolatey-community-validation.extension declares a dependency on
 #    chocolatey (>= 2.0.0). The nupkg install must register chocolatey in
 #    lib\chocolatey, as Chocolatey's install.ps1 does. If it did not, choco would

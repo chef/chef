@@ -86,6 +86,10 @@ class Chef
         ::File.exist?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco.exe")
       end
 
+      def is_chocolatey_package_registered?
+        ::File.file?("#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\lib\\chocolatey\\chocolatey.nupkg")
+      end
+
       def get_choco_version
         powershell_exec("choco --version").result
       end
@@ -131,6 +135,55 @@ class Chef
         def ps_quote(value)
           "'#{value.to_s.gsub(/['\u2018\u2019\u201A\u201B]/) { |c| c * 2 }}'"
         end
+
+        def repair_chocolatey_package_registration
+          unless new_resource.download_url && !new_resource.download_url_script?
+            raise Chef::Exceptions::Package,
+              "Chocolatey is installed but its package registration is missing. " \
+              "Supply the matching .nupkg download_url or uninstall and reinstall Chocolatey."
+          end
+
+          url = new_resource.download_url
+          is_filesystem_path = url.match?(%r{^[a-zA-Z]:[\\/]}) || url.start_with?("\\\\")
+          nupkg_path = is_filesystem_path ? url : new_resource.download_destination
+          powershell_exec(<<~PS).error!
+            $archivePath = #{ps_quote(nupkg_path)}
+            if (-not (Test-Path $archivePath -PathType Leaf)) { throw "Cannot repair Chocolatey package registration: the source .nupkg is not available at $archivePath" }
+
+            $chocoInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
+            $chocoExe = Join-Path $chocoInstall 'choco.exe'
+
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            $archive = [System.IO.Compression.ZipFile]::OpenRead($archivePath)
+            try {
+              $nuspecEntry = $archive.Entries | Where-Object { $_.FullName -match '(^|/)chocolatey\\.nuspec$' } | Select-Object -First 1
+              if (-not $nuspecEntry) { throw "Cannot repair Chocolatey package registration: no chocolatey.nuspec was found in $archivePath" }
+              $reader = New-Object System.IO.StreamReader($nuspecEntry.Open())
+              try {
+                $nuspec = New-Object System.Xml.XmlDocument
+                $nuspec.XmlResolver = $null
+                $nuspec.LoadXml($reader.ReadToEnd())
+              } finally { $reader.Dispose() }
+              $idNode = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='id']")
+              if (-not $idNode -or $idNode.InnerText.Trim() -ne 'chocolatey') { throw "Cannot repair Chocolatey package registration: package ID is not chocolatey in $archivePath" }
+              $versionNode = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='version']")
+              if (-not $versionNode) { throw "Cannot repair Chocolatey package registration: no package version was found in $archivePath" }
+              $archiveVersion = $versionNode.InnerText.Trim()
+            } finally { $archive.Dispose() }
+
+            $installedVersion = (Get-Item -LiteralPath $chocoExe -ErrorAction Stop).VersionInfo.ProductVersion
+            if ([string]::IsNullOrWhiteSpace($installedVersion)) { throw "Cannot determine the installed Chocolatey version from $chocoExe" }
+            $installedVersion = $installedVersion.Trim()
+            if ($archiveVersion -ne $installedVersion) { throw "Cannot repair Chocolatey package registration: source package version $archiveVersion does not match installed version $installedVersion" }
+
+            $chocoPkgDir = Join-Path $chocoInstall 'lib\\chocolatey'
+            if (-not (Test-Path $chocoPkgDir -PathType Container)) { New-Item -ItemType Directory -Path $chocoPkgDir -Force -ErrorAction Stop | Out-Null }
+            $registeredNupkg = Join-Path $chocoPkgDir 'chocolatey.nupkg'
+            if (Test-Path $registeredNupkg -PathType Container) { throw "Cannot register Chocolatey: $registeredNupkg is a directory, not a package archive" }
+            Copy-Item -LiteralPath $archivePath -Destination $registeredNupkg -Force -ErrorAction Stop
+            if (-not (Test-Path $registeredNupkg -PathType Leaf)) { throw "Chocolatey package archive was not registered at $registeredNupkg" }
+          PS
+        end
       end
 
       action :install, description: "Installs Chocolatey package manager" do
@@ -173,6 +226,12 @@ class Chef
 
         if new_resource.proxy_user && new_resource.proxy_password
           powershell_exec("Set-Item -path env:ChocolateyProxyUser -Value #{ps_quote(new_resource.proxy_user)}; Set-Item -path env:ChocolateyProxyPassword -Value #{ps_quote(new_resource.proxy_password)}")
+        end
+
+        if is_choco_installed? && !is_chocolatey_package_registered?
+          converge_by("repair Chocolatey package registration") do
+            repair_chocolatey_package_registration
+          end
         end
 
         # Guard on actual installed state rather than property comparison.
