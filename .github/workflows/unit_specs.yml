@@ -50,7 +50,7 @@ jobs:
         if: runner.os == 'Windows'
         run: git config --global core.autocrlf false
         shell: pwsh
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           clean: true
       - name: Install native deps (Ubuntu)
@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libssl-dev libarchive-dev libffi-dev libyaml-dev
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: false
@@ -133,7 +133,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y build-essential ca-certificates curl git patch pkg-config sudo libssl-dev libarchive-dev libffi-dev libyaml-dev libreadline-dev zlib1g-dev
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           clean: true
       - name: Install native deps (dnf)

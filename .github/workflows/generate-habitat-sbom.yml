@@ -34,12 +34,12 @@ jobs:
       BD_PROJECT_NAME: 'chef'
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set BD version from VERSION file
         run: echo "BD_VERSION_NAME=$(cat VERSION | tr -d '[:space:]')" >> "$GITHUB_ENV"
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1
         with:
           ruby-version: "3.4"
           bundler: none
@@ -86,7 +86,7 @@ jobs:
         run: bash scripts/sbom/canonicalize_bd_purls.sh sbom-all-platforms.json
 
       - name: Upload merged SBOM artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: habitat-cyclonedx-sbom-all-platforms
           path: sbom-all-platforms.json

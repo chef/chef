@@ -10,7 +10,7 @@ jobs:
       checks: read
       contents: read
     steps:
-      - uses: wechuli/allcheckspassed@v2
+      - uses: wechuli/allcheckspassed@1e77c91db5ec91faa94bf441f91b91327d269ab0 # v2
         with:
           # Retry every minute for 30 minutes...
           retries: 90

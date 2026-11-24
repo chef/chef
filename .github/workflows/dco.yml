@@ -12,12 +12,12 @@ jobs:
     name: DCO Check
     steps:
     - name: Get PR Commits
-      uses: actionshub/get-pr-commits@main
+      uses: actionshub/get-pr-commits@043233955440a262985aee5a35e69da1fcbfb9e7 # main
       id: 'get-pr-commits'
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: DCO Check
-      uses: actionshub/dco@main
+      uses: actionshub/dco@96f73417c212ef19e4934a3089c60685fe5d3b19 # main
       with:
         commits: ${{ steps.get-pr-commits.outputs.commits }}
         allow-obvious-fix-label: "obvious-fix"

@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   workflow_guard:
-    uses: chef/chef/.github/workflows/workflow-change-guard.yml@main
+    uses: chef/chef/.github/workflows/workflow-change-guard.yml@e16eb38cc9eb1d40ee6f9cb10a334cb99b3e4ec1 # main
     permissions:
       contents: read
 
@@ -44,7 +44,7 @@ jobs:
       CHEF_LICENSE_KEY: ${{ secrets.CHEF_LICENSE_KEY }}
     steps:
       - name: Checkout PR code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           allow-unsafe-pr-checkout: true
           ref: ${{ github.event.pull_request.head.sha }}

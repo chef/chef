@@ -23,10 +23,10 @@ jobs:
     steps:
       # Note that we do NOT checkout the PR code, this is actually
       # 'main', but Danger rules can still use the API to read the PR
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Install dangerfile dependencies
         run: npm install js-yaml
-      - uses: danger/danger-js@14.1.0
+      - uses: danger/danger-js@72540533c4f99bad772ba303be0eb4af6eddbdc4 # 14.1.0
         with:
           args: "--verbose --text-only -f"
         env:
