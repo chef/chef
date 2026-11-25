@@ -141,9 +141,8 @@ class Chef
           $archivePath = #{ps_quote(nupkg_path)}
           if (-not (Test-Path $archivePath -PathType Leaf)) { throw "Cannot repair Chocolatey package registration: the source .nupkg is not available at $archivePath" }
 
-          $chocoInstall = $env:ChocolateyInstall
-          if (-not $chocoInstall) { $chocoInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey' }
-          $chocoExe = Join-Path $chocoInstall 'bin\\choco.exe'
+          $chocoInstall = Join-Path $env:ALLUSERSPROFILE 'chocolatey'
+          $chocoExe = Join-Path $chocoInstall 'choco.exe'
 
           Add-Type -AssemblyName System.IO.Compression.FileSystem
           $archive = [System.IO.Compression.ZipFile]::OpenRead($archivePath)
@@ -156,13 +155,16 @@ class Chef
               $nuspec.XmlResolver = $null
               $nuspec.LoadXml($reader.ReadToEnd())
             } finally { $reader.Dispose() }
+            $idNode = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='id']")
+            if (-not $idNode -or $idNode.InnerText.Trim() -ne 'chocolatey') { throw "Cannot repair Chocolatey package registration: package ID is not chocolatey in $archivePath" }
             $versionNode = $nuspec.SelectSingleNode("/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='version']")
             if (-not $versionNode) { throw "Cannot repair Chocolatey package registration: no package version was found in $archivePath" }
             $archiveVersion = $versionNode.InnerText.Trim()
           } finally { $archive.Dispose() }
 
-          $installedVersion = (& $chocoExe --version | Out-String).Trim()
-          if ($LASTEXITCODE -ne 0 -or -not $installedVersion) { throw "Cannot determine the installed Chocolatey version from $chocoExe" }
+          $installedVersion = (Get-Item -LiteralPath $chocoExe -ErrorAction Stop).VersionInfo.ProductVersion
+          if ([string]::IsNullOrWhiteSpace($installedVersion)) { throw "Cannot determine the installed Chocolatey version from $chocoExe" }
+          $installedVersion = $installedVersion.Trim()
           if ($archiveVersion -ne $installedVersion) { throw "Cannot repair Chocolatey package registration: source package version $archiveVersion does not match installed version $installedVersion" }
 
           $chocoPkgDir = Join-Path $chocoInstall 'lib\\chocolatey'
