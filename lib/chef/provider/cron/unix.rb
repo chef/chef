@@ -35,7 +35,7 @@ class Chef
 
         def read_crontab
           crontab = shell_out(%w{/usr/bin/crontab -l}, user: @new_resource.user)
-          status = crontab.status.exitstatus
+          status = command_exitstatus(crontab)
 
           logger.trace crontab.format_for_exception if status > 0
 
@@ -63,7 +63,7 @@ class Chef
           begin
             crontab_write = shell_out("/usr/bin/crontab", tempcron_path, user: @new_resource.user)
             stderr = crontab_write.stderr
-            exit_status = crontab_write.status.exitstatus
+            exit_status = command_exitstatus(crontab_write)
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
             if stderr && stderr.include?("errors detected in input, no crontab file generated")
               error_message = stderr
@@ -84,6 +84,12 @@ class Chef
           if exit_status > 0
             raise Chef::Exceptions::Cron, "Error updating state of #{@new_resource.name}, exit: #{exit_status}, message: #{error_message}"
           end
+        end
+
+        def command_exitstatus(command)
+          return command.exitstatus if command.respond_to?(:exitstatus)
+
+          command.status.exitstatus
         end
 
       end
