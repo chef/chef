@@ -46,6 +46,20 @@ pipelines:
       trigger: default
   - habitat/build:
       definition: .expeditor/build.habitat.yml
+  # PROPOSAL (needs build-owner sign-off): separate pipeline for premium installers.
+  # Same habitat plans; the Gemfile switches to the premium Target Mode gems when
+  # CHEF_PREMIUM_EXTENSIONS_ENABLED=true. The license key secret path and the
+  # origin in build.habitat.premium.yml are placeholders.
+  - habitat/build-premium:
+      description: Builds premium installers with the premium Target Mode gems
+      definition: .expeditor/build.habitat.premium.yml
+      env:
+        - CHEF_PREMIUM_EXTENSIONS_ENABLED: true
+        - HAB_STUDIO_SECRET_CHEF_PREMIUM_EXTENSIONS_ENABLED: true
+      secrets:
+        BUNDLE_RUBYGEMS__CHEF__IO:
+          path: TODO/premium-rubygems-license  # placeholder; value must be v1:<license_key>
+          field: license_key
   - hab-export:
       definition: .expeditor/hab-export-pipeline.yml
   - gem_validate/release:

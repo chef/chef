@@ -1,0 +1,3 @@
+---
+# PROPOSAL: placeholder origin so premium packages do not overwrite community ones.
+origin: chef-premium
