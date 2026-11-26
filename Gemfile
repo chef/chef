@@ -12,6 +12,13 @@ gem "cheffish", git: "https://github.com/chef/cheffish.git", branch: "main"
 if ENV["CHEF_PREMIUM_EXTENSIONS_ENABLED"]&.downcase == "true"
   gem "chef_premium_extensions", git: "https://github.com/chef/chef-premium-extensions.git", branch: "agentless-platform-selector"
   gem "agentless_aix_extensions", git: "https://github.com/chef/agentless-aix-extensions.git", branch: "agentless-platform-selector"
+  # Use this instead of the git sources above once the gems are available on
+  # Chef's gem server. The build must authenticate, e.g.
+  # `bundle config https://rubygems.chef.io v1:<license_key>`.
+  # source "https://rubygems.chef.io" do
+  #   gem "chef_premium_extensions", ">= 0.1.0"
+  #   gem "agentless_aix_extensions", ">= 0.1.0"
+  # end
 else
   gem "chef-aix-resources", git: "https://github.com/chef/chef-aix-resources.git", branch: "main"
 end
