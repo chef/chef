@@ -35,9 +35,18 @@ class Chef
 
         def read_crontab
           crontab = shell_out(%w{/usr/bin/crontab -l}, user: @new_resource.user)
-          status = crontab.status.exitstatus
+          # Use #exitstatus (not #status.exitstatus) so this also works against the
+          # Target Mode shell_out shim (FakeShellOut), whose #status is a minimal
+          # OpenStruct that does not populate #exitstatus; #exitstatus itself is
+          # always populated on both the real Mixlib::ShellOut result and FakeShellOut.
+          status = crontab.exitstatus
 
-          logger.trace crontab.format_for_exception if status > 0
+          # Don't use #format_for_exception here: it's defined on real
+          # Mixlib::ShellOut but not on FakeShellOut (the Target Mode shell_out
+          # shim), and status > 0 is the normal case of "user has no crontab
+          # yet" (exit 1), which would otherwise raise NoMethodError in Target
+          # Mode on every first run.
+          logger.trace("crontab -l exited #{status}: stdout=#{crontab.stdout.inspect} stderr=#{crontab.stderr.inspect}") if status > 0
 
           if status > 1
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
@@ -63,7 +72,8 @@ class Chef
           begin
             crontab_write = shell_out("/usr/bin/crontab", tempcron_path, user: @new_resource.user)
             stderr = crontab_write.stderr
-            exit_status = crontab_write.status.exitstatus
+            # See the comment in #read_crontab above re: #exitstatus vs #status.exitstatus.
+            exit_status = crontab_write.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
             if stderr && stderr.include?("errors detected in input, no crontab file generated")
               error_message = stderr
