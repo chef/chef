@@ -39,7 +39,7 @@ describe Chef::Provider::Cron::Unix do
 
   let(:status) { double("Process::Status", exitstatus: exitstatus) }
   let(:exitstatus) { 0 }
-  let(:shell_out) { double("Mixlib::ShellOut", status: status, stdout: stdout, stderr: stderr) }
+  let(:shell_out) { double("Mixlib::ShellOut", status: status, stdout: stdout, stderr: stderr, exitstatus: exitstatus) }
 
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
 
@@ -87,7 +87,6 @@ describe Chef::Provider::Cron::Unix do
 
     before do
       allow(logger).to receive(:trace)
-      allow(shell_out).to receive(:format_for_exception).and_return("formatted command output")
       allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", "-l", user: username).and_return(shell_out)
     end
 
@@ -110,7 +109,7 @@ describe Chef::Provider::Cron::Unix do
 
       it "logs the crontab output to debug" do
         provider.send(:read_crontab)
-        expect(logger).to have_received(:trace).with("formatted command output")
+        expect(logger).to have_received(:trace).with("crontab -l exited 1: stdout=#{stdout.inspect} stderr=#{stderr.inspect}")
       end
     end
 
@@ -125,7 +124,7 @@ describe Chef::Provider::Cron::Unix do
 
       it "logs the crontab output to debug" do
         provider.send(:read_crontab) rescue nil
-        expect(logger).to have_received(:trace).with("formatted command output")
+        expect(logger).to have_received(:trace).with("crontab -l exited 2: stdout=#{stdout.inspect} stderr=#{stderr.inspect}")
       end
     end
   end
